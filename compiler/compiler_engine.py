@@ -1,11 +1,5 @@
 # compiler_engine.py
-# 第二世代・仕様厳守型コンパイラ（Stability Model）
-#
-# Stage 1: master_spec / boot_file 読み込み
-# Stage 2: GPT 接続検証
-# Stage 3: UI質問生成
-# Stage 4: UI判断取り込み（input.json）
-# Stage 5: 仕様 + UI判断 に基づく安定コード生成（MULTI-FILE対応）
+# 第2世代 + 実行モード切り替え版（fast / full）
 
 import os
 import json
@@ -21,9 +15,9 @@ GENERATED_DIR = "generated_output"
 os.makedirs(GENERATED_DIR, exist_ok=True)
 
 
-# ------------------------------
+# =============================
 # Utility
-# ------------------------------
+# =============================
 def load_file(path: str) -> str:
     if not os.path.exists(path):
         return f"[ERROR] File not found: {path}"
@@ -39,9 +33,9 @@ def get_client() -> OpenAI | None:
     return OpenAI(api_key=api_key)
 
 
-# ------------------------------
+# =============================
 # Stage 2: GPT connection test
-# ------------------------------
+# =============================
 def test_gpt_connection():
     print("\n=== Stage 2: GPT-5.2 connection test ===")
     client = get_client()
@@ -51,23 +45,21 @@ def test_gpt_connection():
     res = client.chat.completions.create(
         model="gpt-5.2",
         messages=[
-            {
-                "role": "user",
-                "content": "APIコンパイラとGPT通信テスト。ひと言返してください。"
-            }
+            {"role": "user", "content": "APIコンパイラとの接続テスト。短く返答。"}
         ],
     )
+
     print("GPT:", res.choices[0].message.content)
 
 
-# ------------------------------
-# Stage 3: UI questions
-# ------------------------------
+# =============================
+# Stage 3: Questions for UI
+# =============================
 def generate_questions_for_ui(spec_text: str) -> list[str]:
     return [
-        "1. master_spec の今回の変更点をあなたの言葉で要約してください。",
-        "2. master_spec 内で矛盾または危険な仕様はどこですか？理由も書いてください。",
-        "3. 統合（A）およびコード生成（C）で守るべき優先方針を具体的に示してください。"
+        "1. master_spec の今回変更点の要約を記述せよ。",
+        "2. master_spec 内で矛盾または危険な仕様箇所と理由を述べよ。",
+        "3. 統合（A）および生成（C）で守るべき優先ルールを示せ。"
     ]
 
 
@@ -77,9 +69,9 @@ def write_questions_file(questions: list[str]):
     print("\n=== questions.txt を生成しました ===")
 
 
-# ------------------------------
-# Stage 4: load UI feedback
-# ------------------------------
+# =============================
+# Stage 4: Load UI feedback
+# =============================
 def load_ui_feedback():
     if not os.path.exists(UI_FEEDBACK_PATH):
         print("[INFO] input.json が存在しません（UI判断なし）")
@@ -93,20 +85,21 @@ def load_ui_feedback():
     return data
 
 
-# ------------------------------
-# Stage 5: Stability Code Generator
-# ------------------------------
-def stability_code_generator(spec_text: str, ui_data):
+# =============================
+# Stage 5: Code generation (full-mode)
+# =============================
+def stability_code_generator(spec_text: str, ui_data, mode="fast"):
     """
-    第二世代コード生成器：
-    - master_spec 全文＋UI判断を基に
-    - CONFIG.gs / main.gs / HTML の中から必要なファイルを複数生成可能
-    - 仕様外の改変を禁止
-    - 出力をプレーンテキストのみで返す
+    fast → コード生成スキップ（高速）
+    full → コード生成あり
     """
 
+    if mode == "fast":
+        print("[MODE] fast：コード生成はスキップされます")
+        return {}
+
     if ui_data is None:
-        print("[INFO] UI判断なし → コード生成は実行されません")
+        print("[INFO] UI判断なし → full モードでもコード生成不可")
         return {}
 
     client = get_client()
@@ -114,28 +107,25 @@ def stability_code_generator(spec_text: str, ui_data):
         return {}
 
     system_prompt = (
-        "あなたは Google Apps Script(GAS) と HTML/CSS による業務アプリ開発の専門家です。\n"
-        "以下を厳守してコードを生成してください：\n"
+        "あなたは GAS/HTML/CSS の業務システム生成AIです。\n"
+        "以下の条件を厳守してコードを生成してください：\n"
         "・master_spec を唯一の正として扱う\n"
-        "・UI判断（input.json）を必ず反映する\n"
-        "・ロジック・データ構造・ID体系を勝手に変えない\n"
-        "・仕様変更はUI判断に基づき、推測で勝手に追加しない\n"
-        "・コードブロック（```）は使わない\n"
-        "・複数ファイル生成が必要な場合は JSON 形式で返す\n"
-        "  例：{ \"CONFIG.gs\": \"...\", \"main.gs\": \"...\", \"form.html\": \"...\" }\n"
-        "・出力JSON以外の文章を返さない\n"
+        "・UI判断（input.json）を必ず反映\n"
+        "・仕様外の推測追加は禁止\n"
+        "・住所/区分/ID体系を勝手に変えない\n"
+        "・コードブロック禁止\n"
+        "・生成物は JSON 形式（キー＝ファイル名、値＝内容）で返す\n"
     )
 
     user_prompt = (
         "【master_spec 全文】\n"
         f"{spec_text}\n\n"
-        "【UI判断（input.json）】\n"
+        "【UI判断 input.json】\n"
         f"{json.dumps(ui_data, ensure_ascii=False, indent=2)}\n\n"
-        "上記を踏まえ、必要なコードファイルを JSON 形式で生成してください。\n"
-        "JSON キーがファイル名、値がファイル内容となるようにしてください。\n"
+        "必要なコードファイルを JSON 形式で返してください。\n"
     )
 
-    print("\n=== Stage 5: Stability Code Generation ===")
+    print("\n=== Stage 5: Stability Code Generation (full mode) ===")
 
     res = client.chat.completions.create(
         model="gpt-5.2",
@@ -149,11 +139,10 @@ def stability_code_generator(spec_text: str, ui_data):
     print("\n--- GPT Raw Output (first 300 chars) ---")
     print(raw[:300])
 
-    # GPT の出力は JSON の想定
     try:
         files = json.loads(raw)
     except Exception as e:
-        print("[ERROR] GPT の出力が JSON として解析できません:", e)
+        print("[ERROR] GPT出力がJSONとして解析できません:", e)
         return {}
 
     return files
@@ -161,7 +150,7 @@ def stability_code_generator(spec_text: str, ui_data):
 
 def write_generated_files(files: dict):
     if not files:
-        print("[INFO] 生成ファイルがありません")
+        print("[INFO] 生成ファイルなし")
         return
 
     for filename, content in files.items():
@@ -171,20 +160,18 @@ def write_generated_files(files: dict):
         print(f"[WRITE] {outpath} を生成しました")
 
 
-# ------------------------------
+# =============================
 # Main
-# ------------------------------
+# =============================
 def main():
     print("=== compiler_engine.py START ===")
 
+    mode = os.environ.get("MODE", "fast")
+    print(f"[MODE] 現在の実行モード: {mode}")
+
     # Stage 1
     spec_text = load_file(SPEC_PATH)
-    print("\n--- master_spec snippet ---")
-    print(spec_text[:300])
-
     boot_text = load_file(BOOT_PATH)
-    print("\n--- boot_file snippet ---")
-    print(boot_text[:300])
 
     # Stage 2
     test_gpt_connection()
@@ -196,12 +183,9 @@ def main():
     # Stage 4
     ui_data = load_ui_feedback()
 
-    # Stage 5
-    if ui_data:
-        files = stability_code_generator(spec_text, ui_data)
-        write_generated_files(files)
-    else:
-        print("[INFO] UI判断なし → コード生成スキップ")
+    # Stage 5（fast/full の切り替え）
+    files = stability_code_generator(spec_text, ui_data, mode=mode)
+    write_generated_files(files)
 
     print("\n=== compiler_engine.py END ===")
 
