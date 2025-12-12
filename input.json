@@ -1,22 +1,72 @@
 {
-  "summary": "今回のコンパイルでは、master_spec に基づき、CONFIG.gs / main.gs / 各種GSユーティリティ / すべてのHTMLフォーム（UF01〜UF08, OV01, OV02, FIX, DOC など）を含む『全コード一式』をフルリビルド方式で生成してほしい。過去にUIで生成してきたコードは一切参照せず、master_spec を唯一の正としてゼロから再構築すること。",
-  "risks": [
-    "ID体系（顧客ID、案件ID、行IDなど）、ステータス値、区分コード、住所構造など、データモデルに関わる仕様が勝手に変更されると既存データが壊れるリスクがある。",
-    "シート名・テーブル名・カラム名・フォーム名（UF01〜UF08, OV01, OV02, FIX, DOCなど）がmaster_specと異なる名前で生成されると、既存のスプレッドシート／台帳と噛み合わなくなる。",
-    "バリデーション条件や必須項目が勝手に追加・削除されると、現場オペレーションが破綻する可能性がある。",
-    "業務ロジック（料金計算、ステータス遷移、受付〜完了までのフロー）が、AIの推測で改変されると取り返しのつかない不具合になる。",
-    "エラーハンドリングやログ出力を安易に削ると、トラブル時に原因追跡が困難になる。"
-  ],
-  "policy": [
-    "master_spec を唯一の正とし、そこに書かれていない仕様・推測ロジック・勝手な簡略化を一切行わないこと。",
-    "ID体系・ステータス値・区分コード・住所構造など、既存データモデルに関わる部分は絶対に変更しない。命名や型も含めて master_spec の定義に厳密に従うこと。",
-    "シート名・テーブル名・カラム名・フォーム名（UF01〜UF08, OV01, OV02, FIX, DOC など）は、master_spec に定義されたもののみを使用し、勝手に新規追加・改名しないこと。",
-    "業務ロジック（料金計算、ステータス遷移、受付〜完了までのフロー）は、master_spec に記載されたルールをそのままコード化すること。AIの判断で簡略化・再解釈・リファクタリングしない。",
-    "フルリビルド方式とし、部分的な『つぎはぎ』や差分パッチではなく、CONFIG.gs / main.gs / HTML を一貫した設計で生成すること。",
-    "コメントや説明文を増やしてもよいが、実行ロジックに影響する変更は行わないこと。",
-    "コードブロック（```）などは使わず、生のテキストとして出力し、JSON形式のインターフェース（ファイル名→内容）に従うこと。",
-    "将来の拡張余地を残したい場合でも、『枠だけ用意して中身は書かない』のではなく、master_spec に書かれている範囲だけを正確に実装すること。",
-    "UI時代の生成コードや推測ロジックは一切参照せず、『master_spec + この input.json』だけを根拠としてコードを決定すること。",
-    "生成されるコードは、初回から本番想定の品質を目指し、テスト用の仮ロジックや TODO コメントに依存しない形とすること。"
-  ]
+  "mode": "full",
+
+  "assumptions": {
+    "brandProfiles": {
+      "activeBrand": "default",
+      "brands": [
+        {
+          "id": "default",
+          "name": "よりそい堂",
+          "orderPrefix": "ORD",
+          "customerPrefix": "CUS",
+          "expensePrefix": "EXP",
+          "sheetMapping": {
+            "orders": "Order_YYYY",
+            "customers": "Customer_Master",
+            "expenses": "Expense_Master"
+          }
+        }
+      ]
+    },
+
+    "storageProfiles": {
+      "driveType": "shared",
+      "sharedDriveName": "Yorisoidou_Main_Drive",
+      "folders": {
+        "orders": "orders",
+        "archive": "archive",
+        "logs": "logs",
+        "photos": "photos"
+      }
+    },
+
+    "externalIntegrations": {
+      "todoist": {
+        "enabled": false,
+        "note": "将来統合予定。今回は無効"
+      },
+      "clickup": {
+        "enabled": false,
+        "note": "将来統合予定。今回は無効"
+      },
+      "chatgpt": {
+        "model": "gpt-5.2",
+        "usage": "code-generation-only"
+      },
+      "gelonia": {
+        "enabled": false
+      }
+    },
+
+    "spreadsheetStructure": {
+      "orderSheetRule": "Order_YYYY",
+      "archiveSheetRule": "Archive_Order_YYYY",
+      "logStorage": "Drive"
+    },
+
+    "webConfiguration": {
+      "webAppMode": "doGet",
+      "uiType": "SpreadsheetUI",
+      "executionUser": "access-user"
+    }
+  },
+
+  "integrationPolicy": {
+    "masterSpecPriority": true,
+    "doNotOverwriteMaster": true,
+    "allowTemporaryAssumptions": true
+  },
+
+  "note": "ERROR.txt の T 監査指摘に基づく暫定 input。全項目は full 生成を止めないための仮定値。"
 }
