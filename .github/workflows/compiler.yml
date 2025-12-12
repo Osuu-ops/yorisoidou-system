@@ -29,3 +29,10 @@ jobs:
         with:
           name: ui-questions
           path: questions.txt
+
+      - name: Upload generated code
+        if: success() && exists('generated_code.txt')
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-code
+          path: generated_code.txt
