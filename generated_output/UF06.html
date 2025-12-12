@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#e9ecf5; --muted:#a9b1cc;
+      --accent:#4aa3ff; --warn:#ffd36a; --danger:#ff5a7a; --line:rgba(255,255,255,.12);
+      --radius:16px; --shadow:0 10px 25px rgba(0,0,0,.25); --tap:52px;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic";
+    }
+    body{ margin:0; background:linear-gradient(180deg,#070a14,#0b1020); color:var(--text); }
+    .wrap{ max-width:1200px; margin:0 auto; padding:16px; }
+    .card{ background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .card h2{ margin:0; padding:14px 16px; font-size:16px; border-bottom:1px solid var(--line); }
+    .body{ padding:16px; }
+    .hint{ font-size:12px; color:var(--muted); line-height:1.5; }
+    .danger{ color:var(--danger); }
+  </style>
+</head>
+<body onload="checkEnvironment();">
+  <div class="wrap">
+    <div class="card">
+      <h2>UF06（発注／納品）</h2>
+      <div class="body">
+        <div class="hint">
+          今回のコードは「最小の土台」です。<br>
+          master_spec の UF06（発注カード/納品カード/AA採番/OD_ID/STATUS推移/廃番辞書/Runtime監査）をフル実装するには、
+          Parts_DB（辞書）や既存の発注入力運用（コピペ形式）の確定が必要です。<br>
+          仕様外推測を避けるため、UIのみプレースホルダとして提供します。
+        </div>
+        <div class="hint danger" style="margin-top:10px;">UF06 の本処理（台帳更新）は未実装です。</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function checkEnvironment() {
+  if (typeof google === "undefined" || !google.script || !google.script.run) {
+    alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+  }
+}
+</script>
+</body>
+</html>

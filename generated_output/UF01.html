@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --card2:#0f1730;
+      --text:#e9ecf5;
+      --muted:#a9b1cc;
+      --accent:#4aa3ff;
+      --danger:#ff5a7a;
+      --ok:#45d483;
+      --line:rgba(255,255,255,.12);
+      --shadow: 0 10px 25px rgba(0,0,0,.25);
+      --radius:16px;
+      --pad:14px;
+      --tap:52px;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Arial;
+    }
+    body{ margin:0; background:linear-gradient(180deg,#070a14,#0b1020); color:var(--text); }
+    .wrap{ max-width:1200px; margin:0 auto; padding:16px; }
+    .grid{ display:grid; gap:14px; }
+    @media(min-width: 980px){ .grid{ grid-template-columns: 1.2fr .8fr; align-items:start; } }
+    .card{ background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .card h2{ margin:0; padding:14px 16px; font-size:16px; border-bottom:1px solid var(--line); }
+    .card .body{ padding:16px; }
+    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
+    input, textarea{ width:100%; box-sizing:border-box; border:1px solid var(--line); background:rgba(0,0,0,.15); color:var(--text); border-radius:12px; padding:12px; font-size:16px; outline:none; }
+    textarea{ min-height:140px; resize:vertical; }
+    .row{ display:grid; gap:10px; }
+    @media(min-width: 700px){ .row.two{ grid-template-columns:1fr 1fr; } }
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    button{ border:1px solid var(--line); background:rgba(74,163,255,.18); color:var(--text); padding:12px 14px; border-radius:14px; min-height:var(--tap); font-size:15px; cursor:pointer; }
+    button.primary{ background:linear-gradient(180deg, rgba(74,163,255,.35), rgba(74,163,255,.18)); border-color:rgba(74,163,255,.5); }
+    button.ghost{ background:rgba(255,255,255,.06); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    .stamp{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{ padding:10px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--text); min-height:44px; display:inline-flex; align-items:center; font-size:14px; cursor:pointer; user-select:none; }
+    .chip.active{ border-color:rgba(74,163,255,.65); background:rgba(74,163,255,.20); }
+    .hint{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.5; }
+    .summaryBox{ border:1px dashed rgba(255,255,255,.22); border-radius:14px; padding:12px; background:rgba(0,0,0,.12); }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; }
+    .status{ margin-top:10px; font-size:13px; color:var(--muted); }
+    .danger{ color:var(--danger); }
+    .ok{ color:var(--ok); }
+  </style>
+</head>
+<body onload="checkEnvironment(); initUF01();">
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h2>UF01 受注入力</h2>
+        <div class="body">
+          <label>raw（通知全文 or 1行メモ）※必須</label>
+          <textarea id="raw" placeholder="通知全文を貼り付け"></textarea>
+
+          <div class="row two">
+            <div>
+              <label>顧客名</label>
+              <input id="name" placeholder="例：山田 太郎">
+            </div>
+            <div>
+              <label>電話</label>
+              <input id="phone" inputmode="tel" placeholder="例：09012345678">
+            </div>
+          </div>
+
+          <div class="row two">
+            <div>
+              <label>郵便番号</label>
+              <input id="postal" inputmode="numeric" placeholder="例：6620000">
+            </div>
+            <div>
+              <label>見積金額</label>
+              <input id="price" inputmode="numeric" placeholder="例：12000">
+            </div>
+          </div>
+
+          <label>住所（addressFull）</label>
+          <input id="addressFull" placeholder="例：兵庫県西宮市甲子園口3丁目5-2">
+
+          <div class="row two">
+            <div>
+              <label>希望日1</label>
+              <input id="preferred1" placeholder="例：12/20 午前">
+            </div>
+            <div>
+              <label>希望日2</label>
+              <input id="preferred2" placeholder="例：12/21 夕方">
+            </div>
+          </div>
+
+          <label>summary（スタンプ）</label>
+          <div class="stamp" id="stampArea"></div>
+          <div class="hint">AI要約は禁止（master_spec）。スタンプ方式のみ。</div>
+
+          <div class="btns">
+            <button class="ghost" onclick="fillFromRawHint()" type="button">補助（今回は無効）</button>
+            <button class="primary" onclick="submitUF01()" type="button" id="btnSubmit">送信</button>
+            <button class="ghost" onclick="resetForm()" type="button">クリア</button>
+          </div>
+
+          <div class="status" id="status"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>サマリ（確認）</h2>
+        <div class="body">
+          <div class="summaryBox">
+            <div class="mono" id="preview"></div>
+          </div>
+          <div class="hint">PCでは右側固定、スマホは下に表示（レスポンシブ）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function checkEnvironment() {
+  if (typeof google === "undefined" || !google.script || !google.script.run) {
+    alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+  }
+}
+
+const STAMPS = [
+  '作業：エアコン',
+  '作業：水回り',
+  '作業：換気扇',
+  '作業：その他',
+  '注意：ペット',
+  '注意：駐車場',
+  '注意：時間制約'
+];
+
+let selected = new Set();
+
+function initUF01(){
+  const area = document.getElementById('stampArea');
+  area.innerHTML = '';
+  STAMPS.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.textContent = s;
+    el.onclick = () => {
+      if(selected.has(s)) selected.delete(s); else selected.add(s);
+      el.classList.toggle('active');
+      updatePreview();
+    };
+    area.appendChild(el);
+  });
+
+  ['raw','name','phone','postal','addressFull','preferred1','preferred2','price'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePreview);
+  });
+  updatePreview();
+}
+
+function summaryStamp(){
+  return Array.from(selected).join(' / ');
+}
+
+function updatePreview(){
+  const p = {
+    raw: document.getElementById('raw').value,
+    name: document.getElementById('name').value,
+    phone: document.getElementById('phone').value,
+    postal: document.getElementById('postal').value,
+    addressFull: document.getElementById('addressFull').value,
+    preferred1: document.getElementById('preferred1').value,
+    preferred2: document.getElementById('preferred2').value,
+    price: document.getElementById('price').value,
+    summary: summaryStamp()
+  };
+  document.getElementById('preview').textContent = JSON.stringify(p, null, 2);
+}
+
+function setStatus(msg, cls){
+  const el = document.getElementById('status');
+  el.className = 'status ' + (cls || '');
+  el.textContent = msg;
+}
+
+function fillFromRawHint(){
+  // UI判断：ChatGPTは code-generation-only。外部API連携は今回無効。
+  setStatus('補助抽出は今回無効です（外部連携OFF）。', 'danger');
+}
+
+function submitUF01(){
+  const payload = {
+    raw: document.getElementById('raw').value,
+    name: document.getElementById('name').value,
+    phone: document.getElementById('phone').value,
+    postal: document.getElementById('postal').value,
+    addressFull: document.getElementById('addressFull').value,
+    preferred1: document.getElementById('preferred1').value,
+    preferred2: document.getElementById('preferred2').value,
+    price: document.getElementById('price').value,
+    summary: summaryStamp()
+  };
+
+  if(!String(payload.raw || '').trim()){
+    setStatus('raw は必須です。', 'danger');
+    return;
+  }
+
+  document.getElementById('btnSubmit').disabled = true;
+  setStatus('送信中...', '');
+
+  google.script.run
+    .withSuccessHandler(res => {
+      setStatus('完了：OrderID = ' + res.orderId, 'ok');
+      document.getElementById('btnSubmit').disabled = false;
+    })
+    .withFailureHandler(err => {
+      setStatus('エラー：' + (err && err.message ? err.message : err), 'danger');
+      document.getElementById('btnSubmit').disabled = false;
+    })
+    .onUF01Submit(payload);
+}
+
+function resetForm(){
+  document.getElementById('raw').value = '';
+  document.getElementById('name').value = '';
+  document.getElementById('phone').value = '';
+  document.getElementById('postal').value = '';
+  document.getElementById('addressFull').value = '';
+  document.getElementById('preferred1').value = '';
+  document.getElementById('preferred2').value = '';
+  document.getElementById('price').value = '';
+  selected = new Set();
+  initUF01();
+  setStatus('クリアしました', '');
+}
+</script>
+</body>
+</html>

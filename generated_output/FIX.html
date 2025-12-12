@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#e9ecf5; --muted:#a9b1cc;
+      --accent:#4aa3ff; --danger:#ff5a7a; --ok:#45d483; --line:rgba(255,255,255,.12);
+      --radius:16px; --shadow:0 10px 25px rgba(0,0,0,.25); --tap:52px;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP";
+    }
+    body{ margin:0; background:linear-gradient(180deg,#070a14,#0b1020); color:var(--text); }
+    .wrap{ max-width:900px; margin:0 auto; padding:16px; }
+    .card{ background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .card h2{ margin:0; padding:14px 16px; font-size:16px; border-bottom:1px solid var(--line); }
+    .body{ padding:16px; }
+    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
+    select, textarea{ width:100%; box-sizing:border-box; border:1px solid var(--line); background:rgba(0,0,0,.15); color:var(--text); border-radius:12px; padding:12px; font-size:16px; outline:none; }
+    textarea{ min-height:140px; resize:vertical; }
+    button{ border:1px solid rgba(74,163,255,.5); background:rgba(74,163,255,.20); color:var(--text); padding:12px 14px; border-radius:14px; min-height:var(--tap); font-size:15px; cursor:pointer; }
+    .status{ margin-top:12px; font-size:13px; color:var(--muted); }
+    .danger{ color:var(--danger); }
+    .ok{ color:var(--ok); }
+  </style>
+</head>
+<body onload="checkEnvironment();">
+  <div class="wrap">
+    <div class="card">
+      <h2>FIX（修正申請）</h2>
+      <div class="body">
+        <label>カテゴリ</label>
+        <select id="category">
+          <option>発注キャンセル（返品可）</option>
+          <option>発注キャンセル（返品不可）</option>
+          <option>納品キャンセル（返品可）</option>
+          <option>納品キャンセル（返品不可）</option>
+          <option>区分変更（BP↔BM）</option>
+          <option>入り値修正</option>
+          <option>欠番扱い</option>
+          <option>在庫切離し</option>
+        </select>
+
+        <label>内容（自由記述）</label>
+        <textarea id="content" placeholder="例：対象ID、変更内容、理由"></textarea>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button onclick="submit()" id="btn">送信</button>
+        </div>
+
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function checkEnvironment() {
+  if (typeof google === "undefined" || !google.script || !google.script.run) {
+    alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+  }
+}
+
+function setStatus(msg, cls){
+  const el = document.getElementById('status');
+  el.className = 'status ' + (cls||'');
+  el.textContent = msg;
+}
+
+function submit(){
+  const payload = {
+    category: document.getElementById('category').value,
+    content: document.getElementById('content').value
+  };
+
+  document.getElementById('btn').disabled = true;
+  setStatus('送信中...');
+
+  google.script.run
+    .withSuccessHandler(res => {
+      setStatus('送信完了', 'ok');
+      document.getElementById('btn').disabled = false;
+    })
+    .withFailureHandler(err => {
+      setStatus('エラー：' + (err && err.message ? err.message : err), 'danger');
+      document.getElementById('btn').disabled = false;
+    })
+    .formSubmitFIX(payload);
+}
+</script>
+</body>
+</html>

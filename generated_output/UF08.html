@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#111a33; --card2:#0f1730; --text:#e9ecf5; --muted:#a9b1cc;
+      --accent:#4aa3ff; --danger:#ff5a7a; --ok:#45d483; --line:rgba(255,255,255,.12);
+      --radius:16px; --shadow:0 10px 25px rgba(0,0,0,.25); --tap:52px;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP";
+    }
+    body{ margin:0; background:linear-gradient(180deg,#070a14,#0b1020); color:var(--text); }
+    .wrap{ max-width:900px; margin:0 auto; padding:16px; }
+    .card{ background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .card h2{ margin:0; padding:14px 16px; font-size:16px; border-bottom:1px solid var(--line); }
+    .body{ padding:16px; }
+    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
+    input, textarea{ width:100%; box-sizing:border-box; border:1px solid var(--line); background:rgba(0,0,0,.15); color:var(--text); border-radius:12px; padding:12px; font-size:16px; outline:none; }
+    textarea{ min-height:120px; resize:vertical; }
+    button{ border:1px solid rgba(74,163,255,.5); background:rgba(74,163,255,.20); color:var(--text); padding:12px 14px; border-radius:14px; min-height:var(--tap); font-size:15px; cursor:pointer; }
+    .status{ margin-top:12px; font-size:13px; color:var(--muted); }
+    .danger{ color:var(--danger); }
+    .ok{ color:var(--ok); }
+    .hint{ font-size:12px; color:var(--muted); line-height:1.5; }
+  </style>
+</head>
+<body onload="checkEnvironment();">
+  <div class="wrap">
+    <div class="card">
+      <h2>UF08（追加報告）</h2>
+      <div class="body">
+        <label>OrderID</label>
+        <input id="orderId" placeholder="ORD-YYYYMMDD-00001-UP-...">
+
+        <label>メモ（追加説明）</label>
+        <textarea id="memo" placeholder="追加情報を入力"></textarea>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button onclick="submit()" id="btn">送信</button>
+        </div>
+
+        <div class="hint" style="margin-top:10px;">写真/動画のアップロードは仕様に存在しますが、GAS側の保存先設計（orders/{OrderID}/photos/extra 等）確定が必要なため、最小のJSON送信のみです。</div>
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function checkEnvironment() {
+  if (typeof google === "undefined" || !google.script || !google.script.run) {
+    alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+  }
+}
+
+function setStatus(msg, cls){
+  const el = document.getElementById('status');
+  el.className = 'status ' + (cls||'');
+  el.textContent = msg;
+}
+
+function submit(){
+  const orderId = document.getElementById('orderId').value.trim();
+  const memo = document.getElementById('memo').value;
+
+  if(!orderId){ setStatus('OrderID は必須です', 'danger'); return; }
+
+  document.getElementById('btn').disabled = true;
+  setStatus('送信中...');
+
+  google.script.run
+    .withSuccessHandler(res => {
+      setStatus('送信完了', 'ok');
+      document.getElementById('btn').disabled = false;
+    })
+    .withFailureHandler(err => {
+      setStatus('エラー：' + (err && err.message ? err.message : err), 'danger');
+      document.getElementById('btn').disabled = false;
+    })
+    .onUF08Submit({ orderId, memo });
+}
+</script>
+</body>
+</html>
