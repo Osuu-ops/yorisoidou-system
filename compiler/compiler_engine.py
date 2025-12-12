@@ -1,6 +1,6 @@
 # compiler_engine.py
-# Stage 1: Load files
-# Stage 2: GPT-5.2 API connection test
+# Stage 1: File load
+# Stage 2: GPT-5.2 connection test
 
 import os
 from openai import OpenAI
@@ -22,28 +22,24 @@ def test_gpt_connection():
     response = client.chat.completions.create(
         model="gpt-5.2",
         messages=[
-            {"role": "system", "content": "You are a test assistant."},
-            {"role": "user", "content": "これはコンパイラ接続テストです。応答してください。"}
+            {"role": "user", "content": "これはコンパイラ接続テストです。短く応答してください。"}
         ]
     )
 
     print("--- GPT Response ---")
-    print(response.choices[0].message["content"])
+    print(response.choices[0].message.content)  # ←ここが修正版
 
 def main():
     print("=== compiler_engine.py: Stage 1 START ===")
 
     print("\n--- Loading master_spec.txt ---")
-    spec_text = load_file(SPEC_PATH)
-    print(spec_text[:300])
+    print(load_file(SPEC_PATH)[:300])
 
     print("\n--- Loading boot_file.txt ---")
-    boot_text = load_file(BOOT_PATH)
-    print(boot_text[:300])
+    print(load_file(BOOT_PATH)[:300])
 
     print("\n=== Stage 1 END ===")
 
-    # Stage 2: GPT-5.2 test
     test_gpt_connection()
 
 if __name__ == "__main__":
