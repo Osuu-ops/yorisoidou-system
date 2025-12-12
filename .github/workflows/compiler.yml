@@ -1,0 +1,15 @@
+name: Compiler Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Test echo
+        run: echo "GitHub Actions is working correctly."
