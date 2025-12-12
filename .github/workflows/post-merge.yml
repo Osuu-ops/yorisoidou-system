@@ -1,1 +1,32 @@
+name: Post Merge Maintenance
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  clean-generated-output:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clean generated_output folder
+        run: |
+          echo "Cleaning generated_output/"
+          rm -rf generated_output/*
+          echo "Cleanup done."
+
+      - name: Commit cleanup changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add generated_output
+          git commit -m "chore: clean generated_output after merge" || echo "No changes to commit"
+          git push
 
