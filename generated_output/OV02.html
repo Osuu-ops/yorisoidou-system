@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= HtmlService.createHtmlOutputFromFile('common_ui').getContent(); ?>
+  <style>
+    .tiles{
+      display:grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    @media (min-width: 700px){
+      .tiles{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+    @media (min-width: 980px){
+      .tiles{ grid-template-columns: repeat(5, minmax(0,1fr)); }
+    }
+    .tile{
+      border: 1px solid var(--line);
+      background: rgba(16,30,56,.55);
+      border-radius: 14px;
+      padding: 12px;
+      cursor:pointer;
+    }
+    .tile .t{ font-weight: 800; font-size: 13px; }
+    .tile .d{ color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.5; }
+  </style>
+</head>
+<body onload="checkEnvironment();">
+  <div class="app">
+    <div class="header">
+      <div class="titleWrap">
+        <h1 class="title">OV02（全文検索）</h1>
+        <p class="subtitle">OrderID フォルダ全体（PDF／写真／ログ／HistoryNotes 等）を検索します。</p>
+      </div>
+      <div class="pill warn">自然文検索補助：キーワード化はAI補助（判断はGAS）</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="cardHeader"><h2>検索</h2></div>
+      <div class="cardBody">
+        <div class="row two">
+          <div class="field">
+            <label>query</label>
+            <input id="query" type="text" placeholder="例：甲子園口 追加報告 フィルター">
+          </div>
+          <div class="field" style="align-self:end;">
+            <div class="btns">
+              <button class="btn primary" id="btnSearch" onclick="search();">検索</button>
+            </div>
+          </div>
+        </div>
+        <div class="help">検索対象：Order_YYYY / Archive_Order_YYYY / logs/system / PDFテキスト素材 / 画像OCR素材 / HistoryNotes ほか（GAS実装）。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardHeader"><h2>結果（タイル）</h2></div>
+      <div class="cardBody">
+        <div id="result" class="tiles"></div>
+        <div id="empty" class="notice" style="margin-top:10px;">未検索</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function search(){
+    var btn = qs('#btnSearch');
+    showBusy(btn, true);
+    var q = qs('#query').value || '';
+    google.script.run
+      .withSuccessHandler(function(res){
+        showBusy(btn, false);
+        render(res || []);
+      })
+      .withFailureHandler(function(err){
+        showBusy(btn, false);
+        alert('エラー: ' + (err && err.message ? err.message : err));
+      })
+      .searchOV02({ query: q });
+  }
+
+  function render(list){
+    var root = qs('#result');
+    root.innerHTML = '';
+    if (!list.length){
+      qs('#empty').textContent = '該当なし';
+      return;
+    }
+    qs('#empty').textContent = '';
+
+    list.forEach(function(it){
+      var div = document.createElement('div');
+      div.className = 'tile';
+      div.innerHTML = '<div class="t">' + escapeHtml(it.title || '(no title)') + '</div>' +
+        '<div class="d">' + escapeHtml(it.snippet || '') + '</div>';
+      div.addEventListener('click', function(){
+        if (it.orderId){
+          google.script.run.showDynamicForm('OV01');
+          // 注：モーダル遷移の厳密制御は GAS 側の設計に依存するため、ここでは推測実装しない。
+        }
+      });
+      root.appendChild(div);
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#39;');
+  }
+</script>
+</body>
+</html>

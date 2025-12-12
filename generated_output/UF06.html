@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= HtmlService.createHtmlOutputFromFile('common_ui').getContent(); ?>
+</head>
+<body onload="checkEnvironment(); initUF06();">
+  <div class="app">
+    <div class="header">
+      <div class="titleWrap">
+        <h1 class="title">UF06（発注／納品）</h1>
+        <p class="subtitle">発注カード／納品カード（スマホ折りたたみ／PC 2カラム）</p>
+      </div>
+      <div class="pill warn">AI補助：品番/数量/メーカー候補の素材抽出のみ</div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="cardHeader"><h2>発注（コピペ→候補行）</h2></div>
+        <div class="cardBody">
+          <div class="row two">
+            <div class="field">
+              <label>OrderID（空なら STOCK_ORDERED）</label>
+              <input id="orderId_order" type="text" placeholder="orderPrefix-YYYYMMDD-00001-UP...">
+            </div>
+            <div class="field">
+              <label>区分</label>
+              <select id="partType">
+                <option value="BP">BP</option>
+                <option value="BM">BM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>コピペ入力</label>
+            <textarea id="rawParts" placeholder="例：品番 xxx 数量 2 メーカー yyy"></textarea>
+          </div>
+
+          <div class="btns">
+            <button class="btn ghost" onclick="generateCandidates();">候補行を生成（表示のみ）</button>
+            <button class="btn primary" id="btnOrder" onclick="submitOrder();">発注確定（GAS）</button>
+          </div>
+
+          <div id="candidates" class="notice" style="margin-top:12px;">候補行：未生成</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHeader"><h2>納品（PART_ID単位）</h2></div>
+        <div class="cardBody">
+          <div class="field">
+            <label>OrderID</label>
+            <input id="orderId_deliver" type="text" placeholder="orderPrefix-YYYYMMDD-00001-UP...">
+          </div>
+          <div class="field">
+            <label>納品対象 PART_ID（カンマ区切り）</label>
+            <input id="partIds" type="text" placeholder="BP-YYYYMM-AAxx-PAyy, BM-YYYYMM-AAxx-MAyy">
+          </div>
+          <div class="row two">
+            <div class="field">
+              <label>BP の PRICE（必要な場合のみ）</label>
+              <input id="price" type="number" inputmode="numeric" placeholder="例：9800">
+            </div>
+            <div class="field">
+              <label>LOCATION</label>
+              <input id="location" type="text" placeholder="例：倉庫A-棚2">
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="btn primary" id="btnDeliver" onclick="submitDeliver();">納品確定（GAS）</button>
+          </div>
+
+          <p class="help">BP は PRICE 必須、BM は 0 固定（GASがチェック）。STOCK戻し時は LOCATION 必須。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function initUF06(){ }
+
+  function generateCandidates(){
+    // 推測抽出は禁止。UI上の表示だけ。
+    var raw = qs('#rawParts').value || '';
+    if (!raw.trim()) { alert('コピペ入力を入れてください'); return; }
+    qs('#candidates').textContent = '候補行（未解析）：' + raw.slice(0, 300);
+  }
+
+  function submitOrder(){
+    var btn = qs('#btnOrder');
+    showBusy(btn, true);
+    var payload = {
+      mode: 'ORDER',
+      orderId: qs('#orderId_order').value || '',
+      partType: qs('#partType').value || 'BP',
+      rawParts: qs('#rawParts').value || ''
+    };
+    google.script.run
+      .withSuccessHandler(function(res){ showBusy(btn,false); alert('送信しました'); })
+      .withFailureHandler(function(err){ showBusy(btn,false); alert('エラー: ' + (err && err.message ? err.message : err)); })
+      .onUF06Submit(payload);
+  }
+
+  function submitDeliver(){
+    var btn = qs('#btnDeliver');
+    showBusy(btn, true);
+    var payload = {
+      mode: 'DELIVER',
+      orderId: qs('#orderId_deliver').value || '',
+      partIds: qs('#partIds').value || '',
+      price: qs('#price').value || '',
+      location: qs('#location').value || ''
+    };
+    google.script.run
+      .withSuccessHandler(function(res){ showBusy(btn,false); alert('送信しました'); })
+      .withFailureHandler(function(err){ showBusy(btn,false); alert('エラー: ' + (err && err.message ? err.message : err)); })
+      .onUF06Submit(payload);
+  }
+</script>
+</body>
+</html>
