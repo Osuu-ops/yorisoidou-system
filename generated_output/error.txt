@@ -1,0 +1,29 @@
+不足情報のためコード生成不可（master_spec準拠／推測禁止）。次の input.json（= UI判断に加えて“生成対象と既存資産”）が必要です。
+
+1) 生成対象の指定（必須）
+- 今回「必要なコード」の範囲：CONFIG.gs / main.gs / 各HTML(UF01/UF06/UF07/UF08/FIX/DOC/OV01/OV02) / test-framework(RuntimeSelfTest) のうち、どれを“丸ごと貼り替え”対象にしますか？（複数可）
+
+2) 既存コードの提供（必須：差し替え／互換確認のため）
+- 現在の Apps Script プロジェクトの全ファイル全文（または対象ファイル全文）
+  ※ master_spec 12.2「部分編集禁止」につき、現行との差分前提がない状態で安全に生成できません。
+
+3) CONFIGの実データ（必須）
+- activeBrand / brandProfiles（ids, sheets）
+- storageProfiles（年度フォルダ、DriveフォルダID一式）
+- Todoist / ClickUp / ChatGPT API の接続情報の“キー名だけ”
+  （値は伏字で可：例 TODOIST_TOKEN: "***"）
+- maintenanceMode, testModeRuntime の初期値
+
+4) スプレッドシート構成（必須）
+- 各シートの実シート名（CU_Master, UP_Master, Parts_Master, Request, Expense_Master, EX_Master, Order_YYYY, Archive_Order_YYYY 等）
+- Order_YYYY の年度切替ルール（defaultYear/fiscalYear/fiscalStart の具体値）
+
+5) Webアプリ運用（必須）
+- doGet を Webアプリとして公開しているか／メニューのみか
+- 承認方式（実行ユーザー）
+
+6) UI判断の反映点（確認：silent-execution / forced-block-split）
+- 「silent-execution」をどの処理で要求しますか？（例：ClickUp通知失敗は握りつぶして logs/system のみ、など）
+- 「forced-block-split」出力が必要な対象（例：S→Apps Script 同期用にファイル単位分割を必須、など）
+
+上記が揃い次第、master_spec（特に 11.x, 12.R, 12.S, 12.T, 20章）を満たす“貼り替え可能な全文コード”を、指定ファイル名キーのJSONで返します。
