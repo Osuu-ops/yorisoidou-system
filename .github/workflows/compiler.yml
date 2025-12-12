@@ -2,12 +2,18 @@ name: Compiler Test
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "実行モード（fast / full）"
+        required: false
+        default: "fast"
 
 jobs:
   test-run:
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      MODE: ${{ github.event.inputs.mode }}
 
     steps:
       - name: Checkout repository
@@ -30,9 +36,9 @@ jobs:
           name: ui-questions
           path: questions.txt
 
-      - name: Upload generated code
+      - name: Upload generated files
         uses: actions/upload-artifact@v4
         with:
           name: generated-code
-          path: generated_code.txt
+          path: generated_output
           if-no-files-found: ignore
