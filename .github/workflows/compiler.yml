@@ -23,3 +23,9 @@ jobs:
 
       - name: Run compiler_engine.py
         run: python compiler/compiler_engine.py
+
+      - name: Upload UI questions
+        uses: actions/upload-artifact@v3
+        with:
+          name: ui-questions
+          path: questions.txt
