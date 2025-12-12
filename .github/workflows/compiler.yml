@@ -8,6 +8,10 @@ on:
         required: false
         default: "fast"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   test-run:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -42,3 +46,17 @@ jobs:
           name: generated-code
           path: generated_output
           if-no-files-found: ignore
+
+      - name: Create Pull Request for generated code
+        if: github.event.inputs.mode == 'full'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: update generated code (auto)"
+          title: "Auto: Update generated code"
+          body: |
+            このPRはコンパイラ workflow により自動生成されました。
+            - mode: ${{ github.event.inputs.mode }}
+          branch: "auto/generated-code"
+          delete-branch: true
+          add-paths: |
+            generated_output/**
