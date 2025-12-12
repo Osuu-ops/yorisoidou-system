@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{--bg:#0b1020;--card:#111a33;--line:#22315f;--txt:#eef2ff;--muted:#a9b3d6;--accent:#6ea8ff}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:#0a0f1f;color:var(--txt)}
+    .wrap{max-width:1200px;margin:0 auto;padding:14px}
+    .top{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    input{flex:1;min-width:220px;box-sizing:border-box;background:#0c1430;color:var(--txt);border:1px solid #2a3a74;border-radius:12px;padding:12px;font-size:16px}
+    button{appearance:none;border:0;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:800;background:var(--accent);color:#08102a;cursor:pointer}
+    .note{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:10px}
+    .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:700px){.tiles{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1000px){.tiles{grid-template-columns:repeat(5,1fr)}}
+    .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:90px;cursor:pointer}
+    .title{font-weight:900;font-size:14px;margin:0 0 6px}
+    .meta{font-size:12px;color:var(--muted);white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <input id="query" placeholder="検索（自然文可：例）西宮のAA01の案件を探して">
+      <button onclick="doSearch()">検索</button>
+    </div>
+    <div class="note">検索対象：Order / Archive / logs/system / HistoryNotes / PDF・画像の素材テキスト等（本スケルトンでは結果生成未実装）。</div>
+    <div class="tiles" id="tiles"></div>
+  </div>
+
+  <script>
+    function checkEnvironment() {
+      if (typeof google === "undefined" || !google.script || !google.script.run) {
+        alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+      }
+    }
+    function onloadMerged(){checkEnvironment();}
+    window.addEventListener('load', onloadMerged);
+
+    function renderTiles(results){
+      const root = document.getElementById('tiles');
+      root.innerHTML = '';
+      (results||[]).forEach(r=>{
+        const d = document.createElement('div');
+        d.className = 'tile';
+        d.onclick = ()=>openOV01(r.orderId);
+        d.innerHTML = '<div class="title">' + (r.title||r.orderId||'') + '</div>' +
+          '<div class="meta">' + (r.snippet||'') + '</div>';
+        root.appendChild(d);
+      });
+      if (!results || !results.length) {
+        const d = document.createElement('div');
+        d.className = 'tile';
+        d.innerHTML = '<div class="title">結果なし</div><div class="meta">（本スケルトンは検索実装が未完了です）</div>';
+        root.appendChild(d);
+      }
+    }
+
+    function doSearch(){
+      const query = document.getElementById('query').value || '';
+      google.script.run.withSuccessHandler(function(res){
+        renderTiles(res.results);
+      }).withFailureHandler(function(err){
+        renderTiles([{title:'エラー', snippet: (err && err.message ? err.message : err)}]);
+      }).searchOV02({ query: query });
+    }
+
+    function openOV01(orderId){
+      // OV01 遷移は本来 doGet(?form=OV01&orderId=...) 等で実施。
+      alert('OV01 へ遷移: ' + orderId + '\n（本スケルトンでは遷移未実装）');
+    }
+  </script>
+</body>
+</html>
