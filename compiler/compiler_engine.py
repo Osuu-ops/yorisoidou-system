@@ -74,29 +74,30 @@ def load_ui_feedback():
     return data
 
 
-# Stage 5: Text Audit (T-phase)
+def chunk_text(text, size=8000):
+    """master_spec をチャンク分割する"""
+    return [text[i:i+size] for i in range(0, len(text), size)]
+
+
 def run_text_audit(spec_text: str, ui_data):
-    print("\n=== Stage 5: Text Audit (T-phase) ===")
+    print("\n=== Stage 5: Text Audit (T-phase: Full chunk audit) ===")
 
     client = get_client()
     if client is None:
         return
 
-    # ui_data が None の場合は空オブジェクトとして扱う
     ui_json = "{}" if ui_data is None else json.dumps(ui_data, ensure_ascii=False, indent=2)
 
-    audit_prompt = (
+    audit_prompt_base = (
         "あなたは Tチャット（文章監査専用）です。\n"
-        "master_spec と UI判断(input.json)を監査し、"
-        "不足前提・危険な仕様・あいまいな部分を洗い出してください。\n"
-        "AIが勝手に補完すべきでない項目はすべて指摘してください。\n"
+        "以下の内容を監査し、不足前提・危険仕様・曖昧箇所を報告してください。\n"
+        "出力は必ず次の形式にまとめて返してください：\n"
         "\n"
-        "出力形式は必ず次のフォーマットにしてください：\n"
-        "===== ERROR.txt =====\n"
+        "===== ERROR_CHUNK =====\n"
         "[不足前提]\n"
         "- 箇条書きで列挙\n"
         "\n"
-        "[危険な仕様・あいまいな仕様]\n"
+        "[危険な仕様・曖昧な仕様]\n"
         "- 箇条書きで列挙\n"
         "\n"
         "[Aで統合すべき追加仕様案]\n"
@@ -104,30 +105,44 @@ def run_text_audit(spec_text: str, ui_data):
         "===== END =====\n"
     )
 
-    user_content = (
-        f"[master_spec]\n{spec_text}\n\n"
-        f"[UI判断(input.json)]\n{ui_json}\n"
-    )
+    # master_spec を複数チャンクに分割
+    chunks = chunk_text(spec_text, size=8000)
 
-    res = client.chat.completions.create(
-        model="gpt-5.2",
-        messages=[
-            {"role": "system", "content": "You are T-phase text auditor."},
-            {"role": "user", "content": audit_prompt},
-            {"role": "user", "content": user_content},
-        ],
-    )
+    all_reports = []
 
-    error_text = res.choices[0].message.content
+    for idx, chunk in enumerate(chunks, start=1):
+        print(f"\n--- Auditing chunk {idx}/{len(chunks)} ---")
 
-    # ログ出力
-    print("\n--- ERROR.txt (T-phase output) ---")
-    print(error_text)
+        user_content = (
+            f"[master_spec chunk {idx}]\n{chunk}\n\n"
+            f"[UI判断]\n{ui_json}\n"
+        )
 
-    # ファイル保存（generated_output/ERROR.txt に保存）
+        res = client.chat.completions.create(
+            model="gpt-5.2",
+            messages=[
+                {"role": "system", "content": "You are T-phase text auditor."},
+                {"role": "user", "content": audit_prompt_base},
+                {"role": "user", "content": user_content},
+            ],
+            max_tokens=2000
+        )
+
+        report = res.choices[0].message.content
+        all_reports.append(report)
+
+    # すべてのチャンク監査結果を ERROR.txt に統合
+    final_error = "===== ERROR.txt =====\n"
+    for report in all_reports:
+        final_error += report + "\n"
+    final_error += "===== END =====\n"
+
     error_path = os.path.join(GENERATED_DIR, "ERROR.txt")
     with open(error_path, "w", encoding="utf-8") as f:
-        f.write(error_text)
+        f.write(final_error)
+
+    print("\n--- Final ERROR.txt ---")
+    print(final_error)
     print(f"[WRITE] {error_path} を生成")
 
 
