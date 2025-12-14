@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root{
+        --bg:#0b1220;
+        --panel:#111a2e;
+        --card:#0f1730;
+        --text:#e9eefc;
+        --muted:#a9b5d6;
+        --line:#24304e;
+        --accent:#6aa6ff;
+        --danger:#ff6a6a;
+      }
+      *{box-sizing:border-box;}
+      body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:linear-gradient(180deg,var(--bg),#070b14);color:var(--text);}
+      .wrap{padding:14px;}
+      h1{margin:0;font-size:16px;}
+      .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+      .card{border:1px solid var(--line);background:rgba(17,26,46,0.55);backdrop-filter:blur(6px);border-radius:14px;padding:12px;}
+      .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+      input{flex:1;min-width:220px;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(15,23,48,0.9);color:var(--text);font-size:16px;}
+      button{border:0;padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;font-size:16px;background:var(--accent);color:#061021;}
+      .ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
+      .tiles{display:grid;grid-template-columns: 1fr;gap:10px;margin-top:12px;}
+      @media (min-width: 560px){ .tiles{grid-template-columns: repeat(2, 1fr);} }
+      @media (min-width: 980px){ .tiles{grid-template-columns: repeat(4, 1fr);} }
+      .tile{border:1px solid var(--line);background:rgba(15,23,48,0.7);border-radius:14px;padding:10px;min-height: 92px;display:flex;flex-direction:column;gap:8px;}
+      .small{font-size:12px;color:var(--muted);}
+      .strong{font-size:13px;color:var(--text);font-weight:800;}
+      .btnlink{background:transparent;border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer;font-size:14px;width:100%;}
+      .note{font-size:12px;color:var(--muted);line-height:1.5;}
+    </style>
+  </head>
+  <body onload="checkEnvironment();">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>OV02（全文検索）</h1>
+          <div class="note">※最小版：Order_*/Archive_Order_* シートと logs/system(Drive) の簡易一致検索</div>
+        </div>
+        <button class="ghost" onclick="closeMe()">閉じる</button>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <input id="q" placeholder="例：顧客名 / Order_ID / 住所 / 品番 など">
+          <button onclick="search()">検索</button>
+        </div>
+      </div>
+
+      <div id="tiles" class="tiles"></div>
+
+    </div>
+
+    <script>
+      function checkEnvironment() {
+        if (typeof google === "undefined" || !google.script || !google.script.run) {
+          alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+        }
+      }
+      function closeMe(){ google.script.host.close(); }
+
+      function setTiles(results){
+        var root = document.getElementById('tiles');
+        root.innerHTML = '';
+        if(!results || !results.length){
+          root.innerHTML = '<div class="card"><div class="note">該当なし</div></div>';
+          return;
+        }
+        results.forEach(function(r){
+          var div = document.createElement('div');
+          div.className = 'tile';
+
+          var source = document.createElement('div');
+          source.className = 'small';
+          source.textContent = 'source: ' + (r.source || '');
+
+          var title = document.createElement('div');
+          title.className = 'strong';
+          title.textContent = (r.orderId ? r.orderId : (r.title || '(no title)'));
+
+          var snip = document.createElement('div');
+          snip.className = 'small';
+          snip.textContent = r.snippet ? r.snippet : (r.driveFileId ? ('driveFileId: ' + r.driveFileId) : '');
+
+          div.appendChild(source);
+          div.appendChild(title);
+          div.appendChild(snip);
+
+          if (r.orderId){
+            var btn = document.createElement('button');
+            btn.className = 'btnlink';
+            btn.textContent = 'OV01で開く';
+            btn.onclick = function(){
+              // OV01 を別モーダルで開く導線は GAS メニュー側。
+              // ここでは orderId をクリップボードにコピーするだけ。
+              try{
+                navigator.clipboard.writeText(r.orderId);
+                alert('Order_ID をコピーしました。\nOV01 に貼り付けて開いてください。');
+              }catch(e){
+                alert('Order_ID: ' + r.orderId);
+              }
+            };
+            div.appendChild(btn);
+          }
+
+          root.appendChild(div);
+        });
+      }
+
+      function search(){
+        var q = document.getElementById('q').value.trim();
+        if(!q){
+          alert('検索語を入力してください');
+          return;
+        }
+        document.getElementById('tiles').innerHTML = '<div class="card"><div class="note">検索中...</div></div>';
+        google.script.run
+          .withSuccessHandler(function(res){
+            setTiles(res && res.results ? res.results : []);
+          })
+          .withFailureHandler(function(err){
+            document.getElementById('tiles').innerHTML = '<div class="card"><div class="note">エラー: ' + (err && err.message ? err.message : String(err)) + '</div></div>';
+          })
+          .searchOv02(q);
+      }
+    </script>
+  </body>
+</html>
