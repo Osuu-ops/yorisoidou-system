@@ -2770,3 +2770,219 @@ v7.5R では、この四階層を “役割が絶対に混じらないように�
 ──────────────────────────────────
 END OF master_spec（v7.5R：唯一の正・完全統合版）
 ──────────────────────────────────
+
+
+────────────────────────
+【新章：システム前提の確定仕様（B/A/T/C 向け統合要件）】
+────────────────────────
+
+本章は、従来の曖昧・未定義となっていた前提項目を正式仕様として確定し、
+以降の B/A/T/C/S の各フェーズで「唯一の正」として扱うものとする。
+本章の内容は、UI実行時設定（input.json）よりも常に優先される。
+
+────────────────────────
+1. brandProfiles の正式スキーマ
+────────────────────────
+brandProfiles は下記の固定構造を持ち、全ブランド共通で必須とする。
+
+- id（string）  
+- name（string）  
+- orderPrefix（例：ORD）  
+- customerPrefix（例：CU）  
+- expensePrefix（例：EXP）  
+- sheetMapping（下記の完全一致ルールに従う）  
+    - customers → CU_Master  
+    - orders → Order_YYYY  
+    - expenses → Expense_Master  
+    - parts → Parts_Master  
+    - up → UP_Master  
+    - ex → EX_Master  
+- storageProfiles で参照する Drive フォルダID一覧  
+    - orders / archive / logs / photos（全てブランド直下に確定配置）  
+
+※ “継承” といった表現を廃止し、上記を唯一スキーマとする。
+
+────────────────────────
+2. sheet 名称・内部台帳名の正規化ルール
+────────────────────────
+master_spec 内で用いる台帳名と brandProfiles.sheetMapping は
+必ず下記の 1:1 対応に従う。
+
+- CU_Master ↔ customers  
+- UP_Master ↔ up  
+- Order_YYYY ↔ orders  
+- Parts_Master ↔ parts  
+- EX_Master ↔ ex  
+- Expense_Master ↔ expenses  
+
+上記と異なる別名・旧名は使用禁止とする。
+互換が必要な場合は「互換レイヤ」を別途定義し、AI による推測補完は禁止。
+
+────────────────────────
+3. ID体系（Order_ID / Customer_ID / Expense_ID 等）の prefix確定
+────────────────────────
+各 ID prefix は master_spec に定義された値を唯一の正とし、
+input.json に異なる prefix が存在する場合は実行エラーとする。
+
+- orderPrefix：ORD  
+- customerPrefix：CU  
+- expensePrefix：EXP  
+
+UI判断の仮値（例：CUS）は受け付けない。  
+prefix は全レイヤで統一され、ID衝突を防止する。
+
+────────────────────────
+4. 年度・fiscalYear の正式仕様
+────────────────────────
+以下を年度計算の唯一ルールとして採用する。
+
+- fiscalYear：西暦 YYYY  
+- fiscalStart：毎年 1/1（後に変更する場合は本章の改訂が必要）  
+- Order_YYYY など年度シートの切替は fiscalYear に従う  
+- 年度跨ぎの ID・保存先切替は C フェーズではなく CONFIG / master_spec が決定
+
+────────────────────────
+5. storageProfiles（Drive構造）の確定仕様
+────────────────────────
+storageProfiles は下記の固定スキーマを持つ。
+
+- driveType：shared または mydrive  
+- sharedDriveName（shared の場合のみ必須）  
+- folders：  
+    - orders  
+    - archive  
+    - logs  
+    - photos  
+
+フォルダ名はブランド直下に一意に配置。  
+年度枝番・世代管理が必要な場合は archive 側に集約する。
+
+────────────────────────
+6. logs/system の保存仕様
+────────────────────────
+logs/system の保存形式は下記のいずれかを選択し、本章で固定する。
+
+（A）Sheet保存  
+（B）Drive JSONファイル保存  
+
+保存形式は CONFIG に記載し、本 master_spec にも明文化する。  
+以下を必須定義とする：
+
+- PII（住所/電話等）はマスキング  
+- 更新履歴は1件1ファイルまたは1行ログ  
+- 保持期間、アクセス権、フォルダ構造  
+- ローテーション条件（最大件数・最大容量）  
+
+────────────────────────
+7. 外部統合 Todoist / ClickUp / ChatGPT / Geolonia の正式仕様
+────────────────────────
+外部統合は以下の 2 点を必ず明確にする。
+
+（1）enabled=false 時の縮退運用  
+- Todoist/ClickUp が無効の場合は、  
+  完了同期・警告通知・三階層モデルのどこが停止し、  
+  代替導線（UI・logs/system 出力等）をどこに設けるかを確定する。  
+- ChatGPT の usage は「素材抽出・監査のみ」が基本。  
+  コード生成を許可する場合は C の権限を別途正式化する。  
+- Geolonia が無効の場合の住所生成手順（cityFixed/cityCustomの扱い）を明確化。
+
+（2）認証・鍵管理・失敗時挙動・再送（冪等性）  
+- API Key の保管場所  
+- rate limit 到達時のリトライ  
+- Webhook 再送時の idempotency key ルール  
+- 失敗時のログ記録と UI 警告  
+
+────────────────────────
+8. 冪等性（idempotency）仕様の正式化
+────────────────────────
+以下のイベントには必ず idempotency key を付与する。
+
+- UF01登録  
+- UF06発注  
+- 完了同期（Todoist/ClickUp）  
+- 更新（再同期）  
+
+idempotency key は  
+「Order_ID + Event種別 + タイムスタンプ or シーケンス」  
+などを採用し、重複イベントは「無視 / 上書き / 差分更新」のいずれかを明確に規定する。
+
+────────────────────────
+9. Request.PayloadJSON のスキーマ確定
+────────────────────────
+各フォーム（UF01/UF06/UF07/UF08/FIX/DOC 等）の  
+PayloadJSON は下記をすべて必須とする。
+
+- 必須フィールド一覧  
+- 型（string/number/bool/array/object）  
+- 許容値  
+- バージョン（schemaVersion）  
+- スキーマ外補完禁止  
+
+GAS はスキーマ不一致をエラーとして扱う。
+
+────────────────────────
+10. doGet と「外部起動禁止」の整合仕様
+────────────────────────
+以下を正式仕様として採用する。
+
+- WebApp 公開範囲（domain / 全員 / 限定ユーザー）  
+- referer / token / role でのアクセス制御  
+- doGet は「管理者・operator のみ」アクセス許可  
+- 一般ユーザー UI は Spreadsheet UI 経由に限定  
+
+────────────────────────
+11. UI品質の客観指標（監査可能化）
+────────────────────────
+UI品質関連の定義を以下の指標として固定する。
+
+- 初期ロード：3秒以内（4G回線想定）  
+- DOM 要素数：最大 800  
+- 画像解像度：最大 2000px  
+- 入力ステップ数：フォーム内 12 ステップ以内  
+- LazyLoad の閾値（画像）  
+- スクロール量の上限  
+
+これらの条件を満たさない変更は「UI品質劣化」とみなす。
+
+────────────────────────
+12. Drive フォルダ分類・紐付け規約の正式化
+────────────────────────
+Drive に保存される Before/After/parts/extra/videos/inspection の分類ルールを下記とする。
+
+- ファイル命名規約  
+- 重複衝突防止ルール  
+- Order_ID との紐付け方法  
+- 他案件混入防止方式（フォルダ隔離または prefix）  
+- アーカイブ移動条件（完了後30日など）  
+
+────────────────────────
+13. ClickUp 双方向参照の正式仕様
+────────────────────────
+双方向は「リンクのみ」とし、  
+ステータス更新・コメント同期は行わない。  
+ClickUp からの入力は禁止し、  
+AIは ClickUp のデータを素材として参照するのみ。
+
+────────────────────────
+14. logs/system と “AI違和感検知” の扱い
+────────────────────────
+enabled=false 時の扱いを以下に統一する。
+
+- ClickUp 通知不可  
+- logs/system に記録  
+- UI上に軽微警告表示  
+
+重大度は  
+Low / Medium / High の 3段階を採用し、  
+High は必ず UI 提示する。
+
+────────────────────────
+
+【本章の効力】
+本章に記載された内容はすべて master_spec の正式仕様であり、  
+以降の RUN において T-phase は本章を基準に監査を行う。
+input.json の仮値や UI判断が本章と矛盾する場合、  
+C-phase はエラーとする。
+
+────────────────────────
+
