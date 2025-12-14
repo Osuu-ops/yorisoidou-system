@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root{
+        --bg:#0b1220;
+        --panel:#111a2e;
+        --card:#0f1730;
+        --text:#e9eefc;
+        --muted:#a9b5d6;
+        --line:#24304e;
+        --accent:#6aa6ff;
+        --danger:#ff6a6a;
+      }
+      *{box-sizing:border-box;}
+      body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:linear-gradient(180deg,var(--bg),#070b14);color:var(--text);}
+      .wrap{padding:14px;}
+      .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+      h1{margin:0;font-size:16px;}
+      .card{border:1px solid var(--line);background:rgba(17,26,46,0.55);backdrop-filter:blur(6px);border-radius:14px;padding:12px;}
+      .grid{display:grid;grid-template-columns:1fr;gap:12px;}
+      @media (min-width: 980px){ .grid{grid-template-columns: 1fr 1fr;} }
+      label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+      input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(15,23,48,0.9);color:var(--text);font-size:16px;}
+      button{border:0;padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;font-size:16px;background:var(--accent);color:#061021;}
+      .ghost{background:transparent;color:var(--text);border:1px solid var(--line);}
+      .danger{background: rgba(255,106,106,0.16); color: var(--danger); border:1px solid rgba(255,106,106,0.35);}
+      pre{white-space:pre-wrap;word-break:break-word;margin:0;color:var(--text);font-size:13px;line-height:1.45;}
+      .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+      .pill{border:1px solid var(--line);padding:8px 10px;border-radius:12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,0.03);}
+    </style>
+  </head>
+  <body onload="checkEnvironment();">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>OV01（閲覧：カルテ）</h1>
+          <div class="pill">※本実装はデータ取得（Order/Parts/logs）最小版です</div>
+        </div>
+        <div class="row">
+          <button class="ghost" onclick="closeMe()">閉じる</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>Order_ID</label>
+        <input id="orderId" placeholder="例：ORD-YYYYMMDD-00001-UP_...">
+        <div class="row">
+          <button onclick="load()">表示</button>
+          <button class="danger" onclick="clearView()">クリア</button>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div class="card">
+          <label>Order</label>
+          <pre id="order"></pre>
+        </div>
+        <div class="card">
+          <label>Parts</label>
+          <pre id="parts"></pre>
+        </div>
+        <div class="card" style="grid-column: 1 / -1;">
+          <label>logs/system（index）</label>
+          <pre id="logs"></pre>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function checkEnvironment() {
+        if (typeof google === "undefined" || !google.script || !google.script.run) {
+          alert("このフォームは正しい方法で開かれていません。\nスプレッドシートのメニューから開いてください。");
+        }
+      }
+      function closeMe(){ google.script.host.close(); }
+      function clearView(){
+        document.getElementById('order').textContent='';
+        document.getElementById('parts').textContent='';
+        document.getElementById('logs').textContent='';
+      }
+      function load(){
+        var orderId = document.getElementById('orderId').value.trim();
+        if(!orderId){
+          alert('Order_ID を入力してください');
+          return;
+        }
+        clearView();
+        document.getElementById('order').textContent='読み込み中...';
+
+        google.script.run
+          .withSuccessHandler(function(res){
+            if(!res || !res.ok){
+              document.getElementById('order').textContent = (res && res.message) ? res.message : 'not found';
+              return;
+            }
+            document.getElementById('order').textContent = JSON.stringify(res.order, null, 2);
+            document.getElementById('parts').textContent = JSON.stringify(res.parts, null, 2);
+            document.getElementById('logs').textContent = JSON.stringify(res.logs, null, 2);
+          })
+          .withFailureHandler(function(err){
+            document.getElementById('order').textContent = '通信エラーの可能性があります。\n' + (err && err.message ? err.message : String(err));
+          })
+          .getOv01Data(orderId);
+      }
+    </script>
+  </body>
+</html>

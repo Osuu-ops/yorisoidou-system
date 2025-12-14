@@ -1,0 +1,60 @@
+===== ERROR.txt =====
+[不足前提]
+- [UI判断]の brandProfiles.sheetMapping が master_spec の台帳名（CU_Master / UP_Master / Order_YYYY 等）と不一致（customers が Customer_Master になっている）。どちらが唯一の正か、優先・変換ルールが未定義。
+- master_spec の brandProfiles 構造が「v6.9R〜v7.3R 継承」としか書かれておらず、必須キー（prefix群・sheet名・DriveフォルダID等）の完全なスキーマが本文内に無い。AIは補完禁止なので実装・監査基準が欠落。
+- orderPrefix / cuPrefix / upPrefix / odPrefix など、ID体系で参照している prefix 変数の定義場所と値決定規則が master_spec 内で確定していない（UI判断は orderPrefix=ORD / customerPrefix=CUS を仮定しているが、master_spec の CU例は CU-AA001）。
+- defaultYear / fiscalYear / fiscalStart の定義（形式・算出方法・年度切替条件）が不明。IDや保存先（年度フォルダ切替）に影響するのに決まっていない。
+- storageProfiles（CONFIG.storageProfiles）の必須項目・構造・年度＋枝番の切替ロジックが本文で確定していない（DriveのどのフォルダIDを使うか、shared drive対応の方法、権限など）。
+- logs/system の「保存先」が Drive なのか Sheet なのかの最終確定が不足（master_spec は Driveフォルダ体系を述べるが、列定義・ファイル命名規約・ローテーション等が未定義）。
+- OV02 の「全文検索」の実装前提（Drive検索API利用、インデックス化方式、OCR結果の保存フォーマット、検索性能要件、対象ファイル種別の扱い）が未定義。
+- Geolonia API の利用条件が曖昧（APIキー管理、失敗時挙動、enabled=false時の代替手段、誤判定時の扱い）。UI判断には gelonia(enabled=false) とあるが master_spec 側は Geolonia 前提で記述している。
+- Todoist / ClickUp / ChatGPT API の認証・Webhook・エラー時挙動・再送・冪等キー等の運用前提が本文で確定していない（四層連携を「正式仕様化」としつつ、具体要件が欠落）。
+- maintenanceMode の切替方法（UI・メニュー・CONFIG編集手順）と、true時に「閲覧系のみ許可」の境界（OV01/OV02以外に何が許可されるか）が不完全。
+- 役割ロール（guest/viewer/...）の権限マッピングが欠落（各フォーム閲覧/実行、ClickUp通知閲覧など）。「operator以上」等の断片はあるが全体表がない。
+- commentモードの「どの媒体のコメント欄か」（Todoistコメントのみ？）が明確でない。ClickUpからのトリガー禁止はあるが、システムが受け取る入力チャネル定義が不足。
+- RuntimeSelfTest の出力先（Test_*シート推奨等）はあるが、必須要件（隔離方式の確定、命名規約、後始末/保持期間）が未定義。
+- 「UI品質劣化禁止」の評価指標（表示速度、最大DOM数、画像サイズ、モバイル回線想定、フォームの入力ステップ数の定義）がないため監査基準が不足。
+- OV01 の「カルテ」表示のデータ結合定義（Order↔Parts↔EX/EXP↔Driveフォルダの解決手順）が本文レベルで手順化されていない（キーはOrder_ID中心だが、具体の探索規約が無い）。
+- Before/After/parts/extra/videos/inspection の「分類ルール」（ファイル命名、アップロード元、同名衝突、複数案件混入防止）が欠落。
+- HistoryNotes の「Order_ID 自動リンク化」仕様が曖昧（正規表現、複数OrderID、誤検出時の扱い、リンク先URL形式）。
+- 「自然文検索補助」や「AI違和感検知」の入力・出力フォーマット（JSONスキーマ、ログへの格納形式、重大度レベル定義）が確定していない。
+- UF01 の「成功条件4項目」以外の必須（phone/postal等）の扱いが曖昧（必須でないなら空許容・後工程影響・警告規則が必要）。
+- UF06 の「採用✓のみ発注」等、UI上の状態管理（行ID、チェック状態の送信形式、再表示時の復元）が未定義。
+- UF06/UF07/UF08/FIX/DOC の Request.PayloadJSON の厳密スキーマが欠落（後段GASが唯一の決定者でも、受信JSONが未定義だと監査不能）。
+- EXP_Master/EX_Master の生成タイミングと重複防止（冪等性）キーが明確でない（completeOrderFromTodoist再実行時の扱い等）。
+- 「更新（再同期）」トリガーの再同期範囲は列挙されているが、どの状態を正としどちらへ寄せるか（Sheet↔Todoist↔ClickUp）優先順位が未定義。
+- 「archiveデータも検索対象」方針はあるが、アーカイブ移動トリガー・ルール（いつ、何を、どこへ）が未定義。
+
+[危険な仕様・あいまいな仕様]
+- master_spec は「AIは素材抽出のみ」としつつ、[UI判断]で chatgpt.usage="code-generation-only" としており、役割定義が衝突（抽出・監査 vs コード生成）。どちらに従うか曖昧で危険。
+- [UI判断]で todoist/clickup が enabled=false だが master_spec では多くのフローが Todoist/ClickUp/Webhook 前提（完了同期、警告通知、三階層モデル）。無効時の代替フローが定義されておらず、システムが成立しない可能性がある。
+- [UI判断]の integrationPolicy.allowTemporaryAssumptions=true が master_spec の「推測補完禁止」と真正面から衝突。暫定仮定をどこまで許すかが危険。
+- [UI判断]の sheetMapping が orders/customers/expenses の3種のみで、master_spec の多数シート（UP_Master/Parts_Master/EX_Master/Request/logs等）のマッピングが欠落。実装者が勝手に補完しやすい危険領域。
+- Customer_IDの例が master_spec では CU-AA001、UI判断では customerPrefix=CUS。prefix不一致はID衝突・データ分断の重大事故になりうる。
+- [UI判断]の gelonia（誤字）/enabled=false と master_spec の Geolonia API 前提が衝突。無効時に addressCityTown 生成がどう保証されるか不明。
+- webConfiguration.executionUser="access-user" は、Drive保存・共有ドライブ操作・外部API呼び出しの権限問題を引き起こし得るが、要件（誰権限で動かすべきか、最小権限設計）が未定義。
+- logs/system に「全記録」とあるが、個人情報（住所/電話/メール）を含むログの扱い（マスキング、アクセス制御、保持期間、共有ドライブの閲覧者制限）が未定義で危険。
+- OCR/EXIF解析を行うと明記されているが、同意・プライバシー・位置情報の扱い・削除要請への対応が定義されていない。
+- 「フォームはスプレッドシート外から起動禁止」だが、doGet(e) がURLでフォーム切替を許す仕様と併存しており、運用上の矛盾（外部アクセス可能性）を孕む。
+- 「冪等性必須」と書かれているが、冪等キー（例：Order_ID＋イベント種別＋タイムスタンプ等）や重複検出方法が未定義で、再同期やWebhook再送時に二重計上（EXP二重生成等）の危険。
+- Runtime監査の expected/unexpected effect が概念レベルで、具体の検査項目（どの列がどう変化すべきか、許容誤差、リトライ時の許容）が曖昧。監査が恣意的になる危険。
+- 「UI過負荷禁止」「レイテンシ悪化禁止」が抽象的で、何ms/何操作を許容するか不明。改善のつもりの変更が禁止に該当するか判断不能。
+- 「ClickUp双方向参照を正式化」とあるが、「入力は禁止」もあるため、どこまでが双方向か（リンクのみ？ステータス同期？コメント同期？）が曖昧で危険。
+- Requestシートが「箱」として強力だが、悪意/誤入力のバリデーション、署名、改ざん検知（誰がいつ出したかの保証）が未定義。
+- “AI違和感”の通知先が ClickUp と logs/system だが、enabled=false のときの取り扱いが不明（ログのみ？UI表示のみ？）で運用が破綻しうる。
+
+[Aで統合すべき追加仕様案]
+- master_spec と input.json の優先順位を明文化：input.json は「実行時設定」であり master_spec の定義に矛盾する値は拒否（エラー）か、または必ず diff 手順で master_spec 側を更新してから許可、など。
+- brandProfiles の完全スキーマ（必須キー、prefix一覧、シート名一覧、DriveフォルダID/名称、activeBrandの解決手順）を master_spec 本文に確定記述し、「継承」表現を排除。
+- sheet名の正規化ルールを追加：master_spec の台帳名（CU_Master等）とブランド別 sheetMapping の対応表、別名許可の有無、互換レイヤの定義。
+- externalIntegrations.enabled=false のときの縮退運用（Todoist/ClickUp無しでの入力・完了・警告の代替導線）を仕様化。最低限「機能停止する範囲」と「代替ログ出力」を決める。
+- ChatGPT API の usage を master_spec に合わせて厳密化（「素材抽出・監査のみ」）。コード生成を許すなら、別途「生成対象」「禁止領域」「出力形式」を明記。
+- Geolonia API の有効/無効時の挙動を明文化（無効時は cityFixed/cityCustom をどう扱うか、住所検証の代替、失敗時の警告基準）。
+- logs/system の保存形式を確定（Sheet or Drive、ファイル命名、JSONスキーマ、1ログの最大サイズ、PIIマスキング、アクセス権、保持期間）。
+- 冪等性仕様を追加：各イベント（UF01/UF06/完了同期/更新）の idempotency key と重複時の挙動（無視/上書き/差分更新）を定義。
+- Request.PayloadJSON のスキーマをフォーム別に固定（必須フィールド、型、許容値、バージョン扱い）。AIはスキーマ外の補完禁止を明記。
+- doGet と「外部起動禁止」の整合仕様を追加：WebApp公開範囲、トークン、refererチェック、checkEnvironmentと併用する防御策、例外（管理者のみ許可等）。
+- UI品質劣化禁止の客観指標を追加（モバイルでの最大初期ロード時間、画像LazyLoad閾値、フォームの最大タップ回数等）し、監査可能にする。
+- Driveフォルダ分類規約（ファイル名、メタデータ、Order_ID紐付け方法、衝突回避、アーカイブ移動条件）を明文化。
+- ClickUp「双方向参照」の範囲を定義（リンクのみ/ステータス同期のみ等）し、「入力禁止」と矛盾しない形に限定する。
+===== END =====
