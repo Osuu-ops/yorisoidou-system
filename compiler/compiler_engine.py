@@ -74,7 +74,64 @@ def load_ui_feedback():
     return data
 
 
-# Stage 5: Code generation
+# Stage 5: Text Audit (T-phase)
+def run_text_audit(spec_text: str, ui_data):
+    print("\n=== Stage 5: Text Audit (T-phase) ===")
+
+    client = get_client()
+    if client is None:
+        return
+
+    # ui_data が None の場合は空オブジェクトとして扱う
+    ui_json = "{}" if ui_data is None else json.dumps(ui_data, ensure_ascii=False, indent=2)
+
+    audit_prompt = (
+        "あなたは Tチャット（文章監査専用）です。\n"
+        "master_spec と UI判断(input.json)を監査し、"
+        "不足前提・危険な仕様・あいまいな部分を洗い出してください。\n"
+        "AIが勝手に補完すべきでない項目はすべて指摘してください。\n"
+        "\n"
+        "出力形式は必ず次のフォーマットにしてください：\n"
+        "===== ERROR.txt =====\n"
+        "[不足前提]\n"
+        "- 箇条書きで列挙\n"
+        "\n"
+        "[危険な仕様・あいまいな仕様]\n"
+        "- 箇条書きで列挙\n"
+        "\n"
+        "[Aで統合すべき追加仕様案]\n"
+        "- 箇条書きで列挙\n"
+        "===== END =====\n"
+    )
+
+    user_content = (
+        f"[master_spec]\n{spec_text}\n\n"
+        f"[UI判断(input.json)]\n{ui_json}\n"
+    )
+
+    res = client.chat.completions.create(
+        model="gpt-5.2",
+        messages=[
+            {"role": "system", "content": "You are T-phase text auditor."},
+            {"role": "user", "content": audit_prompt},
+            {"role": "user", "content": user_content},
+        ],
+    )
+
+    error_text = res.choices[0].message.content
+
+    # ログ出力
+    print("\n--- ERROR.txt (T-phase output) ---")
+    print(error_text)
+
+    # ファイル保存（generated_output/ERROR.txt に保存）
+    error_path = os.path.join(GENERATED_DIR, "ERROR.txt")
+    with open(error_path, "w", encoding="utf-8") as f:
+        f.write(error_text)
+    print(f"[WRITE] {error_path} を生成")
+
+
+# Stage 6: Code generation
 def generate_code(spec_text, ui_data):
     if ui_data is None:
         print("[INFO] UI判断なし → 生成スキップ")
@@ -99,7 +156,7 @@ def generate_code(spec_text, ui_data):
         "必要なコードをJSONで返してください"
     )
 
-    print("\n=== Stage 5: Code Generation ===")
+    print("\n=== Stage 6: Code Generation ===")
 
     res = client.chat.completions.create(
         model="gpt-5.2",
@@ -115,7 +172,7 @@ def generate_code(spec_text, ui_data):
 
     try:
         return json.loads(raw)
-    except:
+    except Exception:
         print("[ERROR] JSON解析に失敗")
         return {}
 
@@ -144,6 +201,9 @@ def main():
     write_questions_file(generate_questions_for_ui(spec_text))
 
     ui_data = load_ui_feedback()
+
+    # T-phase 実行（ERROR.txt を生成）
+    run_text_audit(spec_text, ui_data)
 
     files = generate_code(spec_text, ui_data)
     write_files(files)
