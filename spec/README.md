@@ -9,7 +9,7 @@
   すべての master_spec に共通して適用される  
   UI の原則・状態定義・操作制約を定義する。
 
-- UI_spec.md  
+- UI_spec_MEP.md  
   特定の master_spec に対して UI_PROTOCOL を適用した結果。  
   今回の業務仕様における画面構成・入力順・遷移を定義する。
 
