@@ -33,6 +33,30 @@ def run_T():
         save_state(state)
         print("T: initial run -> NG (first_t_done updated).")
         return 1  # 1=NG
+                # --- dormant ui_spec を生成 ---
+        ui_spec_path = Path("spec/ui_spec.md")
+        ui_spec_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if not ui_spec_path.exists():
+            ui_spec_path.write_text(
+                "# UI Spec (dormant)\n\n"
+                "## 本書の位置づけ\n"
+                "本書は master_spec に基づき T フェーズで自動生成された派生仕様である。\n\n"
+                "## 状態\n"
+                "- status: dormant\n\n"
+                "## 内容\n"
+                "(未記入)\n",
+                encoding="utf-8"
+            )
+
+        # spec_status.json に登録
+        state.setdefault("specs", {})
+        state["specs"]["ui_spec.md"] = {
+            "state": "dormant",
+            "generated_by": "T",
+            "path": "spec/ui_spec.md"
+        }
+
 
     # --- 2回目以降のT（ここは後で拡張）---
     state["last_run"] = {"phase": "T", "at": utc_now_iso()}
