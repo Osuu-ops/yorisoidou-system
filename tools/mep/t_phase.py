@@ -22,35 +22,12 @@ def save_state(state):
 def run_T():
     state = load_state()
 
-    # --- 初回T判定 ---
     first_t_done = bool(state.get("first_t_done", False))
+    specs = state.get("specs", {})
+    active_specs = state.get("active_specs", [])
 
+    # --- 初回T：必ずNG（dormant生成のみ想定）---
     if not first_t_done:
-        # --- dormant ui_spec を生成 ---
-        ui_spec_path = Path("spec/ui_spec.md")
-        ui_spec_path.parent.mkdir(parents=True, exist_ok=True)
-
-        if not ui_spec_path.exists():
-            ui_spec_path.write_text(
-                "# UI Spec (dormant)\n\n"
-                "## 本書の位置づけ\n"
-                "本書は master_spec に基づき T フェーズで自動生成された派生仕様である。\n\n"
-                "## 状態\n"
-                "- status: dormant\n\n"
-                "## 内容\n"
-                "(未記入)\n",
-                encoding="utf-8"
-            )
-
-        # state に登録
-        state.setdefault("specs", {})
-        state["specs"]["ui_spec.md"] = {
-            "state": "dormant",
-            "generated_by": "T",
-            "path": "spec/ui_spec.md"
-        }
-
-        # 初回Tは必ずNG
         state["first_t_done"] = True
         state.setdefault("recommendation", {})
         state["recommendation"]["notes"] = (
@@ -60,19 +37,52 @@ def run_T():
             "phase": "T",
             "at": utc_now_iso()
         }
-
         save_state(state)
-        print("T: initial run -> NG (ui_spec generated as dormant).")
-        return 1  # NG
+        print("T: initial run -> NG")
+        return 1
 
-    # --- 2回目以降のT（仮）---
+    # --- 2回目以降のT：active spec 前提で判定 ---
+    if not active_specs:
+        state.setdefault("recommendation", {})
+        state["recommendation"]["notes"] = (
+            "no active specs; result=NG"
+        )
+        state["last_run"] = {
+            "phase": "T",
+            "at": utc_now_iso()
+        }
+        save_state(state)
+        print("T: NG (no active specs)")
+        return 1
+
+    # active spec がすべて state=active か確認
+    for spec_name in active_specs:
+        spec_info = specs.get(spec_name)
+        if not spec_info or spec_info.get("state") != "active":
+            state.setdefault("recommendation", {})
+            state["recommendation"]["notes"] = (
+                f"spec not active or missing: {spec_name}; result=NG"
+            )
+            state["last_run"] = {
+                "phase": "T",
+                "at": utc_now_iso()
+            }
+            save_state(state)
+            print(f"T: NG (spec not active: {spec_name})")
+            return 1
+
+    # --- ここまで来たらOK ---
+    state.setdefault("recommendation", {})
+    state["recommendation"]["notes"] = (
+        "all active specs valid; result=OK"
+    )
     state["last_run"] = {
         "phase": "T",
         "at": utc_now_iso()
     }
     save_state(state)
-    print("T: subsequent run -> NG (placeholder).")
-    return 1
+    print("T: OK (ready for C)")
+    return 0
 
 if __name__ == "__main__":
     exit(run_T())
