@@ -22,18 +22,11 @@ def save_state(state):
 def run_T():
     state = load_state()
 
-    # --- 初回T判定（ここが今回の「書く場所」）---
+    # --- 初回T判定 ---
     first_t_done = bool(state.get("first_t_done", False))
+
     if not first_t_done:
-        # 初回Tは必ずNG（Cへ進まない）
-        state["first_t_done"] = True
-        state.setdefault("recommendation", {})
-        state["recommendation"]["notes"] = "initial T completed; result=NG; specs(if any) are dormant"
-        state["last_run"] = {"phase": "T", "at": utc_now_iso()}
-        save_state(state)
-        print("T: initial run -> NG (first_t_done updated).")
-        return 1  # 1=NG
-                # --- dormant ui_spec を生成 ---
+        # --- dormant ui_spec を生成 ---
         ui_spec_path = Path("spec/ui_spec.md")
         ui_spec_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -49,7 +42,7 @@ def run_T():
                 encoding="utf-8"
             )
 
-        # spec_status.json に登録
+        # state に登録
         state.setdefault("specs", {})
         state["specs"]["ui_spec.md"] = {
             "state": "dormant",
@@ -57,12 +50,29 @@ def run_T():
             "path": "spec/ui_spec.md"
         }
 
+        # 初回Tは必ずNG
+        state["first_t_done"] = True
+        state.setdefault("recommendation", {})
+        state["recommendation"]["notes"] = (
+            "initial T completed; result=NG; specs(if any) are dormant"
+        )
+        state["last_run"] = {
+            "phase": "T",
+            "at": utc_now_iso()
+        }
 
-    # --- 2回目以降のT（ここは後で拡張）---
-    state["last_run"] = {"phase": "T", "at": utc_now_iso()}
+        save_state(state)
+        print("T: initial run -> NG (ui_spec generated as dormant).")
+        return 1  # NG
+
+    # --- 2回目以降のT（仮）---
+    state["last_run"] = {
+        "phase": "T",
+        "at": utc_now_iso()
+    }
     save_state(state)
-    print("T: subsequent run -> (placeholder) NG/OK logic to be implemented.")
-    return 1  # いまは一旦NG返し（後でOK判定実装）
+    print("T: subsequent run -> NG (placeholder).")
+    return 1
 
 if __name__ == "__main__":
     exit(run_T())
