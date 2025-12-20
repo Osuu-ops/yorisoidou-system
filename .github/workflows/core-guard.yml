@@ -1,0 +1,28 @@
+name: Core Protocol Guard
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  guard-core:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changes in spec/core
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^spec/core/' || true)
+
+          if [ -n "$CHANGED" ]; then
+            echo "❌ Changes detected in spec/core:"
+            echo "$CHANGED"
+            echo ""
+            echo "spec/core is the 'single source of truth'."
+            echo "Do not modify core protocols without explicit approval."
+            exit 1
+          else
+            echo "✅ No changes in spec/core"
+          fi
