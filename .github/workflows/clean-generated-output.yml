@@ -1,0 +1,22 @@
+name: clean-generated-output
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove generated outputs
+        run: |
+          rm -rf generated
+
+      - name: Fail if generated outputs are committed
+        run: |
+          if [ -d "generated" ]; then
+            echo "generated directory must not be committed"
+            exit 1
+          fi
