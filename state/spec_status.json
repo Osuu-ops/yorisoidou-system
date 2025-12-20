@@ -1,14 +1,22 @@
 {
   "version": 1,
-  "first_t_done": false,
-  "active_specs": [],
-  "specs": {},
+  "first_t_done": true,
+  "active_specs": [
+    "ui_spec.md"
+  ],
+  "specs": {
+    "ui_spec.md": {
+      "state": "active",
+      "generated_by": "T",
+      "path": "spec/ui_spec.md"
+    }
+  },
   "recommendation": {
     "order": [],
-    "notes": ""
+    "notes": "initial T completed; result=NG; specs(if any) are dormant"
   },
   "last_run": {
-    "phase": "",
-    "at": ""
+    "phase": "B",
+    "at": "2025-12-20T18:30:35Z"
   }
 }
