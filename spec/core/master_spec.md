@@ -1,3 +1,11 @@
+<!-- LAYER: L2 -->
+
+<!-- FOUNDATION_REF: MEP/foundation/FOUNDATION_SPEC.md -->
+
+<!-- NOTE: This specification must conform to FOUNDATION_SPEC -->
+
+
+
 ★ master_spec（唯一の正・完全版｜業務仕様・再構成／復元版）
 
 ──────────────────────────────────
