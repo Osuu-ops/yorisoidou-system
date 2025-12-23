@@ -1,3 +1,17 @@
+<!--
+参照定義ファイル：
+MEP/definitions/SYMBOLS.md
+
+運用ルール：
+本ファイル内に出現するすべての参照記号（@Sxxxx）は、
+個別指定や列挙を行わず、
+上記「参照定義ファイル」を唯一の正として解決する。
+
+本ファイルは、参照関係の宣言・管理を行わない。
+-->
+
+
+
 INTERFACE_PROTOCOL
 
 UI_PROTOCOL × system_protocol
