@@ -1,3 +1,14 @@
+# 参照定義ファイル：
+# MEP/definitions/SYMBOLS.md
+#
+# 本ファイル内に出現する参照記号は、
+# 個別宣言や列挙を行わず、
+# 上記参照定義ファイルを唯一の正として解決する。
+#
+# 本ファイルは参照関係の宣言・管理を行わない。
+
+
+
 # tools/mep/b_phase.py
 import json
 from datetime import datetime, timezone
