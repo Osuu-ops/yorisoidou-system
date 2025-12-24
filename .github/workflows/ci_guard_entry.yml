@@ -1,9 +1,0 @@
-name: CI_GUARD_ENTRY
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  call-ci-guard:
-    uses: ./platform/.github/workflows/ci_guard.yml
