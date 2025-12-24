@@ -1,0 +1,30 @@
+name: MEP_PIPELINE
+
+on:
+  workflow_dispatch:
+    inputs:
+      diff_path:
+        description: "Path to diff file"
+        required: true
+        type: string
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run MEP pipeline (diff -> candidate -> Z.evaluate -> S.commit)
+        run: |
+          cd platform/MEP/MEP_core/system/code
+          chmod +x run_pipeline.sh
+          ./run_pipeline.sh "${{ inputs.diff_path }}"
