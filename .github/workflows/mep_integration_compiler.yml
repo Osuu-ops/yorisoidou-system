@@ -1,0 +1,96 @@
+name: MEP Integration Compiler
+
+on:
+  pull_request:
+    paths:
+      - 'platform/MEP/MEP_core/**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  integration-compiler:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect all MEP_core markdown files (full input)
+        id: collect
+        run: |
+          set -e
+          find platform/MEP/MEP_core -type f -name "*.md" | sort > inputs.txt
+          echo "count=$(wc -l < inputs.txt)" >> $GITHUB_OUTPUT
+
+      - name: Show input summary
+        run: |
+          echo "Total markdown inputs:"
+          cat inputs.txt
+          echo "Count: ${{ steps.collect.outputs.count }}"
+
+      # ---- Semantic Audit (placeholder hook) ----
+      # ここでは「全量を一括で読む」ことだけを保証し、
+      # 実際の監査・判定ロジックは外部スクリプト/LLM呼び出しに委譲する。
+      - name: Semantic Audit (full read, no diff)
+        id: audit
+        env:
+          INPUT_LIST: inputs.txt
+        run: |
+          set -e
+          # 実装方針：
+          # - 差分は使わない
+          # - 全ファイルを一度に読む
+          # - OK/NG のみを機械結果として出す（理由文は出さない）
+          #
+          # ここではデモとして「全OK」を返す。
+          # 実装時はこの部分を置き換える。
+          echo "[]" > audit_results.json
+          echo "ng_count=0" >> $GITHUB_OUTPUT
+
+      # ---- BAT Rebuild (only if NG exists) ----
+      - name: BAT Full Regeneration (NG only)
+        if: steps.audit.outputs.ng_count != '0'
+        run: |
+          set -e
+          # 実装方針：
+          # - NG ファイルのみ対象
+          # - 部分修正禁止
+          # - 全文再生成のみ
+          #
+          # ここでは処理を行わない（実装フック）
+          echo "BAT regeneration placeholder"
+
+      # ---- Re-audit loop (single pass; loop handled by re-run) ----
+      - name: Re-Audit Summary
+        run: |
+          echo "Re-audit completed (single pass)."
+          echo "If NG remains, human intervention is required."
+
+      # ---- PR Comment (no judgment text) ----
+      - name: Post PR summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = [
+              '### MEP Integration Compiler Result',
+              '',
+              '- Input scope: **Full read (no diff)**',
+              `- Files scanned: ${fs.readFileSync('inputs.txt','utf8').trim().split('\n').length}`,
+              '- Changes applied: **None** (demo)',
+              '',
+              'This workflow does **not** auto-merge.',
+              'Final decision is reserved for a human maintainer.'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
