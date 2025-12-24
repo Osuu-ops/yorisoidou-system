@@ -38,7 +38,6 @@ jobs:
         run: |
           set -e
           python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit_results.json
-          echo "Audit results:"
           cat audit_results.json
           echo "ng_count=$(jq '[.results[] | select(.result==\"NG\")] | length' audit_results.json)" >> $GITHUB_OUTPUT
 
@@ -46,13 +45,11 @@ jobs:
         if: steps.audit.outputs.ng_count != '0'
         run: |
           set -e
-          echo "NG detected."
-          echo "BAT regeneration is intentionally manual only."
+          echo "NG detected. BAT regeneration is manual-only by design."
 
       - name: Re-Audit Summary
         run: |
           echo "Re-audit completed (single pass)."
-          echo "If NG remains, human intervention is required."
 
       - name: Post PR summary
         if: github.event_name == 'pull_request'
@@ -60,14 +57,15 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const results = JSON.parse(fs.readFileSync('audit_results.json','utf8'));
-            const ngCount = results.results.filter(r => r.result === 'NG').length;
+            const audit = JSON.parse(fs.readFileSync('audit_results.json','utf8'));
+            const ngCount = audit.results.filter(r => r.result === 'NG').length;
+            const total = audit.results.length;
 
-            let body = [
+            const body = [
               '### MEP Integration Compiler Result',
               '',
               '- Input scope: **Full read (no diff)**',
-              `- Files scanned: ${results.results.length}`,
+              `- Files scanned: ${total}`,
               `- NG count: ${ngCount}`,
               '- BAT executed: **No (manual only)**',
               '',
