@@ -40,14 +40,14 @@ jobs:
           python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit_results.json
           echo "Audit results:"
           cat audit_results.json
-          echo "ng_count=$(jq '[.results[] | select(.result=="NG")] | length' audit_results.json)" >> $GITHUB_OUTPUT
+          echo "ng_count=$(jq '[.results[] | select(.result==\"NG\")] | length' audit_results.json)" >> $GITHUB_OUTPUT
 
       - name: BAT Full Regeneration (NG only)
         if: steps.audit.outputs.ng_count != '0'
         run: |
           set -e
-          echo "NG detected. BAT regeneration step placeholder."
-          echo "BAT regeneration is intentionally not automated yet."
+          echo "NG detected."
+          echo "BAT regeneration is intentionally manual only."
 
       - name: Re-Audit Summary
         run: |
@@ -60,8 +60,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-
-            const results = JSON.parse(fs.readFileSync('audit_results.json', 'utf8'));
+            const results = JSON.parse(fs.readFileSync('audit_results.json','utf8'));
             const ngCount = results.results.filter(r => r.result === 'NG').length;
 
             let body = [
