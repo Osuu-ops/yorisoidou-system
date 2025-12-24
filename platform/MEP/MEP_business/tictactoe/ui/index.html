@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Tic Tac Toe</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #fff;
+  }
+
+  .game {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  }
+
+  h1 {
+    text-align: center;
+    margin: 0 0 16px;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 10px;
+  }
+
+  .cell {
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    font-size: 48px;
+    font-weight: bold;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.2s;
+  }
+
+  .cell:hover {
+    transform: scale(1.05);
+    background: #fff;
+  }
+
+  .cell.disabled {
+    cursor: default;
+    background: #ddd;
+  }
+
+  .status {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 16px;
+  }
+
+  .reset {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .reset:hover {
+    background: #f0f0f0;
+  }
+</style>
+</head>
+<body>
+
+<div class="game">
+  <h1>TIC TAC TOE</h1>
+  <div class="board" id="board"></div>
+  <div class="status" id="status">Player X turn</div>
+  <button class="reset" onclick="resetGame()">RESET</button>
+</div>
+
+<script>
+  const boardEl = document.getElementById("board");
+  const statusEl = document.getElementById("status");
+
+  let board = Array(9).fill(null);
+  let current = "X";
+  let finished = false;
+
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  function render() {
+    boardEl.innerHTML = "";
+    board.forEach((v, i) => {
+      const cell = document.createElement("div");
+      cell.className = "cell" + (v || finished ? " disabled" : "");
+      cell.textContent = v || "";
+      cell.onclick = () => move(i);
+      boardEl.appendChild(cell);
+    });
+  }
+
+  function move(i) {
+    if (board[i] || finished) return;
+    board[i] = current;
+
+    if (checkWin(current)) {
+      statusEl.textContent = `Player ${current} wins!`;
+      finished = true;
+    } else if (board.every(v => v)) {
+      statusEl.textContent = "Draw!";
+      finished = true;
+    } else {
+      current = current === "X" ? "O" : "X";
+      statusEl.textContent = `Player ${current} turn`;
+    }
+    render();
+  }
+
+  function checkWin(p) {
+    return wins.some(line => line.every(i => board[i] === p));
+  }
+
+  function resetGame() {
+    board = Array(9).fill(null);
+    current = "X";
+    finished = false;
+    statusEl.textContent = "Player X turn";
+    render();
+  }
+
+  render();
+</script>
+
+</body>
+</html>
