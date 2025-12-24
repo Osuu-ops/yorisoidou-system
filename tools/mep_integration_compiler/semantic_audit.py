@@ -3,12 +3,16 @@ import sys
 import json
 from pathlib import Path
 
+# Concept文書で禁止する語（確実にNGを出す）
 FORBIDDEN_CONCEPT_WORDS = [
     "OK",
     "NG",
     "停止",
     "遷移",
 ]
+
+def is_concept(path: str) -> bool:
+    return path.endswith("Z_AXIOMS_CANON.md")
 
 def main():
     if len(sys.argv) != 2:
@@ -24,9 +28,10 @@ def main():
 
         result = "OK"
         reason = "NONE"
+        category = "Other"
 
-        # Concept 判定（簡易：foundation/Z 系は Concept 扱い）
-        if "Z_AXIOMS_CANON.md" in file_path:
+        if is_concept(file_path):
+            category = "Concept"
             for w in FORBIDDEN_CONCEPT_WORDS:
                 if w in text:
                     result = "NG"
@@ -35,7 +40,7 @@ def main():
 
         results.append({
             "file": file_path,
-            "category": "Concept" if "Z_AXIOMS_CANON.md" in file_path else "Other",
+            "category": category,
             "result": result,
             "reason_code": reason
         })
