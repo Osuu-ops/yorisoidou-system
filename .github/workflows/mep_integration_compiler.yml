@@ -33,61 +33,49 @@ jobs:
           cat inputs.txt
           echo "Count: ${{ steps.collect.outputs.count }}"
 
-      # ---- Semantic Audit (placeholder hook) ----
-      # ここでは「全量を一括で読む」ことだけを保証し、
-      # 実際の監査・判定ロジックは外部スクリプト/LLM呼び出しに委譲する。
-      - name: Semantic Audit (full read, no diff)
+      - name: Semantic Audit
         id: audit
-        env:
-          INPUT_LIST: inputs.txt
         run: |
           set -e
-          # 実装方針：
-          # - 差分は使わない
-          # - 全ファイルを一度に読む
-          # - OK/NG のみを機械結果として出す（理由文は出さない）
-          #
-          # ここではデモとして「全OK」を返す。
-          # 実装時はこの部分を置き換える。
-          echo "[]" > audit_results.json
-          echo "ng_count=0" >> $GITHUB_OUTPUT
+          python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit_results.json
+          echo "Audit results:"
+          cat audit_results.json
+          echo "ng_count=$(jq '[.results[] | select(.result=="NG")] | length' audit_results.json)" >> $GITHUB_OUTPUT
 
-      # ---- BAT Rebuild (only if NG exists) ----
       - name: BAT Full Regeneration (NG only)
         if: steps.audit.outputs.ng_count != '0'
         run: |
           set -e
-          # 実装方針：
-          # - NG ファイルのみ対象
-          # - 部分修正禁止
-          # - 全文再生成のみ
-          #
-          # ここでは処理を行わない（実装フック）
-          echo "BAT regeneration placeholder"
+          echo "NG detected. BAT regeneration step placeholder."
+          echo "BAT regeneration is intentionally not automated yet."
 
-      # ---- Re-audit loop (single pass; loop handled by re-run) ----
       - name: Re-Audit Summary
         run: |
           echo "Re-audit completed (single pass)."
           echo "If NG remains, human intervention is required."
 
-      # ---- PR Comment (no judgment text) ----
       - name: Post PR summary
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
+
+            const results = JSON.parse(fs.readFileSync('audit_results.json', 'utf8'));
+            const ngCount = results.results.filter(r => r.result === 'NG').length;
+
             let body = [
               '### MEP Integration Compiler Result',
               '',
               '- Input scope: **Full read (no diff)**',
-              `- Files scanned: ${fs.readFileSync('inputs.txt','utf8').trim().split('\n').length}`,
-              '- Changes applied: **None** (demo)',
+              `- Files scanned: ${results.results.length}`,
+              `- NG count: ${ngCount}`,
+              '- BAT executed: **No (manual only)**',
               '',
               'This workflow does **not** auto-merge.',
               'Final decision is reserved for a human maintainer.'
             ].join('\n');
+
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
