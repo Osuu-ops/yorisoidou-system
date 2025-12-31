@@ -2,13 +2,236 @@ name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:
+    inputs:
+      file_path:
+        description: "Modify this file (example: README.md)"
+        required: true
+        type: string
+      append_text:
+        description: "Append this text as a new line"
+        required: true
+        type: string
+      pr_title:
+        description: "PR title"
+        required: true
+        type: string
+      pr_body:
+        description: "PR body"
+        required: true
+        type: string
+      merge_if_ok:
+        description: "Merge automatically if Gate OK (true/false)"
+        required: true
+        default: "true"
+        type: string
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  noop:
+  auto-pr-gate:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "manual-only"
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git config --global core.quotepath false
+
+      - name: Create branch + commit change
+        id: commit
+        env:
+          FILE_PATH: ${{ inputs.file_path }}
+          APPEND_TEXT: ${{ inputs.append_text }}
+        run: |
+          set -euo pipefail
+          TS=$(date +%Y%m%d-%H%M%S)
+          BRANCH="auto/pr-gate-${TS}"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+          git checkout -b "$BRANCH"
+
+          # Ensure file exists
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "File not found: $FILE_PATH"
+            exit 1
+          fi
+
+          printf "\n%s\n" "$APPEND_TEXT" >> "$FILE_PATH"
+
+          git add "$FILE_PATH"
+          git commit -m "${{ inputs.pr_title }}"
+          git push -u origin "$BRANCH"
+
+      - name: Create PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          BRANCH="${{ steps.commit.outputs.branch }}"
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "${{ inputs.pr_title }}" \
+            --body "${{ inputs.pr_body }}" \
+            --repo "${{ github.repository }}")
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          PR_NUMBER=$(echo "$PR_URL" | sed -E 's#.*/pull/([0-9]+).*#\1#')
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "Created PR: $PR_URL"
+
+      - name: Resolve PR SHAs
+        id: shas
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          API="/repos/${{ github.repository }}/pulls/$PR"
+          BASE_SHA=$(gh api "$API" --jq .base.sha)
+          HEAD_SHA=$(gh api "$API" --jq .head.sha)
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR head (for gate)
+        run: |
+          set -euo pipefail
+          git fetch origin ${{ steps.shas.outputs.head_sha }}
+          git checkout ${{ steps.shas.outputs.head_sha }}
+
+      - name: Collect changed files (git diff -z)
+        run: |
+          set -euo pipefail
+          python3 tools/mep_integration_compiler/collect_changed_files.py \
+            --base "${{ steps.shas.outputs.base_sha }}" \
+            --head "${{ steps.shas.outputs.head_sha }}" \
+            --out-dir ".mep/tmp"
+
+      - name: Run Gate (semantic audits + binary guards)
+        id: gate
+        shell: bash
+        run: |
+          set +e
+
+          # CORE semantic audit
+          if [ -s ".mep/tmp/core_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log 2>&1
+            CORE_AUDIT_RC=$?
+          else
+            echo "CORE: SKIP (no auditable files)" > core_audit.log
+            CORE_AUDIT_RC=0
+          fi
+
+          # BUSINESS semantic audit
+          if [ -s ".mep/tmp/biz_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log 2>&1
+            BIZ_AUDIT_RC=$?
+          else
+            echo "BUSINESS: SKIP (no auditable files)" > biz_audit.log
+            BIZ_AUDIT_RC=0
+          fi
+
+          # CORE binary guard
+          if [ -s ".mep/tmp/core_binary.txt" ]; then
+            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/core_binary.txt .mep/allowlists/core.sha256 > core_binary_guard.log 2>&1
+            CORE_BIN_RC=$?
+          else
+            echo "CORE: SKIP (no binary files)" > core_binary_guard.log
+            CORE_BIN_RC=0
+          fi
+
+          # BUSINESS binary guard
+          if [ -s ".mep/tmp/biz_binary.txt" ]; then
+            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/biz_binary.txt .mep/allowlists/business.sha256 > biz_binary_guard.log 2>&1
+            BIZ_BIN_RC=$?
+          else
+            echo "BUSINESS: SKIP (no binary files)" > biz_binary_guard.log
+            BIZ_BIN_RC=0
+          fi
+
+          echo "core_audit_rc=$CORE_AUDIT_RC" >> "$GITHUB_OUTPUT"
+          echo "biz_audit_rc=$BIZ_AUDIT_RC" >> "$GITHUB_OUTPUT"
+          echo "core_bin_rc=$CORE_BIN_RC" >> "$GITHUB_OUTPUT"
+          echo "biz_bin_rc=$BIZ_BIN_RC" >> "$GITHUB_OUTPUT"
+
+          if [ "$CORE_AUDIT_RC" = "0" ] && [ "$BIZ_AUDIT_RC" = "0" ] && [ "$CORE_BIN_RC" = "0" ] && [ "$BIZ_BIN_RC" = "0" ]; then
+            echo "result=OK" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=NG" >> "$GITHUB_OUTPUT"
+          fi
+
+          exit 0
+
+      - name: Comment Gate result on PR
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          RESULT="${{ steps.gate.outputs.result }}"
+          CORE_AUDIT_RC="${{ steps.gate.outputs.core_audit_rc }}"
+          BIZ_AUDIT_RC="${{ steps.gate.outputs.biz_audit_rc }}"
+          CORE_BIN_RC="${{ steps.gate.outputs.core_bin_rc }}"
+          BIZ_BIN_RC="${{ steps.gate.outputs.biz_bin_rc }}"
+
+          MAX=4500
+          tailmax() { python3 - << 'PY' "$1" "$MAX"
+import sys
+p=sys.argv[1]; m=int(sys.argv[2])
+t=open(p,'r',encoding='utf-8',errors='replace').read()
+if len(t)>m: t="...(truncated)...\n"+t[-m:]
+print(t)
+PY
+          }
+
+          COUNTS=$(cat .mep/tmp/counts.json)
+
+          BODY=$(cat <<EOF
+### MEP Auto PR + Gate : $RESULT
+
+**counts.json**
+\`\`\`json
+$COUNTS
+\`\`\`
+
+**CORE semantic audit** (rc=$CORE_AUDIT_RC)
+\`\`\`
+$(tailmax core_audit.log)
+\`\`\`
+
+**BUSINESS semantic audit** (rc=$BIZ_AUDIT_RC)
+\`\`\`
+$(tailmax biz_audit.log)
+\`\`\`
+
+**CORE binary guard** (rc=$CORE_BIN_RC)
+\`\`\`
+$(tailmax core_binary_guard.log)
+\`\`\`
+
+**BUSINESS binary guard** (rc=$BIZ_BIN_RC)
+\`\`\`
+$(tailmax biz_binary_guard.log)
+\`\`\`
+EOF
+          )
+
+          gh pr comment "$PR" --body "$BODY" --repo "${{ github.repository }}"
+
+      - name: Merge PR if OK
+        if: ${{ inputs.merge_if_ok == 'true' && steps.gate.outputs.result == 'OK' }}
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          gh pr merge "$PR" --merge --delete-branch --repo "${{ github.repository }}"
