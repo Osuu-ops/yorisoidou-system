@@ -25,6 +25,6 @@ jobs:
 
       - name: Run MEP pipeline (diff -> candidate -> Z.evaluate -> S.commit)
         run: |
-          cd platform/MEP/MEP_core/system/code
+          cd platform/MEP/01_CORE/system/code
           chmod +x run_pipeline.sh
           ./run_pipeline.sh "${{ inputs.diff_path }}"
