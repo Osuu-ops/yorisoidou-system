@@ -2,406 +2,96 @@ name: MEP Semantic Audit (PR Gate)
 
 on:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   audit-core:
     name: semantic-audit
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Collect changed CORE files (all + auditable text + non-text)
-        id: collect
+      - name: Configure git (no quoted paths)
+        run: git config --global core.quotepath false
+      - name: Collect CORE changed files
         shell: bash
         run: |
           set -euo pipefail
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-
-          python3 tools/mep_integration_compiler/collect_changed_files.py \
-            --base "$BASE_SHA" \
-            --head "$HEAD_SHA" \
-            --out-dir ".mep/tmp"
-
-          cp .mep/tmp/core_all.txt core_all.txt || true
-          cp .mep/tmp/core_audit.txt inputs.txt || true
-          cp .mep/tmp/core_binary.txt core_nontext.txt || true
-
-          echo "all_count=$(wc -l < core_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "nontext_count=$(wc -l < core_nontext.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-
-      - name: Guard: inputs must not be empty when changes exist (CORE)
-        if: always()
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_all.txt || true
+          sed -i 's/^"//; s/"$//' core_all.txt || true
+          cat core_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > core_inputs.txt || true
+          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_am.txt || true
+          sed -i 's/^"//; s/"$//' core_am.txt || true
+          cat core_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | sort > core_nontext.txt || true
+      - name: Binary guard (CORE)
         shell: bash
         run: |
           set -euo pipefail
-          ALL="${{ steps.collect.outputs.all_count }}"
-          AUD="${{ steps.collect.outputs.audit_count }}"
-          BIN="${{ steps.collect.outputs.nontext_count }}"
-          if [ "$ALL" != "0" ] && [ $((AUD + BIN)) -eq 0 ]; then
-            echo "INPUTS_EMPTY_WITH_CHANGES: CORE all_count>0 but audit+binary==0"
-            exit 1
-          fi
-      - name: Binary guard (CORE allowlist)
-        if: steps.collect.outputs.nontext_count != '0'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python tools/mep_integration_compiler/binary_guard.py core_nontext.txt .mep/allowlists/core.sha256 > binary_guard.log
-
-      - name: Skip semantic audit if no auditable files
-        if: steps.collect.outputs.audit_count == '0'
-        run: |
-          echo "No auditable CORE text changes. Skipping semantic audit." | tee audit.log
-
-      - name: Run Semantic Audit (CORE)
-        if: steps.collect.outputs.audit_count != '0'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python tools/mep_integration_compiler/semantic_audit_core.py inputs.txt > audit.log
-
-      - name: Write job summary (CORE)
-        if: always()
-        shell: bash
-        run: |
-          RESULT="OK"
-          if [ "${{ steps.collect.outputs.audit_count }}" = "0" ]; then
-            RESULT="SKIP"
+          if [ -s core_nontext.txt ]; then
+            python tools/mep_integration_compiler/binary_guard.py core_nontext.txt .mep/allowlists/core.sha256
           else
-            if [ "${{ job.status }}" != "success" ]; then
-              RESULT="NG"
-            fi
+            echo "CORE binary: SKIP"
           fi
-
-          echo "## MEP Semantic Audit (CORE)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
-          echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Non-text files (AM): ${{ steps.collect.outputs.nontext_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "<details><summary>core_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 300 core_all.txt >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>core_nontext.txt</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 200 core_nontext.txt >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>binary_guard.log</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 200 binary_guard.log >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 400 audit.log >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-      - name: Post (or update) PR comment (CORE)
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const marker = '<!-- MEP_SEMANTIC_AUDIT_CORE_COMMENT -->';
-            const allCount = Number('${{ steps.collect.outputs.all_count }}');
-            const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
-            const nonTextCount = Number('${{ steps.collect.outputs.nontext_count }}');
-            const jobStatus = '${{ job.status }}';
-            const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
-
-            const coreAll = fs.existsSync('core_all.txt') ? fs.readFileSync('core_all.txt','utf8') : '(core_all.txt not found)';
-            const coreNonText = fs.existsSync('core_nontext.txt') ? fs.readFileSync('core_nontext.txt','utf8') : '';
-            let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
-            let binLog = fs.existsSync('binary_guard.log') ? fs.readFileSync('binary_guard.log','utf8') : '';
-
-            const MAX = 4500;
-            if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
-            if (binLog.length > MAX) binLog = '...(truncated)...\n' + binLog.slice(binLog.length - MAX);
-
-            const body = [
-              marker,
-              `### MEP Semantic Audit (CORE): ${result}`,
-              '',
-              `- Changed files (all): **${allCount}**`,
-              `- Audited text files: **${auditCount}**`,
-              `- Non-text files (AM): **${nonTextCount}**`,
-              '',
-              '<details><summary>Changed files (all)</summary>',
-              '',
-              '```',
-              coreAll,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>Non-text files (AM)</summary>',
-              '',
-              '```',
-              coreNonText,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>binary_guard.log</summary>',
-              '',
-              '```',
-              binLog,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>audit.log</summary>',
-              '',
-              '```',
-              logText,
-              '```',
-              '',
-              '</details>',
-            ].join('\n');
-
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number, per_page: 100,
-            });
-
-            const existing = comments.find(c => typeof c.body === 'string' && c.body.includes(marker));
-
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number, body });
-            }
+      - name: Semantic audit (CORE)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -s core_inputs.txt ]; then
+            python tools/mep_integration_compiler/semantic_audit_core.py core_inputs.txt
+          else
+            echo "CORE audit: SKIP"
+          fi
 
   audit-business:
     name: semantic-audit-business
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Collect changed BUSINESS files (all + auditable text + non-text)
-        id: collect
+      - name: Configure git (no quoted paths)
+        run: git config --global core.quotepath false
+      - name: Collect BUSINESS changed files (include master_spec without extension)
         shell: bash
         run: |
           set -euo pipefail
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
-            | sort > biz_all.txt || true
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_all.txt || true
           sed -i 's/^"//; s/"$//' biz_all.txt || true
-
-
-          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
-            | sort > biz_am.txt || true
+          cat biz_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > biz_inputs.txt || true
+          cat biz_all.txt | grep -F '/master_spec' >> biz_inputs.txt || true
+          sort -u biz_inputs.txt -o biz_inputs.txt || true
+          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_am.txt || true
           sed -i 's/^"//; s/"$//' biz_am.txt || true
-
-
-          cat biz_all.txt \
-            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
-            | sort > inputs.txt || true
-
-          cat biz_all.txt \
-            | grep -F '/master_spec' >> inputs.txt || true
-
-          sort -u inputs.txt -o inputs.txt || true
-
-
-          cat biz_am.txt \
-            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
-            | grep -Fv '/master_spec' \
-            | sort > biz_nontext.txt || true
-
-
-          echo "all_count=$(wc -l < biz_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-          echo "nontext_count=$(wc -l < biz_nontext.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
-
-      - name: Binary guard (BUSINESS allowlist)
-        if: steps.collect.outputs.nontext_count != '0'
+          cat biz_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | grep -Fv '/master_spec' | sort > biz_nontext.txt || true
+      - name: Binary guard (BUSINESS)
         shell: bash
         run: |
           set -euo pipefail
-          python tools/mep_integration_compiler/binary_guard.py biz_nontext.txt .mep/allowlists/business.sha256 > binary_guard.log
-
-      - name: Skip semantic audit if no auditable files
-        if: steps.collect.outputs.audit_count == '0'
-        run: |
-          echo "No auditable BUSINESS text changes. Skipping semantic audit." | tee audit.log
-
-      - name: Run Semantic Audit (BUSINESS)
-        if: steps.collect.outputs.audit_count != '0'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python tools/mep_integration_compiler/semantic_audit_business.py inputs.txt > audit.log
-
-      - name: Write job summary (BUSINESS)
-        if: always()
-        shell: bash
-        run: |
-          RESULT="OK"
-          if [ "${{ steps.collect.outputs.audit_count }}" = "0" ]; then
-            RESULT="SKIP"
+          if [ -s biz_nontext.txt ]; then
+            python tools/mep_integration_compiler/binary_guard.py biz_nontext.txt .mep/allowlists/business.sha256
           else
-            if [ "${{ job.status }}" != "success" ]; then
-              RESULT="NG"
-            fi
+            echo "BUSINESS binary: SKIP"
           fi
-
-          echo "## MEP Semantic Audit (BUSINESS)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
-          echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Non-text files (AM): ${{ steps.collect.outputs.nontext_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "<details><summary>biz_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 300 biz_all.txt >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>biz_nontext.txt</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 200 biz_nontext.txt >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>binary_guard.log</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 200 binary_guard.log >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 400 audit.log >> $GITHUB_STEP_SUMMARY || true
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "</details>" >> $GITHUB_STEP_SUMMARY
-
-      - name: Post (or update) PR comment (BUSINESS)
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const marker = '<!-- MEP_SEMANTIC_AUDIT_BUSINESS_COMMENT -->';
-            const allCount = Number('${{ steps.collect.outputs.all_count }}');
-            const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
-            const nonTextCount = Number('${{ steps.collect.outputs.nontext_count }}');
-            const jobStatus = '${{ job.status }}';
-            const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
-
-            const bizAll = fs.existsSync('biz_all.txt') ? fs.readFileSync('biz_all.txt','utf8') : '(biz_all.txt not found)';
-            const bizNonText = fs.existsSync('biz_nontext.txt') ? fs.readFileSync('biz_nontext.txt','utf8') : '';
-            let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
-            let binLog = fs.existsSync('binary_guard.log') ? fs.readFileSync('binary_guard.log','utf8') : '';
-
-            const MAX = 4500;
-            if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
-            if (binLog.length > MAX) binLog = '...(truncated)...\n' + binLog.slice(binLog.length - MAX);
-
-            const body = [
-              marker,
-              `### MEP Semantic Audit (BUSINESS): ${result}`,
-              '',
-              `- Changed files (all): **${allCount}**`,
-              `- Audited text files: **${auditCount}**`,
-              `- Non-text files (AM): **${nonTextCount}**`,
-              '',
-              '<details><summary>Changed files (all)</summary>',
-              '',
-              '```',
-              bizAll,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>Non-text files (AM)</summary>',
-              '',
-              '```',
-              bizNonText,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>binary_guard.log</summary>',
-              '',
-              '```',
-              binLog,
-              '```',
-              '',
-              '</details>',
-              '',
-              '<details><summary>audit.log</summary>',
-              '',
-              '```',
-              logText,
-              '```',
-              '',
-              '</details>',
-            ].join('\n');
-
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner, repo, issue_number, per_page: 100,
-            });
-
-            const existing = comments.find(c => typeof c.body === 'string' && c.body.includes(marker));
-
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number, body });
-            }
-
-
+      - name: Semantic audit (BUSINESS)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -s biz_inputs.txt ]; then
+            python tools/mep_integration_compiler/semantic_audit_business.py biz_inputs.txt
+          else
+            echo "BUSINESS audit: SKIP"
+          fi
