@@ -1,0 +1,95 @@
+name: Text Integrity Guard (PR)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed files (PR)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$BASE...$HEAD" > changed_files.txt
+          cat changed_files.txt || true
+
+      - name: Validate text integrity + sensitive diff tripwire
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          fail=0
+
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            [ ! -f "$f" ] && continue
+
+            bn="$(basename "$f")"
+            is_sensitive=0
+            if [ "$bn" = "master_spec" ] || [ "$bn" = "ui_spec.md" ]; then
+              is_sensitive=1
+            fi
+
+            if [[ "$f" == *.md ]] || [ "$is_sensitive" -eq 1 ]; then
+              # 1) CR(\r) must not exist
+              if python3 - <<'PY' "$f"
+import sys
+b=open(sys.argv[1],'rb').read()
+raise SystemExit(1 if b.find(b'\r')!=-1 else 0)
+PY
+              then :; else
+                echo "NG: CRLF/CR detected in $f"
+                fail=1
+              fi
+
+              # 2) Must be valid UTF-8
+              python3 - <<'PY' "$f" || (echo "NG: invalid UTF-8 in $f"; exit 1)
+import sys
+open(sys.argv[1],'rb').read().decode('utf-8')
+PY
+
+              # 3) Must end with newline (if non-empty)
+              if ! python3 - <<'PY' "$f"
+import sys
+b=open(sys.argv[1],'rb').read()
+raise SystemExit(1 if len(b)>0 and b[-1:]!=b'\n' else 0)
+PY
+              then
+                echo "NG: missing final newline in $f"
+                fail=1
+              fi
+            fi
+
+            # 4) Tripwire: huge diff on sensitive file
+            if [ "$is_sensitive" -eq 1 ]; then
+              numstat=$(git diff --numstat "$BASE...$HEAD" -- "$f" | awk '{print $1" "$2}')
+              ins=$(echo "$numstat" | awk '{print $1}')
+              del=$(echo "$numstat" | awk '{print $2}')
+              ins=${ins:-0}; del=${del:-0}
+              total=$((ins+del))
+              echo "SENSITIVE_DIFF $f: +$ins -$del (total=$total)"
+              if [ "$total" -gt 200 ]; then
+                echo "NG: large diff detected on sensitive file ($f). total=$total > 200"
+                fail=1
+              fi
+            fi
+          done < changed_files.txt
+
+          if [ "$fail" -ne 0 ]; then
+            echo "Text Integrity Guard: FAILED"
+            exit 1
+          fi
+
+          echo "Text Integrity Guard: OK"
