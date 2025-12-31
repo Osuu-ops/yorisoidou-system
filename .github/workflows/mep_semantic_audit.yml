@@ -1,9 +1,7 @@
-name: MEP Semantic Audit
+﻿name: MEP Semantic Audit
 
 on:
   pull_request:
-    paths:
-      - "platform/MEP/01_CORE/**/*.md"
   workflow_dispatch:
 
 permissions:
@@ -35,9 +33,6 @@ jobs:
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
-          echo "BASE_SHA=$BASE_SHA"
-          echo "HEAD_SHA=$HEAD_SHA"
-
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
             | grep -E '\.md$' \
             | sort > inputs.txt || true
@@ -58,18 +53,10 @@ jobs:
 
       - name: Run Semantic Audit
         if: steps.collect.outputs.count != '0'
-        id: run_audit
         shell: bash
         run: |
           set -euo pipefail
           python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit.log
-          echo "result=OK" >> "$GITHUB_OUTPUT"
-
-      - name: Mark result NG on failure
-        if: failure() && steps.collect.outputs.count != '0'
-        id: mark_ng
-        run: |
-          echo "result=NG" >> "$GITHUB_OUTPUT"
 
       - name: Write job summary
         if: always()
@@ -79,7 +66,6 @@ jobs:
           if [ "${{ steps.collect.outputs.count }}" = "0" ]; then
             RESULT="SKIP"
           else
-            # success() のときは OK、failure() のときは NG を優先
             if [ "${{ job.status }}" != "success" ]; then
               RESULT="NG"
             fi
@@ -103,29 +89,21 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-
             const marker = '<!-- MEP_SEMANTIC_AUDIT_COMMENT -->';
             const inputsCount = Number('${{ steps.collect.outputs.count }}');
-            const jobStatus = '${{ job.status }}'; // success / failure / cancelled
+            const jobStatus = '${{ job.status }}';
             const result = (inputsCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
 
             let logText = '';
-            try {
-              logText = fs.readFileSync('audit.log', 'utf8');
-            } catch (e) {
-              logText = '(audit.log not found)';
-            }
+            try { logText = fs.readFileSync('audit.log', 'utf8'); }
+            catch (e) { logText = '(audit.log not found)'; }
 
-            // コメントが長すぎると弾かれるので、末尾中心に制限
             const MAX = 6000;
-            if (logText.length > MAX) {
-              logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
-            }
+            if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
 
-            const title = `MEP Semantic Audit: ${result}`;
             const body = [
               marker,
-              `### ${title}`,
+              `### MEP Semantic Audit: ${result}`,
               '',
               `- Target files: **${inputsCount}**`,
               `- Workflow: \`${context.workflow}\` / Job: \`${context.job}\``,
@@ -137,14 +115,11 @@ jobs:
               '```',
               '',
               '</details>',
-              '',
-              '**Note:** NG の場合はブランチ保護でマージ不可にしてください（Required status checks）。',
             ].join('\n');
 
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
 
-            // 既存コメント（自分のmarker付き）を探して更新、なければ新規作成
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner, repo, issue_number, per_page: 100,
             });
@@ -152,16 +127,7 @@ jobs:
             const existing = comments.find(c => typeof c.body === 'string' && c.body.includes(marker));
 
             if (existing) {
-              await github.rest.issues.updateComment({
-                owner, repo, comment_id: existing.id, body,
-              });
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
             } else {
-              await github.rest.issues.createComment({
-                owner, repo, issue_number, body,
-              });
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
             }
-
-      - name: Fail the job if audit is NG
-        if: steps.collect.outputs.count != '0' && failure()
-        run: |
-          exit 1
