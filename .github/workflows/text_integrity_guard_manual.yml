@@ -1,16 +1,14 @@
 name: Text Integrity Guard (Manual)
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       base:
         description: "Base SHA (optional; default HEAD^)"
         required: false
-        type: string
       head:
         description: "Head SHA (optional; default HEAD)"
         required: false
-        type: string
 
 permissions:
   contents: read
