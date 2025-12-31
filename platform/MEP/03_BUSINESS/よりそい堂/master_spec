@@ -682,3 +682,35 @@ END OF master_spec（唯一の正・完全版｜業務仕様・再構成／復�
 
 ## CHANGELOG
 - 2026-01-01: Added CURRENT_SCOPE entrypoints (00_CURRENT_SCOPE_NOTE.md, 01_INDEX.md, master_spec/ui_spec headers).
+
+### DOC example: Toilet remodel estimate (split into 2 documents)
+
+- Scenario: Customer requests toilet remodel estimate.
+
+  - Includes: (1) shower/warm-seat toilet item, (2) wallpaper, (3) floor
+
+  - Requirement: create 2 documents (toilet item = 1 copy, wallpaper+floor = 1 copy)
+
+  - Addressee (docName): 土岐啓子
+
+- How to submit (DOC):
+
+  - Create DOC request A (docType=ESTIMATE)
+
+    - docName: 土岐啓子
+
+    - docDesc: トイレ（シャワー暖房便座付き商品）見積
+
+    - docPrice: (set later)
+
+    - docMemo: includes product + install + notes; ask questions if required fields missing
+
+  - Create DOC request B (docType=ESTIMATE)
+
+    - docName: 土岐啓子
+
+    - docDesc: 壁紙・床 見積
+
+    - docPrice: (set later)
+
+    - docMemo: scope=wallpaper+floor; ask questions if required fields missing
