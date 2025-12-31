@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Collect changed CORE files (all + auditable text)
+      - name: Collect changed CORE files (all + auditable text + non-text)
         id: collect
         shell: bash
         run: |
@@ -31,21 +31,34 @@ jobs:
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
+          # all changed files (any status)
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
             | sort > core_all.txt || true
 
-          # auditable text only (feed to semantic_audit.py)
+          # added/modified only (for hash guarding)
+          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
+            | sort > core_am.txt || true
+
+          # auditable text only
           cat core_all.txt \
             | grep -Ei '\.(md|txt|yaml|yml|json)$' \
             | sort > inputs.txt || true
 
+          # non-text assets (added/modified only)
+          cat core_am.txt \
+            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
+            | sort > core_nontext.txt || true
+
           echo "all_count=$(wc -l < core_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "nontext_count=$(wc -l < core_nontext.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
-          echo "CORE changed (all):"
-          cat core_all.txt || true
-          echo "CORE auditable (text):"
-          cat inputs.txt || true
+      - name: Binary guard (CORE allowlist)
+        if: steps.collect.outputs.nontext_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mep_integration_compiler/binary_guard.py core_nontext.txt .mep/allowlists/core.sha256 > binary_guard.log
 
       - name: Skip semantic audit if no auditable files
         if: steps.collect.outputs.audit_count == '0'
@@ -57,7 +70,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit.log
+          python tools/mep_integration_compiler/semantic_audit_core.py inputs.txt > audit.log
 
       - name: Write job summary (CORE)
         if: always()
@@ -77,13 +90,32 @@ jobs:
           echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
           echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
           echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Non-text files (AM): ${{ steps.collect.outputs.nontext_count }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
           echo "<details><summary>core_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           tail -n 300 core_all.txt >> $GITHUB_STEP_SUMMARY || true
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>core_nontext.txt</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 200 core_nontext.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>binary_guard.log</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 200 binary_guard.log >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -101,14 +133,18 @@ jobs:
             const marker = '<!-- MEP_SEMANTIC_AUDIT_CORE_COMMENT -->';
             const allCount = Number('${{ steps.collect.outputs.all_count }}');
             const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
+            const nonTextCount = Number('${{ steps.collect.outputs.nontext_count }}');
             const jobStatus = '${{ job.status }}';
             const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
 
             const coreAll = fs.existsSync('core_all.txt') ? fs.readFileSync('core_all.txt','utf8') : '(core_all.txt not found)';
+            const coreNonText = fs.existsSync('core_nontext.txt') ? fs.readFileSync('core_nontext.txt','utf8') : '';
             let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
+            let binLog = fs.existsSync('binary_guard.log') ? fs.readFileSync('binary_guard.log','utf8') : '';
 
-            const MAX = 5000;
+            const MAX = 4500;
             if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
+            if (binLog.length > MAX) binLog = '...(truncated)...\n' + binLog.slice(binLog.length - MAX);
 
             const body = [
               marker,
@@ -116,11 +152,28 @@ jobs:
               '',
               `- Changed files (all): **${allCount}**`,
               `- Audited text files: **${auditCount}**`,
+              `- Non-text files (AM): **${nonTextCount}**`,
               '',
               '<details><summary>Changed files (all)</summary>',
               '',
               '```',
               coreAll,
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>Non-text files (AM)</summary>',
+              '',
+              '```',
+              coreNonText,
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>binary_guard.log</summary>',
+              '',
+              '```',
+              binLog,
               '```',
               '',
               '</details>',
@@ -163,7 +216,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Collect changed BUSINESS files (all + auditable text)
+      - name: Collect changed BUSINESS files (all + auditable text + non-text)
         id: collect
         shell: bash
         run: |
@@ -174,18 +227,27 @@ jobs:
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
             | sort > biz_all.txt || true
 
-          # auditable text only (feed to semantic_audit.py)
+          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
+            | sort > biz_am.txt || true
+
           cat biz_all.txt \
             | grep -Ei '\.(md|txt|yaml|yml|json)$' \
             | sort > inputs.txt || true
 
+          cat biz_am.txt \
+            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
+            | sort > biz_nontext.txt || true
+
           echo "all_count=$(wc -l < biz_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "nontext_count=$(wc -l < biz_nontext.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
-          echo "BUSINESS changed (all):"
-          cat biz_all.txt || true
-          echo "BUSINESS auditable (text):"
-          cat inputs.txt || true
+      - name: Binary guard (BUSINESS allowlist)
+        if: steps.collect.outputs.nontext_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mep_integration_compiler/binary_guard.py biz_nontext.txt .mep/allowlists/business.sha256 > binary_guard.log
 
       - name: Skip semantic audit if no auditable files
         if: steps.collect.outputs.audit_count == '0'
@@ -197,7 +259,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit.log
+          python tools/mep_integration_compiler/semantic_audit_business.py inputs.txt > audit.log
 
       - name: Write job summary (BUSINESS)
         if: always()
@@ -217,13 +279,32 @@ jobs:
           echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
           echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
           echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Non-text files (AM): ${{ steps.collect.outputs.nontext_count }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
           echo "<details><summary>biz_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           tail -n 300 biz_all.txt >> $GITHUB_STEP_SUMMARY || true
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>biz_nontext.txt</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 200 biz_nontext.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>binary_guard.log</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 200 binary_guard.log >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -241,14 +322,18 @@ jobs:
             const marker = '<!-- MEP_SEMANTIC_AUDIT_BUSINESS_COMMENT -->';
             const allCount = Number('${{ steps.collect.outputs.all_count }}');
             const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
+            const nonTextCount = Number('${{ steps.collect.outputs.nontext_count }}');
             const jobStatus = '${{ job.status }}';
             const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
 
             const bizAll = fs.existsSync('biz_all.txt') ? fs.readFileSync('biz_all.txt','utf8') : '(biz_all.txt not found)';
+            const bizNonText = fs.existsSync('biz_nontext.txt') ? fs.readFileSync('biz_nontext.txt','utf8') : '';
             let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
+            let binLog = fs.existsSync('binary_guard.log') ? fs.readFileSync('binary_guard.log','utf8') : '';
 
-            const MAX = 5000;
+            const MAX = 4500;
             if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
+            if (binLog.length > MAX) binLog = '...(truncated)...\n' + binLog.slice(binLog.length - MAX);
 
             const body = [
               marker,
@@ -256,11 +341,28 @@ jobs:
               '',
               `- Changed files (all): **${allCount}**`,
               `- Audited text files: **${auditCount}**`,
+              `- Non-text files (AM): **${nonTextCount}**`,
               '',
               '<details><summary>Changed files (all)</summary>',
               '',
               '```',
               bizAll,
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>Non-text files (AM)</summary>',
+              '',
+              '```',
+              bizNonText,
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>binary_guard.log</summary>',
+              '',
+              '```',
+              binLog,
               '```',
               '',
               '</details>',
