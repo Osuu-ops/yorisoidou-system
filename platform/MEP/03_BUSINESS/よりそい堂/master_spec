@@ -1,3 +1,9 @@
+<!--
+CURRENT_SCOPE: platform/MEP/03_BUSINESS/yorisoidou/
+NOTE: operational note only; does NOT change master_spec meaning.
+RULE: 1 theme = 1 PR; canonical is main after merge.
+-->
+
 <!-- LAYER: L2 -->
 
 <!-- FOUNDATION_REF: MEP/foundation/FOUNDATION_SPEC.md -->
