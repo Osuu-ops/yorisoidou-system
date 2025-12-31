@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-  checks: write
 
 jobs:
   guard:
@@ -17,34 +16,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute base/head (PR only)
-        id: revs
+      - name: Detect changed files (PR)
         shell: bash
         run: |
           set -euo pipefail
           BASE="${{ github.event.pull_request.base.sha }}"
           HEAD="${{ github.event.pull_request.head.sha }}"
-          echo "base=$BASE" >> "$GITHUB_OUTPUT"
-          echo "head=$HEAD" >> "$GITHUB_OUTPUT"
-          echo "BASE=$BASE"
-          echo "HEAD=$HEAD"
-
-      - name: Detect changed files
-        shell: bash
-        run: |
-          set -euo pipefail
-          BASE="${{ steps.revs.outputs.base }}"
-          HEAD="${{ steps.revs.outputs.head }}"
           git diff --name-only "$BASE...$HEAD" > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt || true
 
-      - name: Validate encoding / EOL / newline + tripwire (sensitive)
+      - name: Validate text integrity + sensitive diff tripwire
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ steps.revs.outputs.base }}"
-          HEAD="${{ steps.revs.outputs.head }}"
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
           fail=0
 
           while IFS= read -r f; do
@@ -62,9 +49,8 @@ jobs:
               # 1) CR(\r) must not exist
               if python3 - <<'PY' "$f"
 import sys
-p=sys.argv[1]
-b=open(p,'rb').read()
-sys.exit(1 if b.find(b'\r')!=-1 else 0)
+b=open(sys.argv[1],'rb').read()
+raise SystemExit(1 if b.find(b'\r')!=-1 else 0)
 PY
               then :; else
                 echo "NG: CRLF/CR detected in $f"
@@ -74,21 +60,22 @@ PY
               # 2) Must be valid UTF-8
               python3 - <<'PY' "$f" || (echo "NG: invalid UTF-8 in $f"; exit 1)
 import sys
-p=sys.argv[1]
-open(p,'rb').read().decode('utf-8')
+open(sys.argv[1],'rb').read().decode('utf-8')
 PY
 
               # 3) Must end with newline (if non-empty)
-              python3 - <<'PY' "$f" || (echo "NG: missing final newline in $f"; exit 1)
+              if ! python3 - <<'PY' "$f"
 import sys
-p=sys.argv[1]
-b=open(p,'rb').read()
-if len(b)>0 and b[-1:]!=b'\n':
-  raise SystemExit(1)
+b=open(sys.argv[1],'rb').read()
+raise SystemExit(1 if len(b)>0 and b[-1:]!=b'\n' else 0)
 PY
+              then
+                echo "NG: missing final newline in $f"
+                fail=1
+              fi
             fi
 
-            # 4) Tripwire for sensitive: block huge diff
+            # 4) Tripwire: huge diff on sensitive file
             if [ "$is_sensitive" -eq 1 ]; then
               numstat=$(git diff --numstat "$BASE...$HEAD" -- "$f" | awk '{print $1" "$2}')
               ins=$(echo "$numstat" | awk '{print $1}')
@@ -101,11 +88,11 @@ PY
                 fail=1
               fi
             fi
-
           done < changed_files.txt
 
           if [ "$fail" -ne 0 ]; then
             echo "Text Integrity Guard: FAILED"
             exit 1
           fi
+
           echo "Text Integrity Guard: OK"
