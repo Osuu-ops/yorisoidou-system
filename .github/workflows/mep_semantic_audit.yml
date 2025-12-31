@@ -9,10 +9,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  audit:
+  audit-core:
     name: semantic-audit
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,46 +23,48 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Collect changed CORE markdown files (diff only)
+      - name: Collect changed CORE files (all + auditable text)
         id: collect
         shell: bash
         run: |
           set -euo pipefail
-
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
-            | grep -E '\.md$' \
+            | sort > core_all.txt || true
+
+          # auditable text only (feed to semantic_audit.py)
+          cat core_all.txt \
+            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
             | sort > inputs.txt || true
 
-          COUNT="$(wc -l < inputs.txt | tr -d ' ')"
-          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "all_count=$(wc -l < core_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
-          echo "Changed markdown inputs: $COUNT"
+          echo "CORE changed (all):"
+          cat core_all.txt || true
+          echo "CORE auditable (text):"
           cat inputs.txt || true
 
-      - name: Skip if no target files
-        if: steps.collect.outputs.count == '0'
+      - name: Skip semantic audit if no auditable files
+        if: steps.collect.outputs.audit_count == '0'
         run: |
-          echo "No target markdown changes. Skipping audit." | tee audit.log
-          echo "## MEP Semantic Audit" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Result: SKIP (no target changes)" >> $GITHUB_STEP_SUMMARY
+          echo "No auditable CORE text changes. Skipping semantic audit." | tee audit.log
 
-      - name: Run Semantic Audit
-        if: steps.collect.outputs.count != '0'
+      - name: Run Semantic Audit (CORE)
+        if: steps.collect.outputs.audit_count != '0'
         shell: bash
         run: |
           set -euo pipefail
           python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit.log
 
-      - name: Write job summary
+      - name: Write job summary (CORE)
         if: always()
         shell: bash
         run: |
           RESULT="OK"
-          if [ "${{ steps.collect.outputs.count }}" = "0" ]; then
+          if [ "${{ steps.collect.outputs.audit_count }}" = "0" ]; then
             RESULT="SKIP"
           else
             if [ "${{ job.status }}" != "success" ]; then
@@ -71,10 +72,18 @@ jobs:
             fi
           fi
 
-          echo "## MEP Semantic Audit" >> $GITHUB_STEP_SUMMARY
+          echo "## MEP Semantic Audit (CORE)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
-          echo "- Target files: ${{ steps.collect.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>core_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 300 core_all.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -83,30 +92,178 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "</details>" >> $GITHUB_STEP_SUMMARY
 
-      - name: Post (or update) PR comment with audit result
+      - name: Post (or update) PR comment (CORE)
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const marker = '<!-- MEP_SEMANTIC_AUDIT_COMMENT -->';
-            const inputsCount = Number('${{ steps.collect.outputs.count }}');
+            const marker = '<!-- MEP_SEMANTIC_AUDIT_CORE_COMMENT -->';
+            const allCount = Number('${{ steps.collect.outputs.all_count }}');
+            const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
             const jobStatus = '${{ job.status }}';
-            const result = (inputsCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
+            const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
 
-            let logText = '';
-            try { logText = fs.readFileSync('audit.log', 'utf8'); }
-            catch (e) { logText = '(audit.log not found)'; }
+            const coreAll = fs.existsSync('core_all.txt') ? fs.readFileSync('core_all.txt','utf8') : '(core_all.txt not found)';
+            let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
 
-            const MAX = 6000;
+            const MAX = 5000;
             if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
 
             const body = [
               marker,
-              `### MEP Semantic Audit: ${result}`,
+              `### MEP Semantic Audit (CORE): ${result}`,
               '',
-              `- Target files: **${inputsCount}**`,
-              `- Workflow: \`${context.workflow}\` / Job: \`${context.job}\``,
+              `- Changed files (all): **${allCount}**`,
+              `- Audited text files: **${auditCount}**`,
+              '',
+              '<details><summary>Changed files (all)</summary>',
+              '',
+              '```',
+              coreAll,
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>audit.log</summary>',
+              '',
+              '```',
+              logText,
+              '```',
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+
+            const existing = comments.find(c => typeof c.body === 'string' && c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+  audit-business:
+    name: semantic-audit-business
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Collect changed BUSINESS files (all + auditable text)
+        id: collect
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
+            | sort > biz_all.txt || true
+
+          # auditable text only (feed to semantic_audit.py)
+          cat biz_all.txt \
+            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
+            | sort > inputs.txt || true
+
+          echo "all_count=$(wc -l < biz_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+          echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+          echo "BUSINESS changed (all):"
+          cat biz_all.txt || true
+          echo "BUSINESS auditable (text):"
+          cat inputs.txt || true
+
+      - name: Skip semantic audit if no auditable files
+        if: steps.collect.outputs.audit_count == '0'
+        run: |
+          echo "No auditable BUSINESS text changes. Skipping semantic audit." | tee audit.log
+
+      - name: Run Semantic Audit (BUSINESS)
+        if: steps.collect.outputs.audit_count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit.log
+
+      - name: Write job summary (BUSINESS)
+        if: always()
+        shell: bash
+        run: |
+          RESULT="OK"
+          if [ "${{ steps.collect.outputs.audit_count }}" = "0" ]; then
+            RESULT="SKIP"
+          else
+            if [ "${{ job.status }}" != "success" ]; then
+              RESULT="NG"
+            fi
+          fi
+
+          echo "## MEP Semantic Audit (BUSINESS)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Result: **${RESULT}**" >> $GITHUB_STEP_SUMMARY
+          echo "- Changed files (all): ${{ steps.collect.outputs.all_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Audited text files: ${{ steps.collect.outputs.audit_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>biz_all.txt</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 300 biz_all.txt >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "<details><summary>audit.log</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 400 audit.log >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post (or update) PR comment (BUSINESS)
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- MEP_SEMANTIC_AUDIT_BUSINESS_COMMENT -->';
+            const allCount = Number('${{ steps.collect.outputs.all_count }}');
+            const auditCount = Number('${{ steps.collect.outputs.audit_count }}');
+            const jobStatus = '${{ job.status }}';
+            const result = (auditCount === 0) ? 'SKIP' : (jobStatus === 'success' ? 'OK' : 'NG');
+
+            const bizAll = fs.existsSync('biz_all.txt') ? fs.readFileSync('biz_all.txt','utf8') : '(biz_all.txt not found)';
+            let logText = fs.existsSync('audit.log') ? fs.readFileSync('audit.log','utf8') : '(audit.log not found)';
+
+            const MAX = 5000;
+            if (logText.length > MAX) logText = '...(truncated)...\n' + logText.slice(logText.length - MAX);
+
+            const body = [
+              marker,
+              `### MEP Semantic Audit (BUSINESS): ${result}`,
+              '',
+              `- Changed files (all): **${allCount}**`,
+              `- Audited text files: **${auditCount}**`,
+              '',
+              '<details><summary>Changed files (all)</summary>',
+              '',
+              '```',
+              bizAll,
+              '```',
+              '',
+              '</details>',
               '',
               '<details><summary>audit.log</summary>',
               '',
