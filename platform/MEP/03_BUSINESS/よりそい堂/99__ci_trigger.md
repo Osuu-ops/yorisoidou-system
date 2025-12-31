@@ -3,3 +3,6 @@
 ## CI trigger v2 
 2026-01-01T08:28:40
 
+## CI trigger (dispatch smoke) 
+2026-01-01T08:35:14
+
