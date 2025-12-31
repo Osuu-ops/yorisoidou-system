@@ -6,7 +6,7 @@
 
 ## 変更対象（Scope-IN）
 
-* （例）platform/MEP/MEP\_business/...
+* （例）platform/MEP/03\_BUSINESS/...
 
 ## 非対象（Scope-OUT｜明示）
 
