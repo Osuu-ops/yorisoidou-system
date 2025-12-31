@@ -76,7 +76,7 @@ jobs:
           HEAD="${{ steps.revs.outputs.head }}"
 
           # Files that are extremely sensitive to accidental rewrites
-          SENSITIVE_REGEX='^(platform/MEP/03_BUSINESS/よりそい堂/master_spec|platform/MEP/03_BUSINESS/よりそい堂/ui_spec\.md)$'
+          SENSITIVE_REGEX='(^|/)(master_spec|ui_spec\.md)$'
 
           fail=0
 
