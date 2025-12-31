@@ -1,4 +1,4 @@
-﻿name: MEP BAT Report (Stage0)
+name: MEP BAT Report (Stage0)
 
 on:
   workflow_dispatch:
