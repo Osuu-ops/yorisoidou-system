@@ -1,4 +1,5 @@
 name: Text Integrity Guard (PR)
+
 on:
   pull_request:
 
@@ -7,6 +8,7 @@ permissions:
 
 jobs:
   guard:
+    name: Text Integrity Guard (PR)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
