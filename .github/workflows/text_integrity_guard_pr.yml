@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  checks: write
 
 jobs:
   guard:
@@ -43,7 +44,6 @@ jobs:
             fi
 
             if [[ "$f" == *.md ]] || [ "$is_sensitive" -eq 1 ]; then
-              # 1) CR(\r) must not exist
               if python3 - <<'PY' "$f"
 import sys
 b=open(sys.argv[1],'rb').read()
@@ -54,13 +54,11 @@ PY
                 fail=1
               fi
 
-              # 2) Must be valid UTF-8
               python3 - <<'PY' "$f" || (echo "NG: invalid UTF-8 in $f"; exit 1)
 import sys
 open(sys.argv[1],'rb').read().decode('utf-8')
 PY
 
-              # 3) Must end with newline (if non-empty)
               if ! python3 - <<'PY' "$f"
 import sys
 b=open(sys.argv[1],'rb').read()
@@ -72,7 +70,6 @@ PY
               fi
             fi
 
-            # 4) Tripwire: huge diff on sensitive file
             if [ "$is_sensitive" -eq 1 ]; then
               numstat=$(git diff --numstat "$BASE...$HEAD" -- "$f" | awk '{print $1" "$2}')
               ins=$(echo "$numstat" | awk '{print $1}')
