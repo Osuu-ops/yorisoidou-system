@@ -1,0 +1,2 @@
+
+BAT report canary
