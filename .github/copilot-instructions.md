@@ -24,3 +24,4 @@
   3) Patch-style diff (unified diff)
 
 # Copilot smoke test
+SMOKE_OK
