@@ -25,25 +25,12 @@ on:
         default: "true"
         type: string
 
-
-  push:
-    branches: [ main ]
-    paths:
-      - '.github/workflows/mep_auto_pr_gate_dispatch.yml'
-
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  register:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "registered"
-
   auto-pr-gate:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -72,7 +59,6 @@ jobs:
 
           git checkout -b "$BRANCH"
 
-          # Ensure file exists
           if [ ! -f "$FILE_PATH" ]; then
             echo "File not found: $FILE_PATH"
             exit 1
@@ -118,8 +104,9 @@ jobs:
       - name: Checkout PR head (for gate)
         run: |
           set -euo pipefail
-          git fetch origin ${{ steps.shas.outputs.head_sha }}
-          git checkout ${{ steps.shas.outputs.head_sha }}
+          PR="${{ steps.pr.outputs.pr_number }}"
+          git fetch --no-tags --prune origin "+refs/pull/${PR}/head:refs/remotes/pull/${PR}/head"
+          git checkout --detach "refs/remotes/pull/${PR}/head"
 
       - name: Collect changed files (git diff -z)
         run: |
@@ -135,7 +122,6 @@ jobs:
         run: |
           set +e
 
-          # CORE semantic audit
           if [ -s ".mep/tmp/core_audit.txt" ]; then
             python tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log 2>&1
             CORE_AUDIT_RC=$?
@@ -144,7 +130,6 @@ jobs:
             CORE_AUDIT_RC=0
           fi
 
-          # BUSINESS semantic audit
           if [ -s ".mep/tmp/biz_audit.txt" ]; then
             python tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log 2>&1
             BIZ_AUDIT_RC=$?
@@ -153,7 +138,6 @@ jobs:
             BIZ_AUDIT_RC=0
           fi
 
-          # CORE binary guard
           if [ -s ".mep/tmp/core_binary.txt" ]; then
             python tools/mep_integration_compiler/binary_guard.py .mep/tmp/core_binary.txt .mep/allowlists/core.sha256 > core_binary_guard.log 2>&1
             CORE_BIN_RC=$?
@@ -162,7 +146,6 @@ jobs:
             CORE_BIN_RC=0
           fi
 
-          # BUSINESS binary guard
           if [ -s ".mep/tmp/biz_binary.txt" ]; then
             python tools/mep_integration_compiler/binary_guard.py .mep/tmp/biz_binary.txt .mep/allowlists/business.sha256 > biz_binary_guard.log 2>&1
             BIZ_BIN_RC=$?
@@ -191,54 +174,7 @@ jobs:
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           RESULT="${{ steps.gate.outputs.result }}"
-          CORE_AUDIT_RC="${{ steps.gate.outputs.core_audit_rc }}"
-          BIZ_AUDIT_RC="${{ steps.gate.outputs.biz_audit_rc }}"
-          CORE_BIN_RC="${{ steps.gate.outputs.core_bin_rc }}"
-          BIZ_BIN_RC="${{ steps.gate.outputs.biz_bin_rc }}"
-
-          MAX=4500
-          tailmax() { python3 - << 'PY' "$1" "$MAX"
-import sys
-p=sys.argv[1]; m=int(sys.argv[2])
-t=open(p,'r',encoding='utf-8',errors='replace').read()
-if len(t)>m: t="...(truncated)...\n"+t[-m:]
-print(t)
-PY
-          }
-
-          COUNTS=$(cat .mep/tmp/counts.json)
-
-          BODY=$(cat <<EOF
-### MEP Auto PR + Gate : $RESULT
-
-**counts.json**
-\`\`\`json
-$COUNTS
-\`\`\`
-
-**CORE semantic audit** (rc=$CORE_AUDIT_RC)
-\`\`\`
-$(tailmax core_audit.log)
-\`\`\`
-
-**BUSINESS semantic audit** (rc=$BIZ_AUDIT_RC)
-\`\`\`
-$(tailmax biz_audit.log)
-\`\`\`
-
-**CORE binary guard** (rc=$CORE_BIN_RC)
-\`\`\`
-$(tailmax core_binary_guard.log)
-\`\`\`
-
-**BUSINESS binary guard** (rc=$BIZ_BIN_RC)
-\`\`\`
-$(tailmax biz_binary_guard.log)
-\`\`\`
-EOF
-          )
-
-          gh pr comment "$PR" --body "$BODY" --repo "${{ github.repository }}"
+          gh pr comment "$PR" --body "### MEP Auto PR + Gate : $RESULT" --repo "${{ github.repository }}"
 
       - name: Merge PR if OK
         if: ${{ inputs.merge_if_ok == 'true' && steps.gate.outputs.result == 'OK' }}
@@ -248,4 +184,3 @@ EOF
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           gh pr merge "$PR" --merge --delete-branch --repo "${{ github.repository }}"
-
