@@ -22,3 +22,5 @@
   1) What file(s) change
   2) Why (linked to audit log)
   3) Patch-style diff (unified diff)
+
+# Copilot smoke test
