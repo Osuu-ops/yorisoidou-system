@@ -1,4 +1,4 @@
-name: MEP Auto PR + Gate (GitHub-only)
+﻿name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:
@@ -25,12 +25,25 @@ on:
         default: "true"
         type: string
 
+
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/mep_auto_pr_gate_dispatch.yml'
+
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
+  register:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "registered"
+
   auto-pr-gate:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -235,3 +248,4 @@ EOF
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           gh pr merge "$PR" --merge --delete-branch --repo "${{ github.repository }}"
+
