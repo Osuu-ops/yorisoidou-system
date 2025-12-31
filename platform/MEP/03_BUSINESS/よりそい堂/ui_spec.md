@@ -1,3 +1,9 @@
+<!--
+UI spec is derived from master_spec (CURRENT_SCOPE: Yorisoidou BUSINESS).
+NOTE: navigation/positioning only; does NOT change meaning.
+RULE: 1 theme = 1 PR; canonical is main after merge.
+-->
+
 UI_spec_<業務>.md
 
 業務 UI ― UI 適用仕様（エンドユーザー向け）
