@@ -1,0 +1,13 @@
+﻿name: Text Integrity Guard (Manual v3)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo OK
