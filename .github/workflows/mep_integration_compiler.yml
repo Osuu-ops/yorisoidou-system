@@ -3,7 +3,7 @@ name: MEP Integration Compiler
 on:
   pull_request:
     paths:
-      - 'platform/MEP/MEP_core/**/*.md'
+      - 'platform/MEP/01_CORE/**/*.md'
   workflow_dispatch:
 
 permissions:
