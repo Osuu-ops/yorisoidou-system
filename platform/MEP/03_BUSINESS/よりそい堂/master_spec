@@ -700,3 +700,19 @@ END OF master_spec・亥髪荳縺ｮ豁｣繝ｻ螳悟・迚茨ｽ懈･ｭ蜍
     - docDesc: Wallpaper and floor estimate
     - docPrice: (set later)
     - docMemo: scope=wallpaper+floor; ask questions if required fields missing
+### DOC example: Toilet remodel estimate (split into 2 documents)
+- Scenario: Customer requests toilet remodel estimate.
+  - Includes: (1) shower/warm-seat toilet item, (2) wallpaper, (3) floor
+  - Requirement: create 2 documents (toilet item = 1 copy, wallpaper+floor = 1 copy)
+  - Addressee (docName): TOKI_KEIKO
+- How to submit (DOC):
+  - Create DOC request A (docType=ESTIMATE)
+    - docName: TOKI_KEIKO
+    - docDesc: Toilet item estimate (shower/warm-seat model)
+    - docPrice: (set later)
+    - docMemo: includes product + install + notes; ask questions if required fields missing
+  - Create DOC request B (docType=ESTIMATE)
+    - docName: TOKI_KEIKO
+    - docDesc: Wallpaper and floor estimate
+    - docPrice: (set later)
+    - docMemo: scope=wallpaper+floor; ask questions if required fields missing
