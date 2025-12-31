@@ -1,0 +1,105 @@
+name: MEP Semantic Audit (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull Request number (e.g. 41)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve PR SHAs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          PR="${{ inputs.pr_number }}"
+          API="/repos/${{ github.repository }}/pulls/$PR"
+          BASE_SHA=$(gh api "$API" --jq .base.sha)
+          HEAD_SHA=$(gh api "$API" --jq .head.sha)
+          echo "BASE_SHA=$BASE_SHA" >> $GITHUB_ENV
+          echo "HEAD_SHA=$HEAD_SHA" >> $GITHUB_ENV
+          echo "PR_NUMBER=$PR" >> $GITHUB_ENV
+
+      - name: Collect changed files (git diff -z)
+        run: |
+          set -euo pipefail
+          python3 tools/mep_integration_compiler/collect_changed_files.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --out-dir ".mep/tmp"
+
+      - name: Run CORE semantic audit (if any)
+        run: |
+          set -euo pipefail
+          if [ -s ".mep/tmp/core_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log
+          else
+            echo "CORE: SKIP (no auditable files)" > core_audit.log
+          fi
+
+      - name: Run BUSINESS semantic audit (if any)
+        run: |
+          set -euo pipefail
+          if [ -s ".mep/tmp/biz_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log
+          else
+            echo "BUSINESS: SKIP (no auditable files)" > biz_audit.log
+          fi
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep-semantic-audit-logs
+          path: |
+            .mep/tmp/counts.json
+            core_audit.log
+            biz_audit.log
+
+      - name: Comment result on PR
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const counts = fs.readFileSync('.mep/tmp/counts.json','utf8');
+            const core = fs.readFileSync('core_audit.log','utf8');
+            const biz = fs.readFileSync('biz_audit.log','utf8');
+            const body = [
+              "### MEP Semantic Audit (Manual)",
+              "",
+              "**counts.json**",
+              "```json",
+              counts,
+              "```",
+              "",
+              "**CORE**",
+              "```",
+              core,
+              "```",
+              "",
+              "**BUSINESS**",
+              "```",
+              biz,
+              "```",
+            ].join("\n");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.PR_NUMBER, 10),
+              body
+            });
