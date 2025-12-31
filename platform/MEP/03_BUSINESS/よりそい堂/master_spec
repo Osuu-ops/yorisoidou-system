@@ -1,3 +1,9 @@
+<!--
+CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
+本追記は運用固定の宣言であり、master_spec の業務仕様（意味）を変更しない。
+変更は 1テーマ=1PR とし、確定は main マージのみ。
+-->
+
 <!-- LAYER: L2 -->
 
 <!-- FOUNDATION_REF: MEP/foundation/FOUNDATION_SPEC.md -->
