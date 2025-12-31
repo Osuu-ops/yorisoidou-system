@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   guard:
+  name: Text Integrity Guard (Manual)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
