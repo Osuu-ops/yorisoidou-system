@@ -678,3 +678,7 @@ orderId / docType / docName / docDesc / docPrice / docMemo
 ──────────────────────────────────
 END OF master_spec（唯一の正・完全版｜業務仕様・再構成／復元版）
 ──────────────────────────────────
+
+
+## CHANGELOG
+- 2026-01-01: Added CURRENT_SCOPE entrypoints (00_CURRENT_SCOPE_NOTE.md, 01_INDEX.md, master_spec/ui_spec headers).
