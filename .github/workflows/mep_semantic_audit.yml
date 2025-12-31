@@ -2,8 +2,6 @@
 
 on:
   pull_request:
-    paths:
-      - "platform/MEP/01_CORE/**/*.md"
   workflow_dispatch:
 
 permissions:
