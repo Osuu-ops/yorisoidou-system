@@ -24,7 +24,7 @@ jobs:
         id: collect
         run: |
           set -e
-          find platform/MEP/MEP_core -type f -name "*.md" | sort > inputs.txt
+          find platform/MEP/01_CORE -type f -name "*.md" | sort > inputs.txt
           echo "count=$(wc -l < inputs.txt)" >> $GITHUB_OUTPUT
 
       - name: Show input summary
