@@ -77,8 +77,8 @@ jobs:
           script: |
             const fs = require('fs');
             const counts = fs.readFileSync('.mep/tmp/counts.json','utf8');
-            const core = fs.readFileSync('core_audit.log','utf8');
-            const biz = fs.readFileSync('biz_audit.log','utf8');
+            const coreLog = fs.readFileSync('core_audit.log','utf8');
+            const bizLog = fs.readFileSync('biz_audit.log','utf8');
             const body = [
               "### MEP Semantic Audit (Manual)",
               "",
@@ -89,12 +89,12 @@ jobs:
               "",
               "**CORE**",
               "```",
-              core,
+              coreLog,
               "```",
               "",
               "**BUSINESS**",
               "```",
-              biz,
+              bizLog,
               "```",
             ].join("\n");
             await github.rest.issues.createComment({
