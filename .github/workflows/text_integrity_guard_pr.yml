@@ -1,6 +1,5 @@
 name: Text Integrity Guard (PR)
-
-"on":
+on:
   pull_request:
 
 permissions:

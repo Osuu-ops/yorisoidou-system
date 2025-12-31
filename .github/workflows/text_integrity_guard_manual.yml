@@ -1,6 +1,5 @@
 name: Text Integrity Guard (Manual)
-
-"on":
+on:
   workflow_dispatch:
     inputs:
       base:
