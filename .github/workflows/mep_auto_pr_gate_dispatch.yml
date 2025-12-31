@@ -25,14 +25,26 @@ on:
         default: "true"
         type: string
 
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/mep_auto_pr_gate_dispatch.yml'
+
+
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  auto-pr-gate:
+  register:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "registered"
 
+  auto-pr-gate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
