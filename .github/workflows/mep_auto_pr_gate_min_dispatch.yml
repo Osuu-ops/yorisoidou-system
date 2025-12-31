@@ -1,0 +1,10 @@
+﻿name: MEP Auto PR Gate Dispatch (Minimal)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "dispatch-ok"
