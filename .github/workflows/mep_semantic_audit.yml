@@ -226,9 +226,13 @@ jobs:
 
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
             | sort > biz_all.txt || true
+          sed -i 's/^"//; s/"$//' biz_all.txt || true
+
 
           git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS \
             | sort > biz_am.txt || true
+          sed -i 's/^"//; s/"$//' biz_am.txt || true
+
 
           cat biz_all.txt \
             | grep -Ei '\.(md|txt|yaml|yml|json)$' \
