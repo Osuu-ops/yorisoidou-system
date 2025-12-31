@@ -9,53 +9,36 @@ SYMBOLS_FILE = Path("platform/MEP/01_CORE/definitions/SYMBOLS.md")
 REF_RE = re.compile(r'@([A-Z][A-Z0-9_/-]{1,64})')
 
 def decode_git_path(s: str) -> str:
-    """
-    Git may output paths with:
-    - surrounding double quotes
-    - octal escapes like \\343\\202\\210...
-    We normalize them to real UTF-8 paths.
-    """
     s = s.strip()
     if s.startswith('"') and s.endswith('"') and len(s) >= 2:
         s = s[1:-1]
-
-    # If it contains octal escapes, decode using unicode_escape then bytes->utf8
-    # Example: \\343\\202\\210 -> bytes 0o343 0o202 0o210
     if re.search(r'(\\[0-7]{3})', s):
         try:
-            # turn \343 into the byte with value 0o343, etc.
             raw = codecs.decode(s, 'unicode_escape')
-            # raw is a str whose codepoints 0-255 represent the bytes
             b = bytes([ord(ch) for ch in raw])
-            s2 = b.decode('utf-8', errors='strict')
-            return s2
+            return b.decode('utf-8', errors='strict')
         except Exception:
-            # fallback: keep original
             return s
-
     return s
 
 def read_inputs_list(inputs_txt: str) -> list[str]:
     p = Path(inputs_txt)
     if not p.exists():
         return []
-    lines = []
+    out = []
     for ln in p.read_text(encoding="utf-8", errors="ignore").splitlines():
         ln = ln.strip()
         if not ln:
             continue
-        lines.append(decode_git_path(ln))
-    return lines
+        out.append(decode_git_path(ln))
+    return out
 
 def load_allowed_symbols() -> set[str]:
     if not SYMBOLS_FILE.exists():
         print(f"REF_AUDIT_NG: symbols file not found: {SYMBOLS_FILE}", file=sys.stderr)
         return set()
     text = SYMBOLS_FILE.read_text(encoding="utf-8", errors="ignore")
-    allowed = set()
-    for m in REF_RE.finditer(text):
-        allowed.add(m.group(0))
-    return allowed
+    return set(m.group(0) for m in REF_RE.finditer(text))
 
 def extract_refs_from_text(text: str) -> set[str]:
     return set(m.group(0) for m in REF_RE.finditer(text))
@@ -69,8 +52,7 @@ def ref_audit_business(changed_files: list[str]) -> int:
     for rel in changed_files:
         fp = Path(rel)
         if not fp.exists():
-            # If path decoding failed, report it clearly
-            print(f"REF_AUDIT_NG: file path not found: {rel}", file=sys.stderr)
+            print(f"REF_AUDIT_NG: file path not found after decode: {rel}", file=sys.stderr)
             return 1
 
         content = fp.read_text(encoding="utf-8", errors="ignore")
