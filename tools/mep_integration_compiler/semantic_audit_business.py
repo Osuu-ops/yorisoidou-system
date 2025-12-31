@@ -3,57 +3,77 @@ import re
 import sys
 from pathlib import Path
 import subprocess
+import codecs
 
-# --- Config ---
 SYMBOLS_FILE = Path("platform/MEP/01_CORE/definitions/SYMBOLS.md")
-
-# We only treat UPPERCASE @TOKENS as "MEP references"
-# (avoids @copilot / @someone etc.)
 REF_RE = re.compile(r'@([A-Z][A-Z0-9_/-]{1,64})')
+
+def decode_git_path(s: str) -> str:
+    """
+    Git may output paths with:
+    - surrounding double quotes
+    - octal escapes like \\343\\202\\210...
+    We normalize them to real UTF-8 paths.
+    """
+    s = s.strip()
+    if s.startswith('"') and s.endswith('"') and len(s) >= 2:
+        s = s[1:-1]
+
+    # If it contains octal escapes, decode using unicode_escape then bytes->utf8
+    # Example: \\343\\202\\210 -> bytes 0o343 0o202 0o210
+    if re.search(r'(\\[0-7]{3})', s):
+        try:
+            # turn \343 into the byte with value 0o343, etc.
+            raw = codecs.decode(s, 'unicode_escape')
+            # raw is a str whose codepoints 0-255 represent the bytes
+            b = bytes([ord(ch) for ch in raw])
+            s2 = b.decode('utf-8', errors='strict')
+            return s2
+        except Exception:
+            # fallback: keep original
+            return s
+
+    return s
 
 def read_inputs_list(inputs_txt: str) -> list[str]:
     p = Path(inputs_txt)
     if not p.exists():
         return []
-    lines = [ln.strip() for ln in p.read_text(encoding="utf-8", errors="ignore").splitlines()]
-    return [ln for ln in lines if ln]
+    lines = []
+    for ln in p.read_text(encoding="utf-8", errors="ignore").splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        lines.append(decode_git_path(ln))
+    return lines
 
 def load_allowed_symbols() -> set[str]:
     if not SYMBOLS_FILE.exists():
-        # If symbols file is missing, we must fail-safe (NG)
         print(f"REF_AUDIT_NG: symbols file not found: {SYMBOLS_FILE}", file=sys.stderr)
         return set()
-
     text = SYMBOLS_FILE.read_text(encoding="utf-8", errors="ignore")
-    # Collect all @TOKENS that appear in SYMBOLS.md
     allowed = set()
     for m in REF_RE.finditer(text):
-        allowed.add(m.group(0))  # include '@' prefix
+        allowed.add(m.group(0))
     return allowed
 
 def extract_refs_from_text(text: str) -> set[str]:
-    found = set()
-    for m in REF_RE.finditer(text):
-        found.add(m.group(0))
-    return found
+    return set(m.group(0) for m in REF_RE.finditer(text))
 
 def ref_audit_business(changed_files: list[str]) -> int:
     allowed = load_allowed_symbols()
     if not allowed:
-        # symbols missing => NG
         return 1
 
-    unknown = []  # (file, ref)
+    unknown = []
     for rel in changed_files:
         fp = Path(rel)
         if not fp.exists():
-            continue
-        # only audit text files that we can read as text
-        try:
-            content = fp.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
-            continue
+            # If path decoding failed, report it clearly
+            print(f"REF_AUDIT_NG: file path not found: {rel}", file=sys.stderr)
+            return 1
 
+        content = fp.read_text(encoding="utf-8", errors="ignore")
         refs = extract_refs_from_text(content)
         for ref in sorted(refs):
             if ref not in allowed:
@@ -79,12 +99,10 @@ def main():
     inputs_txt = sys.argv[1]
     changed_files = read_inputs_list(inputs_txt)
 
-    # 1) Reference audit first (BUSINESS-only rule)
     ra = ref_audit_business(changed_files)
     if ra != 0:
         return ra
 
-    # 2) Run existing semantic audit (pass-through)
     base = Path("tools/mep_integration_compiler/semantic_audit.py")
     if not base.exists():
         print(f"ERROR: base audit script not found: {base}", file=sys.stderr)
