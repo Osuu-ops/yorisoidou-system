@@ -24,8 +24,9 @@ jobs:
       - name: Resolve PR SHAs
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
           PR="${{ inputs.pr_number }}"
           API="/repos/${{ github.repository }}/pulls/$PR"
           BASE_SHA=$(gh api "$API" --jq .base.sha)
@@ -33,6 +34,16 @@ jobs:
           echo "BASE_SHA=$BASE_SHA" >> $GITHUB_ENV
           echo "HEAD_SHA=$HEAD_SHA" >> $GITHUB_ENV
           echo "PR_NUMBER=$PR" >> $GITHUB_ENV
+
+      - name: Fetch PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR="$PR_NUMBER"
+          echo "Fetching PR head ref: refs/pull/${PR}/head"
+          git fetch --no-tags --prune origin "+refs/pull/${PR}/head:refs/remotes/pull/${PR}/head"
+          git checkout --detach "refs/remotes/pull/${PR}/head"
+          echo "Checked out HEAD=$(git rev-parse HEAD)"
 
       - name: Collect changed files (git diff -z)
         run: |
