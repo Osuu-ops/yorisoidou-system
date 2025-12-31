@@ -231,12 +231,20 @@ jobs:
             | sort > biz_am.txt || true
 
           cat biz_all.txt \
-            | grep -Ei '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
+            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
             | sort > inputs.txt || true
 
+          cat biz_all.txt \
+            | grep -F '/master_spec' >> inputs.txt || true
+
+          sort -u inputs.txt -o inputs.txt || true
+
+
           cat biz_am.txt \
-            | grep -Evi '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
+            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
+            | grep -Fv '/master_spec' \
             | sort > biz_nontext.txt || true
+
 
           echo "all_count=$(wc -l < biz_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
