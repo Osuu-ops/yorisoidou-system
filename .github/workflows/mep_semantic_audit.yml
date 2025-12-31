@@ -1,4 +1,4 @@
-﻿name: MEP Semantic Audit
+name: MEP Semantic Audit
 
 on:
   pull_request:
@@ -22,7 +22,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Collect changed CORE files (all + auditable text + non-text)
         id: collect
         shell: bash
@@ -31,28 +30,31 @@ jobs:
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
 
-          # all changed files (any status)
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
-            | sort > core_all.txt || true
+          python3 tools/mep_integration_compiler/collect_changed_files.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --out-dir ".mep/tmp"
 
-          # added/modified only (for hash guarding)
-          git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE \
-            | sort > core_am.txt || true
-
-          # auditable text only
-          cat core_all.txt \
-            | grep -Ei '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
-            | sort > inputs.txt || true
-
-          # non-text assets (added/modified only)
-          cat core_am.txt \
-            | grep -Evi '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
-            | sort > core_nontext.txt || true
+          cp .mep/tmp/core_all.txt core_all.txt || true
+          cp .mep/tmp/core_audit.txt inputs.txt || true
+          cp .mep/tmp/core_binary.txt core_nontext.txt || true
 
           echo "all_count=$(wc -l < core_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "audit_count=$(wc -l < inputs.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
           echo "nontext_count=$(wc -l < core_nontext.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 
+      - name: Guard: inputs must not be empty when changes exist (CORE)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ALL="${{ steps.collect.outputs.all_count }}"
+          AUD="${{ steps.collect.outputs.audit_count }}"
+          BIN="${{ steps.collect.outputs.nontext_count }}"
+          if [ "$ALL" != "0" ] && [ $((AUD + BIN)) -eq 0 ]; then
+            echo "INPUTS_EMPTY_WITH_CHANGES: CORE all_count>0 but audit+binary==0"
+            exit 1
+          fi
       - name: Binary guard (CORE allowlist)
         if: steps.collect.outputs.nontext_count != '0'
         shell: bash
