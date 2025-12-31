@@ -17,97 +17,86 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute base/head
-        id: revs
+      # ---- base/head をイベント別に安全に出す（push で PR 専用 context を参照しない） ----
+      - name: Revs (pull_request)
+        id: revs_pr
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
+          echo "base=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+          echo "head=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
-          # Default
+      - name: Revs (push/workflow_dispatch)
+        id: revs_other
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
           HEAD="${GITHUB_SHA}"
-          BASE=""
-
-          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-          elif [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            # push event has "before"
-            BASE="${{ github.event.before }}"
-            # In some cases (first push/new branch), BASE can be 0000...; fallback to HEAD^
-            if [ -z "$BASE" ] || echo "$BASE" | grep -qE '^0+$'; then
-              BASE="$(git rev-parse "${HEAD}^" 2>/dev/null || true)"
-            fi
+          BASE="${{ github.event.before }}"
+          # 新規ブランチ初回push等で before が空/0 の場合がある
+          if [ -z "$BASE" ] || echo "$BASE" | grep -qE '^0+$'; then
+            BASE="$(git rev-parse "${HEAD}^" 2>/dev/null || true)"
           fi
-
-          if [ -z "$BASE" ]; then
-            echo "BASE is empty (cannot diff). Treat as OK and exit."
-            echo "base=" >> "$GITHUB_OUTPUT"
-            echo "head=$HEAD" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
           echo "base=$BASE" >> "$GITHUB_OUTPUT"
           echo "head=$HEAD" >> "$GITHUB_OUTPUT"
-          echo "BASE=$BASE"
-          echo "HEAD=$HEAD"
 
       - name: Detect changed files
-        id: changed
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ steps.revs.outputs.base }}"
-          HEAD="${{ steps.revs.outputs.head }}"
-
+          BASE="${{ steps.revs_pr.outputs.base || steps.revs_other.outputs.base }}"
+          HEAD="${{ steps.revs_pr.outputs.head || steps.revs_other.outputs.head }}"
           if [ -z "$BASE" ]; then
-            echo "No base -> no changed files"
+            echo "BASE empty -> skip diff"
             : > changed_files.txt
             exit 0
           fi
-
           git diff --name-only "$BASE...$HEAD" > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt || true
 
-      - name: Validate encoding / EOL / newline and tripwire on large diffs
+      - name: Validate encoding / EOL / newline and tripwire on sensitive large diffs
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ steps.revs.outputs.base }}"
-          HEAD="${{ steps.revs.outputs.head }}"
-
-          # Files that are extremely sensitive to accidental rewrites
-          SENSITIVE_REGEX='(^|/)(master_spec|ui_spec\.md)$'
-
+          BASE="${{ steps.revs_pr.outputs.base || steps.revs_other.outputs.base }}"
+          HEAD="${{ steps.revs_pr.outputs.head || steps.revs_other.outputs.head }}"
           fail=0
 
           while IFS= read -r f; do
             [ -z "$f" ] && continue
             [ ! -f "$f" ] && continue
 
-            # Only check text-like files (md + sensitive)
-            if [[ "$f" == *.md ]] || [[ "$f" =~ $SENSITIVE_REGEX ]]; then
-              # 1) CR (\r) must not exist
+            bn="$(basename "$f")"
+            is_sensitive=0
+            if [ "$bn" = "master_spec" ] || [ "$bn" = "ui_spec.md" ]; then
+              is_sensitive=1
+            fi
+
+            # 対象：*.md と、sensitive（master_spec / ui_spec.md）
+            if [[ "$f" == *.md ]] || [ "$is_sensitive" -eq 1 ]; then
+              # 1) CR(\r) 禁止
               if python3 - <<'PY' "$f"
 import sys
 p=sys.argv[1]
 b=open(p,'rb').read()
 sys.exit(1 if b.find(b'\r')!=-1 else 0)
 PY
-              then
-                :
-              else
+              then :; else
                 echo "NG: CRLF/CR detected in $f"
                 fail=1
               fi
 
-              # 2) Must be valid UTF-8
+              # 2) UTF-8 で decode できること
               python3 - <<'PY' "$f" || (echo "NG: invalid UTF-8 in $f"; exit 1)
 import sys
 p=sys.argv[1]
 open(p,'rb').read().decode('utf-8')
 PY
 
-              # 3) Must end with newline (if non-empty)
+              # 3) 最終改行必須（空ファイルは除外）
               python3 - <<'PY' "$f" || (echo "NG: missing final newline in $f"; exit 1)
 import sys
 p=sys.argv[1]
@@ -117,16 +106,14 @@ if len(b)>0 and b[-1:]!=b'\n':
 PY
             fi
 
-            # 4) Tripwire: if sensitive file changed, block huge diff (accidental rewrite)
-            if [[ "$f" =~ $SENSITIVE_REGEX ]] && [ -n "$BASE" ]; then
+            # 4) sensitive の巨大差分トリガ（BASE が取れているときのみ）
+            if [ "$is_sensitive" -eq 1 ] && [ -n "$BASE" ]; then
               numstat=$(git diff --numstat "$BASE...$HEAD" -- "$f" | awk '{print $1" "$2}')
               ins=$(echo "$numstat" | awk '{print $1}')
               del=$(echo "$numstat" | awk '{print $2}')
               ins=${ins:-0}; del=${del:-0}
               total=$((ins+del))
               echo "SENSITIVE_DIFF $f: +$ins -$del (total=$total)"
-
-              # threshold: stops mojibake/full-rewrite accidents
               if [ "$total" -gt 200 ]; then
                 echo "NG: large diff detected on sensitive file ($f). total=$total > 200"
                 fail=1
