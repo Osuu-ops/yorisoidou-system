@@ -41,12 +41,12 @@ jobs:
 
           # auditable text only
           cat core_all.txt \
-            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
+            | grep -Ei '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
             | sort > inputs.txt || true
 
           # non-text assets (added/modified only)
           cat core_am.txt \
-            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
+            | grep -Evi '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
             | sort > core_nontext.txt || true
 
           echo "all_count=$(wc -l < core_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
@@ -231,11 +231,11 @@ jobs:
             | sort > biz_am.txt || true
 
           cat biz_all.txt \
-            | grep -Ei '\.(md|txt|yaml|yml|json)$' \
+            | grep -Ei '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
             | sort > inputs.txt || true
 
           cat biz_am.txt \
-            | grep -Evi '\.(md|txt|yaml|yml|json)$' \
+            | grep -Evi '(\.(md|txt|yaml|yml|json)$|/master_spec$)' \
             | sort > biz_nontext.txt || true
 
           echo "all_count=$(wc -l < biz_all.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
@@ -390,3 +390,4 @@ jobs:
             } else {
               await github.rest.issues.createComment({ owner, repo, issue_number, body });
             }
+
