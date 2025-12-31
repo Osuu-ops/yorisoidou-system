@@ -1,0 +1,173 @@
+name: MEP Gate Runner (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull Request number (e.g. 42)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gate-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve PR SHAs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          PR="${{ inputs.pr_number }}"
+          API="/repos/${{ github.repository }}/pulls/$PR"
+          BASE_SHA=$(gh api "$API" --jq .base.sha)
+          HEAD_SHA=$(gh api "$API" --jq .head.sha)
+          echo "BASE_SHA=$BASE_SHA" >> $GITHUB_ENV
+          echo "HEAD_SHA=$HEAD_SHA" >> $GITHUB_ENV
+          echo "PR_NUMBER=$PR" >> $GITHUB_ENV
+
+      - name: Collect changed files (git diff -z)
+        run: |
+          set -euo pipefail
+          python3 tools/mep_integration_compiler/collect_changed_files.py \
+            --base "$BASE_SHA" \
+            --head "$HEAD_SHA" \
+            --out-dir ".mep/tmp"
+
+      - name: Run audits (capture status)
+        shell: bash
+        run: |
+          set +e
+
+          # CORE semantic audit
+          if [ -s ".mep/tmp/core_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log 2>&1
+            CORE_AUDIT_RC=$?
+          else
+            echo "CORE: SKIP (no auditable files)" > core_audit.log
+            CORE_AUDIT_RC=0
+          fi
+          echo "CORE_AUDIT_RC=$CORE_AUDIT_RC" >> $GITHUB_ENV
+
+          # BUSINESS semantic audit
+          if [ -s ".mep/tmp/biz_audit.txt" ]; then
+            python tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log 2>&1
+            BIZ_AUDIT_RC=$?
+          else
+            echo "BUSINESS: SKIP (no auditable files)" > biz_audit.log
+            BIZ_AUDIT_RC=0
+          fi
+          echo "BIZ_AUDIT_RC=$BIZ_AUDIT_RC" >> $GITHUB_ENV
+
+          # CORE binary guard
+          if [ -s ".mep/tmp/core_binary.txt" ]; then
+            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/core_binary.txt .mep/allowlists/core.sha256 > core_binary_guard.log 2>&1
+            CORE_BIN_RC=$?
+          else
+            echo "CORE: SKIP (no binary files)" > core_binary_guard.log
+            CORE_BIN_RC=0
+          fi
+          echo "CORE_BIN_RC=$CORE_BIN_RC" >> $GITHUB_ENV
+
+          # BUSINESS binary guard
+          if [ -s ".mep/tmp/biz_binary.txt" ]; then
+            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/biz_binary.txt .mep/allowlists/business.sha256 > biz_binary_guard.log 2>&1
+            BIZ_BIN_RC=$?
+          else
+            echo "BUSINESS: SKIP (no binary files)" > biz_binary_guard.log
+            BIZ_BIN_RC=0
+          fi
+          echo "BIZ_BIN_RC=$BIZ_BIN_RC" >> $GITHUB_ENV
+
+          exit 0
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep-gate-runner
+          path: |
+            .mep/tmp/counts.json
+            core_audit.log
+            biz_audit.log
+            core_binary_guard.log
+            biz_binary_guard.log
+
+      - name: Comment result on PR
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          CORE_AUDIT_RC: ${{ env.CORE_AUDIT_RC }}
+          BIZ_AUDIT_RC: ${{ env.BIZ_AUDIT_RC }}
+          CORE_BIN_RC: ${{ env.CORE_BIN_RC }}
+          BIZ_BIN_RC: ${{ env.BIZ_BIN_RC }}
+        with:
+          script: |
+            const fs = require('fs');
+
+            const counts = fs.readFileSync('.mep/tmp/counts.json','utf8');
+            let coreAuditLog = fs.readFileSync('core_audit.log','utf8');
+            let bizAuditLog = fs.readFileSync('biz_audit.log','utf8');
+            let coreBinLog = fs.readFileSync('core_binary_guard.log','utf8');
+            let bizBinLog = fs.readFileSync('biz_binary_guard.log','utf8');
+
+            const MAX = 4500;
+            const tail = (t) => (t.length > MAX) ? ("...(truncated)...\n" + t.slice(t.length - MAX)) : t;
+
+            const coreAuditRc = Number(process.env.CORE_AUDIT_RC || "1");
+            const bizAuditRc  = Number(process.env.BIZ_AUDIT_RC  || "1");
+            const coreBinRc   = Number(process.env.CORE_BIN_RC   || "1");
+            const bizBinRc    = Number(process.env.BIZ_BIN_RC    || "1");
+
+            const result = (coreAuditRc===0 && bizAuditRc===0 && coreBinRc===0 && bizBinRc===0) ? "OK" : "NG";
+
+            const body = [
+              "### MEP Gate Runner (Manual) : " + result,
+              "",
+              "**counts.json**",
+              "```json",
+              counts,
+              "```",
+              "",
+              "**CORE semantic audit** (rc=" + coreAuditRc + ")",
+              "```",
+              tail(coreAuditLog),
+              "```",
+              "",
+              "**BUSINESS semantic audit** (rc=" + bizAuditRc + ")",
+              "```",
+              tail(bizAuditLog),
+              "```",
+              "",
+              "**CORE binary guard** (rc=" + coreBinRc + ")",
+              "```",
+              tail(coreBinLog),
+              "```",
+              "",
+              "**BUSINESS binary guard** (rc=" + bizBinRc + ")",
+              "```",
+              tail(bizBinLog),
+              "```",
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.PR_NUMBER, 10),
+              body
+            });
+
+      - name: Fail job if any gate failed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${CORE_AUDIT_RC:-1}" != "0" ] || [ "${BIZ_AUDIT_RC:-1}" != "0" ] || [ "${CORE_BIN_RC:-1}" != "0" ] || [ "${BIZ_BIN_RC:-1}" != "0" ]; then
+            exit 1
+          fi
