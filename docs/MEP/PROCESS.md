@@ -21,3 +21,4 @@
 git checkout main
 git pull --ff-only
 scope-guard enforcement test 20260103-002424
+scope-guard DoD test 20260103-003642
