@@ -45,7 +45,7 @@ jobs:
 
           text = open(scope_file, "r", encoding="utf-8").read()
 
-          m = re.search(r"^##\s*変更対象（Scope-IN）\s*$", text, flags=re.M)
+          m = re.search(r"^##\s*変更対象�E�Ecope-IN�E�\s*$", text, flags=re.M)
           if not m:
             print("::error::Scope-IN section not found in CURRENT_SCOPE.md")
             sys.exit(1)
