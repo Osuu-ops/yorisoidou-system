@@ -1,6 +1,7 @@
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
+- .github/workflows/required_checks_drift_guard_manual.yml
 - platform/MEP/03_BUSINESS/よりそい堂/**
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
