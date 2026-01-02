@@ -1,0 +1,21 @@
+﻿version: 1.0
+entrypoint:
+  primary: START_HERE.md
+  index: docs/MEP/INDEX.md
+chat_packet:
+  file: docs/MEP/CHAT_PACKET.md
+rules:
+  request_limit: 3
+  forbid:
+    - "Ask to paste everything"
+    - "Ask to paste 10 files"
+reference_order:
+  - docs/MEP/STATE_CURRENT.md
+  - docs/MEP/ARCHITECTURE.md
+  - docs/MEP/PROCESS.md
+  - docs/MEP/GLOSSARY.md
+  - docs/MEP/GOLDEN_PATH.md
+checks:
+  required:
+    - semantic-audit
+    - semantic-audit-business
