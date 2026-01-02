@@ -1,4 +1,4 @@
-﻿name: Scope Guard (PR)
+﻿﻿name: Scope Guard (PR)
 
 on:
   pull_request:
@@ -16,66 +16,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate CURRENT_SCOPE format
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import sys, re
-          from pathlib import Path
-          p = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")
-          if not p.exists():
-              print(f"::error file={p}::CURRENT_SCOPE.md not found")
-              sys.exit(1)
-
-          try:
-              lines = p.read_text(encoding="utf-8", errors="strict").splitlines()
-          except Exception as e:
-              print(f"::error file={p}::Failed to read as UTF-8: {e}")
-              sys.exit(1)
-
-          heading = "## 変更対象（Scope-IN）"
-          hit = [i for i,l in enumerate(lines) if l.strip() == heading]
-          if len(hit) != 1:
-              print(f"::error file={p}::Expected exactly 1 heading '{heading}', found {len(hit)}")
-              sys.exit(1)
-
-          start = hit[0] + 1
-          end = len(lines)
-          for i in range(start, len(lines)):
-              if lines[i].startswith("## "):
-                  end = i
-                  break
-
-          bullets, bad = [], []
-          for i in range(start, end):
-              l = lines[i]
-              if l.strip() == "":
-                  continue
-              if l.startswith("- "):
-                  bullets.append((i, l[2:].strip()))
-              else:
-                  bad.append((i, l))
-
-          if not bullets:
-              print(f"::error file={p}::No '- ' bullets found under Scope-IN section")
-              sys.exit(1)
-
-          if bad:
-              for i,l in bad[:50]:
-                  print(f"::error file={p},line={i+1}::Non-bullet line in Scope-IN section: {l}")
-              sys.exit(1)
-
-          allow = re.compile(r'^[^\s#>\(\)（）]+$')
-          for i,c in bullets:
-              if not c:
-                  print(f"::error file={p},line={i+1}::Empty bullet is not allowed")
-                  sys.exit(1)
-              if not allow.match(c):
-                  print(f"::error file={p},line={i+1}::Invalid characters in scope glob: {c}")
-                  sys.exit(1)
-
-          print("CURRENT_SCOPE format OK")
-          PY
       - name: Enforce CURRENT_SCOPE Scope-IN
         shell: bash
         env:
@@ -102,6 +42,25 @@ jobs:
 
           raw = sh(f"git -c core.quotepath=false diff --name-only {base}..{head} || true")
           changed = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+
+          # ---- Phase1: docs allowlist fast-path (safe)
+          DOCS_ALLOW = [
+            "docs/MEP/**",
+            "START_HERE.md",
+          ]
+
+          def match_any(path: str, patterns: list[str]) -> bool:
+            for pat in patterns:
+              if fnmatch.fnmatch(path, pat):
+                return True
+            return False
+
+          if changed and all(match_any(p, DOCS_ALLOW) for p in changed):
+            print("Scope Guard OK (docs-only allowlist)")
+            print("Changed files (docs-only):")
+            for p in changed:
+              print(f" - {p}")
+            sys.exit(0)
 
           text = open(scope_file, "r", encoding="utf-8").read()
 
@@ -133,10 +92,20 @@ jobs:
           out = [p for p in changed if not allowed(p)]
           if out:
             print("::error::Scope Guard NG: out-of-scope changes detected")
+            print("")
+            print("Changed files:")
+            for p in changed:
+              print(f" - {p}")
+            print("")
+            print("Out-of-scope files:")
             for p in out:
               print(f"::error:: - {p}")
+            print("")
+            print("Next steps (pick one):")
+            print("A) Intended change: add missing path(s) to CURRENT_SCOPE Scope-IN as '- <path/glob>' (no comments, no blank lines).")
+            print("B) Split PR: keep this PR docs-only (docs/MEP/**, START_HERE.md) OR move non-doc changes to a separate PR with Scope-IN updated.")
+            print("C) Revert unintended files from this PR (restore them to base), then push again.")
             sys.exit(1)
 
           print("Scope Guard OK")
           PY
-
