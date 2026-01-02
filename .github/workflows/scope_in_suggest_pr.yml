@@ -26,6 +26,12 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.MEP_PR_TOKEN }}
 
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git config --global core.quotepath false
+
       - name: Skip fork PRs
         shell: bash
         run: |
@@ -65,13 +71,17 @@ jobs:
             exit 1
           fi
 
+          export BASE_SHA="$base"
+          export HEAD_SHA="$head"
+          export PR_NUMBER="$pr"
+          export REPO_FULL="$repo"
+
           python3 - <<'PY'
           import os, re, subprocess, sys, fnmatch, json
+
           scope_file = os.environ["SCOPE_FILE"]
-          repo = os.environ.get("GITHUB_REPOSITORY")
-          pr = os.environ.get("GITHUB_EVENT_PULL_REQUEST_NUMBER") or ""
-          base = os.environ.get("GITHUB_EVENT_PULL_REQUEST_BASE_SHA")
-          head = os.environ.get("GITHUB_EVENT_PULL_REQUEST_HEAD_SHA")
+          base = os.environ["BASE_SHA"]
+          head = os.environ["HEAD_SHA"]
 
           def sh(cmd: str) -> str:
             return subprocess.check_output(cmd, shell=True, text=True).strip()
@@ -102,8 +112,7 @@ jobs:
             return False
 
           out = [p for p in changed if not allowed(p)]
-          # Also exclude docs safe allowlist here (handled by Scope Guard already)
-          out = [p for p in out if not (p.startswith("docs/MEP/") or p=="START_HERE.md")]
+          out = [p for p in out if not (p.startswith("docs/MEP/") or p == "START_HERE.md")]
 
           print(json.dumps({"changed": changed, "out": out}, ensure_ascii=False))
           PY > /tmp/scope_suggest.json
@@ -122,7 +131,6 @@ jobs:
             exit 0
           fi
 
-          # Create suggestion branch from main and update CURRENT_SCOPE.md
           ts=$(date +%Y%m%d-%H%M%S)
           branch="auto/scope-suggest-pr${pr}-${ts}"
 
@@ -130,7 +138,7 @@ jobs:
           git checkout -B "$branch" origin/main
 
           python3 - <<'PY'
-          import json, re
+          import json
           from pathlib import Path
 
           p = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")
@@ -147,7 +155,6 @@ jobs:
             if lines[i].startswith("## "):
               e=i; break
 
-          # Collect existing bullets (preserve order)
           seen=set()
           bullets=[]
           for l in lines[s:e]:
@@ -158,8 +165,6 @@ jobs:
 
           d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))
           add=[x for x in d["out"] if x and x not in seen]
-
-          # Add exact paths only (safe, non-broad)
           for x in add:
             bullets.append(x)
 
@@ -172,16 +177,13 @@ jobs:
           git commit -m "chore(scope): suggest Scope-IN for PR #$pr"
           git push -u origin "$branch"
 
-          # Open PR (no auto-merge)
           body=$'This PR is an auto-generated **suggestion** to update CURRENT_SCOPE Scope-IN.\n\n- Target PR: #'"$pr"$'\n- Adds exact file paths (safe, non-broad).\n\nPlease review and merge if acceptable.\n'
           url=$(gh pr create --repo "$repo" --base main --head "$branch" --title "chore(scope): suggest Scope-IN for PR #$pr" --body "$body")
 
-          # Comment original PR with link + list
           python3 - <<'PY'
           import json
           d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))
-          out=d["out"]
-          print("\n".join(f"- {x}" for x in out))
+          print("\n".join(f"- {x}" for x in d["out"]))
           PY > /tmp/out_list.txt
 
           gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
