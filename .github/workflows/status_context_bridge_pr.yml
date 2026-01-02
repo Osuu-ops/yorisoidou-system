@@ -1,9 +1,7 @@
 ﻿name: Status Context Bridge (PR)
 
 on:
-  pull_request:
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read
@@ -95,3 +93,4 @@ jobs:
 
               core.info(`status context '${name}' => ${state} (${desc})`);
             }
+
