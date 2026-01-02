@@ -6,6 +6,7 @@ on:
       - "START_HERE.md"
       - "docs/MEP/**"
       - ".github/workflows/chat_packet_guard.yml"
+      - ".github/workflows/chat_packet_update_dispatch.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,20 +18,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Require CHAT_PACKET
+      - name: Require files
         shell: bash
         run: |
           set -euo pipefail
           test -f docs/MEP/CHAT_PACKET.md
           test -f docs/MEP/MEP_MANIFEST.yml
           test -f START_HERE.md
+          test -f docs/MEP/build_chat_packet.py
 
-      - name: Basic content checks
+      - name: Regenerate and ensure no diff
         shell: bash
         run: |
           set -euo pipefail
-          grep -q "CHAT_PACKET" docs/MEP/CHAT_PACKET.md
-          grep -q "REQUEST" docs/MEP/CHAT_PACKET.md
-          grep -q "request_limit" docs/MEP/MEP_MANIFEST.yml
-          grep -q "START_HERE" docs/MEP/MEP_MANIFEST.yml
+          python3 docs/MEP/build_chat_packet.py
+          if ! git diff --exit-code -- docs/MEP/CHAT_PACKET.md; then
+            echo "::error file=docs/MEP/CHAT_PACKET.md::CHAT_PACKET.md is outdated. Run Chat Packet Update (Dispatch) or regenerate and commit."
+            exit 1
+          fi
