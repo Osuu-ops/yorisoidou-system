@@ -7,6 +7,13 @@
 - .github/workflows/scope_guard_pr.yml
 - .github/workflows/business_packet_guard_pr.yml
 - .github/workflows/self_heal_auto_prs.yml
+<<<<<<< HEAD
+=======
+- .github/workflows/chat_packet_update_schedule.yml
+
+
+
+>>>>>>> origin/main
 - .github/workflows/chat_packet_self_heal.yml
 - docs/MEP/**
 - .github/workflows/*.yml
