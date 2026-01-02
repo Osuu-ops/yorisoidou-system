@@ -40,7 +40,7 @@ jobs:
           def sh(cmd: str) -> str:
             return subprocess.check_output(cmd, shell=True, text=True).strip()
 
-          raw = sh(f"git diff --name-only {base}..{head} || true")
+          raw = sh(f"git -c core.quotepath=false diff --name-only {base}..{head} || true")
           changed = [ln.strip() for ln in raw.splitlines() if ln.strip()]
 
           text = open(scope_file, "r", encoding="utf-8").read()
