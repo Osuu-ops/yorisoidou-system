@@ -299,6 +299,7 @@ scope-guard enforcement test 20260103-002424
 
  - scopeguard-dod-test: 20260103-051233
  - ruleset-dod-test: 20260103-053612
+ - required4-dod-test: 20260103-060125
 ```
 
 ---
