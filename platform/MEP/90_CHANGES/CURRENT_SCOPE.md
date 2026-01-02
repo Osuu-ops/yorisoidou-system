@@ -4,11 +4,17 @@
 完了：tictactoe master_spec の同梱注記／入力(1〜3)明記／Acceptance追加を main へ反映済み。
 03_BUSINESS/tictactoe を差し込み対象として、監査（B運用2チェック＋TIG）を通る最小差分で整形し、生成テストに進む。
 
-## 変更対象（Scope-IN）
-- platform/MEP/03_BUSINESS/tictactoe/**
-- (this file) CURRENT_SCOPE.md
 
-## 非対象（Scope-OUT｜明示）
+    param($m)
+    $h = $m.Groups[1].Value
+    $body = $m.Groups[2].Value
+    $tail = $m.Groups[3].Value
+
+    # 箇条書きの末尾に追加（改行整形は最小）
+    if (-not $body.EndsWith("`n")) { $body += "`n" }
+    $body += "- $needle`n"
+    return $h + $body + $tail
+  非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
 - .github/**（CI/TIGは今回変更しない）
@@ -23,3 +29,18 @@
 - Scope-IN には glob を使用できる（例：platform/MEP/03_BUSINESS/**）。
 - 見出し名の変更、箇条書き形式の変更（番号付き等）は禁止。
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
+
+
+      param($m)
+      $h = $m.Groups[1].Value
+      $body = $m.Groups[2].Value
+      $tail = $m.Groups[3].Value
+      if (-not $body.EndsWith("`n")) { $body += "`n" }
+      $body += "- $needle`n"
+      return $h + $body + $tail
+    
+
+## 変更対象（Scope-IN）
+- .github/workflows/scope_guard_pr.yml
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+## 変更対象（Scope-IN）
