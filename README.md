@@ -11,3 +11,6 @@ test: auto pr gate PAT 20260101-063145
 
 test: B-required-checks 20260101-063431
 
+
+<!-- scope-guard-ng test 20260103-012223 -->
+
