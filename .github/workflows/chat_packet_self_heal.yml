@@ -1,0 +1,142 @@
+﻿name: Chat Packet Self-Heal (PR)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "docs/MEP/**"
+      - "START_HERE.md"
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Target PR number (optional)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: chat-packet-self-heal
+  cancel-in-progress: false
+
+jobs:
+  self-heal:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+      BRANCH_PREFIX: "auto/chat-packet-update-"
+      TARGET_FILE: "docs/MEP/CHAT_PACKET.md"
+      BUILD_SCRIPT: "docs/MEP/build_chat_packet.py"
+
+    steps:
+      - name: Resolve PR number
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "number=${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate PR number
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${{ steps.pr.outputs.number }}" ]; then
+            echo "No PR number."
+            exit 0
+          fi
+
+      - name: Read PR metadata (same-repo only)
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr="${{ steps.pr.outputs.number }}"
+          repo="${{ github.repository }}"
+
+          headRepo=$(gh pr view "$pr" --repo "$repo" --json headRepository --jq '.headRepository.nameWithOwner')
+          headRef=$(gh pr view "$pr" --repo "$repo" --json headRefName --jq '.headRefName')
+          isDraft=$(gh pr view "$pr" --repo "$repo" --json isDraft --jq '.isDraft')
+
+          echo "headRepo=$headRepo" >> "$GITHUB_OUTPUT"
+          echo "headRef=$headRef"   >> "$GITHUB_OUTPUT"
+          echo "isDraft=$isDraft"   >> "$GITHUB_OUTPUT"
+
+          if [ "$headRepo" != "$repo" ]; then
+            echo "Skip: fork PR (cannot push)."
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$isDraft" = "true" ]; then
+            echo "Skip: draft PR."
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$headRef" != ${BRANCH_PREFIX}* ]]; then
+            echo "Skip: headRef not matched ($headRef)."
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=0" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR branch
+        if: steps.meta.outputs.skip == '0'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.meta.outputs.headRef }}
+          fetch-depth: 0
+          token: ${{ secrets.MEP_PR_TOKEN }}
+
+      - name: Setup Python
+        if: steps.meta.outputs.skip == '0'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Rebuild chat packet
+        if: steps.meta.outputs.skip == '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${BUILD_SCRIPT}"
+
+      - name: Commit & push if changed
+        if: steps.meta.outputs.skip == '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pr="${{ steps.pr.outputs.number }}"
+          headRef="${{ steps.meta.outputs.headRef }}"
+
+          if git diff --quiet -- "${TARGET_FILE}"; then
+            echo "No changes in ${TARGET_FILE}."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add "${TARGET_FILE}"
+          git commit -m "chore(chat-packet): self-heal regenerate"
+
+          set +e
+          git push origin "HEAD:${headRef}"
+          rc=$?
+          set -e
+
+          if [ $rc -ne 0 ]; then
+            gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Push failed\n- Reason: push rejected (non-fast-forward or permission)\n- Action required: re-run after syncing or regenerate PR.\n'
+            exit 0
+          fi
+
+          gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Updated\n- Action: regenerated docs/MEP/CHAT_PACKET.md and pushed to PR branch\n- Expectation: checks will re-run and auto-merge will proceed if conditions are met\n'
