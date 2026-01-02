@@ -1,0 +1,36 @@
+﻿name: Chat Packet Guard
+
+on:
+  pull_request:
+    paths:
+      - "START_HERE.md"
+      - "docs/MEP/**"
+      - ".github/workflows/chat_packet_guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require CHAT_PACKET
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/MEP/CHAT_PACKET.md
+          test -f docs/MEP/MEP_MANIFEST.yml
+          test -f START_HERE.md
+
+      - name: Basic content checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "CHAT_PACKET" docs/MEP/CHAT_PACKET.md
+          grep -q "REQUEST" docs/MEP/CHAT_PACKET.md
+          grep -q "request_limit" docs/MEP/MEP_MANIFEST.yml
+          grep -q "START_HERE" docs/MEP/MEP_MANIFEST.yml
