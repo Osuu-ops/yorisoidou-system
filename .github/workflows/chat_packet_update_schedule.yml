@@ -6,12 +6,6 @@ on:
     - cron: "10 18 * * *"
   workflow_dispatch:
 
-  # docs/MEP の入力PRが main にマージされたら自動で追随更新（上位互換A）
-  pull_request:
-    types: [closed]
-    paths:
-      - "docs/MEP/**"
-
 permissions:
   contents: write
   pull-requests: write
@@ -22,14 +16,6 @@ concurrency:
 
 jobs:
   update-chat-packet:
-    # PRがclosedでmergedのときだけ動かす。auto/chat-packet-update-* のmergeは無限ループ防止で除外。
-    if: >
-      github.event_name != 'pull_request' ||
-      (
-        github.event.action == 'closed' &&
-        github.event.pull_request.merged == true &&
-        !startsWith(github.event.pull_request.head.ref, 'auto/chat-packet-update-')
-      )
     runs-on: ubuntu-latest
 
     steps:
@@ -73,11 +59,13 @@ jobs:
             exit 0
           fi
 
-          FILES=$(git diff --name-only)
+          # Strict: allow ONLY exactly one changed file: docs/MEP/CHAT_PACKET.md
+          FILES=$(git diff --name-only | sed '/^$/d')
           echo "Changed files:"
           echo "$FILES"
 
-          if [ "$FILES" != "docs/MEP/CHAT_PACKET.md" ]; then
+          COUNT=$(printf "%s\n" "$FILES" | wc -l | tr -d ' ')
+          if [ "$COUNT" -ne 1 ] || [ "$FILES" != "docs/MEP/CHAT_PACKET.md" ]; then
             echo "Unexpected changes detected. Refuse to create PR."
             git diff
             exit 1
