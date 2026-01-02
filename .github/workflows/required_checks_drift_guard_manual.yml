@@ -1,0 +1,51 @@
+﻿name: Required Checks Drift Guard (Manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  drift-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required contexts vs latest merged PR checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Repo: $REPO"
+
+          required=$(gh api "repos/$REPO/branches/main/protection/required_status_checks/contexts" --jq '.[]' | sort)
+          echo "=== Required contexts ==="
+          echo "$required"
+
+          pr=$(gh pr list --repo "$REPO" --state merged --base main --limit 1 --json number --jq '.[0].number')
+          if [ -z "$pr" ] || [ "$pr" = "null" ]; then
+            echo "::error::No merged PR found for base=main"
+            exit 1
+          fi
+          echo "Latest merged PR: #$pr"
+
+          checks=$(gh pr view "$pr" --repo "$REPO" --json statusCheckRollup --jq '.statusCheckRollup[].name' | sort)
+          echo "=== Latest PR checks ==="
+          echo "$checks"
+
+          missing=$(comm -23 <(echo "$required") <(echo "$checks") || true)
+          extra=$(comm -13 <(echo "$required") <(echo "$checks") || true)
+
+          echo "=== Missing (required but not seen) ==="
+          echo "$missing"
+          echo "=== Extra (seen but not required) ==="
+          echo "$extra"
+
+          if [ -n "$missing" ] || [ -n "$extra" ]; then
+            echo "::error::Required checks drift detected"
+            exit 1
+          fi
+
+          echo "OK: no drift"
