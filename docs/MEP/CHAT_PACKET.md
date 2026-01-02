@@ -96,6 +96,8 @@ checks:
 5. GOLDEN_PATH（完走例）
 
 ## Links
+- [OPS_POWERSHELL](./OPS_POWERSHELL.md)
+- [OPS_SCOPE_GUARD](./OPS_SCOPE_GUARD.md)
 - [AI_BOOT](./AI_BOOT.md)
 - [STATE_CURRENT](./STATE_CURRENT.md)
 - [ARCHITECTURE](./ARCHITECTURE.md)
@@ -280,6 +282,7 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 ```powershell
 git checkout main
 git pull --ff-only
+scope-guard enforcement test 20260103-002424
 ```
 
 ---
