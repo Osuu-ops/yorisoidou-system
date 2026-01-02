@@ -1,0 +1,187 @@
+﻿name: Scope-IN Suggest (PR)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: scope-in-suggest
+  cancel-in-progress: false
+
+jobs:
+  suggest:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+      SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+
+    steps:
+      - name: Checkout (full history, PAT)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.MEP_PR_TOKEN }}
+
+      - name: Skip fork PRs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "Fork PR -> cannot push suggestion branch. Skip."
+            exit 0
+          fi
+
+      - name: Detect out-of-scope files and open suggestion PR
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          repo="${{ github.repository }}"
+          pr="${{ github.event.pull_request.number }}"
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+
+          # Fast-path allowlist (same as Scope Guard Phase1 docs safe-path)
+          is_docs_only=1
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            case "$f" in
+              docs/MEP/*|START_HERE.md) ;;
+              *) is_docs_only=0 ;;
+            esac
+          done < <(git -c core.quotepath=false diff --name-only "$base..$head" | sed '/^$/d')
+
+          if [ "$is_docs_only" -eq 1 ]; then
+            echo "docs-only allowlist -> no suggestion needed."
+            exit 0
+          fi
+
+          if [ ! -f "$SCOPE_FILE" ]; then
+            echo "::error::SCOPE_FILE not found: $SCOPE_FILE"
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import os, re, subprocess, sys, fnmatch, json
+          scope_file = os.environ["SCOPE_FILE"]
+          repo = os.environ.get("GITHUB_REPOSITORY")
+          pr = os.environ.get("GITHUB_EVENT_PULL_REQUEST_NUMBER") or ""
+          base = os.environ.get("GITHUB_EVENT_PULL_REQUEST_BASE_SHA")
+          head = os.environ.get("GITHUB_EVENT_PULL_REQUEST_HEAD_SHA")
+
+          def sh(cmd: str) -> str:
+            return subprocess.check_output(cmd, shell=True, text=True).strip()
+
+          raw = sh(f"git -c core.quotepath=false diff --name-only {base}..{head} || true")
+          changed = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+
+          text = open(scope_file, "r", encoding="utf-8").read()
+          m = re.search(r"^##\s*変更対象（Scope-IN）\s*$", text, flags=re.M)
+          if not m:
+            print("::error::Scope-IN section not found in CURRENT_SCOPE.md")
+            sys.exit(1)
+
+          tail = text[m.end():]
+          stop = re.search(r"^##\s+", tail, flags=re.M)
+          block = tail[: stop.start()] if stop else tail
+
+          allow = []
+          for ln in block.splitlines():
+            ln = ln.strip()
+            if ln.startswith("- "):
+              allow.append(ln[2:].strip())
+
+          def allowed(path: str) -> bool:
+            for pat in allow:
+              if fnmatch.fnmatch(path, pat):
+                return True
+            return False
+
+          out = [p for p in changed if not allowed(p)]
+          # Also exclude docs safe allowlist here (handled by Scope Guard already)
+          out = [p for p in out if not (p.startswith("docs/MEP/") or p=="START_HERE.md")]
+
+          print(json.dumps({"changed": changed, "out": out}, ensure_ascii=False))
+          PY > /tmp/scope_suggest.json
+
+          out_count=$(python3 -c 'import json; d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8")); print(len(d["out"]))')
+          if [ "$out_count" -eq 0 ]; then
+            echo "No out-of-scope files -> no suggestion needed."
+            exit 0
+          fi
+
+          # Avoid spamming: if a suggestion PR already exists, skip
+          prefix="auto/scope-suggest-pr${pr}-"
+          existing=$(gh pr list --repo "$repo" --state open --json headRefName --jq "[.[] | select(.headRefName | startswith(\"$prefix\"))] | length")
+          if [ "$existing" != "0" ]; then
+            echo "Suggestion PR already open. Skip."
+            exit 0
+          fi
+
+          # Create suggestion branch from main and update CURRENT_SCOPE.md
+          ts=$(date +%Y%m%d-%H%M%S)
+          branch="auto/scope-suggest-pr${pr}-${ts}"
+
+          git fetch origin main
+          git checkout -B "$branch" origin/main
+
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          p = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")
+          txt = p.read_text(encoding="utf-8")
+          lines = txt.splitlines()
+
+          head = "## 変更対象（Scope-IN）"
+          idx = [i for i,l in enumerate(lines) if l.strip()==head]
+          if len(idx)!=1:
+            raise SystemExit(f"Expected 1 heading '{head}', found {len(idx)}")
+          s = idx[0]+1
+          e = len(lines)
+          for i in range(s, len(lines)):
+            if lines[i].startswith("## "):
+              e=i; break
+
+          # Collect existing bullets (preserve order)
+          seen=set()
+          bullets=[]
+          for l in lines[s:e]:
+            if l.startswith("- "):
+              item=l[2:].strip()
+              if item and item not in seen:
+                seen.add(item); bullets.append(item)
+
+          d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))
+          add=[x for x in d["out"] if x and x not in seen]
+
+          # Add exact paths only (safe, non-broad)
+          for x in add:
+            bullets.append(x)
+
+          new_block=[f"- {b}" for b in bullets]
+          new_lines = lines[:s] + new_block + lines[e:]
+          p.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+          PY
+
+          git add "$SCOPE_FILE"
+          git commit -m "chore(scope): suggest Scope-IN for PR #$pr"
+          git push -u origin "$branch"
+
+          # Open PR (no auto-merge)
+          body=$'This PR is an auto-generated **suggestion** to update CURRENT_SCOPE Scope-IN.\n\n- Target PR: #'"$pr"$'\n- Adds exact file paths (safe, non-broad).\n\nPlease review and merge if acceptable.\n'
+          url=$(gh pr create --repo "$repo" --base main --head "$branch" --title "chore(scope): suggest Scope-IN for PR #$pr" --body "$body")
+
+          # Comment original PR with link + list
+          python3 - <<'PY'
+          import json
+          d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))
+          out=d["out"]
+          print("\n".join(f"- {x}" for x in out))
+          PY > /tmp/out_list.txt
+
+          gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
