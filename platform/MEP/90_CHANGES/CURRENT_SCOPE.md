@@ -6,6 +6,8 @@
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/scope_guard_pr.yml
 - .github/workflows/business_packet_guard_pr.yml
+- .github/workflows/self_heal_auto_prs.yml
+
 
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
