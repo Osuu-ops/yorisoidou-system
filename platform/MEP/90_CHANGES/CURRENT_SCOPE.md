@@ -7,13 +7,7 @@
 - .github/workflows/scope_guard_pr.yml
 - .github/workflows/business_packet_guard_pr.yml
 - .github/workflows/self_heal_auto_prs.yml
-<<<<<<< HEAD
-=======
 - .github/workflows/chat_packet_update_schedule.yml
-
-
-
->>>>>>> origin/main
 - .github/workflows/chat_packet_self_heal.yml
 - docs/MEP/**
 - .github/workflows/*.yml
@@ -31,6 +25,8 @@
 - 見出し名の変更、箇条書き形式の変更（番号付き等）は禁止。
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
+
+
 
 
 
