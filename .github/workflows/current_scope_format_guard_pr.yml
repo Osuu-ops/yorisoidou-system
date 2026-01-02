@@ -1,0 +1,87 @@
+﻿name: Current Scope Format Guard (PR)
+
+on:
+  pull_request:
+    paths:
+      - "platform/MEP/90_CHANGES/CURRENT_SCOPE.md"
+
+permissions:
+  contents: read
+
+jobs:
+  format_guard:
+    name: Current Scope Format Guard (PR)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate Scope-IN bullets only
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import sys, re
+          from pathlib import Path
+
+          p = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")
+          if not p.exists():
+              print(f"::error file={p}::CURRENT_SCOPE.md not found")
+              sys.exit(1)
+
+          try:
+              lines = p.read_text(encoding="utf-8", errors="strict").splitlines()
+          except Exception as e:
+              print(f"::error file={p}::Failed to read as UTF-8 (strict): {e}")
+              sys.exit(1)
+
+          heading = "## 変更対象（Scope-IN）"
+          hit = [i for i,l in enumerate(lines) if l.strip() == heading]
+          if len(hit) != 1:
+              print(f"::error file={p}::Expected exactly 1 heading '{heading}', found {len(hit)}")
+              sys.exit(1)
+
+          start = hit[0] + 1
+          end = len(lines)
+          for i in range(start, len(lines)):
+              if lines[i].startswith("## "):
+                  end = i
+                  break
+
+          if start >= end:
+              print(f"::error file={p}::Scope-IN section is empty")
+              sys.exit(1)
+
+          bullets = []
+          bad = []
+
+          for i in range(start, end):
+              l = lines[i]
+              if not l.startswith("- "):
+                  bad.append((i, l))
+                  continue
+              c = l[2:].strip()
+              bullets.append((i, c))
+
+          if not bullets:
+              print(f"::error file={p}::No '- ' bullets found under Scope-IN section")
+              sys.exit(1)
+
+          if bad:
+              for i,l in bad[:50]:
+                  shown = l if l else "<EMPTY LINE>"
+                  print(f"::error file={p},line={i+1}::Scope-IN must be bullet only ('- <path/glob>'). Found: {shown}")
+              sys.exit(1)
+
+          allow = re.compile(r'^[^\s#>\(\)（）]+$')
+          for i,c in bullets:
+              if not c:
+                  print(f"::error file={p},line={i+1}::Empty bullet is not allowed")
+                  sys.exit(1)
+              if not allow.match(c):
+                  print(f"::error file={p},line={i+1}::Invalid characters in scope glob: {c}")
+                  sys.exit(1)
+
+          print("Current Scope Format Guard OK")
+          PY
