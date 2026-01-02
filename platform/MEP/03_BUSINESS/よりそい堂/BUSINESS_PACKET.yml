@@ -7,3 +7,6 @@ sources:
   - title: ui_spec（UI/運用の入口）
     path: ui_spec.md
     required: false
+  - title: code entry（コード入口）
+    path: code/README.md
+    required: false

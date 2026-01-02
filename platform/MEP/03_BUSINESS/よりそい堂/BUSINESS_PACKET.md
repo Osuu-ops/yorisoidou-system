@@ -192,7 +192,24 @@ UI 実装は、本書との差分として管理される
 ```
 <!-- END SOURCE:ui_spec.md -->
 
+
+---
+
+## code entry（コード入口）
+
+**path:** `code/README.md`
+
+<!-- BEGIN SOURCE:code/README.md -->
+```text
+# Yorisoidou Business Code Entry
+
+This directory is the canonical entry point for business-side code/assets for よりそい堂.
+- This file is intentionally minimal.
+- Update business packet via workflow_dispatch: Business Packet Update (Dispatch)
+```
+<!-- END SOURCE:code/README.md -->
+
 ---
 
 ## PACKET_DIGEST
-`sha256:b8e368756a685ba10567dfd5b494f13be0b5fa586e335b923999d859e6e9146a`
+`sha256:0f4bcb0fc3ba0046219c893b9b3c1a28a47cf62e314e70b130b3c856112bb992`
