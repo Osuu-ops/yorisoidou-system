@@ -1,0 +1,50 @@
+﻿name: Chat Packet Update (Dispatch)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Regenerate CHAT_PACKET
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 docs/MEP/build_chat_packet.py
+
+      - name: Detect changes
+        id: diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/MEP/CHAT_PACKET.md; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR if changed
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          b="auto/chat-packet-update-${{ github.run_id }}"
+          git switch -c "$b"
+          git add docs/MEP/CHAT_PACKET.md
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git commit -m "docs(MEP): update CHAT_PACKET"
+          git push origin "$b"
+          gh pr create --title "docs(MEP): update CHAT_PACKET" --body "Regenerated CHAT_PACKET.md from canonical docs." --base main --head "$b"
