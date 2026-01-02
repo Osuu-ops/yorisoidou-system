@@ -16,6 +16,66 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate CURRENT_SCOPE format
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import sys, re
+          from pathlib import Path
+          p = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")
+          if not p.exists():
+              print(f"::error file={p}::CURRENT_SCOPE.md not found")
+              sys.exit(1)
+
+          try:
+              lines = p.read_text(encoding="utf-8", errors="strict").splitlines()
+          except Exception as e:
+              print(f"::error file={p}::Failed to read as UTF-8: {e}")
+              sys.exit(1)
+
+          heading = "## 変更対象（Scope-IN）"
+          hit = [i for i,l in enumerate(lines) if l.strip() == heading]
+          if len(hit) != 1:
+              print(f"::error file={p}::Expected exactly 1 heading '{heading}', found {len(hit)}")
+              sys.exit(1)
+
+          start = hit[0] + 1
+          end = len(lines)
+          for i in range(start, len(lines)):
+              if lines[i].startswith("## "):
+                  end = i
+                  break
+
+          bullets, bad = [], []
+          for i in range(start, end):
+              l = lines[i]
+              if l.strip() == "":
+                  continue
+              if l.startswith("- "):
+                  bullets.append((i, l[2:].strip()))
+              else:
+                  bad.append((i, l))
+
+          if not bullets:
+              print(f"::error file={p}::No '- ' bullets found under Scope-IN section")
+              sys.exit(1)
+
+          if bad:
+              for i,l in bad[:50]:
+                  print(f"::error file={p},line={i+1}::Non-bullet line in Scope-IN section: {l}")
+              sys.exit(1)
+
+          allow = re.compile(r'^[^\s#>\(\)（）]+$')
+          for i,c in bullets:
+              if not c:
+                  print(f"::error file={p},line={i+1}::Empty bullet is not allowed")
+                  sys.exit(1)
+              if not allow.match(c):
+                  print(f"::error file={p},line={i+1}::Invalid characters in scope glob: {c}")
+                  sys.exit(1)
+
+          print("CURRENT_SCOPE format OK")
+          PY
       - name: Enforce CURRENT_SCOPE Scope-IN
         shell: bash
         env:
@@ -79,3 +139,4 @@ jobs:
 
           print("Scope Guard OK")
           PY
+
