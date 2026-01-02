@@ -1,14 +1,28 @@
-name: Text Integrity Guard (Manual)
-on:
-  workflow_dispatch:
-    inputs:
-      base:
-        description: "Base SHA (optional; default HEAD^)"
-        required: false
-        type: string
-      head:
-        description: "Head SHA (optional; default HEAD)"
-        required: false
-        type: string
+- name: Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)
+  shell: bash
+  env:
+    MAX_CHANGED_LINES: ${{ inputs.max_changed_lines }}
+    BASE_REF: ${{ inputs.base_ref }}
+    SENSITIVE_GLOBS: |
+      master_spec.md
+      ui_spec.md
+  run: |
+    set -euo pipefail
 
-          echo "Text Integrity Guard: OK"
+    git fetch origin "${BASE_REF}":"refs/remotes/origin/${BASE_REF}" --force
+
+    BASE_COMMIT="$(git rev-parse "origin/${BASE_REF}")"
+    HEAD_COMMIT="$(git rev-parse "HEAD")"
+
+    echo "Base: ${BASE_COMMIT}"
+    echo "Head: ${HEAD_COMMIT}"
+
+    export BASE_COMMIT HEAD_COMMIT
+
+    python - <<'PY'
+    import os, subprocess, fnmatch, sys
+    base = os.environ["BASE_COMMIT"]
+    head = os.environ["HEAD_COMMIT"]
+    max_lines = int(os.environ.get("MAX_CHANGED_LINES", "200"))
+    # 以下、あなたのPython本体はそのままでOK
+    PY
