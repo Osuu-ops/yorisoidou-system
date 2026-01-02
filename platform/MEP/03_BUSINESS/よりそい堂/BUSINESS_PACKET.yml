@@ -1,0 +1,9 @@
+﻿version: 1.0
+sources:
+  - title: master_spec（業務仕様）
+    path: master_spec
+    required: true
+
+  - title: ui_spec（UI/運用の入口）
+    path: ui_spec.md
+    required: false

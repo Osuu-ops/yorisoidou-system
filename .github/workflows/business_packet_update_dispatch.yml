@@ -1,0 +1,61 @@
+﻿name: Business Packet Update (Dispatch)
+
+on:
+  workflow_dispatch:
+    inputs:
+      biz_dir:
+        description: 'Business directory path that contains BUSINESS_PACKET.yml (e.g., platform/MEP/03_BUSINESS/よりそい堂)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Generate BUSINESS_PACKET.md
+        run: |
+          set -euo pipefail
+          python platform/infra/tools/packets/generate_business_packet.py --biz-dir "${{ inputs.biz_dir }}"
+
+      - name: Create PR if changed
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.MEP_PR_TOKEN }}
+          commit-message: "chore(business): update BUSINESS_PACKET"
+          title: "chore(business): update BUSINESS_PACKET"
+          body: |
+            Automated update of BUSINESS_PACKET.md
+            - biz_dir: ${{ inputs.biz_dir }}
+          branch: auto/business-packet-update
+          delete-branch: true
+
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          pr="${{ steps.cpr.outputs.pull-request-number }}"
+          repo="${{ github.repository }}"
+          gh pr merge "$pr" --repo "$repo" --auto --squash

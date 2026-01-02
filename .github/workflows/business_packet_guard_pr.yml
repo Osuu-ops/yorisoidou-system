@@ -1,0 +1,59 @@
+﻿name: Business Packet Guard (PR)
+
+on:
+  pull_request:
+    paths:
+      - 'platform/MEP/**'
+      - 'platform/infra/tools/packets/**'
+      - '.github/workflows/business_packet_*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Find BUSINESS_PACKET.yml and check generated packets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t CFGS < <(git ls-files | grep -E 'BUSINESS_PACKET\.yml$' || true)
+
+          if [ "${#CFGS[@]}" -eq 0 ]; then
+            echo "No BUSINESS_PACKET.yml found. Nothing to check."
+            exit 0
+          fi
+
+          FAILED=0
+          for cfg in "${CFGS[@]}"; do
+            biz_dir="$(dirname "$cfg")"
+            echo "Checking: $biz_dir"
+            python platform/infra/tools/packets/generate_business_packet.py --biz-dir "$biz_dir" --check || FAILED=1
+          done
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo ""
+            echo "BUSINESS_PACKET is outdated."
+            echo "Run workflow_dispatch: Business Packet Update (Dispatch)"
+            exit 1
+          fi
+
+          echo "OK: all business packets are up-to-date."
