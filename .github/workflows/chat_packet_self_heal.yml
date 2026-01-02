@@ -151,3 +151,4 @@ jobs:
           fi
 
           gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Updated\n- Action: regenerated docs/MEP/CHAT_PACKET.md and pushed to PR branch\n- Expectation: Chat Packet Guard should pass; auto-merge will proceed if other conditions are met.\n'
+
