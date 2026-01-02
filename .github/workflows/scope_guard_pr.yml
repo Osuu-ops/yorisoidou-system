@@ -1,0 +1,83 @@
+name: Scope Guard (PR)
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce CURRENT_SCOPE Scope-IN
+        shell: bash
+        env:
+          SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "$SCOPE_FILE" ]; then
+            echo "::error::SCOPE_FILE not found: $SCOPE_FILE"
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import os, re, subprocess, sys, fnmatch
+
+          scope_file = os.environ["SCOPE_FILE"]
+          base = os.environ["BASE_SHA"]
+          head = os.environ["HEAD_SHA"]
+
+          def sh(cmd: str) -> str:
+            return subprocess.check_output(cmd, shell=True, text=True).strip()
+
+          raw = sh(f"git diff --name-only {base}..{head} || true")
+          changed = [ln.strip() for ln in raw.splitlines() if ln.strip()]
+
+          text = open(scope_file, "r", encoding="utf-8").read()
+
+          m = re.search(r"^##\s*変更対象（Scope-IN）\s*$", text, flags=re.M)
+          if not m:
+            print("::error::Scope-IN section not found in CURRENT_SCOPE.md")
+            sys.exit(1)
+
+          tail = text[m.end():]
+          stop = re.search(r"^##\s+", tail, flags=re.M)
+          section = tail[:stop.start()] if stop else tail
+
+          globs = []
+          for line in section.splitlines():
+            line = line.strip()
+            if line.startswith("- "):
+              g = line[2:].strip().replace("\\", "/")
+              if g:
+                globs.append(g)
+
+          if scope_file.replace("\\", "/") not in globs:
+            globs.append(scope_file.replace("\\", "/"))
+
+          def matches(path: str) -> bool:
+            p = path.replace("\\", "/")
+            return any(fnmatch.fnmatch(p, g) for g in globs)
+
+          out = [p for p in changed if not matches(p)]
+          if out:
+            print("::error::Scope Guard: changes outside Scope-IN detected")
+            for p in out:
+              print(f" - {p}")
+            print("Scope-IN:")
+            for g in globs:
+              print(f" - {g}")
+            sys.exit(1)
+
+          print("OK: all changed files are within CURRENT_SCOPE Scope-IN")
+          PY
