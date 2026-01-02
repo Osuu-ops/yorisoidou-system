@@ -39,3 +39,8 @@
       $body += "- $needle`n"
       return $h + $body + $tail
     
+
+## 変更対象（Scope-IN）
+- .github/workflows/scope_guard_pr.yml
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+## 変更対象（Scope-IN）
