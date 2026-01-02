@@ -15,3 +15,4 @@
 
 ## 判断が必要な点（YES/NO）
 - なし（必要が生じた場合のみ追記して停止する）
+# scope-guard registration test 20260103-000927
