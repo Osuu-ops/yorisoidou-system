@@ -1,4 +1,4 @@
-name: Scope Guard (PR)
+﻿name: Scope Guard (PR)
 
 on:
   pull_request:
@@ -7,8 +7,8 @@ permissions:
   contents: read
 
 jobs:
-  guard:
-    name: guard
+  scope_guard:
+    name: Scope Guard (PR)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history)
@@ -45,39 +45,37 @@ jobs:
 
           text = open(scope_file, "r", encoding="utf-8").read()
 
-          m = re.search(r"^##\s*変更対象�E�Ecope-IN�E�\s*$", text, flags=re.M)
+          m = re.search(r"^##\s*変更対象（Scope-IN）\s*$", text, flags=re.M)
           if not m:
-            print("::error::Scope-IN section not found in CURRENT_SCOPE.md")
+            print("::error::Scope-IN section not found in CURRENT_SCOPE.md (expected header: ## 変更対象（Scope-IN）)")
             sys.exit(1)
 
           tail = text[m.end():]
           stop = re.search(r"^##\s+", tail, flags=re.M)
-          section = tail[:stop.start()] if stop else tail
+          block = tail[: stop.start()] if stop else tail
 
-          globs = []
-          for line in section.splitlines():
-            line = line.strip()
-            if line.startswith("- "):
-              g = line[2:].strip().replace("\\", "/")
-              if g:
-                globs.append(g)
+          allow = []
+          for ln in block.splitlines():
+            ln = ln.strip()
+            if ln.startswith("- "):
+              allow.append(ln[2:].strip())
 
-          if scope_file.replace("\\", "/") not in globs:
-            globs.append(scope_file.replace("\\", "/"))
-
-          def matches(path: str) -> bool:
-            p = path.replace("\\", "/")
-            return any(fnmatch.fnmatch(p, g) for g in globs)
-
-          out = [p for p in changed if not matches(p)]
-          if out:
-            print("::error::Scope Guard: changes outside Scope-IN detected")
-            for p in out:
-              print(f" - {p}")
-            print("Scope-IN:")
-            for g in globs:
-              print(f" - {g}")
+          if not allow:
+            print("::error::No Scope-IN entries found under ## 変更対象（Scope-IN）")
             sys.exit(1)
 
-          print("OK: all changed files are within CURRENT_SCOPE Scope-IN")
+          def allowed(path: str) -> bool:
+            for pat in allow:
+              if fnmatch.fnmatch(path, pat):
+                return True
+            return False
+
+          out = [p for p in changed if not allowed(p)]
+          if out:
+            print("::error::Scope Guard NG: out-of-scope changes detected")
+            for p in out:
+              print(f"::error:: - {p}")
+            sys.exit(1)
+
+          print("Scope Guard OK")
           PY

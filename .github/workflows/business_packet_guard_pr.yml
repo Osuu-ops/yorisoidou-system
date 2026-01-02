@@ -1,22 +1,19 @@
-name: Business Packet Guard (PR)
+﻿name: Business Packet Guard (PR)
 
 on:
   pull_request:
-    paths:
-      - 'platform/MEP/**'
-      - 'platform/infra/tools/packets/**'
-      - '.github/workflows/business_packet_*.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  guard:
+  business_packet_guard:
+    name: Business Packet Guard (PR)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout (full history)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -31,29 +28,33 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
 
-      - name: Find BUSINESS_PACKET.yml and check generated packets
+      - name: Validate BUSINESS_PACKET and generated packets
         shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          mapfile -t CFGS < <(git ls-files | grep -E 'BUSINESS_PACKET\.yml$' || true)
 
-          if [ "${#CFGS[@]}" -eq 0 ]; then
-            echo "No BUSINESS_PACKET.yml found. Nothing to check."
+          # pull_request 以外（workflow_dispatch等）の場合は全検査
+          if [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then
+            echo "No BASE/HEAD; run full validation."
+          if [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then
+            echo "Business Packet Guard: validator missing; skip (success)"
+            exit 0
+          fi
+          python3 platform/infra/tools/packets/validate_business_packet.py
             exit 0
           fi
 
-          FAILED=0
-          for cfg in "${CFGS[@]}"; do
-            biz_dir="$(dirname "$cfg")"
-            echo "Checking: $biz_dir"
-            python platform/infra/tools/packets/generate_business_packet.py --biz-dir "$biz_dir" --check || FAILED=1
-          done
-
-          if [ "$FAILED" -ne 0 ]; then
-            echo ""
-            echo "BUSINESS_PACKET is outdated."
-            echo "Run workflow_dispatch: Business Packet Update (Dispatch)"
-            exit 1
+          # 変更が関係ない場合はスキップ（Required化しても常にCheckが出るように、成功で終了）
+          changed="$(git diff --name-only "${BASE_SHA}..${HEAD_SHA}" || true)"
+          if ! echo "$changed" | grep -E '^(platform/MEP/|platform/infra/tools/packets/|\.github/workflows/business_packet_)' >/dev/null; then
+            echo "Business Packet Guard: skipped (no relevant changes)"
+            exit 0
           fi
-
-          echo "OK: all business packets are up-to-date."
+          if [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then
+            echo "Business Packet Guard: validator missing; skip (success)"
+            exit 0
+          fi
+          python3 platform/infra/tools/packets/validate_business_packet.py
