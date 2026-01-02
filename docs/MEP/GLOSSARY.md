@@ -6,4 +6,3 @@
 - INDEX方式: 入口だけ貼り、必要箇所だけ要求
 
 
-TEST: chat_packet schedule v2
