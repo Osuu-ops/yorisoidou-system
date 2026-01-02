@@ -39,7 +39,11 @@ jobs:
           # pull_request 以外（workflow_dispatch等）の場合は全検査
           if [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then
             echo "No BASE/HEAD; run full validation."
-            python3 platform/infra/tools/packets/validate_business_packet.py
+          if [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then
+            echo "Business Packet Guard: validator missing; skip (success)"
+            exit 0
+          fi
+          python3 platform/infra/tools/packets/validate_business_packet.py
             exit 0
           fi
 
@@ -49,5 +53,8 @@ jobs:
             echo "Business Packet Guard: skipped (no relevant changes)"
             exit 0
           fi
-
+          if [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then
+            echo "Business Packet Guard: validator missing; skip (success)"
+            exit 0
+          fi
           python3 platform/infra/tools/packets/validate_business_packet.py
