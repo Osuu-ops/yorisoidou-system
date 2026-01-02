@@ -1,0 +1,83 @@
+﻿name: Docs Index Guard
+
+on:
+  pull_request:
+    paths:
+      - "START_HERE.md"
+      - "docs/MEP/**"
+      - ".github/workflows/docs_index_guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require MEP entry files
+        run: |
+          set -euo pipefail
+
+          required=(
+            "START_HERE.md"
+            "docs/MEP/INDEX.md"
+            "docs/MEP/AI_BOOT.md"
+            "docs/MEP/STATE_CURRENT.md"
+            "docs/MEP/ARCHITECTURE.md"
+            "docs/MEP/PROCESS.md"
+            "docs/MEP/GLOSSARY.md"
+            "docs/MEP/GOLDEN_PATH.md"
+          )
+
+          echo "Checking required files..."
+          for f in "${required[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::Missing required file: $f"
+              exit 1
+            fi
+          done
+
+          echo "OK: required files exist."
+
+      - name: Validate INDEX.md links (local md targets only)
+        run: |
+          set -euo pipefail
+
+          idx="docs/MEP/INDEX.md"
+          echo "Parsing links in $idx ..."
+
+          targets=$(grep -oE '\]\(([^)]+)\)' "$idx" \
+            | sed -E 's/^\]\(//; s/\)$//' \
+            | grep -vE '^(https?://|mailto:|#)' || true)
+
+          echo "Found targets:"
+          echo "$targets" | sed '/^$/d' || true
+
+          base_dir=$(dirname "$idx")
+
+          fail=0
+          while IFS= read -r t; do
+            [ -z "$t" ] && continue
+            t_no_anchor="${t%%#*}"
+
+            if [[ "$t_no_anchor" == ./* ]]; then
+              path="$base_dir/${t_no_anchor#./}"
+            else
+              path="$base_dir/$t_no_anchor"
+            fi
+
+            if [ ! -f "$path" ]; then
+              echo "::error file=$idx::Broken local link target: $t (resolved: $path)"
+              fail=1
+            fi
+          done <<< "$targets"
+
+          if [ "$fail" -ne 0 ]; then
+            exit 1
+          fi
+
+          echo "OK: INDEX local targets exist."
