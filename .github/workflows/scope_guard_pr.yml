@@ -65,7 +65,7 @@ jobs:
                   print(f"::error file={p},line={i+1}::Non-bullet line in Scope-IN section: {l}")
               sys.exit(1)
 
-          allow = re.compile(r'^[A-Za-z0-9_\-./*?\[\]{}!,]+$')
+          allow = re.compile(r'^[^\s#>\(\)（）]+$')
           for i,c in bullets:
               if not c:
                   print(f"::error file={p},line={i+1}::Empty bullet is not allowed")
@@ -139,3 +139,4 @@ jobs:
 
           print("Scope Guard OK")
           PY
+
