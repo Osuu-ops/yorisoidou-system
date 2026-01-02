@@ -1,5 +1,147 @@
-name: Text Integrity Guard (PR)
+﻿name: Text Integrity Guard (PR)
+
 on:
   pull_request:
 
-          echo "Text Integrity Guard: OK"
+permissions:
+  contents: read
+
+concurrency:
+  group: tig-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  tig:
+    name: Text Integrity Guard (PR)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MAX_CHANGED_LINES: "200"
+          SENSITIVE_GLOBS: |
+            master_spec.md
+            ui_spec.md
+        run: |
+          set -euo pipefail
+
+          echo "Base: ${BASE_SHA}"
+          echo "Head: ${HEAD_SHA}"
+
+          python3 - <<'PY'
+          import os, subprocess, fnmatch, sys
+
+          base = os.environ["BASE_SHA"]
+          head = os.environ["HEAD_SHA"]
+          max_lines = int(os.environ.get("MAX_CHANGED_LINES", "200"))
+
+          globs = []
+          for line in os.environ.get("SENSITIVE_GLOBS", "").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+              globs.append(line)
+
+          def sh(cmd: str) -> str:
+            return subprocess.check_output(cmd, shell=True, text=True).strip()
+
+          def is_sensitive(path: str) -> bool:
+            for g in globs:
+              if fnmatch.fnmatch(path, g) or path.endswith("/" + g) or path == g:
+                return True
+            return False
+
+          if not globs:
+            print("::warning::SENSITIVE_GLOBS is empty; nothing to check.")
+            sys.exit(0)
+
+          raw = sh(f"git diff --name-status {base}..{head} || true")
+          lines = [ln for ln in raw.splitlines() if ln.strip()]
+
+          changes = []
+          for ln in lines:
+            parts = ln.split("\t")
+            st = parts[0].strip()
+            if st.startswith("R") and len(parts) >= 3:
+              changes.append((st, parts[2].strip(), parts[1].strip()))
+            elif len(parts) >= 2:
+              changes.append((st, parts[1].strip(), None))
+
+          sensitive_changes = [(st, p, old) for (st, p, old) in changes if is_sensitive(p) or (old and is_sensitive(old))]
+
+          if not sensitive_changes:
+            print("No sensitive files changed. (OK)")
+            sys.exit(0)
+
+          print("Sensitive files changed:")
+          for st, p, old in sensitive_changes:
+            if old:
+              print(f" - {st} {old} -> {p}")
+            else:
+              print(f" - {st} {p}")
+
+          errors = 0
+
+          for st, p, old in sensitive_changes:
+            if st == "D":
+              print(f"::error file={p}::Sensitive file deletion is not allowed.")
+              errors += 1
+            if st.startswith("R") or st.startswith("C"):
+              target = p if p else (old or "")
+              print(f"::error file={target}::Rename/Copy for sensitive files is not allowed.")
+              errors += 1
+
+          for st, p, old in sensitive_changes:
+            if st == "D" or st.startswith("R") or st.startswith("C"):
+              continue
+            try:
+              data = open(p, "rb").read()
+            except FileNotFoundError:
+              print(f"::error file={p}::Sensitive file missing in workspace.")
+              errors += 1
+              continue
+
+            if b"\r\n" in data:
+              print(f"::error file={p}::CRLF detected (\\r\\n). Must be LF only.")
+              errors += 1
+
+            try:
+              data.decode("utf-8", errors="strict")
+            except UnicodeDecodeError as e:
+              print(f"::error file={p}::Invalid UTF-8 detected: {e}")
+              errors += 1
+
+            if len(data) > 0 and not data.endswith(b"\n"):
+              print(f"::error file={p}::Missing final newline (file must end with \\n).")
+              errors += 1
+
+          for st, p, old in sensitive_changes:
+            if st == "D" or st.startswith("R") or st.startswith("C"):
+              continue
+            out = sh(f"git diff --numstat {base}..{head} -- {p} || true")
+            if not out:
+              continue
+            parts = out.split()
+            if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
+              add = int(parts[0]); dele = int(parts[1])
+              total = add + dele
+              if total > max_lines:
+                print(f"::error file={p}::Huge diff detected: {total} lines changed (add {add} + del {dele}) > {max_lines}.")
+                errors += 1
+            else:
+              print(f"::error file={p}::Unexpected diff stat (possibly binary/rename). Not allowed for sensitive files: {out}")
+              errors += 1
+
+          if errors:
+            print(f"FAILED: {errors} issue(s) found.")
+            sys.exit(1)
+
+          print("OK: Text Integrity Guard passed.")
+          PY
