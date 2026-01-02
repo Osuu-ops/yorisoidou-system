@@ -30,4 +30,12 @@
 - 見出し名の変更、箇条書き形式の変更（番号付き等）は禁止。
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 
-## 変更対象（Scope-IN）
+
+      param($m)
+      $h = $m.Groups[1].Value
+      $body = $m.Groups[2].Value
+      $tail = $m.Groups[3].Value
+      if (-not $body.EndsWith("`n")) { $body += "`n" }
+      $body += "- $needle`n"
+      return $h + $body + $tail
+    
