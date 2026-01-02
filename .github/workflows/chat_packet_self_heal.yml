@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-      BRANCH_PREFIX: "auto/chat-packet-update-"
       TARGET_FILE: "docs/MEP/CHAT_PACKET.md"
       BUILD_SCRIPT: "docs/MEP/build_chat_packet.py"
 
@@ -51,7 +50,7 @@ jobs:
             exit 0
           fi
 
-      - name: Read PR metadata (same-repo only)
+      - name: Read PR metadata (same-repo only) + enforce docs-only allowlist
         id: meta
         shell: bash
         run: |
@@ -80,8 +79,19 @@ jobs:
             exit 0
           fi
 
-          if [[ "$headRef" != ${BRANCH_PREFIX}* ]]; then
-            echo "Skip: headRef not matched ($headRef)."
+          # Safety: only self-heal when ALL changed files are within docs/MEP/** or START_HERE.md
+          files=$(gh pr view "$pr" --repo "$repo" --json files --jq '.files[].path' || true)
+          bad=0
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            case "$f" in
+              docs/MEP/*|START_HERE.md) ;;
+              *) echo "Out-of-allowlist file detected: $f"; bad=1 ;;
+            esac
+          done <<< "$files"
+
+          if [ $bad -ne 0 ]; then
+            echo "Skip: PR includes non-docs changes; do not auto-commit CHAT_PACKET."
             echo "skip=1" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -107,6 +117,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -f "${BUILD_SCRIPT}"
           python3 "${BUILD_SCRIPT}"
 
       - name: Commit & push if changed
@@ -135,8 +146,8 @@ jobs:
           set -e
 
           if [ $rc -ne 0 ]; then
-            gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Push failed\n- Reason: push rejected (non-fast-forward or permission)\n- Action required: re-run after syncing or regenerate PR.\n'
+            gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Push failed\n- Reason: push rejected (non-fast-forward or permission)\n- Action required: sync PR branch and re-run.\n'
             exit 0
           fi
 
-          gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Updated\n- Action: regenerated docs/MEP/CHAT_PACKET.md and pushed to PR branch\n- Expectation: checks will re-run and auto-merge will proceed if conditions are met\n'
+          gh pr comment "$pr" --repo "${{ github.repository }}" --body $'### [CHAT_PACKET_SELF_HEAL] Updated\n- Action: regenerated docs/MEP/CHAT_PACKET.md and pushed to PR branch\n- Expectation: Chat Packet Guard should pass; auto-merge will proceed if other conditions are met.\n'
