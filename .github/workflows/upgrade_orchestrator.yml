@@ -1,0 +1,142 @@
+﻿name: Upgrade Orchestrator (Manual/Schedule)
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle:
+        description: "Bundle ID to apply (e.g., 002). Empty = next pending."
+        required: false
+        default: ""
+  schedule:
+    # daily 03:30 JST (= 18:30 UTC)
+    - cron: "30 18 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upgrade-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+
+    steps:
+      - name: Checkout main (PAT)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.MEP_PR_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git config --global core.quotepath false
+
+      - name: Determine bundle to apply
+        id: pick
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Bundles are applied in order; keep list here.
+          # 002: Gate single-check aggregator (planned)
+          # 003: CURRENT_SCOPE auto-suggest PR (planned)
+          BUNDLES=("002" "003")
+
+          requested="${{ inputs.bundle }}"
+          if [ -n "$requested" ]; then
+            echo "bundle=$requested" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Choose first pending by checking for marker file
+          for b in "${BUNDLES[@]}"; do
+            marker="docs/MEP/UPGRADES/APPLIED_${b}.md"
+            if [ ! -f "$marker" ]; then
+              echo "bundle=$b" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+
+          echo "bundle=" >> "$GITHUB_OUTPUT"
+          echo "All bundles already applied."
+          exit 0
+
+      - name: Stop if no bundle
+        if: steps.pick.outputs.bundle == ''
+        run: |
+          echo "No pending bundle. Exit."
+          exit 0
+
+      - name: Apply bundle (placeholder: create marker only)
+        id: apply
+        shell: bash
+        run: |
+          set -euo pipefail
+          b="${{ steps.pick.outputs.bundle }}"
+
+          mkdir -p docs/MEP/UPGRADES
+          marker="docs/MEP/UPGRADES/APPLIED_${b}.md"
+
+          # Placeholder implementation:
+          # Real bundle logic will be added as separate PRs that modify this section.
+          cat > "$marker" <<EOF
+          # APPLIED_${b}
+          Applied by Upgrade Orchestrator run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
+          echo "marker=$marker" >> "$GITHUB_OUTPUT"
+
+      - name: Safety check: allowed paths only
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes. Exit."
+            exit 0
+          fi
+
+          bad=0
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            case "$f" in
+              docs/MEP/*|.github/workflows/*) ;;
+              *) echo "::error::Out-of-allowlist change: $f"; bad=1 ;;
+            esac
+          done < <(git diff --name-only)
+
+          if [ $bad -ne 0 ]; then
+            echo "::error::Refuse to proceed (out-of-allowlist)."
+            exit 1
+          fi
+
+      - name: Create PR for bundle changes
+        id: pr
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          b="${{ steps.pick.outputs.bundle }}"
+          ts="$(date +%Y%m%d-%H%M%S)"
+          branch="auto/upgrade-bundle-${b}-${ts}"
+
+          git checkout -b "$branch"
+          git add -A
+          git commit -m "chore(upgrade): apply bundle ${b}"
+          git push -u origin "$branch"
+
+          title="chore(upgrade): apply bundle ${b}"
+          body=$'Auto-applied by Upgrade Orchestrator.\n\n- Bundle: '"${b}"$'\n- Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n'
+
+          url=$(gh pr create --repo "${{ github.repository }}" --base main --head "$branch" --title "$title" --body "$body")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+          num=$(echo "$url" | sed -E 's#.*/pull/([0-9]+).*#\1#')
+          gh pr merge "$num" --auto --squash --delete-branch --repo "${{ github.repository }}"
