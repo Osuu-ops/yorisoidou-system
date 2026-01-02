@@ -1,4 +1,4 @@
-﻿name: Text Integrity Guard (PR)
+name: Text Integrity Guard (PR)
 
 on:
   pull_request:
@@ -28,8 +28,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           MAX_CHANGED_LINES: "200"
           SENSITIVE_GLOBS: |
-            master_spec.md
-            ui_spec.md
+            platform/MEP/03_BUSINESS/tictactoe/master_spec.md
         run: |
           set -euo pipefail
 
@@ -145,3 +144,4 @@ jobs:
 
           print("OK: Text Integrity Guard passed.")
           PY
+

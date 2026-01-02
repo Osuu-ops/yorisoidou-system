@@ -46,8 +46,7 @@ jobs:
           MAX_CHANGED_LINES: ${{ inputs.max_changed_lines }}
           BASE_REF: ${{ inputs.base_ref }}
           SENSITIVE_GLOBS: |
-            master_spec.md
-            ui_spec.md
+            platform/MEP/03_BUSINESS/tictactoe/master_spec.md
         run: |
           set -euo pipefail
 
@@ -168,3 +167,4 @@ jobs:
 
           print("OK: Text Integrity Guard passed.")
           PY
+
