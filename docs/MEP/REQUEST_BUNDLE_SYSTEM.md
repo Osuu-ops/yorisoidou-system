@@ -3,22 +3,22 @@
 本書は、AIが追加で要求しがちなファイル群を「1枚」に束ねた生成物である。
 新チャットで REQUEST が発生した場合は、原則として本書を貼れば追加要求を抑止できる。
 本書は時刻・ランID等を含めず、入力ファイルが同じなら差分が出ないことを前提とする。
-生成: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\build_request_bundle.py
-ソース定義: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\request_bundle_sources_system.txt
+生成: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/build_request_bundle.py
+ソース定義: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/request_bundle_sources_system.txt
 
 ---
 
 ## 収録ファイル一覧（存在するもの）
-- docs\MEP\STATE_SUMMARY.md
-- docs\MEP\STATE_CURRENT.md
-- docs\MEP\INDEX.md
-- docs\MEP\PLAYBOOK.md
-- docs\MEP\PLAYBOOK_SUMMARY.md
-- docs\MEP\RUNBOOK.md
-- docs\MEP\RUNBOOK_SUMMARY.md
-- docs\MEP\UPGRADE_GATE.md
-- docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
-- docs\MEP\CHAT_PACKET.md
+- docs/MEP/STATE_SUMMARY.md
+- docs/MEP/STATE_CURRENT.md
+- docs/MEP/INDEX.md
+- docs/MEP/PLAYBOOK.md
+- docs/MEP/PLAYBOOK_SUMMARY.md
+- docs/MEP/RUNBOOK.md
+- docs/MEP/RUNBOOK_SUMMARY.md
+- docs/MEP/UPGRADE_GATE.md
+- docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+- docs/MEP/CHAT_PACKET.md
 
 ---
 
@@ -32,9 +32,9 @@
 
 ---
 
-### FILE: docs\MEP\STATE_SUMMARY.md
-- sha256: 7c15970cfdd042d57a6a3fab285a3df5d3066dc4cc90d31eaf6fbfb831dc4b41
-- bytes: 1929
+### FILE: docs/MEP/STATE_SUMMARY.md
+- sha256: 6bb2dd1f8925e2c890ecce24b6bf503729c65462f8ff1c705e318b40057d703d
+- bytes: 2014
 
 > # STATE_SUMMARY（現在地サマリ） v1.0
 > 
@@ -92,20 +92,22 @@
 > - PLAYBOOK_SUMMARY（次の指示サマリ）
 > - RUNBOOK_SUMMARY（復旧サマリ）
 > - UPGRADE_GATE（開始ゲート）
+> - HANDOFF_100（引継ぎ100点）
+> - REQUEST_BUNDLE（追加要求ファイル束）
 > 
 
 ---
 
-### FILE: docs\MEP\STATE_CURRENT.md
+### FILE: docs/MEP/STATE_CURRENT.md
 - sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - bytes: 0
 
 
 ---
 
-### FILE: docs\MEP\INDEX.md
-- sha256: 1de71622da561e67340d351f9e69a5e25eff4346b0131e181e9534cde91f8997
-- bytes: 1145
+### FILE: docs/MEP/INDEX.md
+- sha256: af63073ceed57794dcfdb1cbc1ed025147341d241489cb0a64025ab1124c52e6
+- bytes: 1428
 
 > ﻿# MEP INDEX（入口） v1.0
 > 
@@ -144,10 +146,17 @@
 > 
 > ## UPGRADE_GATE（開始ゲート）
 > - UPGRADE_GATE.md（開始直後に100点化してから着手する固定ゲート）
+> 
+> ## HANDOFF_100（引継ぎ100点）
+> - HANDOFF_100.md（新チャット1通目に貼る1枚）
+> 
+> ## REQUEST_BUNDLE（追加要求ファイル束）
+> - REQUEST_BUNDLE_SYSTEM.md（SYSTEM側の要求ファイル束）
+> - REQUEST_BUNDLE_BUSINESS.md（BUSINESS側の要求ファイル束）
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK.md
+### FILE: docs/MEP/PLAYBOOK.md
 - sha256: 806af7c0f0487afede2136d617dd0c1134d0a3421c7871a430e32a86971bf12d
 - bytes: 2190
 
@@ -232,7 +241,7 @@
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK_SUMMARY.md
+### FILE: docs/MEP/PLAYBOOK_SUMMARY.md
 - sha256: 4b3888d4438d090d5d37fc0388f28c2e19af475ce59dfb7c278414d4532f6086
 - bytes: 632
 
@@ -255,7 +264,7 @@
 
 ---
 
-### FILE: docs\MEP\RUNBOOK.md
+### FILE: docs/MEP/RUNBOOK.md
 - sha256: 0b2de462ad051da90b51c3ae74aa3295b3d7a7c2bdabd23ee24230e8c0540f31
 - bytes: 2135
 
@@ -329,7 +338,7 @@
 
 ---
 
-### FILE: docs\MEP\RUNBOOK_SUMMARY.md
+### FILE: docs/MEP/RUNBOOK_SUMMARY.md
 - sha256: 757400985bcb574392a4875937f5cf80c6c87ee7f0dfb7b23cd216fd1988c003
 - bytes: 528
 
@@ -350,7 +359,7 @@
 
 ---
 
-### FILE: docs\MEP\UPGRADE_GATE.md
+### FILE: docs/MEP/UPGRADE_GATE.md
 - sha256: 1ceb57bbf8900cf5a6d53c241f1720e689aa3b6bb535dce444e3a5736d4ef92c
 - bytes: 1531
 
@@ -391,7 +400,7 @@
 
 ---
 
-### FILE: docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
+### FILE: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 - sha256: 7cfe777c553e8743f16b34fec199fee9fc5cce4c2a640daf34d37a9294b1fa8e
 - bytes: 1726
 
@@ -424,7 +433,7 @@
 
 ---
 
-### FILE: docs\MEP\CHAT_PACKET.md
+### FILE: docs/MEP/CHAT_PACKET.md
 - sha256: 20a1841378cdf376622aff7ef1244e9f42f88719aa1bfac817bab9701bdddc58
 - bytes: 11639
 
