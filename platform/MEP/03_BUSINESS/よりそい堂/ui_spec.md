@@ -221,3 +221,32 @@ UI 実装は、本書との差分として管理される
 ### 入金済み（PAID）
 - 画面上の操作（将来）または運用手順により invoiceStatus=PAID に更新できる
 
+## RECEIPT_FLOW（領収の導線）
+
+### 目的
+- 領収作成（入力）→プレビュー→発行（ISSUED）までの導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_RECEIPT_CREATE（領収作成）
+- SCREEN_RECEIPT_PREVIEW（領収プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_RECEIPT_CREATE で「プレビューへ」
+2) 最低限チェック（推奨）：
+   - docName（宛名）
+   - docDesc（領収内容）
+   - docPrice（金額）
+3) receivedDate / paymentMethod は未設定でも可（docMemoで補足してよい）
+4) receiptStatus=DRAFT の場合は「下書き」としてプレビュー可能
+
+### プレビュー画面（表示規約）
+- receiptStatus=DRAFT の場合：下書きを明記
+- receiptStatus=ISSUED の場合：受領日/支払方法があれば表示
+
+### 発行（ISSUED）
+- SCREEN_RECEIPT_PREVIEW で「発行」
+- 発行時の最小要件：
+  - docName/docDesc/docPrice が揃っている（原則）
+- 発行後は receiptStatus=ISSUED
+
