@@ -11,6 +11,8 @@
 - .github/workflows/chat_packet_self_heal.yml
 - docs/MEP/**
 - .github/workflows/*.yml
+- platform/MEP/01_CORE/_SCOPE_SUGGEST_FORCE_20260103-135009.txt
+- platform/MEP/90_CHANGES/_SCOPE_SUGGEST_DOD_20260103-072904.txt
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
