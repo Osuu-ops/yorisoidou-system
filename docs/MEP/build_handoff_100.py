@@ -41,10 +41,11 @@ def extract_block(text: str, begin: str, end: str) -> str | None:
 
 
 def set_block(text: str, begin: str, end: str, body: str) -> str:
+    # IMPORTANT: use lambda replacement so backslashes are treated literally
     pat = re.escape(begin) + r".*?" + re.escape(end)
     repl = begin + "\n" + body.rstrip("\n") + "\n" + end
     if re.search(pat, text, flags=re.DOTALL):
-        return re.sub(pat, repl, text, flags=re.DOTALL)
+        return re.sub(pat, lambda _m: repl, text, flags=re.DOTALL)
     if not text.endswith("\n"):
         text += "\n"
     return text + "\n" + repl + "\n"
@@ -131,7 +132,7 @@ def render_current_with_meta() -> str:
 
     meta: list[str] = []
     meta.append(f"HANDOFF_ID: {hid}")
-    meta.append("HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\\tools\\mep_handoff.ps1")
+    meta.append(r"HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1")
     meta.append("HANDOFF_TRIGGER_BUNDLE: 追加が必要なら次の1行だけを返す： Get-Content docs/MEP/REQUEST_BUNDLE_SYSTEM.md -Raw -Encoding UTF8  /  Get-Content docs/MEP/REQUEST_BUNDLE_BUSINESS.md -Raw -Encoding UTF8")
     meta.append("CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。")
     meta.append("NOTE: IDだけ貼る場合は、少なくとも HANDOFF_ID と HANDOFF_OVERVIEW を同時に貼る（前提共有のため）。")
@@ -169,7 +170,6 @@ def main() -> None:
     existing = read_text(OUT)
     new_current = render_current_with_meta()
 
-    # If markers missing, create fresh
     if CURRENT_BEGIN not in existing or CURRENT_END not in existing or ARCHIVE_BEGIN not in existing or ARCHIVE_END not in existing:
         skeleton = ""
         skeleton = set_block(skeleton, CURRENT_BEGIN, CURRENT_END, new_current)
