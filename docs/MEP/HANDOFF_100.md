@@ -73,6 +73,8 @@
 - PLAYBOOK_SUMMARY（次の指示サマリ）
 - RUNBOOK_SUMMARY（復旧サマリ）
 - UPGRADE_GATE（開始ゲート）
+- HANDOFF_100（引継ぎ100点）
+- REQUEST_BUNDLE（追加要求ファイル束）
 
 ---
 
