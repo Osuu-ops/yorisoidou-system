@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 200151
+- included_total_bytes: 201267
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -567,8 +567,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/PLAYBOOK.md
-- sha256: a2e94b4b7994ca91ff07358a0457e9ee3731aff6f6a8e030ca868fe881d8f6b7
-- bytes: 3128
+- sha256: 6e544294f3777c812f8a89b4996d91e3a8f843f42c1aa72440549dc93c129567
+- bytes: 3466
 
 ```text
 ﻿# PLAYBOOK（次の指示カード集）
@@ -676,6 +676,16 @@ scope-guard enforcement test 20260103-002424
 - docs/MEP/IDEA_VAULT.md（避難所）
 - docs/MEP/IDEA_INDEX.md（候補一覧）
 - docs/MEP/IDEA_RECEIPTS.md（実装レシート）
+
+---
+
+## CARD-00 追記（Lease / Continue Target） v1.1
+
+新チャット開始時の最初の作業は、必ず以下の順で固定する：
+- LEASE 適用（CURRENT）
+- UPGRADE_GATE 適用（矛盾検出 → 観測）
+- CONTINUE_TARGET により “次の一手カード” を 1つに確定
+- そのカードに従い 1PR を着手
 ```
 
 
@@ -950,8 +960,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/UPGRADE_GATE.md
-- sha256: 1ceb57bbf8900cf5a6d53c241f1720e689aa3b6bb535dce444e3a5736d4ef92c
-- bytes: 1531
+- sha256: ff963d0c2903b55ec28d893a88b0fbf5b77019bb6ce2e793a98c7285760f7365
+- bytes: 2309
 
 ```text
 ﻿# UPGRADE_GATE（開始直後の100点化ゲート）
@@ -988,6 +998,22 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - 新チャット開始で、STATE_SUMMARY から開始できる
 - 必要に応じて REQUEST（最大3件）で追加情報を取得できる
 - 取得後、観測→次の一手→1PR、の一本道が成立する
+
+---
+
+## Lease / Continue Target（開始直後の固定手順） v1.1
+
+開始直後、AIは必ず以下を実行する。
+
+1) LEASE を適用する（CURRENT に含まれる：HANDOFF_ID / HANDOFF_OVERVIEW / CONTINUE_TARGET）
+2) UPGRADE_GATE を適用する（矛盾検出 → 観測 → 次の一手カード確定）
+3) CONTINUE_TARGET を決定する
+   - AUTO: open PR / failing checks / RUNBOOK異常 → 1つに確定
+   - FIXED: CURRENT 指定の CARD-ID を優先（ただし DIRTY は例外なく停止）
+4) 出力は PowerShell 単一コピペ一本道（ID手入力禁止、ghで自動解決）
+5) 1サイクルは「観測 → 1PR」まで（複数PR同時進行は禁止）
+
+本手順に違反した場合は LEASE_BREAK として DIRTY 扱いで停止する。
 ```
 
 
