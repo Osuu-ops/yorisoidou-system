@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 199470
+- included_total_bytes: 199994
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -561,8 +561,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/PLAYBOOK.md
-- sha256: 1a82c3c6fbbeea3d6503096e5f298b0f8bf86595ec17ee3b7371d26e030f3c96
-- bytes: 2604
+- sha256: a2e94b4b7994ca91ff07358a0457e9ee3731aff6f6a8e030ca868fe881d8f6b7
+- bytes: 3128
 
 ```text
 ﻿# PLAYBOOK（次の指示カード集）
@@ -651,6 +651,20 @@ scope-guard enforcement test 20260103-002424
 
 実行（ID手入力なし）：
 - powershell: .\tools\mep_idea_receipt.ps1
+
+参照：
+- docs/MEP/IDEA_VAULT.md（避難所）
+- docs/MEP/IDEA_INDEX.md（候補一覧）
+- docs/MEP/IDEA_RECEIPTS.md（実装レシート）
+
+## CARD: IDEA → Receipt → PR（mep_idea_receipt）
+
+目的：
+- 採用したIDEAを「実装レシート（IDEA_RECEIPTS）」として固定し、必要ならPRとして提出する。
+
+実行（非対話／例）：
+- powershell: .\tools\mep_idea_receipt.ps1 -IdeaId abcd1234efgh -Ref "PR#999" -Desc "Implemented the idea"
+- usage:     .\tools\mep_idea_receipt.ps1 -Help
 
 参照：
 - docs/MEP/IDEA_VAULT.md（避難所）
