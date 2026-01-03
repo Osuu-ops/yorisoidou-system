@@ -1,16 +1,15 @@
 ﻿<!--
-CANONICAL: platform/MEP/03_BUSINESS/よりそい堂/master_spec
-NOTE:
-- This file exists for tooling/compatibility.
-- Do NOT edit business spec here. Edit the canonical file above.
-- This wrapper intentionally prevents mojibake corruption from reappearing in master_spec.md.
+ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
+CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 -->
 
-# master_spec.md (Compatibility Wrapper)
+# master_spec.md（入口・案内専用）
 
-このファイルは互換性のために残しています。  
-**唯一の正（編集対象）は master_spec（拡張子なし）**です。
+このファイルは **入口（案内）**です。本文（唯一の正）は次です：
 
-- Canonical: platform/MEP/03_BUSINESS/よりそい堂/master_spec
-- この master_spec.md は参照用ラッパーです（内容は複製しません）。
+- **唯一の正（実体）**：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+
+## 編集ルール（固定）
+- 仕様の本文を編集する場合は **必ず master_spec を編集**する
+- master_spec.md は案内・要点・手順のみ（本文は置かない）
 

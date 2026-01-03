@@ -10,3 +10,10 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
+
+## 唯一の正（実体）
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+
+## 入口
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec.md（案内専用）
+
