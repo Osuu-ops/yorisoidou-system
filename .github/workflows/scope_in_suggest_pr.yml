@@ -65,7 +65,7 @@ jobs:
             exit 1
           fi
 
-          python3 - <<'PY'
+          python3 - <<'PY' > /tmp/scope_suggest.json
           import os, re, subprocess, sys, fnmatch, json
           scope_file = os.environ["SCOPE_FILE"]
           repo = os.environ.get("GITHUB_REPOSITORY")
@@ -106,7 +106,7 @@ jobs:
           out = [p for p in out if not (p.startswith("docs/MEP/") or p=="START_HERE.md")]
 
           print(json.dumps({"changed": changed, "out": out}, ensure_ascii=False))
-          PY > /tmp/scope_suggest.json
+          PY
 
           out_count=$(python3 -c 'import json; d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8")); print(len(d["out"]))')
           if [ "$out_count" -eq 0 ]; then
@@ -129,7 +129,7 @@ jobs:
           git fetch origin main
           git checkout -B "$branch" origin/main
 
-          python3 - <<'PY'
+          python3 - <<'PY' > /tmp/out_list.txt
           import json, re
           from pathlib import Path
 
@@ -177,11 +177,12 @@ jobs:
           url=$(gh pr create --repo "$repo" --base main --head "$branch" --title "chore(scope): suggest Scope-IN for PR #$pr" --body "$body")
 
           # Comment original PR with link + list
-          python3 - <<'PY'
+          python3 - <<'PY' > /tmp/out_list.txt
           import json
           d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))
           out=d["out"]
           print("\n".join(f"- {x}" for x in out))
-          PY > /tmp/out_list.txt
+          PY
 
           gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
+
