@@ -81,3 +81,30 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - docName/docDesc/docPrice が揃っていない場合は質問して補完する。
 - 受領日や支払方法は未設定でも作成可（docMemo に未確定と記載）。
 
+## 5. 受注（ORDER）
+
+### 5.1 目的
+- 見積（ESTIMATE）が確定した後、受注として案件を確定し、次工程（WORK/INVOICE）へ渡す。
+
+### 5.2 入力（最小）
+- 元見積（確定済み）：
+  - docName / docDesc / docPrice / docMemo
+- 可能なら追加：
+  - 工事予定日（任意）
+  - 担当者（任意）
+  - ステータス（任意）
+
+### 5.3 出力（生成物）
+- ORDER（受注）レコード（将来：台帳/ID化）
+- 最低限の保持項目：
+  - customer/docName
+  - scope/docDesc
+  - amount/docPrice
+  - notes/docMemo
+  - status（例：CONFIRMED）
+
+### 5.4 ルール
+- 元見積が priceStatus=FINAL であることが原則
+- 分割見積の場合、受注は「1案件に複数見積紐付け」または「見積ごとに受注」を選べる（将来拡張）
+- 受注確定後、WORK と INVOICE を作成可能になる
+
