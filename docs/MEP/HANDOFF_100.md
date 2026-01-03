@@ -26,7 +26,8 @@
 ---
 
 ## 目的（STATE_CURRENTから要約）
-- （未取得）STATE_CURRENT.md の「目的」節を確認
+本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
+UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
 
 ---
 
@@ -40,7 +41,11 @@
 ---
 
 ## STATE_CURRENT の主要見出し
-- （未取得）STATE_CURRENT.md を確認
+- STATE_CURRENT（現在地） v1.2
+- 目的
+- 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
+- 2) 重要ルール（固定）
+- 3) 次の改良 Top3（一本道）
 
 ---
 
