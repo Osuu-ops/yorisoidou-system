@@ -1,4 +1,4 @@
-﻿# RUNBOOK（復旧カード）
+# RUNBOOK（復旧カード）
 
 本書は「異常時の復旧」をカードとして固定する。
 本書は説明を行わない。評価を行わない。
@@ -143,3 +143,57 @@ gh pr list --repo $repo --state open
 - 実行：`.\tools\mep_chat_packet_min.ps1` を実行し、出力を貼る。
 - AI：個別ファイル要求は禁止。必要なら再貼付のみ要求する。
 
+<!-- CARD: BUSINESS_IMPL_GO_NOGO -->
+
+## CARD: BUSINESS_IMPL_GO_NOGO（業務系へ進むGo/No-Go）
+
+### 観測
+- open PR が 0 か
+  - `gh pr list --state open`
+- Phase-1（PARTS/EXPENSE）の marker が origin/main に揃っているか（唯一の正で確認）
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/business_spec.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/business_master.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/ui_master.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md`
+
+### 一次対応（PowerShell 単一コピペ）
+~~~powershell
+$ErrorActionPreference="Stop"
+$repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
+
+git checkout main | Out-Null
+git pull --ff-only | Out-Null
+if (git status --porcelain) { git status; throw "NO-GO: working tree not clean" }
+
+$open = (gh pr list --repo $repo --state open --json number,title,headRefName | ConvertFrom-Json)
+if ($open.Count -ne 0) { $open | Format-Table -AutoSize; throw "NO-GO: open PR exists" }
+
+$need = @(
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md";  marker="<!-- PARTS_SPEC_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_master.md"; marker="<!-- PARTS_FIELDS_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_master.md";       marker="<!-- PARTS_UI_MASTER_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md";         marker="<!-- PARTS_FLOW_PHASE1 -->" },
+
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md";  marker="<!-- EXPENSE_SPEC_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_master.md"; marker="<!-- EXPENSE_FIELDS_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_master.md";       marker="<!-- EXPENSE_UI_MASTER_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md";         marker="<!-- EXPENSE_FLOW_PHASE1 -->" }
+)
+
+$ng=@()
+foreach($x in $need){
+  $txt = (git show ("origin/main:{0}" -f $x.file) | Out-String)
+  if ($txt -notmatch [regex]::Escape($x.marker)) { $ng += "$($x.file) :: $($x.marker)" }
+}
+
+if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: missing markers" }
+"GO: Business implementation can proceed."
+~~~
+
+### 停止条件（NO-GO）
+- open PR が 1本でもある
+- marker が欠けている
+- working tree が dirty
+
+### 次の遷移（GO）
+- 業務系（実装・運用側）へ進む（Phase-1 を前提として進める）
