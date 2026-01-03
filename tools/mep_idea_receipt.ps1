@@ -1,3 +1,32 @@
+param(
+  [switch]$Help,
+  [string]$IdeaId,
+  [Parameter(Mandatory=$true)][string]$Ref,
+  [Parameter(Mandatory=$true)][string]$Desc
+)
+
+function Show-Usage {
+@"
+mep_idea_receipt.ps1
+
+Usage:
+  .\tools\mep_idea_receipt.ps1 -Help
+  .\tools\mep_idea_receipt.ps1 -IdeaId <12chars> -Ref <ref> -Desc <desc>
+
+Example:
+  .\tools\mep_idea_receipt.ps1 -IdeaId abcd1234efgh -Ref "PR#999" -Desc "Implemented the idea"
+"@
+}
+
+if ($Help) { Show-Usage; exit 0 }
+
+if (-not $IdeaId -or $IdeaId.Length -ne 12) {
+  Write-Error "IdeaId must be exactly 12 characters."
+  exit 2
+}
+
+$line = "IDEA:$IdeaId  RESULT: implemented  REF: $Ref  DESC: $Desc"
+
 ﻿# tools/mep_idea_receipt.ps1
 # Usage:
 #   .\tools\mep_idea_receipt.ps1 1 3 -Ref "PR#999" -Desc "今回このアイデアが実装されました"
