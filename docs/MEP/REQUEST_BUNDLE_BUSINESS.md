@@ -1,4 +1,4 @@
-# REQUEST_BUNDLE_BUSINESS（追加要求ファイル束） v1.1
+﻿# REQUEST_BUNDLE_BUSINESS（追加要求ファイル束） v1.1
 
 本書は、AIが追加で要求しがちなファイル群を「1枚」に束ねた生成物である。
 新チャットで REQUEST が発生した場合は、原則として本書を貼れば追加要求を抑止できる。
@@ -19,7 +19,7 @@
 - docs/MEP/STATE_CURRENT.md
 - docs/MEP/STATE_SUMMARY.md
 - docs/MEP/UPGRADE_GATE.md
-- platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+- platform/MEP/03_BUSINESS/tictactoe/master_spec
 - platform/MEP/03_BUSINESS/よりそい堂/00_CURRENT_SCOPE_NOTE.md
 - platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
 - platform/MEP/03_BUSINESS/よりそい堂/03_TODO.md
@@ -28,7 +28,7 @@
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
 - platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
 - platform/MEP/03_BUSINESS/よりそい堂/code/README.md
-- platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec
 - platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 - platform/MEP/90_CHANGES/CHANGELOG.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
@@ -1056,7 +1056,7 @@ Tell the assistant:
 
 ---
 
-### FILE: platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+### FILE: platform/MEP/03_BUSINESS/tictactoe/master_spec
 - sha256: e7a82f7a6240f473815a656b55985d6146bdbb7da38901862f4e218f7d4009a3
 - bytes: 605
 
@@ -1446,7 +1446,7 @@ This directory is the canonical entry point for business-side code/assets for �
 
 ---
 
-### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 - sha256: e86eadc1c31b2b0b5461c10f7df8494303ba67c1061c1202d810f6234b14b102
 - bytes: 79356
 
@@ -1676,5 +1676,6 @@ UI 実装は、本書との差分として管理される
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
 ```
+
 
 
