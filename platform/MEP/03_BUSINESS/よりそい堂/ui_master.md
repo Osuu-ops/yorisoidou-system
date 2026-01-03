@@ -137,3 +137,55 @@ ROLE: UI_MASTER (screen/components/field mappings)
 ### Display Rules（最小）
 - scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
 - required/optional の表示は UI_PROTOCOL に従う。
+
+<!-- WORK_UI_MASTER_PHASE1 -->
+## WORK（施工）— UI_MASTER（Phase-1）
+
+本節は WORK（施工/完了報告）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
+※ “完了確定” は現場タスク完了が起点（master_spec 9章）。UI は完了を任意に確定しない（報告の受付・表示・確認のみ）。
+
+### Screens（最小）
+- SCREEN_WORK_REPORT（完了報告）
+  - 目的：完了コメント（全文）と写真/動画を添付し、完了報告として送信する
+- SCREEN_WORK_CONFIRM（報告確認）
+  - 目的：送信前に内容を確認し、二重送信を防止する
+- SCREEN_WORK_DONE（報告完了）
+  - 目的：受付完了を明示し、次の行動を迷わせない
+- SCREEN_WORK_VIEW（閲覧）
+  - 目的：完了報告内容（コメント全文・添付）を閲覧できる
+
+### Fields（UI表示/入力）
+- workDoneComment
+  - label: 完了コメント（全文）
+  - ui: textarea
+  - required: true
+  - helper: 「未使用：BP-..., BM-...」の形式で未使用部材を記載できます（任意）
+- photosBefore
+  - label: 写真（施工前）
+  - ui: uploader（複数）
+  - required: false
+- photosAfter
+  - label: 写真（施工後）
+  - ui: uploader（複数）
+  - required: false
+- photosParts
+  - label: 写真（部材）
+  - ui: uploader（複数）
+  - required: false
+- photosExtra
+  - label: 写真（追加）
+  - ui: uploader（複数）
+  - required: false
+- videoInspection
+  - label: 動画（点検）
+  - ui: uploader/url
+  - required: false
+
+### Display Rules（最小）
+- 送信中はボタン無効化・処理中表示（UI_PROTOCOL 準拠、二重送信防止）。
+- 未入力の添付は「未添付」として表示し、責めない文言にする。
+- UI は未使用部材の抽出結果を断定表示しない（抽出/確定は業務ロジック側）。
+
+### Error / Warning（最小）
+- 必須不足：workDoneComment が空の場合のみエラー表示（他は任意）
+- 添付不足（写真不足など）は “警告” として扱い、送信は止めない（管理警告で吸収）
