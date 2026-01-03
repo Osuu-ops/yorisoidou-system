@@ -279,3 +279,39 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - 送信中は二重送信防止（ボタン無効化・処理中表示）
 - 価格未入力/LOCATION欠落などは “警告” として扱い、送信自体は止めない（管理警告で回収）
 - UI は STATUS を任意に編集しない（表示のみ、または非表示でも可）
+
+<!-- EXPENSE_UI_MASTER_PHASE1 -->
+## EXPENSE（経費）— UI_MASTER（Phase-1）
+
+### Screens（最小）
+- SCREEN_EXPENSE_CREATE（経費入力）
+- SCREEN_EXPENSE_CONFIRM（経費確認）
+- SCREEN_EXPENSE_DONE（経費完了）
+- SCREEN_EXPENSE_VIEW（閲覧）
+
+### Fields（UI表示/入力）
+- Order_ID
+  - label: 受注ID
+  - ui: text
+  - required: true
+- PART_ID
+  - label: 部材ID（任意）
+  - ui: text
+  - required: false
+- PRICE
+  - label: 金額
+  - ui: number
+  - required: true
+  - rule: 推測代入は禁止（確定のみ）
+- USED_DATE
+  - label: 使用日/支出日
+  - ui: date
+  - required: true
+- MEMO
+  - label: メモ
+  - ui: textarea
+  - required: false
+
+### Display Rules（最小）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+- 未入力が許容されないのは PRICE/USED_DATE/Order_ID のみ
