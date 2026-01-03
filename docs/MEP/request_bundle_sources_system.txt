@@ -1,0 +1,20 @@
+﻿# One path per line. Lines starting with # are comments.
+docs/MEP/STATE_SUMMARY.md
+docs/MEP/STATE_CURRENT.md
+docs/MEP/INDEX.md
+docs/MEP/PLAYBOOK.md
+docs/MEP/PLAYBOOK_SUMMARY.md
+docs/MEP/RUNBOOK.md
+docs/MEP/RUNBOOK_SUMMARY.md
+docs/MEP/UPGRADE_GATE.md
+docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+docs/MEP/CHAT_PACKET.md
+
+# --- platform/MEP (SYSTEM) ---
+
+
+platform/MEP/01_CORE/**/*.md
+
+
+platform/MEP/MEP_core/**/*.md
+
