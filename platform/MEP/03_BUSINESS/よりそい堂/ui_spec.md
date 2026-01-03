@@ -187,3 +187,37 @@ UI 実装は、本書との差分として管理される
   - priceStatus=FINAL の場合は docPrice が設定されている
 - 確定後は「見積DOCが生成された」状態として次工程へ（将来：INVOICE連携）
 
+## INVOICE_FLOW（請求の導線）
+
+### 目的
+- 請求作成（入力）→プレビュー→発行（ISSUED）→入金済み（PAID）までの導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_INVOICE_CREATE（請求作成）
+- SCREEN_INVOICE_PREVIEW（請求プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_INVOICE_CREATE で「プレビューへ」
+2) 最低限チェック（推奨）：
+   - docName（宛名）
+   - docDesc（請求内容）
+   - docPrice（原則必須：未確定運用をする場合は invoiceStatus=DRAFT を許容）
+3) dueDate / paymentMethod / bankAccount は未設定でも可（docMemoで補足してよい）
+
+### プレビュー画面（表示規約）
+- invoiceStatus=DRAFT の場合：
+  - 「下書き」を明記して表示
+- invoiceStatus=ISSUED の場合：
+  - 支払期限があれば表示
+  - 支払方法/振込先があれば表示
+
+### 発行（ISSUED）
+- SCREEN_INVOICE_PREVIEW で「発行」
+- 発行時の最小要件：
+  - docName/docDesc/docPrice が揃っている（原則）
+- 発行後は invoiceStatus=ISSUED
+
+### 入金済み（PAID）
+- 画面上の操作（将来）または運用手順により invoiceStatus=PAID に更新できる
+
