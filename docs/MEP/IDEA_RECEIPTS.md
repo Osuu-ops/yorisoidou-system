@@ -17,3 +17,5 @@
 ## RECEIPTS（追記していく：1行=1件）
 
 （空）
+IDEA:1c4d4e1a7f30  RESULT: implemented  REF: CLEANUP  DESC: cleanup: mistaken capture (command text), discard
+
