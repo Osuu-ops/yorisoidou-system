@@ -1,4 +1,4 @@
-﻿name: MEP Auto PR + Gate (GitHub-only)
+name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:

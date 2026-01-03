@@ -1,4 +1,4 @@
-﻿﻿name: Scope Guard (PR)
+﻿name: Scope Guard (PR)
 
 on:
   pull_request:

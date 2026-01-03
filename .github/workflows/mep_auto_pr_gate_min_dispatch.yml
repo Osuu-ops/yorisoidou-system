@@ -1,4 +1,4 @@
-﻿name: MEP Auto PR Gate Dispatch (Minimal)
+name: MEP Auto PR Gate Dispatch (Minimal)
 
 on:
   workflow_dispatch:

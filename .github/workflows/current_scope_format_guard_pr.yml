@@ -1,4 +1,4 @@
-﻿name: Current Scope Format Guard (PR)
+name: Current Scope Format Guard (PR)
 
 on:
   pull_request:

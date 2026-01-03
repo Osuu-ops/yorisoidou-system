@@ -1,4 +1,4 @@
-﻿name: Business Packet Guard (PR)
+name: Business Packet Guard (PR)
 
 on:
   pull_request:
