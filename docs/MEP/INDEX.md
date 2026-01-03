@@ -20,3 +20,6 @@
 
 ## RUNBOOK（復旧カード）
 - RUNBOOK.md（異常時は診断ではなく次の一手だけを返す）
+
+## PLAYBOOK（次の指示）
+- PLAYBOOK.md（常に次の一手を返すカード集）
