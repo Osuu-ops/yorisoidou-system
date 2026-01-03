@@ -39,7 +39,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 202385
+- included_total_bytes: 202515
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1112,8 +1112,8 @@ CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
-- sha256: 5ad0b0f08da6232a549d91d2a00ca745b627d5f1720376f724790f8ba3d160f6
-- bytes: 341
+- sha256: 49499b3d9e6bd78eecef5be160ffc9ee323b685237655adb7df99ef9c174b788
+- bytes: 534
 
 ```text
 ﻿# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
@@ -1128,6 +1128,12 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
+
+## 唯一の正（実体）
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+
+## 入口
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec.md（案内専用）
 ```
 
 
@@ -1447,25 +1453,24 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
-- sha256: ce984c8209ea847114a6bcee99bb59f9f072ef5fac2470257306329eb0dfdf3c
-- bytes: 635
+- sha256: 5ee72b1ea6454c530373dd3bef5f994d73f2e6e53c7bfae3f242d7a78f3e360e
+- bytes: 572
 
 ```text
 ﻿<!--
-CANONICAL: platform/MEP/03_BUSINESS/よりそい堂/master_spec
-NOTE:
-- This file exists for tooling/compatibility.
-- Do NOT edit business spec here. Edit the canonical file above.
-- This wrapper intentionally prevents mojibake corruption from reappearing in master_spec.md.
+ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
+CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 -->
 
-# master_spec.md (Compatibility Wrapper)
+# master_spec.md（入口・案内専用）
 
-このファイルは互換性のために残しています。  
-**唯一の正（編集対象）は master_spec（拡張子なし）**です。
+このファイルは **入口（案内）**です。本文（唯一の正）は次です：
 
-- Canonical: platform/MEP/03_BUSINESS/よりそい堂/master_spec
-- この master_spec.md は参照用ラッパーです（内容は複製しません）。
+- **唯一の正（実体）**：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+
+## 編集ルール（固定）
+- 仕様の本文を編集する場合は **必ず master_spec を編集**する
+- master_spec.md は案内・要点・手順のみ（本文は置かない）
 ```
 
 
