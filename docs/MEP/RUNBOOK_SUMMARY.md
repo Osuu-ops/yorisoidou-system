@@ -6,9 +6,5 @@
 ---
 
 ## カード一覧
-- CARD-01: no-checks（Checksがまだ出ない／表示されない）
-- CARD-02: Chat Packet Guard NG（CHAT_PACKET outdated）
-- CARD-03: Scope不足（Scope Guard / Scope-IN Suggest）
-- CARD-04: Head branch is out of date（behind/out-of-date）
-- CARD-05: DIRTY（自動で安全に解決できない）
+- （未取得）RUNBOOK.md を確認
 
