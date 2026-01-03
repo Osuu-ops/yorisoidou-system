@@ -52,3 +52,6 @@
 
 ## IDEA_RECEIPTS（実装レシート）
 - IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
+
+## Tools
+- [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
