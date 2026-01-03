@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 104355
+- included_total_bytes: 104603
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -739,8 +739,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 66559e1655bd672fa29d7bb98dfa48aef890f73804e49774a2682987ce76ce2c
-- bytes: 4291
+- sha256: 550c4c175d1332de252becb3eda1dfcab5e9206cc2ea2eb1c881a1eeddbe32b7
+- bytes: 4539
 
 ```text
 ﻿# RUNBOOK（復旧カード）
@@ -883,6 +883,10 @@ gh pr list --repo $repo --state open
 ### 判定
 - DIRTY が出たら停止して人間判断へ
 - clean なら観測に復帰
+
+## CARD-BOOT: One-Packet Bootstrap（新チャット/新アカウント向け）
+- 実行：`.\tools\mep_chat_packet_min.ps1` を実行し、出力を貼る。
+- AI：個別ファイル要求は禁止。必要なら再貼付のみ要求する。
 ```
 
 
