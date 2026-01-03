@@ -103,3 +103,13 @@
 - docs/MEP/IDEA_VAULT.md（避難所）
 - docs/MEP/IDEA_INDEX.md（候補一覧）
 - docs/MEP/IDEA_RECEIPTS.md（実装レシート）
+
+---
+
+## CARD-00 追記（Lease / Continue Target） v1.1
+
+新チャット開始時の最初の作業は、必ず以下の順で固定する：
+- LEASE 適用（CURRENT）
+- UPGRADE_GATE 適用（矛盾検出 → 観測）
+- CONTINUE_TARGET により “次の一手カード” を 1つに確定
+- そのカードに従い 1PR を着手
