@@ -42,3 +42,20 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - invoiceStatus=DRAFT の場合は docPrice を未確定として扱ってもよい（ただし最終は BUSINESS_SPEC に従う）
 - invoiceStatus=ISSUED の場合は、docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
 
+## 5. 領収（RECEIPT）UI 拡張
+
+### 5.1 画面（RECEIPT）
+- SCREEN_RECEIPT_CREATE（領収作成）
+- SCREEN_RECEIPT_PREVIEW（領収プレビュー）
+
+### 5.2 フィールドマッピング（領収作成：追加）
+| screen | field | source | required | ui_type | notes |
+|---|---|---|---|---|---|
+| SCREEN_RECEIPT_CREATE | receivedDate | BUSINESS_MASTER.receipt.receipt.receivedDate | no | text | 受領日 |
+| SCREEN_RECEIPT_CREATE | paymentMethod | BUSINESS_MASTER.receipt.receipt.paymentMethod | no | select | CASH/BANK/OTHER |
+| SCREEN_RECEIPT_CREATE | receiptStatus | BUSINESS_MASTER.receipt.receipt.receiptStatus | no | select | DRAFT/ISSUED |
+
+### 5.3 UI上の最小ルール
+- receiptStatus=DRAFT の場合：下書きとしてプレビュー可能
+- receiptStatus=ISSUED の場合：docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
+
