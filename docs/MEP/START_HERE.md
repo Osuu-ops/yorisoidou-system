@@ -24,4 +24,7 @@ You MUST reconstruct context from files in this order.
 ## 3. What this system is for
 - Generate and maintain Yorisoidou BUSINESS master_spec and operational docs safely.
 - Prevent contamination into main via CI guards and scope controls.
+## ONE-PACKET BOOTSTRAP (memory=0対策：最重要)
+- 新チャット/新アカウントでは、最初に .\tools\mep_chat_packet_min.ps1 の出力を貼る。
+- AIは個別ファイル要求を増やしてはいけない。必要ならこのパケットの再貼付のみ要求する。
 

@@ -138,3 +138,8 @@ gh pr list --repo $repo --state open
 ### 判定
 - DIRTY が出たら停止して人間判断へ
 - clean なら観測に復帰
+
+## CARD-BOOT: One-Packet Bootstrap（新チャット/新アカウント向け）
+- 実行：`.\tools\mep_chat_packet_min.ps1` を実行し、出力を貼る。
+- AI：個別ファイル要求は禁止。必要なら再貼付のみ要求する。
+
