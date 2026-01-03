@@ -27,8 +27,11 @@
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger.md
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
 - platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
+- platform/MEP/03_BUSINESS/よりそい堂/business_master.md
+- platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
 - platform/MEP/03_BUSINESS/よりそい堂/code/README.md
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
+- platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
 - platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 - platform/MEP/90_CHANGES/CHANGELOG.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
@@ -39,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 202515
+- included_total_bytes: 218220
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1112,8 +1115,8 @@ CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
-- sha256: 49499b3d9e6bd78eecef5be160ffc9ee323b685237655adb7df99ef9c174b788
-- bytes: 534
+- sha256: 7b62b617592855e1d52f8f0f199100acfdd9f5d53435a8db1ad4ec56abcedb0e
+- bytes: 1203
 
 ```text
 ﻿# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
@@ -1134,6 +1137,19 @@ Rule:
 
 ## 入口
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec.md（案内専用）
+
+## 分離（Phase-1）: 4ファイル構成
+
+### 役割（固定）
+- 唯一の正（実体・当面）：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+- BUSINESS_MASTER: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
+- BUSINESS_SPEC:   platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
+- UI_MASTER:       platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
+- UI_SPEC:         platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+
+### フェーズ方針
+- Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
+- Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
 ```
 
 
@@ -1435,6 +1451,239 @@ This directory is the canonical entry point for business-side code/assets for �
 
 ---
 
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
+- sha256: d7696a3c94dc814f328b61c27adc221139426e33334000f187d8c46143d6975c
+- bytes: 4384
+
+```text
+﻿<!--
+PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
+CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
+ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
+-->
+
+# BUSINESS_MASTER（業務マスタ）
+
+## 0. 目的
+- 業務で使う「項目・ID・辞書・制約」を一箇所に集約する（ルール本文は BUSINESS_SPEC へ）
+
+## 1. ID体系（仮）
+- CU_ID:
+- ORDER_ID:
+- DOC_ID:
+- ITEM_ID:
+- PART_ID:
+
+## 2. フィールド辞書（最小テンプレ）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| customer | customer | name | string | yes |  | 顧客名 |
+| customer | customer | phone | string | no |  | 電話 |
+| address | address | line1 | string | no |  | 住所 |
+| doc | estimate | docName | string | yes |  | 文書宛名 |
+| doc | estimate | docDesc | string | yes |  | 概要 |
+| doc | estimate | docPrice | number | no | >=0 | 金額 |
+| doc | estimate | docMemo | string | no |  | メモ |
+
+## 3. 列挙（仮）
+- docType: ESTIMATE / INVOICE / RECEIPT
+
+## 4. 見積（ESTIMATE）追加フィールド
+
+本セクションは BUSINESS_SPEC の「見積（ESTIMATE）」を実務で回すための追加辞書である。
+
+### 4.1 追加フィールド（辞書）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| contact | customer | phone | string | no |  | 連絡先（電話） |
+| address | site | addressLine1 | string | no |  | 現場住所（1行） |
+| schedule | site | preferredDate | string | no | YYYY-MM-DD or free text | 希望日時（任意） |
+| estimate | estimate | priceStatus | enum | no | TBD/FINAL | 金額の確定状態 |
+| estimate | estimate | splitPolicy | enum | no | AUTO/MANUAL | 分割判断の方針 |
+| estimate | estimate | scopeCategory | enum | no | EQUIPMENT/INTERIOR/OTHER | 見積カテゴリ（分割判断に利用） |
+
+### 4.2 列挙（enum）
+- priceStatus: TBD（未確定） / FINAL（確定）
+- splitPolicy: AUTO（規約に従い自動分割） / MANUAL（手動指定）
+- scopeCategory:
+  - EQUIPMENT（製品＋取付＝設備）
+  - INTERIOR（壁紙/床など＝内装）
+  - OTHER（その他）
+
+### 4.3 分割判断で使う最小ルール（辞書側の補足）
+- scopeCategory=EQUIPMENT と INTERIOR が混在する場合は原則分割（BUSINESS_SPEC側のルールと対応）
+
+## 5. 請求（INVOICE）追加フィールド
+
+本セクションは BUSINESS_SPEC の「請求（INVOICE）」を実務で回すための追加辞書である。
+
+### 5.1 追加フィールド（辞書）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| invoice | invoice | dueDate | string | no | YYYY-MM-DD or free text | 支払期限 |
+| invoice | invoice | paymentMethod | enum | no | BANK/ON_SITE/OTHER | 支払方法 |
+| invoice | invoice | bankAccount | string | no |  | 振込先（自由記述） |
+| invoice | invoice | invoiceStatus | enum | no | DRAFT/ISSUED/PAID | 請求状態 |
+
+### 5.2 列挙（enum）
+- paymentMethod:
+  - BANK（振込）
+  - ON_SITE（現地/集金）
+  - OTHER（その他）
+- invoiceStatus:
+  - DRAFT（下書き）
+  - ISSUED（発行）
+  - PAID（入金済み）
+
+### 5.3 最小ルール（辞書側の補足）
+- dueDate / paymentMethod / bankAccount は未設定でも INVOICE を作成可（BUSINESS_SPEC側と対応）
+
+## 6. 領収（RECEIPT）追加フィールド
+
+本セクションは BUSINESS_SPEC の「領収（RECEIPT）」を実務で回すための追加辞書である。
+
+### 6.1 追加フィールド（辞書）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| receipt | receipt | receivedDate | string | no | YYYY-MM-DD or free text | 受領日 |
+| receipt | receipt | paymentMethod | enum | no | CASH/BANK/OTHER | 支払方法 |
+| receipt | receipt | receiptStatus | enum | no | DRAFT/ISSUED | 領収状態 |
+
+### 6.2 列挙（enum）
+- paymentMethod:
+  - CASH（現金）
+  - BANK（振込）
+  - OTHER（その他）
+- receiptStatus:
+  - DRAFT（下書き）
+  - ISSUED（発行）
+
+### 6.3 最小ルール（辞書側の補足）
+- receivedDate / paymentMethod は未設定でも RECEIPT を作成可（BUSINESS_SPEC側と対応）
+```
+
+
+---
+
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
+- sha256: 3804d4d7ecdb6aeb024a4aae4da18f1635dee64169bdb6d94057e57f4fd10a9c
+- bytes: 3789
+
+```text
+﻿<!--
+PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
+CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
+ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
+-->
+
+# BUSINESS_SPEC（業務スペック）
+
+## 0. 目的
+- 見積→受注→施工→請求→領収→部材→経費 の業務ルールを定義する
+- 項目定義は BUSINESS_MASTER に置く
+
+## 1. 業務フロー（章立て）
+1) 見積（ESTIMATE）
+2) 受注（ORDER）
+3) 施工（WORK）
+4) 請求（INVOICE）
+5) 領収（RECEIPT）
+6) 部材（PARTS）
+7) 経費（EXPENSE）
+
+## 2. 見積（ESTIMATE）— 最小仕様（仮）
+- 目的：依頼内容から見積書を生成する
+- 入力：BUSINESS_MASTER の estimate 項目
+- 出力：docType=ESTIMATE / docName / docDesc / docPrice / docMemo
+- 例外：必須項目不足は質問で補完する
+
+（※詳細は次のPRで詰める。今回は骨格のみ）
+
+## 3. 請求（INVOICE）
+
+### 3.1 目的
+- 確定した見積（ESTIMATE）を元に、請求書（docType=INVOICE）を生成する。
+
+### 3.2 入力（最小）
+- 元見積（確定済み）：
+  - docName / docDesc / docPrice / docMemo
+- 必要なら追加：
+  - 支払期限（任意）
+  - 振込先/支払方法（任意）
+
+### 3.3 出力（生成物）
+- docType = INVOICE
+- docName（宛名）
+- docDesc（請求内容）
+- docPrice（金額：原則必須）
+- docMemo（備考：任意、支払条件など）
+
+### 3.4 ルール
+- ESTIMATE が priceStatus=FINAL でない場合は原則 INVOICE を作らない（例外：手動で進める場合は docMemo に理由を明記）
+- 金額は原則 docPrice を引き継ぐ（税/端数処理などは将来拡張）
+
+### 3.5 不足情報（質問）
+- docName/docDesc/docPrice が揃っていない場合は質問して補完する。
+- 支払期限や支払方法は未設定でも作成可（docMemo に未確定と記載）。
+
+## 4. 領収（RECEIPT）
+
+### 4.1 目的
+- 確定した請求（INVOICE）または入金情報を元に、領収書（docType=RECEIPT）を生成する。
+
+### 4.2 入力（最小）
+- 元請求（INVOICE）：
+  - docName / docDesc / docPrice / docMemo
+- 可能なら追加：
+  - 受領日（任意）
+  - 支払方法（任意：現金/振込など）
+
+### 4.3 出力（生成物）
+- docType = RECEIPT
+- docName（宛名）
+- docDesc（領収内容）
+- docPrice（金額：原則必須）
+- docMemo（備考：任意）
+
+### 4.4 ルール
+- 原則、INVOICE が invoiceStatus=PAID（入金済み）の場合に作成する
+- 例外的に、現金受領などで手動作成する場合は docMemo に理由を明記する
+
+### 4.5 不足情報（質問）
+- docName/docDesc/docPrice が揃っていない場合は質問して補完する。
+- 受領日や支払方法は未設定でも作成可（docMemo に未確定と記載）。
+
+## 5. 受注（ORDER）
+
+### 5.1 目的
+- 見積（ESTIMATE）が確定した後、受注として案件を確定し、次工程（WORK/INVOICE）へ渡す。
+
+### 5.2 入力（最小）
+- 元見積（確定済み）：
+  - docName / docDesc / docPrice / docMemo
+- 可能なら追加：
+  - 工事予定日（任意）
+  - 担当者（任意）
+  - ステータス（任意）
+
+### 5.3 出力（生成物）
+- ORDER（受注）レコード（将来：台帳/ID化）
+- 最低限の保持項目：
+  - customer/docName
+  - scope/docDesc
+  - amount/docPrice
+  - notes/docMemo
+  - status（例：CONFIRMED）
+
+### 5.4 ルール
+- 元見積が priceStatus=FINAL であることが原則
+- 分割見積の場合、受注は「1案件に複数見積紐付け」または「見積ごとに受注」を選べる（将来拡張）
+- 受注確定後、WORK と INVOICE を作成可能になる
+```
+
+
+---
+
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/code/README.md
 - sha256: aaa3dad7ea832722566d5ab943505eea0986907285305246248057f916769f98
 - bytes: 327
@@ -1476,12 +1725,82 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 
 ---
 
-### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 555488256b076b6fd02568e05d8f968a29b8d5c757011c77048305cadc45fcd3
-- bytes: 3939
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
+- sha256: 99bb28bc4c0da5d3aa7b22fb43706952cdbaa948f3a1eed26555e7f27103387c
+- bytes: 3027
 
 ```text
-<!--
+﻿<!--
+PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
+CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+ROLE: UI_MASTER (screen/components/field mappings)
+-->
+
+# UI_MASTER（UIマスタ）
+
+## 0. 目的
+- UIで扱う画面・コンポーネント・入力フィールドを辞書化する
+- 導線は UI_SPEC に置く
+
+## 1. 画面一覧（仮）
+- SCREEN_ESTIMATE_CREATE
+- SCREEN_ESTIMATE_PREVIEW
+- SCREEN_INVOICE_CREATE
+- SCREEN_RECEIPT_CREATE
+
+## 2. フィールドマッピング（最小テンプレ）
+| screen | field | source | required | ui_type | notes |
+|---|---|---|---|---|---|
+| SCREEN_ESTIMATE_CREATE | docName | BUSINESS_MASTER.doc.estimate.docName | yes | text | 宛名 |
+| SCREEN_ESTIMATE_CREATE | docDesc | BUSINESS_MASTER.doc.estimate.docDesc | yes | textarea | 概要 |
+| SCREEN_ESTIMATE_CREATE | docPrice | BUSINESS_MASTER.doc.estimate.docPrice | no | number | 金額 |
+| SCREEN_ESTIMATE_CREATE | docMemo | BUSINESS_MASTER.doc.estimate.docMemo | no | textarea | メモ |
+
+## 4. 請求（INVOICE）UI 拡張
+
+### 4.1 画面（INVOICE）
+- SCREEN_INVOICE_CREATE（請求作成）
+- SCREEN_INVOICE_PREVIEW（請求プレビュー）
+
+### 4.2 フィールドマッピング（請求作成：追加）
+| screen | field | source | required | ui_type | notes |
+|---|---|---|---|---|---|
+| SCREEN_INVOICE_CREATE | dueDate | BUSINESS_MASTER.invoice.invoice.dueDate | no | text | 支払期限 |
+| SCREEN_INVOICE_CREATE | paymentMethod | BUSINESS_MASTER.invoice.invoice.paymentMethod | no | select | BANK/ON_SITE/OTHER |
+| SCREEN_INVOICE_CREATE | bankAccount | BUSINESS_MASTER.invoice.invoice.bankAccount | no | textarea | 振込先（自由記述） |
+| SCREEN_INVOICE_CREATE | invoiceStatus | BUSINESS_MASTER.invoice.invoice.invoiceStatus | no | select | DRAFT/ISSUED/PAID |
+
+### 4.3 UI上の最小ルール
+- invoiceStatus=DRAFT の場合は docPrice を未確定として扱ってもよい（ただし最終は BUSINESS_SPEC に従う）
+- invoiceStatus=ISSUED の場合は、docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
+
+## 5. 領収（RECEIPT）UI 拡張
+
+### 5.1 画面（RECEIPT）
+- SCREEN_RECEIPT_CREATE（領収作成）
+- SCREEN_RECEIPT_PREVIEW（領収プレビュー）
+
+### 5.2 フィールドマッピング（領収作成：追加）
+| screen | field | source | required | ui_type | notes |
+|---|---|---|---|---|---|
+| SCREEN_RECEIPT_CREATE | receivedDate | BUSINESS_MASTER.receipt.receipt.receivedDate | no | text | 受領日 |
+| SCREEN_RECEIPT_CREATE | paymentMethod | BUSINESS_MASTER.receipt.receipt.paymentMethod | no | select | CASH/BANK/OTHER |
+| SCREEN_RECEIPT_CREATE | receiptStatus | BUSINESS_MASTER.receipt.receipt.receiptStatus | no | select | DRAFT/ISSUED |
+
+### 5.3 UI上の最小ルール
+- receiptStatus=DRAFT の場合：下書きとしてプレビュー可能
+- receiptStatus=ISSUED の場合：docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
+```
+
+
+---
+
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+- sha256: 0c94e8f9079cfa4b738c119511a58bf9c0c0e90f415bc9fe9adbc468effbffb8
+- bytes: 7775
+
+```text
+﻿<!--
 UI spec is derived from master_spec (CURRENT_SCOPE: Yorisoidou BUSINESS).
 NOTE: navigation/positioning only; does NOT change meaning.
 RULE: 1 theme = 1 PR; canonical is main after merge.
@@ -1637,6 +1956,101 @@ UI_PROTOCOL の変更を伴う修正は行わない
 UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
+
+## ESTIMATE_FLOW（見積の導線）
+
+### 目的
+- 見積作成（入力）→プレビュー→確定 の導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_ESTIMATE_CREATE（見積作成）
+- SCREEN_ESTIMATE_PREVIEW（見積プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_ESTIMATE_CREATE で「プレビューへ」
+2) その時点で最低限チェック：
+   - docName（必須）
+   - docDesc（必須）
+3) docPrice は priceStatus=TBD の場合は未設定でも可
+   - priceStatus=FINAL の場合は docPrice を必須にしてよい
+4) splitPolicy=MANUAL の場合は scopeCategory を必須にしてよい
+
+### プレビュー画面（表示規約）
+- priceStatus=TBD の場合：
+  - 「価格未確定」を明記して表示（docPriceが空でもOK）
+- 分割が必要な場合（設備＋内装混在など）は、プレビュー上で
+  - 「見積A（設備）」「見積B（内装）」のように2件表示できる（BUSINESS_SPECの分割ルールに従う）
+
+### 確定（CONFIRM）
+- SCREEN_ESTIMATE_PREVIEW で「確定」
+- 確定時の最小要件：
+  - docName/docDesc が揃っている
+  - priceStatus=FINAL の場合は docPrice が設定されている
+- 確定後は「見積DOCが生成された」状態として次工程へ（将来：INVOICE連携）
+
+## INVOICE_FLOW（請求の導線）
+
+### 目的
+- 請求作成（入力）→プレビュー→発行（ISSUED）→入金済み（PAID）までの導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_INVOICE_CREATE（請求作成）
+- SCREEN_INVOICE_PREVIEW（請求プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_INVOICE_CREATE で「プレビューへ」
+2) 最低限チェック（推奨）：
+   - docName（宛名）
+   - docDesc（請求内容）
+   - docPrice（原則必須：未確定運用をする場合は invoiceStatus=DRAFT を許容）
+3) dueDate / paymentMethod / bankAccount は未設定でも可（docMemoで補足してよい）
+
+### プレビュー画面（表示規約）
+- invoiceStatus=DRAFT の場合：
+  - 「下書き」を明記して表示
+- invoiceStatus=ISSUED の場合：
+  - 支払期限があれば表示
+  - 支払方法/振込先があれば表示
+
+### 発行（ISSUED）
+- SCREEN_INVOICE_PREVIEW で「発行」
+- 発行時の最小要件：
+  - docName/docDesc/docPrice が揃っている（原則）
+- 発行後は invoiceStatus=ISSUED
+
+### 入金済み（PAID）
+- 画面上の操作（将来）または運用手順により invoiceStatus=PAID に更新できる
+
+## RECEIPT_FLOW（領収の導線）
+
+### 目的
+- 領収作成（入力）→プレビュー→発行（ISSUED）までの導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_RECEIPT_CREATE（領収作成）
+- SCREEN_RECEIPT_PREVIEW（領収プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_RECEIPT_CREATE で「プレビューへ」
+2) 最低限チェック（推奨）：
+   - docName（宛名）
+   - docDesc（領収内容）
+   - docPrice（金額）
+3) receivedDate / paymentMethod は未設定でも可（docMemoで補足してよい）
+4) receiptStatus=DRAFT の場合は「下書き」としてプレビュー可能
+
+### プレビュー画面（表示規約）
+- receiptStatus=DRAFT の場合：下書きを明記
+- receiptStatus=ISSUED の場合：受領日/支払方法があれば表示
+
+### 発行（ISSUED）
+- SCREEN_RECEIPT_PREVIEW で「発行」
+- 発行時の最小要件：
+  - docName/docDesc/docPrice が揃っている（原則）
+- 発行後は receiptStatus=ISSUED
 ```
 
 
