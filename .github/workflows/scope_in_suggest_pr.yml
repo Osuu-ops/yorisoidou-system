@@ -39,6 +39,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git config user.name  "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git config --global core.quotepath false
 
           repo="${{ github.repository }}"
           pr="${{ github.event.pull_request.number }}"
@@ -190,6 +193,7 @@ jobs:
           PY
 
           gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
+
 
 
 
