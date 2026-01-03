@@ -1,105 +1,87 @@
+[CmdletBinding()]
 param(
   [switch]$Help,
-  [string]$IdeaId,
-  [Parameter(Mandatory=$true)][string]$Ref,
-  [Parameter(Mandatory=$true)][string]$Desc
+  [switch]$DryRun,
+  [Parameter()][string]$IdeaId,
+  [Parameter()][string]$Ref,
+  [Parameter()][string]$Desc
 )
 
 function Show-Usage {
 @"
 mep_idea_receipt.ps1
 
+Purpose:
+  Create one receipt line and (optionally) open a PR to append it into docs/MEP/IDEA_RECEIPTS.md.
+
 Usage:
   .\tools\mep_idea_receipt.ps1 -Help
+
+  # dry-run (prints the line only)
+  .\tools\mep_idea_receipt.ps1 -DryRun -IdeaId <12chars> -Ref <ref> -Desc <desc>
+
+  # normal (opens PR)
   .\tools\mep_idea_receipt.ps1 -IdeaId <12chars> -Ref <ref> -Desc <desc>
 
-Example:
-  .\tools\mep_idea_receipt.ps1 -IdeaId abcd1234efgh -Ref "PR#999" -Desc "Implemented the idea"
+Rules:
+  - IdeaId must be exactly 12 characters.
+  - Ref/Desc are required unless -Help is specified.
 "@
 }
 
 if ($Help) { Show-Usage; exit 0 }
 
-if (-not $IdeaId -or $IdeaId.Length -ne 12) {
-  Write-Error "IdeaId must be exactly 12 characters."
-  exit 2
-}
+if (-not $IdeaId -or $IdeaId.Length -ne 12) { Write-Error "IdeaId must be exactly 12 characters."; exit 2 }
+if ([string]::IsNullOrWhiteSpace($Ref)) { Write-Error "Ref is required."; exit 2 }
+if ([string]::IsNullOrWhiteSpace($Desc)) { Write-Error "Desc is required."; exit 2 }
 
 $line = "IDEA:$IdeaId  RESULT: implemented  REF: $Ref  DESC: $Desc"
 
-﻿# tools/mep_idea_receipt.ps1
-# Usage:
-#   .\tools\mep_idea_receipt.ps1 1 3 -Ref "PR#999" -Desc "今回このアイデアが実装されました"
+if ($DryRun) {
+  Write-Host $line
+  exit 0
+}
 
-param(
-  [Parameter(Mandatory=$true, ValueFromRemainingArguments=$true)]
-  [string[]]$Numbers,
-
-  [Parameter(Mandatory=$true)]
-  [string]$Ref,
-
-  [Parameter(Mandatory=$true)]
-  [string]$Desc
-)
-
+# GitHub PR workflow (GitHub is source of truth)
 $ErrorActionPreference = "Stop"
-
-if (git status --porcelain) { throw "Working tree is not clean. Commit/stash changes first." }
 $repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
 
-git checkout main | Out-Null
-git fetch origin main | Out-Null
-git reset --hard origin/main | Out-Null
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$branch = ("work/idea-receipt-{0}-{1}" -f $IdeaId, $stamp)
 
-$idxPath = "docs/MEP/IDEA_INDEX.md"
-$receiptsPath = "docs/MEP/IDEA_RECEIPTS.md"
-if (-not (Test-Path $idxPath)) { throw "Missing: $idxPath" }
-if (-not (Test-Path $receiptsPath)) { throw "Missing: $receiptsPath" }
+$mainRef = gh api ("repos/{0}/git/ref/heads/main" -f $repo) | ConvertFrom-Json
+$mainSha = $mainRef.object.sha
+gh api -X POST ("repos/{0}/git/refs" -f $repo) -f ("ref=refs/heads/{0}" -f $branch) -f ("sha={0}" -f $mainSha) | Out-Null
 
-$idxRaw = Get-Content $idxPath -Raw -Encoding UTF8
-$map = @()
-foreach ($ln in ($idxRaw -split "`r?`n")) {
-  $m = [regex]::Match($ln, '^\s*(\d+)\.\s+.*\[(IDEA:[0-9a-fA-F]{12})\]\s*$')
-  if ($m.Success) { $map += [pscustomobject]@{ n=[int]$m.Groups[1].Value; id=$m.Groups[2].Value } }
-}
-if ($map.Count -eq 0) { throw "IDEA_INDEX has no selectable items." }
-
-$sel = @()
-foreach ($n in $Numbers) {
-  if ($n -notmatch '^\d+$') { throw "Invalid number: $n" }
-  $i = [int]$n
-  $hit = $map | Where-Object { $_.n -eq $i } | Select-Object -First 1
-  if (-not $hit) { throw "Number not found in IDEA_INDEX: $i" }
-  $sel += $hit.id
-}
-$sel = $sel | Sort-Object -Unique
-
-$raw = Get-Content $receiptsPath -Raw -Encoding UTF8
-$linesToAdd = @()
-foreach ($id in $sel) { $linesToAdd += "$id  RESULT: implemented  REF: $Ref  DESC: $Desc" }
-
-$added = 0
-foreach ($ln in $linesToAdd) {
-  if ($raw -match [regex]::Escape($ln)) { continue }
-  Add-Content -Path $receiptsPath -Value ($ln + "`r`n") -Encoding UTF8
-  $added++
+function Get-RepoFile {
+  param([string]$Path,[string]$Ref)
+  $obj = gh api ("repos/{0}/contents/{1}?ref={2}" -f $repo, $Path, $Ref) | ConvertFrom-Json
+  $b64 = ($obj.content -replace '\s','')
+  $bytes = [Convert]::FromBase64String($b64)
+  $text = [Text.Encoding]::UTF8.GetString($bytes)
+  return [pscustomobject]@{ sha=$obj.sha; text=$text }
 }
 
-if ($added -eq 0) { Write-Host "No new receipts added (all lines already existed)."; exit 0 }
+function Put-RepoFile {
+  param([string]$Path,[string]$Branch,[string]$Message,[string]$NewText,[string]$OldSha)
+  if (-not $NewText.EndsWith("`n")) { $NewText += "`n" }
+  $newB64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($NewText))
+  gh api -X PUT ("repos/{0}/contents/{1}" -f $repo, $Path) `
+    -f ("message={0}" -f $Message) `
+    -f ("content={0}" -f $newB64) `
+    -f ("sha={0}" -f $OldSha) `
+    -f ("branch={0}" -f $Branch) | Out-Null
+}
 
-$ts = Get-Date -Format "yyyyMMdd-HHmmss"
-$branch = "work/idea-receipt-$ts"
-git checkout -b $branch | Out-Null
+$path = "docs/MEP/IDEA_RECEIPTS.md"
+$f = Get-RepoFile -Path $path -Ref "main"
 
-git add $receiptsPath
-git commit -m ("docs(MEP): add implemented receipts (" + ($sel -join ",") + ")") | Out-Null
-git push -u origin $branch | Out-Null
+# append under RECEIPTS section (simple append at EOF is acceptable because file is append-only ledger)
+$newText = $f.text.TrimEnd() + "`n" + $line + "`n"
+Put-RepoFile -Path $path -Branch $branch -Message "docs(MEP): append IDEA receipt ($IdeaId)" -NewText $newText -OldSha $f.sha
 
-$prUrl = (gh pr create -R $repo -B main -H $branch -t "docs(MEP): add implemented receipts" -b ("Adds RESULT: implemented receipts for: " + ($sel -join ", ") + "  REF: " + $Ref))
-Write-Host $prUrl
+$title = "docs(MEP): IDEA receipt $IdeaId"
+$body = "Append one implemented receipt line to IDEA_RECEIPTS.`n`n$line"
+gh pr create --base main --head $branch --title $title --body $body | Out-Null
 
-$pr = (gh pr list -R $repo --state open --head $branch --json number --jq '.[0].number')
-if (-not $pr) { throw "Failed to resolve PR number." }
-
-gh pr merge $pr -R $repo --auto --squash --delete-branch | Out-Null
-Write-Host ("OK: Added {0} receipt line(s). Now finalize: .\tools\mep_idea_finalize.ps1 {1}" -f $added, ($Numbers -join " "))
+Write-Host "PR created."
