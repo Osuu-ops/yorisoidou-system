@@ -25,3 +25,16 @@ You MUST reconstruct context from files in this order.
 - Generate and maintain Yorisoidou BUSINESS master_spec and operational docs safely.
 - Prevent contamination into main via CI guards and scope controls.
 
+## ONE-PACKET BOOTSTRAP (memory=0対策：最重要)
+- 新チャット/新アカウントでは「会話の記憶は信用しない」前提で動くこと。
+- 追加ファイル要求が膨らむ事故を防ぐため、**最初の入力は必ず1枚に固定**する。
+
+### ユーザーがやること（唯一の起動手順）
+- PowerShellで次を実行して、出力を全部貼る：
+  - `.\tools\mep_chat_packet_min.ps1`
+
+### AI側の禁止事項（固定）
+- 10個以上のファイル貼付を要求してはいけない。
+- 3つ/5つ/10つと“追加要求”を増やしてはいけない。
+- 不足がある場合は **必ず** `mep_chat_packet_min.ps1` の再貼付を要求する（個別ファイル要求は禁止）。
+
