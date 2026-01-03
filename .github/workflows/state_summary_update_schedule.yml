@@ -1,0 +1,83 @@
+﻿name: State Summary Update (Schedule)
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"  # every 6 hours
+  workflow_dispatch:
+  pull_request:
+    types: [closed]
+    paths:
+      - "docs/MEP/**"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-state-summary:
+    if: |
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged == true &&
+       !startsWith(github.event.pull_request.head.ref, 'auto/state-summary-update-'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (prefer PAT for checks stability)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.MEP_PR_TOKEN || github.token }}
+
+      - name: Configure git
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+
+      - name: Abort if an auto state-summary PR is already open
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          repo="${GITHUB_REPOSITORY}"
+          open_cnt=$(gh pr list -R "$repo" --state open --search "base:main head:auto/state-summary-update-" --json number --jq 'length')
+          if [ "$open_cnt" -gt 0 ]; then
+            echo "Auto state-summary PR already open; abort."
+            exit 0
+          fi
+
+      - name: Build STATE_SUMMARY on main
+        run: |
+          set -euo pipefail
+          python3 docs/MEP/build_state_summary.py
+
+      - name: Detect changes (docs/MEP/STATE_SUMMARY.md only)
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/MEP/STATE_SUMMARY.md; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR + enable auto-merge
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          repo="${GITHUB_REPOSITORY}"
+          branch="auto/state-summary-update-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git add docs/MEP/STATE_SUMMARY.md
+          git commit -m "docs(MEP): update STATE_SUMMARY"
+          git push -u origin "$branch"
+
+          url=$(gh pr create -R "$repo" -B main -H "$branch" \
+            -t "docs(MEP): update STATE_SUMMARY" \
+            -b "Auto-generated update of docs/MEP/STATE_SUMMARY.md (deterministic, no timestamps).")
+          echo "$url"
+
+          pr=$(gh pr list -R "$repo" --state open --head "$branch" --json number --jq '.[0].number')
+          gh pr merge "$pr" -R "$repo" --auto --squash --delete-branch
