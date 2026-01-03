@@ -45,6 +45,11 @@ jobs:
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
 
+          export BASE_SHA="$base"
+          export HEAD_SHA="$head"
+          export PR_NUMBER="$pr"
+          export REPO_FULL="$repo"
+
           # Fast-path allowlist (same as Scope Guard Phase1 docs safe-path)
           is_docs_only=1
           while IFS= read -r f; do
@@ -68,10 +73,10 @@ jobs:
           python3 - <<'PY' > /tmp/scope_suggest.json
           import os, re, subprocess, sys, fnmatch, json
           scope_file = os.environ["SCOPE_FILE"]
-          repo = os.environ.get("GITHUB_REPOSITORY")
-          pr = os.environ.get("GITHUB_EVENT_PULL_REQUEST_NUMBER") or ""
-          base = os.environ.get("GITHUB_EVENT_PULL_REQUEST_BASE_SHA")
-          head = os.environ.get("GITHUB_EVENT_PULL_REQUEST_HEAD_SHA")
+          repo = os.environ.get("REPO_FULL")
+          pr = os.environ.get("PR_NUMBER","")
+          base = os.environ["BASE_SHA"]
+          head = os.environ["HEAD_SHA"]
 
           def sh(cmd: str) -> str:
             return subprocess.check_output(cmd, shell=True, text=True).strip()
@@ -185,4 +190,6 @@ jobs:
           PY
 
           gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
+
+
 
