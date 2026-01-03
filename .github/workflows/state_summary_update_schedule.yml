@@ -2,7 +2,7 @@
 
 on:
   schedule:
-    - cron: "17 */6 * * *"  # every 6 hours
+    - cron: "17 */6 * * *"
   workflow_dispatch:
   pull_request:
     types: [closed]
@@ -46,16 +46,28 @@ jobs:
             exit 0
           fi
 
-      - name: Build STATE_SUMMARY on main
+      - name: Build generated docs on main
         run: |
           set -euo pipefail
           python3 docs/MEP/build_state_summary.py
+          python3 docs/MEP/build_playbook_summary.py
+          python3 docs/MEP/build_runbook_summary.py
+          python3 docs/MEP/build_request_bundle.py
+          python3 docs/MEP/build_handoff_100.py
+          python3 docs/MEP/build_chat_packet.py
 
-      - name: Detect changes (docs/MEP/STATE_SUMMARY.md only)
+      - name: Detect changes (generated docs only)
         id: diff
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/MEP/STATE_SUMMARY.md; then
+          if git diff --quiet -- \
+            docs/MEP/STATE_SUMMARY.md \
+            docs/MEP/PLAYBOOK_SUMMARY.md \
+            docs/MEP/RUNBOOK_SUMMARY.md \
+            docs/MEP/REQUEST_BUNDLE_SYSTEM.md \
+            docs/MEP/REQUEST_BUNDLE_BUSINESS.md \
+            docs/MEP/HANDOFF_100.md \
+            docs/MEP/CHAT_PACKET.md; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -70,14 +82,21 @@ jobs:
           repo="${GITHUB_REPOSITORY}"
           branch="auto/state-summary-update-${GITHUB_RUN_ID}"
           git checkout -b "$branch"
-          git add docs/MEP/STATE_SUMMARY.md
-          git commit -m "docs(MEP): update STATE_SUMMARY"
+          git add \
+            docs/MEP/STATE_SUMMARY.md \
+            docs/MEP/PLAYBOOK_SUMMARY.md \
+            docs/MEP/RUNBOOK_SUMMARY.md \
+            docs/MEP/REQUEST_BUNDLE_SYSTEM.md \
+            docs/MEP/REQUEST_BUNDLE_BUSINESS.md \
+            docs/MEP/HANDOFF_100.md
+          git commit -m "docs(MEP): update generated docs"
           git push -u origin "$branch"
 
           url=$(gh pr create -R "$repo" -B main -H "$branch" \
-            -t "docs(MEP): update STATE_SUMMARY" \
-            -b "Auto-generated update of docs/MEP/STATE_SUMMARY.md (deterministic, no timestamps).")
+            -t "docs(MEP): update generated docs" \
+            -b "Auto-generated update of docs/MEP generated docs (deterministic, no timestamps).")
           echo "$url"
 
           pr=$(gh pr list -R "$repo" --state open --head "$branch" --json number --jq '.[0].number')
           gh pr merge "$pr" -R "$repo" --auto --squash --delete-branch
+
