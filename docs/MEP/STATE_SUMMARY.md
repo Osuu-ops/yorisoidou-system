@@ -62,4 +62,5 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - HANDOFF_100（引継ぎ100点）
 - REQUEST_BUNDLE（追加要求ファイル束）
 - IDEA_VAULT（アイデア避難所）
+- IDEA_INDEX（統合用一覧）
 
