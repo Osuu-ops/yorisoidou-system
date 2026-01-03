@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 201267
+- included_total_bytes: 202524
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -494,8 +494,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/INDEX.md
-- sha256: 0f1b9cc4a0ef6a367e543c7df3a77c0e030fdade79df7fcdcd4734a5f10f9ca2
-- bytes: 2068
+- sha256: bca9213eff86c124897517d5590e5bf7bc2911a2d3b6a2665c787c0c4f295ddb
+- bytes: 2189
 
 ```text
 ﻿# MEP INDEX（入口） v1.0
@@ -561,6 +561,11 @@ scope-guard enforcement test 20260103-002424
 ## Lease / Continue Target（追加）
 - LEASE: docs/MEP/LEASE.md
 - CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
+
+---
+
+## RUNBOOK（追加）
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
 ```
 
 
@@ -717,8 +722,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: ca4a15adf19b4f8f6fd121f44e166fcc07b7d33eeba603722946af4dcd1a9a6b
-- bytes: 3243
+- sha256: 66559e1655bd672fa29d7bb98dfa48aef890f73804e49774a2682987ce76ce2c
+- bytes: 4291
 
 ```text
 ﻿# RUNBOOK（復旧カード）
@@ -823,14 +828,52 @@ scope-guard enforcement test 20260103-002424
 ### 次の遷移
 - 解消できたら PLAYBOOK へ復帰
 - 解消できないなら DIRTY
+
+---
+
+## CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+
+### 症状
+- PowerShell/端末が落ちた
+- rebase/merge/cherry-pick が途中で止まった
+- 状況が不明だが、安全に観測へ戻りたい
+
+### 目的
+- ローカルの途中状態を安全に解除し、DIRTY を検出したら停止する
+- Continue Target（open PR → failing checks → RUNBOOK）へ戻す
+
+### 手順（PowerShell 単一コピペ）
+~~~powershell
+$ErrorActionPreference = "Stop"
+$repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
+
+& git rebase --abort 2>$null | Out-Null
+& git merge --abort 2>$null | Out-Null
+& git cherry-pick --abort 2>$null | Out-Null
+
+$porcelain = (& git status --porcelain)
+if (-not [string]::IsNullOrWhiteSpace($porcelain)) {
+  git status
+  throw "DIRTY: 未コミット変更あり（人間判断へ）"
+}
+
+git checkout main | Out-Null
+git pull --ff-only | Out-Null
+
+gh pr list --repo $repo --state open
+~~~
+
+### 判定
+- DIRTY が出たら停止して人間判断へ
+- clean なら観測に復帰
 ```
 
 
 ---
 
 ### FILE: docs/MEP/RUNBOOK_SUMMARY.md
-- sha256: e79b656c4481409d72856cab406afe319de61c2057eb760fa2c78812cfad0174
-- bytes: 256
+- sha256: c78aacf6e55e619444c1e9a7a8890ae38172f8e87458764670b9104034d611ed
+- bytes: 289
 
 ```text
 # RUNBOOK_SUMMARY（復旧サマリ） v1.0
@@ -841,7 +884,7 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ## カード一覧
-- （未取得）RUNBOOK.md を確認
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 ```
 
 
@@ -886,8 +929,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: ce33f84312e23f164e115f80a39a03220dc6969c7cffbec632c4a3cb9ffa3adf
-- bytes: 2156
+- sha256: a81326eda188d041346feb58a164bafabde7c9b58dc651a844767af3db0436af
+- bytes: 2211
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -934,7 +977,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## RUNBOOK カード一覧
-- （未取得）RUNBOOK.md を確認
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
 ---
 
@@ -954,6 +997,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_RECEIPTS（実装レシート）
 - Tools
 - Lease / Continue Target（追加）
+- RUNBOOK（追加）
 ```
 
 
