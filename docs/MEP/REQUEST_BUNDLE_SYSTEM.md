@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 102879
+- included_total_bytes: 103036
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -509,8 +509,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/INDEX.md
-- sha256: cd9a15192b8859c5455932d8ea5e862530c5f7d1d9a75299e0dd25520ec2c955
-- bytes: 1949
+- sha256: 0f1b9cc4a0ef6a367e543c7df3a77c0e030fdade79df7fcdcd4734a5f10f9ca2
+- bytes: 2068
 
 ```text
 ﻿# MEP INDEX（入口） v1.0
@@ -570,6 +570,12 @@ scope-guard enforcement test 20260103-002424
 
 ## Tools
 - [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
+
+---
+
+## Lease / Continue Target（追加）
+- LEASE: docs/MEP/LEASE.md
+- CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
 ```
 
 
@@ -885,8 +891,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 9a78ec571f34ae44a7ad538a47de4d4237c0635c8c68d01d1b7cd4862d8d6256
-- bytes: 2118
+- sha256: ce33f84312e23f164e115f80a39a03220dc6969c7cffbec632c4a3cb9ffa3adf
+- bytes: 2156
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -952,6 +958,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_INDEX（統合用一覧）
 - IDEA_RECEIPTS（実装レシート）
 - Tools
+- Lease / Continue Target（追加）
 ```
 
 
