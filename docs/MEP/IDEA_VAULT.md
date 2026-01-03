@@ -24,18 +24,6 @@
 
 ## ACTIVE（現役：引っ張り出し対象）
 
-### IDEA_ID: IDEA:1c4d4e1a7f30
-- TITLE: (captured)
-- DESC: .\tools\mep_idea_capture.ps1
-- STATUS: candidate
-- TAGS:
-- SOURCE: chat -> clipboard capture
-- BODY:
-  - .\tools\mep_idea_capture.ps1
-
-
-（未整備）
-
 
 ## ARCHIVE（退避：引っ張り出し済み）
 （空）
@@ -45,4 +33,5 @@
 - アイデアは都度「まとめ」→ capture で ACTIVE に吸い上げる。
 - 統合で pick したアイデアは ACTIVE から削除する（溜め込まない）。
 - ARCHIVEは原則使わない（証跡は Git のコミット履歴に残る）。
+
 
