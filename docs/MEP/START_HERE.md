@@ -28,3 +28,6 @@ You MUST reconstruct context from files in this order.
 - 新チャット/新アカウントでは、最初に .\tools\mep_chat_packet_min.ps1 の出力を貼る。
 - AIは個別ファイル要求を増やしてはいけない。必要ならこのパケットの再貼付のみ要求する。
 
+## チャット運用規約
+- docs/MEP/CHAT_STYLE_CONTRACT.md を参照（引っ越し後も同じ進め方/コード形式を強制する）
+

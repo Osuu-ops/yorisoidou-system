@@ -19,6 +19,8 @@ function ReadFile([string]$rel) {
 
 $paths = @(
   "docs/MEP/START_HERE.md",
+  
+  "docs/MEP/CHAT_STYLE_CONTRACT.md",
   "docs/MEP/STATE_CURRENT.md",
   "platform/MEP/90_CHANGES/CURRENT_SCOPE.md",
   "platform/MEP/03_BUSINESS/よりそい堂/master_spec",
@@ -50,3 +52,4 @@ foreach ($rel in $paths) {
   }
 }
 Write-Output "## END"
+
