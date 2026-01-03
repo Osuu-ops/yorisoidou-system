@@ -51,4 +51,7 @@
 - RUNBOOK（復旧カード）
 - PLAYBOOK（次の指示）
 - STATE_SUMMARY（現在地サマリ）
+- PLAYBOOK_SUMMARY（次の指示サマリ）
+- RUNBOOK_SUMMARY（復旧サマリ）
+- UPGRADE_GATE（開始ゲート）
 
