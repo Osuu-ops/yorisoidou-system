@@ -55,3 +55,28 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ### 4.3 分割判断で使う最小ルール（辞書側の補足）
 - scopeCategory=EQUIPMENT と INTERIOR が混在する場合は原則分割（BUSINESS_SPEC側のルールと対応）
 
+## 5. 請求（INVOICE）追加フィールド
+
+本セクションは BUSINESS_SPEC の「請求（INVOICE）」を実務で回すための追加辞書である。
+
+### 5.1 追加フィールド（辞書）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| invoice | invoice | dueDate | string | no | YYYY-MM-DD or free text | 支払期限 |
+| invoice | invoice | paymentMethod | enum | no | BANK/ON_SITE/OTHER | 支払方法 |
+| invoice | invoice | bankAccount | string | no |  | 振込先（自由記述） |
+| invoice | invoice | invoiceStatus | enum | no | DRAFT/ISSUED/PAID | 請求状態 |
+
+### 5.2 列挙（enum）
+- paymentMethod:
+  - BANK（振込）
+  - ON_SITE（現地/集金）
+  - OTHER（その他）
+- invoiceStatus:
+  - DRAFT（下書き）
+  - ISSUED（発行）
+  - PAID（入金済み）
+
+### 5.3 最小ルール（辞書側の補足）
+- dueDate / paymentMethod / bankAccount は未設定でも INVOICE を作成可（BUSINESS_SPEC側と対応）
+
