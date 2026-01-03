@@ -184,3 +184,86 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ### Derived / Effects（参照）
 - 完了同期により、Parts/EX/Expense/在庫戻しが確定される（business_spec / master_spec に従う）
 - 不備（写真不足/LOCATION不整合/価格未確定 等）は管理警告対象
+
+<!-- PARTS_FIELDS_PHASE1 -->
+## PARTS（部材）— BUSINESS_MASTER（辞書）
+
+本節は PARTS（部材）に関する辞書（field/enum/補助辞書）を定義する。
+※ PRICE/STATUS/区分（BP/BM）等の確定は業務ルールに従う。人/AI/UI が任意に決定してはならない。
+
+### Enums（固定）
+- partType
+  - values: BP / BM
+  - meaning:
+    - BP=メーカー手配品（納品時に価格確定）
+    - BM=既製品/支給品等（PRICE=0、経費対象外）
+- partStatus
+  - values: STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
+  - rule: 工程イベント（発注/納品/完了同期）でのみ遷移する
+
+### Fields（台帳カラムの意味：Phase-1）
+- PART_ID
+  - type: string
+  - meaning: 部材の貫通ID（BP/BM体系、再利用不可）
+- Order_ID
+  - type: string|null
+  - meaning: 受注への接続（無い場合は在庫発注として扱う）
+- OD_ID
+  - type: string|null
+  - meaning: 同一受注内の発注行補助ID
+- partType
+  - type: enum(partType)
+  - required: true
+- AA
+  - type: string|null
+  - meaning: 永続番号（AA00は禁止、タスク名反映）
+- PA
+  - type: string|null
+  - meaning: BP枝番（PA00禁止）
+- MA
+  - type: string|null
+  - meaning: BM枝番（MA00禁止）
+- maker
+  - type: string|null
+- modelNumber
+  - type: string|null
+  - meaning: 品番
+- quantity
+  - type: number
+  - default: 1
+- PRICE
+  - type: number|null
+  - rule:
+    - BP: 納品時に確定（未確定は警告）
+    - BM: 0（経費対象外）
+- partStatus
+  - type: enum(partStatus)
+  - required: true
+- CREATED_AT
+  - type: datetime
+- DELIVERED_AT
+  - type: datetime|null
+- USED_DATE
+  - type: date|null
+- LOCATION
+  - type: string|null
+  - rule:
+    - STATUS=STOCK の場合は必須
+    - 未使用部材の STOCK 戻しでも整合必須（欠落は管理警告）
+- MEMO
+  - type: string|null
+
+### Discontinued Dictionary（廃番→新番：補助辞書）
+- discontinuedPartMap
+  - entry:
+    - discontinued: string（廃番品番/旧番）
+    - replacement: string|null（新番/代替候補）
+    - keywords: list<string>（曖昧検索補助）
+    - photoUrl: url|null（写真/参考）
+  - rule:
+    - 代替案内は補助。最終採用判断は業務ロジックで確定する
+
+### Guard（業務破壊防止）
+- AA00/PA00/MA00 はテスト専用。業務データに混在させない
+- PRICE 推測代入禁止（確定入力のみ）
+- BP/BM 区分変更は危険修正（申請/FIX）として扱う
