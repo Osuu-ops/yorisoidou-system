@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 UI spec is derived from master_spec (CURRENT_SCOPE: Yorisoidou BUSINESS).
 NOTE: navigation/positioning only; does NOT change meaning.
 RULE: 1 theme = 1 PR; canonical is main after merge.
@@ -249,4 +249,36 @@ UI 実装は、本書との差分として管理される
 - 発行時の最小要件：
   - docName/docDesc/docPrice が揃っている（原則）
 - 発行後は receiptStatus=ISSUED
+
+<!-- ORDER_FLOW_PHASE1 -->
+
+## ORDER_FLOW（受注の導線）
+
+### 目的
+- UF01（受注）入力 → 確認 → 受付完了 の導線を固定する。
+- 意味（必須/任意・ルール）は master_spec に従う（特に raw 必須、orderStatus は UI で決めない）。
+
+### 画面
+- SCREEN_ORDER_CREATE（受注入力）
+- SCREEN_ORDER_CONFIRM（受注確認）
+- SCREEN_ORDER_DONE（受付完了）
+
+### 入力→確認遷移（VALIDATION）
+1) SCREEN_ORDER_CREATE で「確認へ」
+2) 最低限チェック（必須）
+   - raw（通知全文 / 1行メモ）
+3) それ以外（name/phone/addressFull/preferred1/preferred2/price/備考等）は
+   - 未入力を許容する（素材が無い受注を業務として拒否しない）
+
+### 確認画面（表示規約）
+- 未入力項目は「未入力」として表示し、責めない文言にする。
+- addressCityTown 等の業務確定値が未確定な段階では、UI は推測で断定表示しない。
+- orderStatus/STATUS は UI で決めない（表示のみ、または非表示でも可）。
+
+### 受付完了（SUBMIT）
+- SCREEN_ORDER_CONFIRM で「送信」
+- 送信後は SCREEN_ORDER_DONE を表示し、以下を明示する：
+  - 「受付しました」
+  - 「内容を確認のうえ、後ほどご連絡します」
+- 二重送信防止：送信中はボタン無効化・処理中表示を行う（UI_PROTOCOL に従う）。
 
