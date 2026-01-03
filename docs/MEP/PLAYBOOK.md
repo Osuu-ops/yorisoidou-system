@@ -76,3 +76,16 @@
 - 人間判断入力に変換（採用/破棄を明示）
 - 最小差分PRで再実行
 - RUNBOOK: CARD-05
+
+## CARD: IDEA → Receipt → PR（mep_idea_receipt）
+
+目的：
+- 採用したIDEAを「実装レシート（IDEA_RECEIPTS）」として固定し、必要ならPRとして提出する。
+
+実行（ID手入力なし）：
+- powershell: .\tools\mep_idea_receipt.ps1
+
+参照：
+- docs/MEP/IDEA_VAULT.md（避難所）
+- docs/MEP/IDEA_INDEX.md（候補一覧）
+- docs/MEP/IDEA_RECEIPTS.md（実装レシート）
