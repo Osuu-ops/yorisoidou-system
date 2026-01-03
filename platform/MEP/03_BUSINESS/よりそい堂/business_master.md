@@ -267,3 +267,28 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - AA00/PA00/MA00 はテスト専用。業務データに混在させない
 - PRICE 推測代入禁止（確定入力のみ）
 - BP/BM 区分変更は危険修正（申請/FIX）として扱う
+
+<!-- EXPENSE_FIELDS_PHASE1 -->
+## EXPENSE（経費）— BUSINESS_MASTER（辞書）
+
+### Fields（Phase-1）
+- EXP_ID
+  - type: string
+  - format: EXP-YYYYMM-0001
+  - rule: 再利用不可、月内連番
+- Order_ID
+  - type: string
+  - required: true
+- PART_ID
+  - type: string|null
+  - required: false
+- PRICE
+  - type: number
+  - required: true
+  - rule: 推測代入禁止（確定のみ）
+- USED_DATE
+  - type: date
+  - required: true
+- CreatedAt
+  - type: datetime
+  - required: true
