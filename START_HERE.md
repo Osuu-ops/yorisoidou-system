@@ -42,3 +42,6 @@
 - docs/MEP/PROCESS.md
 - docs/MEP/GLOSSARY.md
 - docs/MEP/GOLDEN_PATH.md
+
+- [OPS: Scope-IN Suggest 運用（Out-of-scope 自動提案PR）](docs/MEP/OPS_SCOPE_SUGGEST.md)
+
