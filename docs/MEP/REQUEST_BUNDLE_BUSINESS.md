@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 194886
+- included_total_bytes: 197315
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -87,8 +87,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 4a07b12640befbd434013255c0c4ecfe812d40e5327bf4f9a2f2b37043605824
-- bytes: 10664
+- sha256: 6f6e276875b49cecff2dd9b2b835fadfa013f0ddd4be0e450793ec265c3a5e6e
+- bytes: 11751
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -284,7 +284,34 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
+# STATE_CURRENT（現在地） v1.2
 
+## 目的
+本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
+UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+
+---
+
+## 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
+- chat_packet_update_schedule / dispatch により CHAT_PACKET を生成し、差分があれば auto PR を作成・auto-merge
+- Chat Packet Guard が生成物の古さをNGとして検出（正常）
+- Self-Heal が no-checks / behind / DIRTY を検知し、復旧 or 停止（停止理由を残す）
+
+---
+
+## 2) 重要ルール（固定）
+- PowerShell は必ず @' '@（ダブルクォートHere-Stringは禁止）
+- 人間によるID手入力・プレースホルダ差し替え禁止（gh等で自動解決）
+- 変更は必ずPR経由（main直コミット禁止）
+
+---
+
+## 3) 次の改良 Top3（一本道）
+1. RUNBOOK（復旧カード）を docs/MEP に追加
+2. PLAYBOOK（次の指示カード）を docs/MEP に追加
+3. STATE_SUMMARY を生成物として自動更新
+
+---
 ```
 
 ---
@@ -724,19 +751,46 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-- bytes: 0
+- sha256: 8f91309bff6fe0a2f0817808b849348f81400a5448a0e650f1ecd60ff5b6d6bf
+- bytes: 1088
 
 ```text
+# STATE_CURRENT（現在地） v1.2
 
+## 目的
+本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
+UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+
+---
+
+## 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
+- chat_packet_update_schedule / dispatch により CHAT_PACKET を生成し、差分があれば auto PR を作成・auto-merge
+- Chat Packet Guard が生成物の古さをNGとして検出（正常）
+- Self-Heal が no-checks / behind / DIRTY を検知し、復旧 or 停止（停止理由を残す）
+
+---
+
+## 2) 重要ルール（固定）
+- PowerShell は必ず @' '@（ダブルクォートHere-Stringは禁止）
+- 人間によるID手入力・プレースホルダ差し替え禁止（gh等で自動解決）
+- 変更は必ずPR経由（main直コミット禁止）
+
+---
+
+## 3) 次の改良 Top3（一本道）
+1. RUNBOOK（復旧カード）を docs/MEP に追加
+2. PLAYBOOK（次の指示カード）を docs/MEP に追加
+3. STATE_SUMMARY を生成物として自動更新
+
+---
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 6bb2dd1f8925e2c890ecce24b6bf503729c65462f8ff1c705e318b40057d703d
-- bytes: 2014
+- sha256: 8d3abcb47cc5d01981e815b95144ae7c8c58d73fa1d6c6dc8e80f2904134d252
+- bytes: 2268
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -748,7 +802,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ## 目的（STATE_CURRENTから要約）
-- （未取得）STATE_CURRENT.md の「目的」節を確認
+本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
+UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
 
 ---
 
@@ -762,7 +817,11 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ## STATE_CURRENT の主要見出し
-- （未取得）STATE_CURRENT.md を確認
+- STATE_CURRENT（現在地） v1.2
+- 目的
+- 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
+- 2) 重要ルール（固定）
+- 3) 次の改良 Top3（一本道）
 
 ---
 
