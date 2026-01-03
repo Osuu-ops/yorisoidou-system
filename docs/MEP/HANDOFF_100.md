@@ -1955,3 +1955,12 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 > - CARD-04: Head branch is out of date（behind/out-of-date）
 > - CARD-05: DIRTY（自動で安全に解決できない）
 <!-- HANDOFF_ARCHIVE_END -->
+
+---
+
+## Lease / Continue Target（導入） v1.1
+
+- LEASE: docs/MEP/LEASE.md
+- CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
+
+運用は「開始直後に UPGRADE_GATE → CONTINUE_TARGET確定 → 1PR」の1本道に固定する。
