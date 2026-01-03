@@ -17,3 +17,6 @@
 - [GLOSSARY](./GLOSSARY.md)
 - [GOLDEN_PATH](./GOLDEN_PATH.md)
 
+
+## RUNBOOK（復旧カード）
+- RUNBOOK.md（異常時は診断ではなく次の一手だけを返す）
