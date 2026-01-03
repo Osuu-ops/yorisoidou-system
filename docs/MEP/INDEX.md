@@ -61,3 +61,8 @@
 ## Lease / Continue Target（追加）
 - LEASE: docs/MEP/LEASE.md
 - CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
+
+---
+
+## RUNBOOK（追加）
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
