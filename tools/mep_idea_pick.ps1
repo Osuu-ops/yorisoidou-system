@@ -1,9 +1,10 @@
 ﻿# tools/mep_idea_pick.ps1
 # Usage:
-#   .\tools\mep_idea_pick.ps1 2 5
+#   .\tools\mep_idea_pick.ps1 1 3
 # Effect:
 #   - Copies selected idea blocks to clipboard (insertion-ready)
-#   - Deletes them from ACTIVE (no stockpiling; history remains in Git)
+#   - Marks them as STATUS: picked (does NOT delete)
+#   - Deletion is done only after implemented receipt exists: .\tools\mep_idea_finalize.ps1 1 3
 $ErrorActionPreference = "Stop"
 
 param(
@@ -50,16 +51,19 @@ $bundle = "# SELECTED_IDEAS (paste this into chat)`r`n`r`n" + ($picks -join "`r`
 $bundle | Set-Clipboard
 Write-Host ("OK: Copied {0} idea(s) to clipboard." -f $picks.Count)
 
-# Delete from ACTIVE (no ARCHIVE)
+# Mark STATUS: picked inside ACTIVE (no deletion)
 $active2 = $active
 foreach ($p in $picks) {
-  $active2 = $active2 -replace [regex]::Escape($p), ""
+  $p2 = $p
+  if ($p2 -match '(?m)^\-\s*STATUS:\s*') {
+    $p2 = [regex]::Replace($p2, '(?m)^\-\s*STATUS:\s*\w+\s*$', '- STATUS: picked')
+  } else {
+    # Insert STATUS under TITLE if missing
+    $p2 = [regex]::Replace($p2, '(?m)^\-\s*TITLE:.*$', '$0' + "`r`n" + '- STATUS: picked', 1)
+  }
+  $active2 = $active2 -replace [regex]::Escape($p), $p2
 }
-$active2 = ($active2 -replace "(\r?\n){4,}", "`r`n`r`n`r`n")
-
-# Rebuild file: replace ACTIVE section only, keep rest (including ARCHIVE header)
-$raw2 = $raw -replace [regex]::Escape($activeMatch.Value), $active2
-Set-Content -Path $vaultPath -Value $raw2 -Encoding UTF8
+Set-Content -Path $vaultPath -Value ($raw -replace [regex]::Escape($activeMatch.Value), $active2) -Encoding UTF8
 
 # Regenerate IDEA_INDEX locally
 if (Get-Command py -ErrorAction SilentlyContinue) { py -3 docs/MEP/build_idea_index.py | Out-Host }
@@ -71,15 +75,14 @@ $branch = "work/idea-pick-$ts"
 git checkout -b $branch | Out-Null
 
 git add $vaultPath "docs/MEP/IDEA_INDEX.md"
-git commit -m "docs(MEP): delete picked ideas from ACTIVE (no stockpile)" | Out-Null
+git commit -m "docs(MEP): mark picked ideas (no delete)" | Out-Null
 git push -u origin $branch | Out-Null
 
-$prUrl = (gh pr create -R $repo -B main -H $branch -t "docs(MEP): delete picked ideas (no stockpile)" -b "Picked ideas were copied to clipboard and removed from IDEA_VAULT ACTIVE. IDEA_INDEX refreshed. (History remains in Git.)")
+$prUrl = (gh pr create -R $repo -B main -H $branch -t "docs(MEP): mark picked ideas" -b "Selected ideas copied to clipboard and marked STATUS:picked. Deletion is only after receipts show RESULT: implemented.")
 Write-Host $prUrl
 
 $pr = (gh pr list -R $repo --state open --head $branch --json number --jq '.[0].number')
 if (-not $pr) { throw "Failed to resolve PR number." }
 
 gh pr merge $pr -R $repo --auto --squash --delete-branch | Out-Null
-
-Write-Host "OK: Pick complete. Paste clipboard into chat and say '統合して進めて'."
+Write-Host "OK: Pick complete (copied to clipboard + marked picked)."

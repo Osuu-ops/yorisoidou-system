@@ -49,3 +49,6 @@
 ## IDEA_INDEX（統合用一覧）
 - IDEA_INDEX.md（ACTIVEから生成。番号で選ぶ）
 - IDEA_VAULT.md（本体。ACTIVE/ARCHIVE）
+
+## IDEA_RECEIPTS（実装レシート）
+- IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
