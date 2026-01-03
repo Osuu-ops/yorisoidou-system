@@ -54,3 +54,30 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - docName/docDesc/docPrice が揃っていない場合は質問して補完する。
 - 支払期限や支払方法は未設定でも作成可（docMemo に未確定と記載）。
 
+## 4. 領収（RECEIPT）
+
+### 4.1 目的
+- 確定した請求（INVOICE）または入金情報を元に、領収書（docType=RECEIPT）を生成する。
+
+### 4.2 入力（最小）
+- 元請求（INVOICE）：
+  - docName / docDesc / docPrice / docMemo
+- 可能なら追加：
+  - 受領日（任意）
+  - 支払方法（任意：現金/振込など）
+
+### 4.3 出力（生成物）
+- docType = RECEIPT
+- docName（宛名）
+- docDesc（領収内容）
+- docPrice（金額：原則必須）
+- docMemo（備考：任意）
+
+### 4.4 ルール
+- 原則、INVOICE が invoiceStatus=PAID（入金済み）の場合に作成する
+- 例外的に、現金受領などで手動作成する場合は docMemo に理由を明記する
+
+### 4.5 不足情報（質問）
+- docName/docDesc/docPrice が揃っていない場合は質問して補完する。
+- 受領日や支払方法は未設定でも作成可（docMemo に未確定と記載）。
+
