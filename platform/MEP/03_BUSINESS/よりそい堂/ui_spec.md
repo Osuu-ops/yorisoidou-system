@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 UI spec is derived from master_spec (CURRENT_SCOPE: Yorisoidou BUSINESS).
 NOTE: navigation/positioning only; does NOT change meaning.
 RULE: 1 theme = 1 PR; canonical is main after merge.
@@ -154,3 +154,36 @@ UI_PROTOCOL の変更を伴う修正は行わない
 UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
+
+## ESTIMATE_FLOW（見積の導線）
+
+### 目的
+- 見積作成（入力）→プレビュー→確定 の導線を固定する。
+- 意味（必須/任意・ルール）は BUSINESS_SPEC/BUSINESS_MASTER に従う。
+
+### 画面
+- SCREEN_ESTIMATE_CREATE（見積作成）
+- SCREEN_ESTIMATE_PREVIEW（見積プレビュー）
+
+### 入力→プレビュー遷移（VALIDATION）
+1) SCREEN_ESTIMATE_CREATE で「プレビューへ」
+2) その時点で最低限チェック：
+   - docName（必須）
+   - docDesc（必須）
+3) docPrice は priceStatus=TBD の場合は未設定でも可
+   - priceStatus=FINAL の場合は docPrice を必須にしてよい
+4) splitPolicy=MANUAL の場合は scopeCategory を必須にしてよい
+
+### プレビュー画面（表示規約）
+- priceStatus=TBD の場合：
+  - 「価格未確定」を明記して表示（docPriceが空でもOK）
+- 分割が必要な場合（設備＋内装混在など）は、プレビュー上で
+  - 「見積A（設備）」「見積B（内装）」のように2件表示できる（BUSINESS_SPECの分割ルールに従う）
+
+### 確定（CONFIRM）
+- SCREEN_ESTIMATE_PREVIEW で「確定」
+- 確定時の最小要件：
+  - docName/docDesc が揃っている
+  - priceStatus=FINAL の場合は docPrice が設定されている
+- 確定後は「見積DOCが生成された」状態として次工程へ（将来：INVOICE連携）
+
