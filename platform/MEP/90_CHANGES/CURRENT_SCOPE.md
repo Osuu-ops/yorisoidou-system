@@ -17,6 +17,7 @@
 - tools/mep_idea_capture.ps1
 - tools/mep_idea_list.ps1
 - tools/mep_idea_pick.ps1
+- tools/mep_idea_finalize.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
