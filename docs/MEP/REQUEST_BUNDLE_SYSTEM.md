@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 105409
+- included_total_bytes: 104355
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 348faaf8b00f77960aafd6890388578f93511f7f1c2e39046237e18478d1dff2
-- bytes: 12121
+- sha256: 3488c0a3fd92cbf11a4b84c2ddb781183e22fb1fd2af56455086bd8ee520971d
+- bytes: 11888
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -250,6 +250,20 @@ checks:
 
 ## IDEA_RECEIPTS（実装レシート）
 - IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
+
+## Tools
+- [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
+
+---
+
+## Lease / Continue Target（追加）
+- LEASE: docs/MEP/LEASE.md
+- CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
+
+---
+
+## RUNBOOK（追加）
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
 ```
 
 ---
@@ -309,34 +323,22 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-# STATE_CURRENT（現在地） v1.2
+﻿# STATE_CURRENT (MEP)
 
-## 目的
-本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+## CURRENT_SCOPE (canonical)
+- platform/MEP/03_BUSINESS/よりそい堂/**
 
----
+## Guards / Safety
+- Text Integrity Guard (PR): enabled
+- Halfwidth Kana Guard: enabled
+- UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
-## 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
-- chat_packet_update_schedule / dispatch により CHAT_PACKET を生成し、差分があれば auto PR を作成・auto-merge
-- Chat Packet Guard が生成物の古さをNGとして検出（正常）
-- Self-Heal が no-checks / behind / DIRTY を検知し、復旧 or 停止（停止理由を残す）
+## Current objective
+- Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 
----
-
-## 2) 重要ルール（固定）
-- PowerShell は必ず @' '@（ダブルクォートHere-Stringは禁止）
-- 人間によるID手入力・プレースホルダ差し替え禁止（gh等で自動解決）
-- 変更は必ずPR経由（main直コミット禁止）
-
----
-
-## 3) 次の改良 Top3（一本道）
-1. RUNBOOK（復旧カード）を docs/MEP に追加
-2. PLAYBOOK（次の指示カード）を docs/MEP に追加
-3. STATE_SUMMARY を生成物として自動更新
-
----
+## How to start a new conversation
+Tell the assistant:
+- "Read docs/MEP/START_HERE.md and proceed."
 ```
 
 ---
@@ -906,46 +908,34 @@ gh pr list --repo $repo --state open
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 8f91309bff6fe0a2f0817808b849348f81400a5448a0e650f1ecd60ff5b6d6bf
-- bytes: 1088
+- sha256: 1967e4b4a65cfefb609e072c278966854a1d7752ec2d046320ebf7669a3f89fa
+- bytes: 465
 
 ```text
-# STATE_CURRENT（現在地） v1.2
+﻿# STATE_CURRENT (MEP)
 
-## 目的
-本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+## CURRENT_SCOPE (canonical)
+- platform/MEP/03_BUSINESS/よりそい堂/**
 
----
+## Guards / Safety
+- Text Integrity Guard (PR): enabled
+- Halfwidth Kana Guard: enabled
+- UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
-## 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
-- chat_packet_update_schedule / dispatch により CHAT_PACKET を生成し、差分があれば auto PR を作成・auto-merge
-- Chat Packet Guard が生成物の古さをNGとして検出（正常）
-- Self-Heal が no-checks / behind / DIRTY を検知し、復旧 or 停止（停止理由を残す）
+## Current objective
+- Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 
----
-
-## 2) 重要ルール（固定）
-- PowerShell は必ず @' '@（ダブルクォートHere-Stringは禁止）
-- 人間によるID手入力・プレースホルダ差し替え禁止（gh等で自動解決）
-- 変更は必ずPR経由（main直コミット禁止）
-
----
-
-## 3) 次の改良 Top3（一本道）
-1. RUNBOOK（復旧カード）を docs/MEP に追加
-2. PLAYBOOK（次の指示カード）を docs/MEP に追加
-3. STATE_SUMMARY を生成物として自動更新
-
----
+## How to start a new conversation
+Tell the assistant:
+- "Read docs/MEP/START_HERE.md and proceed."
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: a81326eda188d041346feb58a164bafabde7c9b58dc651a844767af3db0436af
-- bytes: 2211
+- sha256: f22dd8828835f2323e503d7ad9d86bf5c0cea8058b3122188826a4fcc4f606b9
+- bytes: 2013
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -957,8 +947,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## 目的（STATE_CURRENTから要約）
-本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+- （未取得）STATE_CURRENT.md の「目的」節を確認
 
 ---
 
@@ -972,11 +961,10 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT（現在地） v1.2
-- 目的
-- 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
-- 2) 重要ルール（固定）
-- 3) 次の改良 Top3（一本道）
+- CURRENT_SCOPE (canonical)
+- Guards / Safety
+- Current objective
+- How to start a new conversation
 
 ---
 
