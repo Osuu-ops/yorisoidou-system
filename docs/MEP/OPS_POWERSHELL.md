@@ -55,3 +55,11 @@ gh run list --workflow "chat_packet_update_schedule.yml" --limit 1
 
 # auto/chat-packet-update PR の有無（open は瞬殺されるので state all 推奨）
 gh pr list --state all --base main --search "head:auto/chat-packet-update-" --limit 5
+
+## AI出力契約（単一コピペ一本道）
+
+- 本運用では、AIの出力は **PowerShell単一コピペ一本道**を原則とする。
+- ID/番号の手入力・差し替えは禁止（ghで自動解決してコマンド内で完結）。
+- 詳細は以下を唯一の正とする：
+  - docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+
