@@ -45,3 +45,7 @@
 
 ## IDEA_VAULT（アイデア避難所）
 - IDEA_VAULT.md（アイデア散逸防止。ID化は採用候補のみ）
+
+## IDEA_INDEX（統合用一覧）
+- IDEA_INDEX.md（ACTIVEから生成。番号で選ぶ）
+- IDEA_VAULT.md（本体。ACTIVE/ARCHIVE）
