@@ -318,3 +318,32 @@ UI 実装は、本書との差分として管理される
 - 必須不足（workDoneComment 空）のみエラー
 - 添付不足は警告（任意）に留め、送信は止めない
 
+<!-- PARTS_FLOW_PHASE1 -->
+
+## PARTS_FLOW（部材：UF06/UF07 の導線）
+
+### 目的
+- UF06（発注/納品）と UF07（価格入力）を「入力→確認→完了」の導線として固定する。
+- PRICE/STATUS/区分の確定は UI で行わない。業務ルールに従い、警告は管理側で回収する。
+
+### UF06_ORDER_FLOW（発注）
+- SCREEN_PARTS_ORDER_CREATE → SCREEN_PARTS_ORDER_CONFIRM → SCREEN_PARTS_ORDER_DONE
+- 最低限チェック（推奨）：
+  - partType（必須）
+  - quantity（必須）
+- Order_ID は未入力を許容（在庫発注＝STOCK_ORDERED）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+
+### UF06_DELIVER_FLOW（納品）
+- SCREEN_PARTS_DELIVER_CREATE → SCREEN_PARTS_DELIVER_CONFIRM → SCREEN_PARTS_DELIVER_DONE
+- 最低限チェック（必須）：
+  - deliveredAt
+- BP の PRICE 未入力は “警告” として扱い、送信は止めない（管理警告で回収）
+- LOCATION は STOCK を扱う場合は必須化してよい（欠落は警告）
+
+### UF07_PRICE_FLOW（価格入力）
+- SCREEN_PARTS_PRICE_CREATE → SCREEN_PARTS_PRICE_CONFIRM → SCREEN_PARTS_PRICE_DONE
+- 最低限チェック（必須）：
+  - PART_ID
+  - PRICE
+- STATUS は変更しない（価格確定のみ）
