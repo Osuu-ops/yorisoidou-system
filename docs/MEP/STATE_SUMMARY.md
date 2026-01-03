@@ -60,4 +60,5 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_VAULT（アイデア避難所）
 - IDEA_INDEX（統合用一覧）
 - IDEA_RECEIPTS（実装レシート）
+- Tools
 

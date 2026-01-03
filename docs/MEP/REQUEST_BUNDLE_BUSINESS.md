@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 198868
+- included_total_bytes: 199470
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -494,8 +494,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/INDEX.md
-- sha256: 73a3ac2ac6b087320abbe6afcff5189d6f7b9ffed2efaca27b7cdb904fd1cdb5
-- bytes: 1798
+- sha256: cd9a15192b8859c5455932d8ea5e862530c5f7d1d9a75299e0dd25520ec2c955
+- bytes: 1949
 
 ```text
 ﻿# MEP INDEX（入口） v1.0
@@ -552,14 +552,17 @@ scope-guard enforcement test 20260103-002424
 
 ## IDEA_RECEIPTS（実装レシート）
 - IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
+
+## Tools
+- [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
 ```
 
 
 ---
 
 ### FILE: docs/MEP/PLAYBOOK.md
-- sha256: 806af7c0f0487afede2136d617dd0c1134d0a3421c7871a430e32a86971bf12d
-- bytes: 2190
+- sha256: 1a82c3c6fbbeea3d6503096e5f298b0f8bf86595ec17ee3b7371d26e030f3c96
+- bytes: 2604
 
 ```text
 ﻿# PLAYBOOK（次の指示カード集）
@@ -640,6 +643,19 @@ scope-guard enforcement test 20260103-002424
 - 人間判断入力に変換（採用/破棄を明示）
 - 最小差分PRで再実行
 - RUNBOOK: CARD-05
+
+## CARD: IDEA → Receipt → PR（mep_idea_receipt）
+
+目的：
+- 採用したIDEAを「実装レシート（IDEA_RECEIPTS）」として固定し、必要ならPRとして提出する。
+
+実行（ID手入力なし）：
+- powershell: .\tools\mep_idea_receipt.ps1
+
+参照：
+- docs/MEP/IDEA_VAULT.md（避難所）
+- docs/MEP/IDEA_INDEX.md（候補一覧）
+- docs/MEP/IDEA_RECEIPTS.md（実装レシート）
 ```
 
 
@@ -840,8 +856,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 477ea184148fe5cbbad2c06b63df35d14b928de70a96436dd174663585d2a5a5
-- bytes: 2110
+- sha256: 9a78ec571f34ae44a7ad538a47de4d4237c0635c8c68d01d1b7cd4862d8d6256
+- bytes: 2118
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -906,6 +922,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_VAULT（アイデア避難所）
 - IDEA_INDEX（統合用一覧）
 - IDEA_RECEIPTS（実装レシート）
+- Tools
 ```
 
 
@@ -1523,8 +1540,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: f2e8aa340da38863dfc2868e5689a95a2f9618c600bdc71dd0ac78b732d2554e
-- bytes: 1519
+- sha256: e1716518cf44d9426006bf6f88d575f0d9d14635eadc7b63e7a7ff067c76669b
+- bytes: 1548
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -1547,6 +1564,7 @@ UI 実装は、本書との差分として管理される
 - tools/mep_idea_list.ps1
 - tools/mep_idea_pick.ps1
 - tools/mep_idea_finalize.ps1
+- tools/mep_idea_receipt.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
