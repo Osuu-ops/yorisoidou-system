@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 218220
+- included_total_bytes: 245298
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -728,11 +728,11 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 550c4c175d1332de252becb3eda1dfcab5e9206cc2ea2eb1c881a1eeddbe32b7
-- bytes: 4539
+- sha256: f2cbc838b1d1c7b9eafa1655065c748d3e26a756692577b10cb42738a54becd8
+- bytes: 7106
 
 ```text
-﻿# RUNBOOK（復旧カード）
+# RUNBOOK（復旧カード）
 
 本書は「異常時の復旧」をカードとして固定する。
 本書は説明を行わない。評価を行わない。
@@ -876,6 +876,61 @@ gh pr list --repo $repo --state open
 ## CARD-BOOT: One-Packet Bootstrap（新チャット/新アカウント向け）
 - 実行：`.\tools\mep_chat_packet_min.ps1` を実行し、出力を貼る。
 - AI：個別ファイル要求は禁止。必要なら再貼付のみ要求する。
+
+<!-- CARD: BUSINESS_IMPL_GO_NOGO -->
+
+## CARD: BUSINESS_IMPL_GO_NOGO（業務系へ進むGo/No-Go）
+
+### 観測
+- open PR が 0 か
+  - `gh pr list --state open`
+- Phase-1（PARTS/EXPENSE）の marker が origin/main に揃っているか（唯一の正で確認）
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/business_spec.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/business_master.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/ui_master.md`
+  - `git show origin/main:platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md`
+
+### 一次対応（PowerShell 単一コピペ）
+~~~powershell
+$ErrorActionPreference="Stop"
+$repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
+
+git checkout main | Out-Null
+git pull --ff-only | Out-Null
+if (git status --porcelain) { git status; throw "NO-GO: working tree not clean" }
+
+$open = (gh pr list --repo $repo --state open --json number,title,headRefName | ConvertFrom-Json)
+if ($open.Count -ne 0) { $open | Format-Table -AutoSize; throw "NO-GO: open PR exists" }
+
+$need = @(
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md";  marker="<!-- PARTS_SPEC_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_master.md"; marker="<!-- PARTS_FIELDS_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_master.md";       marker="<!-- PARTS_UI_MASTER_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md";         marker="<!-- PARTS_FLOW_PHASE1 -->" },
+
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md";  marker="<!-- EXPENSE_SPEC_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/business_master.md"; marker="<!-- EXPENSE_FIELDS_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_master.md";       marker="<!-- EXPENSE_UI_MASTER_PHASE1 -->" },
+  @{ file="platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md";         marker="<!-- EXPENSE_FLOW_PHASE1 -->" }
+)
+
+$ng=@()
+foreach($x in $need){
+  $txt = (git show ("origin/main:{0}" -f $x.file) | Out-String)
+  if ($txt -notmatch [regex]::Escape($x.marker)) { $ng += "$($x.file) :: $($x.marker)" }
+}
+
+if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: missing markers" }
+"GO: Business implementation can proceed."
+~~~
+
+### 停止条件（NO-GO）
+- open PR が 1本でもある
+- marker が欠けている
+- working tree が dirty
+
+### 次の遷移（GO）
+- 業務系（実装・運用側）へ進む（Phase-1 を前提として進める）
 ```
 
 
@@ -1452,11 +1507,11 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
-- sha256: d7696a3c94dc814f328b61c27adc221139426e33334000f187d8c46143d6975c
-- bytes: 4384
+- sha256: d2252e54947369effd7214ad9b926f0fb53df8f117f829276868377a39aebd2e
+- bytes: 10541
 
 ```text
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
@@ -1560,17 +1615,207 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 
 ### 6.3 最小ルール（辞書側の補足）
 - receivedDate / paymentMethod は未設定でも RECEIPT を作成可（BUSINESS_SPEC側と対応）
+
+<!-- ORDER_FIELDS_PHASE1 -->
+## ORDER（受注）— BUSINESS_MASTER（辞書）
+
+本節は「受注（ORDER）」に関する辞書（enum/field）を定義する。
+※ master_spec の原則どおり、Order の状態（STATUS/orderStatus）は **業務ロジックが確定**し、人/AI/UIが任意に決定してはならない。
+
+### Fields（追加：Phase-1）
+- orderStatus
+  - type: string（表示用）
+  - source: business-logic（自動確定）
+  - rule: UIは表示のみ。手入力で確定/変更してはならない。
+- scheduledDate
+  - type: date（YYYY-MM-DD, Asia/Tokyo）
+  - meaning: 施工予定日（確定/未確定を含む“予定”）
+- scheduledTimeSlot
+  - type: enum
+  - values: AM / PM / EVENING / ANY / TBD
+  - rule: TBD は「未確定」を意味する（UIで明示）
+- scheduledTimeNote
+  - type: string（任意）
+  - meaning: 時間帯の補足（例：10時以降希望、管理会社連絡後確定 等）
+- assignee
+  - type: string（任意）
+  - meaning: 担当者（表示名/コードいずれでも可。確定は運用/実装で制約）
+- priority
+  - type: enum
+  - values: NORMAL / HIGH / URGENT
+- intakeChannel
+  - type: enum
+  - values: UF01 / FIX / DOC / OTHER
+- orderMemo
+  - type: string（任意）
+  - meaning: 受注に関する補足（HistoryNotes と役割が衝突しない範囲で使用）
+
+### UI 表示ルール（最小）
+- scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
+- orderStatus は UI で“決めない”。表示・検索・監督（管理タスク参照）にのみ使う。
+
+<!-- WORK_FIELDS_PHASE1 -->
+## WORK（施工）— BUSINESS_MASTER（辞書）
+
+本節は WORK（施工/完了報告）に関する辞書（field/enum）を定義する。
+※ “完了確定” は現場タスク完了が起点（master_spec 9章）。UI/人が任意に完了確定してはならない。
+
+### Fields（Phase-1）
+- workDoneAt
+  - type: datetime（ISO / Asia/Tokyo）
+  - source: field-report（現場完了の結果）
+  - required: true（完了確定時）
+- workDoneComment
+  - type: string（全文）
+  - source: field-report（完了コメント）
+  - required: true（完了確定時）
+  - rule: 未使用部材の抽出対象になり得る（書式は master_spec 9.3）
+- unusedPartsList
+  - type: list<string>
+  - source: derived（workDoneComment から抽出）
+  - required: false（抽出失敗は管理警告で扱う）
+- photosBefore
+  - type: list<url|string>
+  - required: false
+- photosAfter
+  - type: list<url|string>
+  - required: false
+- photosParts
+  - type: list<url|string>
+  - required: false
+- photosExtra
+  - type: list<url|string>
+  - required: false
+- videoInspection
+  - type: url|string
+  - required: false
+- workSummary
+  - type: string
+  - required: false
+  - rule: 要約の作り込みで業務判断を置換しない（素材の要点メモに留める）
+
+### Derived / Effects（参照）
+- 完了同期により、Parts/EX/Expense/在庫戻しが確定される（business_spec / master_spec に従う）
+- 不備（写真不足/LOCATION不整合/価格未確定 等）は管理警告対象
+
+<!-- PARTS_FIELDS_PHASE1 -->
+## PARTS（部材）— BUSINESS_MASTER（辞書）
+
+本節は PARTS（部材）に関する辞書（field/enum/補助辞書）を定義する。
+※ PRICE/STATUS/区分（BP/BM）等の確定は業務ルールに従う。人/AI/UI が任意に決定してはならない。
+
+### Enums（固定）
+- partType
+  - values: BP / BM
+  - meaning:
+    - BP=メーカー手配品（納品時に価格確定）
+    - BM=既製品/支給品等（PRICE=0、経費対象外）
+- partStatus
+  - values: STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
+  - rule: 工程イベント（発注/納品/完了同期）でのみ遷移する
+
+### Fields（台帳カラムの意味：Phase-1）
+- PART_ID
+  - type: string
+  - meaning: 部材の貫通ID（BP/BM体系、再利用不可）
+- Order_ID
+  - type: string|null
+  - meaning: 受注への接続（無い場合は在庫発注として扱う）
+- OD_ID
+  - type: string|null
+  - meaning: 同一受注内の発注行補助ID
+- partType
+  - type: enum(partType)
+  - required: true
+- AA
+  - type: string|null
+  - meaning: 永続番号（AA00は禁止、タスク名反映）
+- PA
+  - type: string|null
+  - meaning: BP枝番（PA00禁止）
+- MA
+  - type: string|null
+  - meaning: BM枝番（MA00禁止）
+- maker
+  - type: string|null
+- modelNumber
+  - type: string|null
+  - meaning: 品番
+- quantity
+  - type: number
+  - default: 1
+- PRICE
+  - type: number|null
+  - rule:
+    - BP: 納品時に確定（未確定は警告）
+    - BM: 0（経費対象外）
+- partStatus
+  - type: enum(partStatus)
+  - required: true
+- CREATED_AT
+  - type: datetime
+- DELIVERED_AT
+  - type: datetime|null
+- USED_DATE
+  - type: date|null
+- LOCATION
+  - type: string|null
+  - rule:
+    - STATUS=STOCK の場合は必須
+    - 未使用部材の STOCK 戻しでも整合必須（欠落は管理警告）
+- MEMO
+  - type: string|null
+
+### Discontinued Dictionary（廃番→新番：補助辞書）
+- discontinuedPartMap
+  - entry:
+    - discontinued: string（廃番品番/旧番）
+    - replacement: string|null（新番/代替候補）
+    - keywords: list<string>（曖昧検索補助）
+    - photoUrl: url|null（写真/参考）
+  - rule:
+    - 代替案内は補助。最終採用判断は業務ロジックで確定する
+
+### Guard（業務破壊防止）
+- AA00/PA00/MA00 はテスト専用。業務データに混在させない
+- PRICE 推測代入禁止（確定入力のみ）
+- BP/BM 区分変更は危険修正（申請/FIX）として扱う
+
+<!-- EXPENSE_FIELDS_PHASE1 -->
+## EXPENSE（経費）— BUSINESS_MASTER（辞書）
+
+### Fields（Phase-1）
+- EXP_ID
+  - type: string
+  - format: EXP-YYYYMM-0001
+  - rule: 再利用不可、月内連番
+- Order_ID
+  - type: string
+  - required: true
+- PART_ID
+  - type: string|null
+  - required: false
+- PRICE
+  - type: number
+  - required: true
+  - rule: 推測代入禁止（確定のみ）
+- USED_DATE
+  - type: date
+  - required: true
+- CreatedAt
+  - type: datetime
+  - required: true
 ```
 
 
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 3804d4d7ecdb6aeb024a4aae4da18f1635dee64169bdb6d94057e57f4fd10a9c
-- bytes: 3789
+- sha256: 713692dc67e54fa208af18622586f46686b0c717220bc11d9d7bb652d1142b74
+- bytes: 9309
 
 ```text
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -1679,6 +1924,129 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 元見積が priceStatus=FINAL であることが原則
 - 分割見積の場合、受注は「1案件に複数見積紐付け」または「見積ごとに受注」を選べる（将来拡張）
 - 受注確定後、WORK と INVOICE を作成可能になる
+
+<!-- WORK_SPEC_PHASE1 -->
+## WORK（施工）— BUSINESS_SPEC（Phase-1）
+
+### 目的
+- 施工（WORK）を「受注（Order_ID）に紐づく現場作業の実行・完了報告」として定義し、
+  完了同期（台帳確定・経費確定・在庫戻し）へ繋ぐ。
+
+### 入力入口（不変）
+- 現場の完了報告は「現場タスクの完了（完了コメント全文）」が唯一の正（master_spec 9章）。
+- 施工の途中経過は、運用上のメモとして残してよいが、台帳確定のトリガーではない。
+
+### 最小データ（業務要件）
+- workDoneAt（完了日時）
+- workDoneComment（完了コメント全文：未使用部材記載を含み得る）
+- photosBefore / photosAfter / photosParts / photosExtra（任意：不足は管理警告）
+- videoInspection（任意）
+- workSummary（任意：要約の作り込みで業務判断を置換しない）
+
+### 完了コメント規約（抽出）
+- 未使用部材は、以下の書式で列挙できること（master_spec 9.3 準拠）：
+  例）未使用：BP-YYYYMM-AAxx-PAyy, BM-YYYYMM-AAxx-MAyy
+- 抽出結果は在庫戻し（STATUS=STOCK）へ利用される（LOCATION 整合が必須）
+
+### 完了時に起きる業務（概要）
+- Order の完了日時・状態更新・最終同期日時の更新
+- DELIVERED 部材の USED 化、EX/Expense の確定、未使用部材の STOCK 戻し
+- 不備（価格未入力/写真不足/LOCATION不整合 等）は管理警告対象
+
+### 禁止事項
+- 人/AI/UI が Order の STATUS/orderStatus を任意に確定/変更してはならない
+- 完了同期の代替として、別経路で台帳を確定させてはならない
+
+<!-- PARTS_SPEC_PHASE1 -->
+## PARTS（部材）— BUSINESS_SPEC（Phase-1）
+
+### 目的
+- 部材（PARTS）を「発注→納品→使用→在庫」の工程で追跡可能な業務として定義する。
+- 受注（Order_ID）と部材（PART_ID/OD_ID/AA/PA/MA）を正しく接続し、完了同期で経費確定へ繋ぐ。
+
+### 入力入口（不変）
+- UF06（発注/納品）が工程の主入口（master_spec 7章）
+- UF07（価格入力）は BP の価格未確定を補完する入口（master_spec 7.3）
+- 価格/区分/状態の“確定”は業務ルールに従い、人/AI/UI が任意に決めない
+
+### 部材区分（BP/BM）
+- BP（メーカー手配品）
+  - 納品時に PRICE を確定する（未確定は警告）
+- BM（既製品/支給品等）
+  - PRICE=0（経費対象外）
+- BP/BM の区分変更は危険修正（申請/FIX）に分類し、直接確定しない
+
+### 主要IDと接続（要点）
+- PART_ID：部材の貫通ID（BP/BM体系）
+- AA：部材群の永続番号（タスク名へ反映）
+- PA/MA：枝番（BP=PA, BM=MA）
+- OD_ID：同一受注内の発注行補助ID
+- 接続の中心は Order_ID（受注）
+  - Order_ID の無い発注は STOCK_ORDERED として扱う（在庫発注）
+
+### STATUS（部材状態：固定）
+- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
+- 変更は工程イベントにより行う（発注/納品/完了同期）
+- 人/AI/UI が任意に書き換えない
+
+### LOCATION（在庫ロケーション）
+- STATUS=STOCK の部材は LOCATION を必須とする（欠落は管理警告）
+- 未使用部材の STOCK 戻しでも LOCATION 整合が必須
+
+### 発注（UF06: ORDER）業務（概要）
+- 採用行のみを発注として確定する
+- 確定結果：
+  - PART_ID/OD_ID 発行
+  - STATUS=ORDERED（Order_ID 無しの場合は STOCK_ORDERED）
+  - BP は PRICE 未定、BM は PRICE=0
+
+### 納品（UF06: DELIVER）業務（概要）
+- 確定結果：
+  - STATUS=DELIVERED
+  - DELIVERED_AT 記録
+  - BP は PRICE 入力必須（納品時確定）
+  - LOCATION 記録（在庫・管理に必要）
+  - AA群を抽出し、現場タスク名へ反映する
+
+### 価格入力（UF07）業務（概要）
+- BP の PRICE 未入力を補完し、業務として価格を確定する
+- 部材STATUSは原則変更しない（価格確定のみ）
+- 価格未確定は管理警告の対象
+
+### 完了同期との関係（要点）
+- 現場完了により、DELIVERED 部材が USED 化され、EX/Expense が確定される
+- 未使用部材は STOCK 戻し（LOCATION 整合必須）
+
+### 禁止事項
+- ID の再利用/改変、AA 再発番
+- PRICE の推測代入
+- STATUS の任意変更
+- LOCATION 欠落の放置（警告として扱い、管理で回収）
+
+<!-- EXPENSE_SPEC_PHASE1 -->
+## EXPENSE（経費）— BUSINESS_SPEC（Phase-1）
+
+### 目的
+- 経費（EXPENSE）を「確定した支出記録」として保持し、受注（Order_ID）へ接続する。
+- 経費の“確定”は推測ではなく、確定入力（または完了同期で確定されたUSED部材）に限定する。
+
+### 入力入口（不変）
+- 完了同期により USED 部材の PRICE が経費として確定される（master_spec 9章 / Expense_Master）
+- 手動の経費追加は、確定情報（領収/金額/日付/対象）を入力できる入口（運用/将来UI）
+- 推測代入は禁止
+
+### 最小データ（業務要件）
+- EXP_ID（経費ID：月内連番、再利用不可）
+- Order_ID（接続キー）
+- PART_ID（関連部材がある場合）
+- PRICE（確定金額）
+- USED_DATE（使用/支出日）
+- CreatedAt（記録日時）
+
+### 禁止事項
+- PRICE 推測代入
+- EXP_ID 再発番/再利用
+- Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）
 ```
 
 
@@ -1726,11 +2094,11 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
-- sha256: 99bb28bc4c0da5d3aa7b22fb43706952cdbaa948f3a1eed26555e7f27103387c
-- bytes: 3027
+- sha256: e1bc2de72b359e31ed4e04f8dfa0aed76b4fe4f08a2dfb4004b33edc99175b9b
+- bytes: 11092
 
 ```text
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 ROLE: UI_MASTER (screen/components/field mappings)
@@ -1790,17 +2158,274 @@ ROLE: UI_MASTER (screen/components/field mappings)
 ### 5.3 UI上の最小ルール
 - receiptStatus=DRAFT の場合：下書きとしてプレビュー可能
 - receiptStatus=ISSUED の場合：docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
+
+<!-- ORDER_UI_MASTER_PHASE1 -->
+## ORDER（受注）— UI_MASTER（Phase-1）
+
+本節は ORDER（受注）に関する UI 辞書（表示/入力の最小定義）を追加する。
+※ orderStatus/STATUS は **業務ロジックが確定**し、UIは表示のみ（手入力で確定/変更しない）。
+
+### Screens（最小）
+- SCREEN_ORDER_INTake（受注取り込み）
+  - 目的：UF01（raw/通知全文）から受注素材を入力し、登録へ進める
+- SCREEN_ORDER_SCHEDULE（予定/担当）
+  - 目的：施工予定（scheduledDate/timeSlot）と担当（assignee）を扱う（未確定を許容）
+- SCREEN_ORDER_VIEW（閲覧）
+  - 目的：OV01 相当の受注閲覧で、状態・予定・メモを確認できる
+
+### Fields（UI表示/入力）
+- raw
+  - label: 通知全文 / 1行メモ
+  - ui: textarea
+  - required: true
+- name
+  - label: お名前
+  - ui: text
+  - required: false（素材が無い場合を許容）
+- phone
+  - label: 電話番号
+  - ui: tel
+  - required: false
+- addressFull
+  - label: 住所（全文）
+  - ui: text
+  - required: false
+- preferred1 / preferred2
+  - label: 希望日
+  - ui: datetime/text（運用に合わせる）
+  - required: false
+
+- orderStatus
+  - label: 状態
+  - ui: badge（read-only）
+  - rule: UIは決めない（表示のみ）
+
+- scheduledDate
+  - label: 施工予定日
+  - ui: date
+  - required: false（未確定を許容）
+- scheduledTimeSlot
+  - label: 時間帯
+  - ui: select
+  - values: AM / PM / EVENING / ANY / TBD
+  - default: TBD
+- scheduledTimeNote
+  - label: 時間補足
+  - ui: text
+  - required: false
+
+- assignee
+  - label: 担当者
+  - ui: text/select（運用に合わせる）
+  - required: false
+- priority
+  - label: 優先度
+  - ui: select
+  - values: NORMAL / HIGH / URGENT
+  - default: NORMAL
+- intakeChannel
+  - label: 入口
+  - ui: select
+  - values: UF01 / FIX / DOC / OTHER
+  - default: UF01
+- orderMemo
+  - label: 受注メモ
+  - ui: textarea
+  - required: false
+  - rule: HistoryNotes と役割が衝突しない範囲で使用
+
+### Display Rules（最小）
+- scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
+- required/optional の表示は UI_PROTOCOL に従う。
+
+<!-- WORK_UI_MASTER_PHASE1 -->
+## WORK（施工）— UI_MASTER（Phase-1）
+
+本節は WORK（施工/完了報告）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
+※ “完了確定” は現場タスク完了が起点（master_spec 9章）。UI は完了を任意に確定しない（報告の受付・表示・確認のみ）。
+
+### Screens（最小）
+- SCREEN_WORK_REPORT（完了報告）
+  - 目的：完了コメント（全文）と写真/動画を添付し、完了報告として送信する
+- SCREEN_WORK_CONFIRM（報告確認）
+  - 目的：送信前に内容を確認し、二重送信を防止する
+- SCREEN_WORK_DONE（報告完了）
+  - 目的：受付完了を明示し、次の行動を迷わせない
+- SCREEN_WORK_VIEW（閲覧）
+  - 目的：完了報告内容（コメント全文・添付）を閲覧できる
+
+### Fields（UI表示/入力）
+- workDoneComment
+  - label: 完了コメント（全文）
+  - ui: textarea
+  - required: true
+  - helper: 「未使用：BP-..., BM-...」の形式で未使用部材を記載できます（任意）
+- photosBefore
+  - label: 写真（施工前）
+  - ui: uploader（複数）
+  - required: false
+- photosAfter
+  - label: 写真（施工後）
+  - ui: uploader（複数）
+  - required: false
+- photosParts
+  - label: 写真（部材）
+  - ui: uploader（複数）
+  - required: false
+- photosExtra
+  - label: 写真（追加）
+  - ui: uploader（複数）
+  - required: false
+- videoInspection
+  - label: 動画（点検）
+  - ui: uploader/url
+  - required: false
+
+### Display Rules（最小）
+- 送信中はボタン無効化・処理中表示（UI_PROTOCOL 準拠、二重送信防止）。
+- 未入力の添付は「未添付」として表示し、責めない文言にする。
+- UI は未使用部材の抽出結果を断定表示しない（抽出/確定は業務ロジック側）。
+
+### Error / Warning（最小）
+- 必須不足：workDoneComment が空の場合のみエラー表示（他は任意）
+- 添付不足（写真不足など）は “警告” として扱い、送信は止めない（管理警告で吸収）
+
+<!-- PARTS_UI_MASTER_PHASE1 -->
+## PARTS（部材）— UI_MASTER（Phase-1）
+
+本節は PARTS（部材：発注/納品/価格入力）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
+※ PRICE/STATUS/区分（BP/BM）の確定は業務ルールが行う。UI は「入力素材の受付」と「確認」を担い、任意に確定しない。
+
+### Screens（最小）
+- SCREEN_PARTS_ORDER_CREATE（UF06: 発注入力）
+- SCREEN_PARTS_ORDER_CONFIRM（UF06: 発注確認）
+- SCREEN_PARTS_ORDER_DONE（UF06: 発注完了）
+
+- SCREEN_PARTS_DELIVER_CREATE（UF06: 納品入力）
+- SCREEN_PARTS_DELIVER_CONFIRM（UF06: 納品確認）
+- SCREEN_PARTS_DELIVER_DONE（UF06: 納品完了）
+
+- SCREEN_PARTS_PRICE_CREATE（UF07: 価格入力）
+- SCREEN_PARTS_PRICE_CONFIRM（UF07: 価格確認）
+- SCREEN_PARTS_PRICE_DONE（UF07: 価格完了）
+
+- SCREEN_PARTS_STOCK_LOCATION（在庫ロケーション入力/修正：任意）
+  - 目的：STATUS=STOCK の LOCATION 欠落を回収する（欠落は警告対象）
+
+### Fields（共通）
+- Order_ID
+  - label: 受注ID
+  - ui: text
+  - required: false（在庫発注を許容：無い場合は STOCK_ORDERED 扱い）
+- partType
+  - label: 区分
+  - ui: select
+  - values: BP / BM
+  - required: true
+- maker
+  - label: メーカー
+  - ui: text
+  - required: false
+- modelNumber
+  - label: 品番
+  - ui: text
+  - required: false
+- quantity
+  - label: 数量
+  - ui: number
+  - default: 1
+  - required: true
+- MEMO
+  - label: メモ
+  - ui: textarea
+  - required: false
+
+### UF06: 発注（ORDER）追加Fields
+- requestedAt
+  - label: 発注日
+  - ui: date/datetime
+  - required: false
+
+### UF06: 納品（DELIVER）追加Fields
+- deliveredAt
+  - label: 納品日
+  - ui: date/datetime
+  - required: true
+- LOCATION
+  - label: ロケーション（在庫場所）
+  - ui: text
+  - required: false（ただし STOCK を扱う場合は必須化してよい）
+- PRICE
+  - label: 価格
+  - ui: number
+  - required: false
+  - rule:
+    - BP は納品時に価格確定が必要（未入力は警告）
+    - BM は 0（経費対象外）。UI は入力を受け付けてもよいが、業務ルールで 0 に正規化される
+
+### UF07: 価格入力（PRICE）追加Fields
+- PART_ID
+  - label: 部材ID
+  - ui: text
+  - required: true
+- PRICE
+  - label: 価格
+  - ui: number
+  - required: true
+  - rule: BP の未確定価格を補完する（STATUSは原則変更しない）
+
+### Display Rules（最小）
+- 必須/任意の表示は UI_PROTOCOL に従う
+- 送信中は二重送信防止（ボタン無効化・処理中表示）
+- 価格未入力/LOCATION欠落などは “警告” として扱い、送信自体は止めない（管理警告で回収）
+- UI は STATUS を任意に編集しない（表示のみ、または非表示でも可）
+
+<!-- EXPENSE_UI_MASTER_PHASE1 -->
+## EXPENSE（経費）— UI_MASTER（Phase-1）
+
+### Screens（最小）
+- SCREEN_EXPENSE_CREATE（経費入力）
+- SCREEN_EXPENSE_CONFIRM（経費確認）
+- SCREEN_EXPENSE_DONE（経費完了）
+- SCREEN_EXPENSE_VIEW（閲覧）
+
+### Fields（UI表示/入力）
+- Order_ID
+  - label: 受注ID
+  - ui: text
+  - required: true
+- PART_ID
+  - label: 部材ID（任意）
+  - ui: text
+  - required: false
+- PRICE
+  - label: 金額
+  - ui: number
+  - required: true
+  - rule: 推測代入は禁止（確定のみ）
+- USED_DATE
+  - label: 使用日/支出日
+  - ui: date
+  - required: true
+- MEMO
+  - label: メモ
+  - ui: textarea
+  - required: false
+
+### Display Rules（最小）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+- 未入力が許容されないのは PRICE/USED_DATE/Order_ID のみ
 ```
 
 
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 0c94e8f9079cfa4b738c119511a58bf9c0c0e90f415bc9fe9adbc468effbffb8
-- bytes: 7775
+- sha256: e583bdd3f3b12168133f6cc4faf748e2e22e4bf38d045d11375abc40e15664e3
+- bytes: 12544
 
 ```text
-﻿<!--
+<!--
 UI spec is derived from master_spec (CURRENT_SCOPE: Yorisoidou BUSINESS).
 NOTE: navigation/positioning only; does NOT change meaning.
 RULE: 1 theme = 1 PR; canonical is main after merge.
@@ -2051,6 +2676,127 @@ UI 実装は、本書との差分として管理される
 - 発行時の最小要件：
   - docName/docDesc/docPrice が揃っている（原則）
 - 発行後は receiptStatus=ISSUED
+
+<!-- ORDER_FLOW_PHASE1 -->
+
+## ORDER_FLOW（受注の導線）
+
+### 目的
+- UF01（受注）入力 → 確認 → 受付完了 の導線を固定する。
+- 意味（必須/任意・ルール）は master_spec に従う（特に raw 必須、orderStatus は UI で決めない）。
+
+### 画面
+- SCREEN_ORDER_CREATE（受注入力）
+- SCREEN_ORDER_CONFIRM（受注確認）
+- SCREEN_ORDER_DONE（受付完了）
+
+### 入力→確認遷移（VALIDATION）
+1) SCREEN_ORDER_CREATE で「確認へ」
+2) 最低限チェック（必須）
+   - raw（通知全文 / 1行メモ）
+3) それ以外（name/phone/addressFull/preferred1/preferred2/price/備考等）は
+   - 未入力を許容する（素材が無い受注を業務として拒否しない）
+
+### 確認画面（表示規約）
+- 未入力項目は「未入力」として表示し、責めない文言にする。
+- addressCityTown 等の業務確定値が未確定な段階では、UI は推測で断定表示しない。
+- orderStatus/STATUS は UI で決めない（表示のみ、または非表示でも可）。
+
+### 受付完了（SUBMIT）
+- SCREEN_ORDER_CONFIRM で「送信」
+- 送信後は SCREEN_ORDER_DONE を表示し、以下を明示する：
+  - 「受付しました」
+  - 「内容を確認のうえ、後ほどご連絡します」
+- 二重送信防止：送信中はボタン無効化・処理中表示を行う（UI_PROTOCOL に従う）。
+
+<!-- WORK_FLOW_PHASE1 -->
+
+## WORK_FLOW（施工完了報告の導線）
+
+### 目的
+- 現場の完了報告（コメント全文＋添付）を、迷いなく「送信→確認→完了」できる導線として固定する。
+- “完了確定” は UI で決めない。完了報告は受付であり、確定・同期は業務ロジック（master_spec 9章）に従う。
+
+### 画面
+- SCREEN_WORK_REPORT（完了報告）
+- SCREEN_WORK_CONFIRM（報告確認）
+- SCREEN_WORK_DONE（報告完了）
+
+### 入力→確認遷移（VALIDATION）
+1) SCREEN_WORK_REPORT で「確認へ」
+2) 最低限チェック（必須）
+   - workDoneComment（完了コメント全文）
+3) 添付（写真/動画）は任意
+   - 不足は管理警告で扱うため、送信は止めない
+
+### 確認画面（表示規約）
+- workDoneComment は全文表示（省略しない）
+- 添付は「添付あり/未添付」を明確に表示（責めない文言）
+- 未使用部材の抽出結果など、業務ロジック側で確定される情報を UI は断定表示しない
+
+### 送信（SUBMIT）
+- SCREEN_WORK_CONFIRM で「送信」
+- 送信中は二重送信防止（ボタン無効化・処理中表示。UI_PROTOCOL 準拠）
+- 送信後は SCREEN_WORK_DONE を表示し、以下を明示する：
+  - 「報告を受け付けました」
+  - 「内容を確認のうえ、必要に応じてご連絡します」
+
+### エラー/警告（最小）
+- 必須不足（workDoneComment 空）のみエラー
+- 添付不足は警告（任意）に留め、送信は止めない
+
+<!-- PARTS_FLOW_PHASE1 -->
+
+## PARTS_FLOW（部材：UF06/UF07 の導線）
+
+### 目的
+- UF06（発注/納品）と UF07（価格入力）を「入力→確認→完了」の導線として固定する。
+- PRICE/STATUS/区分の確定は UI で行わない。業務ルールに従い、警告は管理側で回収する。
+
+### UF06_ORDER_FLOW（発注）
+- SCREEN_PARTS_ORDER_CREATE → SCREEN_PARTS_ORDER_CONFIRM → SCREEN_PARTS_ORDER_DONE
+- 最低限チェック（推奨）：
+  - partType（必須）
+  - quantity（必須）
+- Order_ID は未入力を許容（在庫発注＝STOCK_ORDERED）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+
+### UF06_DELIVER_FLOW（納品）
+- SCREEN_PARTS_DELIVER_CREATE → SCREEN_PARTS_DELIVER_CONFIRM → SCREEN_PARTS_DELIVER_DONE
+- 最低限チェック（必須）：
+  - deliveredAt
+- BP の PRICE 未入力は “警告” として扱い、送信は止めない（管理警告で回収）
+- LOCATION は STOCK を扱う場合は必須化してよい（欠落は警告）
+
+### UF07_PRICE_FLOW（価格入力）
+- SCREEN_PARTS_PRICE_CREATE → SCREEN_PARTS_PRICE_CONFIRM → SCREEN_PARTS_PRICE_DONE
+- 最低限チェック（必須）：
+  - PART_ID
+  - PRICE
+- STATUS は変更しない（価格確定のみ）
+
+<!-- EXPENSE_FLOW_PHASE1 -->
+
+## EXPENSE_FLOW（経費の導線）
+
+### 目的
+- 経費入力 → 確認 → 完了 の導線を固定する。
+- 金額は確定のみ（推測代入禁止）。
+
+### 画面
+- SCREEN_EXPENSE_CREATE
+- SCREEN_EXPENSE_CONFIRM
+- SCREEN_EXPENSE_DONE
+
+### 入力→確認（VALIDATION）
+- 必須：
+  - Order_ID
+  - PRICE
+  - USED_DATE
+
+### 完了（SUBMIT）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+- 完了画面で「記録しました」を明示
 ```
 
 
