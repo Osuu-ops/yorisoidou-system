@@ -189,3 +189,93 @@ ROLE: UI_MASTER (screen/components/field mappings)
 ### Error / Warning（最小）
 - 必須不足：workDoneComment が空の場合のみエラー表示（他は任意）
 - 添付不足（写真不足など）は “警告” として扱い、送信は止めない（管理警告で吸収）
+
+<!-- PARTS_UI_MASTER_PHASE1 -->
+## PARTS（部材）— UI_MASTER（Phase-1）
+
+本節は PARTS（部材：発注/納品/価格入力）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
+※ PRICE/STATUS/区分（BP/BM）の確定は業務ルールが行う。UI は「入力素材の受付」と「確認」を担い、任意に確定しない。
+
+### Screens（最小）
+- SCREEN_PARTS_ORDER_CREATE（UF06: 発注入力）
+- SCREEN_PARTS_ORDER_CONFIRM（UF06: 発注確認）
+- SCREEN_PARTS_ORDER_DONE（UF06: 発注完了）
+
+- SCREEN_PARTS_DELIVER_CREATE（UF06: 納品入力）
+- SCREEN_PARTS_DELIVER_CONFIRM（UF06: 納品確認）
+- SCREEN_PARTS_DELIVER_DONE（UF06: 納品完了）
+
+- SCREEN_PARTS_PRICE_CREATE（UF07: 価格入力）
+- SCREEN_PARTS_PRICE_CONFIRM（UF07: 価格確認）
+- SCREEN_PARTS_PRICE_DONE（UF07: 価格完了）
+
+- SCREEN_PARTS_STOCK_LOCATION（在庫ロケーション入力/修正：任意）
+  - 目的：STATUS=STOCK の LOCATION 欠落を回収する（欠落は警告対象）
+
+### Fields（共通）
+- Order_ID
+  - label: 受注ID
+  - ui: text
+  - required: false（在庫発注を許容：無い場合は STOCK_ORDERED 扱い）
+- partType
+  - label: 区分
+  - ui: select
+  - values: BP / BM
+  - required: true
+- maker
+  - label: メーカー
+  - ui: text
+  - required: false
+- modelNumber
+  - label: 品番
+  - ui: text
+  - required: false
+- quantity
+  - label: 数量
+  - ui: number
+  - default: 1
+  - required: true
+- MEMO
+  - label: メモ
+  - ui: textarea
+  - required: false
+
+### UF06: 発注（ORDER）追加Fields
+- requestedAt
+  - label: 発注日
+  - ui: date/datetime
+  - required: false
+
+### UF06: 納品（DELIVER）追加Fields
+- deliveredAt
+  - label: 納品日
+  - ui: date/datetime
+  - required: true
+- LOCATION
+  - label: ロケーション（在庫場所）
+  - ui: text
+  - required: false（ただし STOCK を扱う場合は必須化してよい）
+- PRICE
+  - label: 価格
+  - ui: number
+  - required: false
+  - rule:
+    - BP は納品時に価格確定が必要（未入力は警告）
+    - BM は 0（経費対象外）。UI は入力を受け付けてもよいが、業務ルールで 0 に正規化される
+
+### UF07: 価格入力（PRICE）追加Fields
+- PART_ID
+  - label: 部材ID
+  - ui: text
+  - required: true
+- PRICE
+  - label: 価格
+  - ui: number
+  - required: true
+  - rule: BP の未確定価格を補完する（STATUSは原則変更しない）
+
+### Display Rules（最小）
+- 必須/任意の表示は UI_PROTOCOL に従う
+- 送信中は二重送信防止（ボタン無効化・処理中表示）
+- 価格未入力/LOCATION欠落などは “警告” として扱い、送信自体は止めない（管理警告で回収）
+- UI は STATUS を任意に編集しない（表示のみ、または非表示でも可）
