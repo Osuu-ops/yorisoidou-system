@@ -42,7 +42,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## RUNBOOK カード一覧
-- （未取得）RUNBOOK.md を確認
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
 ---
 
@@ -62,4 +62,5 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_RECEIPTS（実装レシート）
 - Tools
 - Lease / Continue Target（追加）
+- RUNBOOK（追加）
 
