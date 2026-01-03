@@ -54,6 +54,7 @@ jobs:
           python3 docs/MEP/build_runbook_summary.py
           python3 docs/MEP/build_request_bundle.py
           python3 docs/MEP/build_handoff_100.py
+          python3 docs/MEP/build_chat_packet.py
 
       - name: Detect changes (generated docs only)
         id: diff
@@ -65,7 +66,8 @@ jobs:
             docs/MEP/RUNBOOK_SUMMARY.md \
             docs/MEP/REQUEST_BUNDLE_SYSTEM.md \
             docs/MEP/REQUEST_BUNDLE_BUSINESS.md \
-            docs/MEP/HANDOFF_100.md; then
+            docs/MEP/HANDOFF_100.md \
+            docs/MEP/CHAT_PACKET.md; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -97,3 +99,4 @@ jobs:
 
           pr=$(gh pr list -R "$repo" --state open --head "$branch" --json number --jq '.[0].number')
           gh pr merge "$pr" -R "$repo" --auto --squash --delete-branch
+
