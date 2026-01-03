@@ -12,6 +12,7 @@ DOCS = ROOT / "docs" / "MEP"
 STATE_SUMMARY = DOCS / "STATE_SUMMARY.md"
 PLAYBOOK_SUMMARY = DOCS / "PLAYBOOK_SUMMARY.md"
 RUNBOOK_SUMMARY = DOCS / "RUNBOOK_SUMMARY.md"
+IDEA_INDEX = DOCS / "IDEA_INDEX.md"
 
 OUT = DOCS / "HANDOFF_100.md"
 
@@ -41,7 +42,6 @@ def extract_block(text: str, begin: str, end: str) -> str | None:
 
 
 def set_block(text: str, begin: str, end: str, body: str) -> str:
-    # IMPORTANT: use lambda replacement so backslashes are treated literally
     pat = re.escape(begin) + r".*?" + re.escape(end)
     repl = begin + "\n" + body.rstrip("\n") + "\n" + end
     if re.search(pat, text, flags=re.DOTALL):
@@ -63,6 +63,20 @@ def compact_lines(md: str, max_lines: int) -> str:
     return "\n".join(out)
 
 
+def render_idea_menu(max_items: int = 12) -> str:
+    idx = read_text(IDEA_INDEX).strip()
+    if not idx:
+        return "（IDEA_INDEXなし。必要なら docs/MEP/IDEA_VAULT.md を確認）"
+    lines = []
+    # take numbered lines only
+    for ln in idx.splitlines():
+        if re.match(r"^\d+\.\s", ln.strip()):
+            lines.append(ln.strip())
+            if len(lines) >= max_items:
+                break
+    return "\n".join(lines) if lines else "（ACTIVEに候補なし）"
+
+
 def render_current_body_without_meta() -> str:
     state = read_text(STATE_SUMMARY).strip()
     pb = read_text(PLAYBOOK_SUMMARY).strip()
@@ -71,6 +85,7 @@ def render_current_body_without_meta() -> str:
     ov_state = compact_lines(state, 14) if state else "- （未生成）STATE_SUMMARY.md を確認"
     ov_pb = compact_lines(pb, 12) if pb else "- （未生成）PLAYBOOK_SUMMARY.md を確認"
     ov_rb = compact_lines(rb, 12) if rb else "- （未生成）RUNBOOK_SUMMARY.md を確認"
+    idea_menu = render_idea_menu()
 
     lines: list[str] = []
     lines.append("# HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）")
@@ -98,6 +113,12 @@ def render_current_body_without_meta() -> str:
     lines.append("")
     lines.append("■ 異常時（RUNBOOK_SUMMARY 抜粋）")
     lines.append(ov_rb)
+    lines.append("")
+    lines.append("■ アイデア一覧（番号で統合）")
+    lines.append(idea_menu)
+    lines.append("")
+    lines.append("■ 統合の指示例")
+    lines.append("- 新チャットで：『アイデア統合 1 3』→ PowerShellで： .\\tools\\mep_idea_pick.ps1 1 3 → 貼り付け → 『統合して進めて』")
     lines.append("")
     lines.append("■ 追加束（必要な場合のみ）")
     lines.append("- docs/MEP/REQUEST_BUNDLE_SYSTEM.md")
@@ -133,9 +154,7 @@ def render_current_with_meta() -> str:
     meta: list[str] = []
     meta.append(f"HANDOFF_ID: {hid}")
     meta.append(r"HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1")
-    meta.append("HANDOFF_TRIGGER_BUNDLE: 追加が必要なら次の1行だけを返す： Get-Content docs/MEP/REQUEST_BUNDLE_SYSTEM.md -Raw -Encoding UTF8  /  Get-Content docs/MEP/REQUEST_BUNDLE_BUSINESS.md -Raw -Encoding UTF8")
     meta.append("CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。")
-    meta.append("NOTE: IDだけ貼る場合は、少なくとも HANDOFF_ID と HANDOFF_OVERVIEW を同時に貼る（前提共有のため）。")
     meta.append("")
     return "\n".join(meta) + body
 
