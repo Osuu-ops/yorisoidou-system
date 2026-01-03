@@ -1,22 +1,21 @@
-# HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚） v1.0
 
-本書は、MEP運用の「唯一の正（docs/MEP）」から生成された引継ぎ文である。
-新チャット開始は原則として本書 1枚だけを貼る。
 
-## ルール（最優先）
+<!-- HANDOFF_CURRENT_BEGIN -->
+# HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
+
+## CURRENT（貼るのはここだけ）
+
+新チャット1通目は **この CURRENT ブロックだけ**を貼る。
+追加が必要と言われた場合のみ `REQUEST_BUNDLE_SYSTEM` または `REQUEST_BUNDLE_BUSINESS` を貼る。
+
+### ルール（最優先）
 - 開始直後に UPGRADE_GATE を必ず適用（矛盾検出 → 観測 → 次の一手カード確定 → 1PR着手）
 - 追加情報が必要な場合のみ REQUEST 形式（最大3件）で要求
 - AI出力は PowerShell単一コピペ一本道（ID手入力禁止、ghで自動解決）
 
 ---
 
-## Start（貼る順序）
-- この HANDOFF_100 を貼る（= これ1枚）
-- それでも足りない場合のみ、次を貼る：REQUEST_BUNDLE_SYSTEM または REQUEST_BUNDLE_BUSINESS
-
----
-
-## 現在地（STATE_SUMMARY）
+### 現在地（STATE_SUMMARY）
 # STATE_SUMMARY（現在地サマリ） v1.0
 
 本書は `STATE_CURRENT / INDEX / RUNBOOK / PLAYBOOK` をもとに、現在地を 1枚に圧縮した生成物である。
@@ -83,7 +82,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 
 ---
 
-## 次の一手（PLAYBOOK_SUMMARY）
+### 次の一手（PLAYBOOK_SUMMARY）
 # PLAYBOOK_SUMMARY（次の指示サマリ） v1.0
 
 本書は docs/MEP/PLAYBOOK.md をもとに、カード一覧を 1枚に圧縮した生成物である。
@@ -102,7 +101,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 
 ---
 
-## 異常時（RUNBOOK_SUMMARY）
+### 異常時（RUNBOOK_SUMMARY）
 # RUNBOOK_SUMMARY（復旧サマリ） v1.0
 
 本書は docs/MEP/RUNBOOK.md をもとに、カード一覧を 1枚に圧縮した生成物である。
@@ -119,8 +118,16 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 
 ---
 
-## 参照（唯一の正）
+### 追加束（必要な場合のみ）
+- docs/MEP/REQUEST_BUNDLE_SYSTEM.md
+- docs/MEP/REQUEST_BUNDLE_BUSINESS.md
+
+### 参照（唯一の正）
 - docs/MEP/UPGRADE_GATE.md
 - docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 - docs/MEP/STATE_CURRENT.md / PLAYBOOK.md / RUNBOOK.md / INDEX.md
+<!-- HANDOFF_CURRENT_END -->
 
+<!-- HANDOFF_ARCHIVE_BEGIN -->
+（ARCHIVEは自動生成。通常は参照しない。）
+<!-- HANDOFF_ARCHIVE_END -->
