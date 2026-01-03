@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 197904
+- included_total_bytes: 198868
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -87,8 +87,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 6f6e276875b49cecff2dd9b2b835fadfa013f0ddd4be0e450793ec265c3a5e6e
-- bytes: 11751
+- sha256: 348faaf8b00f77960aafd6890388578f93511f7f1c2e39046237e18478d1dff2
+- bytes: 12121
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -225,6 +225,16 @@ checks:
 ## REQUEST_BUNDLE（追加要求ファイル束）
 - REQUEST_BUNDLE_SYSTEM.md（SYSTEM側の要求ファイル束）
 - REQUEST_BUNDLE_BUSINESS.md（BUSINESS側の要求ファイル束）
+
+## IDEA_VAULT（アイデア避難所）
+- IDEA_VAULT.md（アイデア散逸防止。ID化は採用候補のみ）
+
+## IDEA_INDEX（統合用一覧）
+- IDEA_INDEX.md（ACTIVEから生成。番号で選ぶ）
+- IDEA_VAULT.md（本体。ACTIVE/ARCHIVE）
+
+## IDEA_RECEIPTS（実装レシート）
+- IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
 ```
 
 ---
@@ -661,85 +671,120 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 0b2de462ad051da90b51c3ae74aa3295b3d7a7c2bdabd23ee24230e8c0540f31
-- bytes: 2135
+- sha256: ca4a15adf19b4f8f6fd121f44e166fcc07b7d33eeba603722946af4dcd1a9a6b
+- bytes: 3243
 
 ```text
-﻿# RUNBOOK（復旧カード集）
+﻿# RUNBOOK（復旧カード）
 
-本書は「異常が起きたとき、診断ではなく次の一手だけを返す」ための復旧カード集である。
-手順は PowerShell 単一コピペ一本道を原則とし、IDは gh で自動解決する（手入力禁止）。
-唯一の正：main / PR / Checks / docs（GitHub上の状態）
-
----
-
-## CARD-01: no-checks（Checksがまだ出ない／表示されない）
-
-症状：
-- gh pr checks が「no checks reported」または空
-- ただし直後に表示されることがある（生成待ち）
-
-次の一手（待機→再観測）：
-- 一定時間（例：30〜90秒）待機して再度 gh pr checks を実行
-- それでも出ない場合は A運用（Gate Runner Manual）へ遷移
-
-停止条件（人間判断）：
-- 一定時間待機してもChecksが出ない状態が継続
+本書は「異常時の復旧」をカードとして固定する。
+本書は説明を行わない。評価を行わない。
+目的は、観測 → 一次対応 → 停止条件 → 次の遷移 を迷いなく実行すること。
 
 ---
 
-## CARD-02: Chat Packet Guard NG（CHAT_PACKET outdated）
+## CARD: no-checks（Checksがまだ出ない／表示されない）
 
-症状：
-- Chat Packet Guard が NG（例：CHAT_PACKET.md is outdated）
+### 観測
+- PR の状態とChecks表示
+  - `gh pr view <PR> --json number,state,url,headRefName,baseRefName,mergeable --jq '.'`
+  - `gh pr checks <PR>`
+- GitHub 側の遅延か、ワークフロー未発火かを切り分ける
 
-次の一手：
-- docs/MEP/build_chat_packet.py を実行して CHAT_PACKET.md を更新
-- 更新差分を同一PRに含めて再push（または自動更新PRに任せる）
+### 一次対応
+- しばらく待って再観測（短時間で出ることがある）
+- `gh pr checks <PR>` が永続的に空なら、RUNBOOK: Guard / Scope / token 起因を疑う
+
+### 停止条件（DIRTYへ遷移）
+- 何度観測してもChecksが出ない／「No checks」のまま変化しない
+
+### 次の遷移
+- `CARD: Guard NG` または `CARD: Scope不足` を適用（観測結果により決定）
+- それでも不明なら `CARD: DIRTY`
 
 ---
 
-## CARD-03: Scope不足（Scope Guard / Scope-IN Suggest）
+## CARD: behind / out-of-date（Head branch is out of date）
 
-症状：
+### 観測
+- PR 画面で “Head branch is out of date” 表示
+- `gh pr view <PR> --json mergeable,baseRefOid,headRefOid --jq '.'`
+
+### 一次対応
+- 原則：main を取り込んで更新（rebase/merge は運用規約に従う）
+- 自動で安全に解決できない場合は DIRTY に落とす
+
+### 停止条件（DIRTYへ遷移）
+- 競合が発生する／解決に人間判断が必要
+
+### 次の遷移
+- 解消できたら PLAYBOOK の該当カードへ復帰
+- 解消できないなら `CARD: DIRTY`
+
+---
+
+## CARD: DIRTY（自動で安全に解決できない）
+
+### 観測
+- `git status --porcelain` が空でない
+- 差分が「意図した範囲」外へ漏れている
+- どのカードにも機械的に当てはまらず、人間判断が必要
+
+### 一次対応
+- 自動実行を停止する（これ以上進めない）
+- 停止理由を分類し、人間入力に変換する（最大3点）
+
+### 停止条件（固定）
+- 以後の自動PR作成は行わない
+
+### 次の遷移
+- PLAYBOOK へ戻す前に、人間が「採るべき方針」を確定させる
+
+---
+
+## CARD: Scope不足（Scope Guard / Scope-IN Suggest）
+
+### 観測
 - Scope Guard が NG
-- Scope-IN Suggest が提案を出す
+- 変更対象が Scope-IN に含まれていない
 
-次の一手：
-- 変更対象が本当に必要かを確認
-- 必要なら CURRENT_SCOPE の Scope-IN を最小追加してPRで通す
-- 不要なら変更をScope内に戻す
+### 一次対応
+- CURRENT_SCOPE に必要最小限の Scope-IN を追加する（1PR）
+- 余計なパスを増やさない
 
----
+### 停止条件（DIRTYへ遷移）
+- どのパスを許可すべきか、人間判断が必要
 
-## CARD-04: Head branch is out of date（behind/out-of-date）
-
-症状：
-- gh pr merge が "Head branch is out of date" を返す
-
-次の一手：
-- PRブランチを main に追従（merge/rebaseのいずれか）して再push
-- その後 auto-merge を再設定
+### 次の遷移
+- Scope PR が通ったら、元の目的PRへ復帰
 
 ---
 
-## CARD-05: DIRTY（自動で安全に解決できない）
+## CARD: Guard NG（Chat Packet Guard / Docs Index Guard 等）
 
-定義：
-- merge conflict / push不可 / 自動修復失敗 など、汚染リスクが上がるため自動停止すべき状態
+### 観測
+- Guard のチェック名とログで NG 理由を確定
+- 典型：生成物が outdated / 参照不整合 / 期待ファイル不足
 
-次の一手：
-- 停止理由（分類）を確認
-- 人間判断入力に変換（何を採用/破棄するかを明示）
-- その判断を反映した最小差分PRで再実行
+### 一次対応
+- main 最新から「生成物を再生成して整合」させる（差分最小）
+- 必要なら `docs/MEP/build_*` を実行して追随させる
+
+### 停止条件（DIRTYへ遷移）
+- 追随しても原因が解消しない
+- 参照の正が不明で人間判断が必要
+
+### 次の遷移
+- 解消できたら PLAYBOOK へ復帰
+- 解消できないなら DIRTY
 ```
 
 
 ---
 
 ### FILE: docs/MEP/RUNBOOK_SUMMARY.md
-- sha256: 757400985bcb574392a4875937f5cf80c6c87ee7f0dfb7b23cd216fd1988c003
-- bytes: 528
+- sha256: e79b656c4481409d72856cab406afe319de61c2057eb760fa2c78812cfad0174
+- bytes: 256
 
 ```text
 # RUNBOOK_SUMMARY（復旧サマリ） v1.0
@@ -750,11 +795,7 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ## カード一覧
-- CARD-01: no-checks（Checksがまだ出ない／表示されない）
-- CARD-02: Chat Packet Guard NG（CHAT_PACKET outdated）
-- CARD-03: Scope不足（Scope Guard / Scope-IN Suggest）
-- CARD-04: Head branch is out of date（behind/out-of-date）
-- CARD-05: DIRTY（自動で安全に解決できない）
+- （未取得）RUNBOOK.md を確認
 ```
 
 
@@ -799,8 +840,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 7706186ab87ec8fa30780eb799dda236299c3a2250e1cf7b9e936f9483d3fab7
-- bytes: 2382
+- sha256: 477ea184148fe5cbbad2c06b63df35d14b928de70a96436dd174663585d2a5a5
+- bytes: 2110
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -847,11 +888,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## RUNBOOK カード一覧
-- CARD-01: no-checks（Checksがまだ出ない／表示されない）
-- CARD-02: Chat Packet Guard NG（CHAT_PACKET outdated）
-- CARD-03: Scope不足（Scope Guard / Scope-IN Suggest）
-- CARD-04: Head branch is out of date（behind/out-of-date）
-- CARD-05: DIRTY（自動で安全に解決できない）
+- （未取得）RUNBOOK.md を確認
 
 ---
 
@@ -1486,8 +1523,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: c1a9d90d701e23ee502479f3122ab17276f1008764ae049193811d893704e0ee
-- bytes: 1489
+- sha256: f2e8aa340da38863dfc2868e5689a95a2f9618c600bdc71dd0ac78b732d2554e
+- bytes: 1519
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -1509,6 +1546,7 @@ UI 実装は、本書との差分として管理される
 - tools/mep_idea_capture.ps1
 - tools/mep_idea_list.ps1
 - tools/mep_idea_pick.ps1
+- tools/mep_idea_finalize.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
