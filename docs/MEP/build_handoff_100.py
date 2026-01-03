@@ -140,6 +140,8 @@ def render_current_with_id() -> str:
 
     meta = []
     meta.append(f"HANDOFF_ID: {hid}")
+meta.append("HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\\tools\\mep_handoff.ps1")
+meta.append("HANDOFF_TRIGGER_BUNDLE: 追加が必要なら次の1行だけを返す： Get-Content docs/MEP/REQUEST_BUNDLE_SYSTEM.md -Raw -Encoding UTF8  /  Get-Content docs/MEP/REQUEST_BUNDLE_BUSINESS.md -Raw -Encoding UTF8")
     meta.append("CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。")
     meta.append("NOTE: IDだけ貼る場合は、この3行（HANDOFF_ID/CONTINUE_TARGET/概要）を一緒に貼ると前提が即時共有できる。")
     meta.append("")
@@ -205,3 +207,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
