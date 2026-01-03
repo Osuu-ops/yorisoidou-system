@@ -11,3 +11,12 @@ docs/MEP/RUNBOOK_SUMMARY.md
 docs/MEP/UPGRADE_GATE.md
 docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 docs/MEP/CHAT_PACKET.md
+
+# --- platform/MEP (BUSINESS) ---
+
+
+platform/MEP/03_BUSINESS/**/*.md
+
+
+platform/MEP/90_CHANGES/**/*.md
+
