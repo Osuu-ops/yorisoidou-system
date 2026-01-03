@@ -1,7 +1,8 @@
 ﻿# tools/mep_idea_capture.ps1
 # Usage:
-#   1) AIに「アイデアまとめて」と言い、返ってきた要約をコピー（Ctrl+C）
-#   2) .\tools\mep_idea_capture.ps1   （GitHubへ吸い上げ）
+#   1) チャットで「アイデアまとめて」
+#   2) 返ってきた要約をコピー（Ctrl+C）
+#   3) .\tools\mep_idea_capture.ps1
 $ErrorActionPreference = "Stop"
 
 if (git status --porcelain) { throw "Working tree is not clean. Commit/stash changes first." }
@@ -9,6 +10,12 @@ $repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
 
 $txt = (Get-Clipboard -Raw | Out-String).Trim()
 if (-not $txt) { throw "Clipboard is empty. Copy the AI summary first, then run again." }
+
+# Show evidence (first line)
+$first = ($txt -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ }) | Select-Object -First 1
+if (-not $first) { $first = "(empty)" }
+if ($first.Length -gt 120) { $first = $first.Substring(0,119) + "…" }
+Write-Host ("OK: Read idea from clipboard. First line: {0}" -f $first)
 
 # Sync main
 git checkout main | Out-Null
@@ -23,44 +30,36 @@ $sha = (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([System.Text.En
 $ideaId = "IDEA:" + $sha.Substring(0,12)
 
 # One-line DESC = first non-empty line
-$first = ($txt -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ }) | Select-Object -First 1
-if (-not $first) { $first = "idea" }
-if ($first.Length -gt 90) { $first = $first.Substring(0,89) + "…" }
+$desc = $first
+if ($desc.Length -gt 90) { $desc = $desc.Substring(0,89) + "…" }
 
-# Build entry (insertion-ready)
+# Build entry
 $bodyBullets = ($txt -split "`r?`n" | ForEach-Object { $_.TrimEnd() } | Where-Object { $_ -ne "" } | ForEach-Object { "  - " + $_ }) -join "`r`n"
 
 $entry = @"
 ### IDEA_ID: $ideaId
 - TITLE: (captured)
-- DESC: $first
+- DESC: $desc
 - STATUS: candidate
 - TAGS:
-- SOURCE: chat (non-GitHub) -> clipboard capture
+- SOURCE: chat -> clipboard capture
 - BODY:
 $bodyBullets
 "@.Trim() + "`r`n`r`n"
 
-# Insert under ACTIVE (top)
+# Insert under ACTIVE (top), prevent duplicates
 $raw = Get-Content $vaultPath -Raw -Encoding UTF8
 if ($raw -notmatch "(?s)## ACTIVE") { throw "IDEA_VAULT missing '## ACTIVE' section." }
-
-# Prevent duplicates
-if ($raw -match [regex]::Escape("### IDEA_ID: $ideaId")) {
-  throw "Already exists in IDEA_VAULT: $ideaId"
-}
+if ($raw -match [regex]::Escape("### IDEA_ID: $ideaId")) { throw "Already exists in IDEA_VAULT: $ideaId" }
 
 $raw2 = $raw -replace "(?s)(## ACTIVE[^\r\n]*\r?\n)", ('$1' + "`r`n" + $entry)
 Set-Content -Path $vaultPath -Value $raw2 -Encoding UTF8
 
 # Regenerate IDEA_INDEX locally
-if (Get-Command py -ErrorAction SilentlyContinue) {
-  py -3 docs/MEP/build_idea_index.py | Out-Host
-} elseif (Get-Command python -ErrorAction SilentlyContinue) {
-  python docs/MEP/build_idea_index.py | Out-Host
-}
+if (Get-Command py -ErrorAction SilentlyContinue) { py -3 docs/MEP/build_idea_index.py | Out-Host }
+elseif (Get-Command python -ErrorAction SilentlyContinue) { python docs/MEP/build_idea_index.py | Out-Host }
 
-# Commit/PR/auto-merge
+# Commit/PR/auto-merge (human-authored)
 $ts = Get-Date -Format "yyyyMMdd-HHmmss"
 $branch = "work/idea-capture-$ts"
 git checkout -b $branch | Out-Null
@@ -69,11 +68,12 @@ git add $vaultPath "docs/MEP/IDEA_INDEX.md"
 git commit -m ("docs(MEP): capture idea " + $ideaId) | Out-Null
 git push -u origin $branch | Out-Null
 
-$prUrl = (gh pr create -R $repo -B main -H $branch -t ("docs(MEP): capture idea " + $ideaId) -b ("Captured AI summary into IDEA_VAULT (candidate). " + $ideaId))
+$prUrl = (gh pr create -R $repo -B main -H $branch -t ("docs(MEP): capture idea " + $ideaId) -b ("Captured idea into IDEA_VAULT (candidate) and refreshed IDEA_INDEX. " + $ideaId))
 Write-Host $prUrl
 
 $pr = (gh pr list -R $repo --state open --head $branch --json number --jq '.[0].number')
 if (-not $pr) { throw "Failed to resolve PR number." }
 
 gh pr merge $pr -R $repo --auto --squash --delete-branch | Out-Null
-Write-Host "OK: Idea captured (candidate) + IDEA_INDEX updated."
+
+Write-Host ("OK: Captured {0}. Use list: .\tools\mep_idea_list.ps1" -f $ideaId)
