@@ -24,3 +24,21 @@ ROLE: UI_MASTER (screen/components/field mappings)
 | SCREEN_ESTIMATE_CREATE | docPrice | BUSINESS_MASTER.doc.estimate.docPrice | no | number | 金額 |
 | SCREEN_ESTIMATE_CREATE | docMemo | BUSINESS_MASTER.doc.estimate.docMemo | no | textarea | メモ |
 
+## 4. 請求（INVOICE）UI 拡張
+
+### 4.1 画面（INVOICE）
+- SCREEN_INVOICE_CREATE（請求作成）
+- SCREEN_INVOICE_PREVIEW（請求プレビュー）
+
+### 4.2 フィールドマッピング（請求作成：追加）
+| screen | field | source | required | ui_type | notes |
+|---|---|---|---|---|---|
+| SCREEN_INVOICE_CREATE | dueDate | BUSINESS_MASTER.invoice.invoice.dueDate | no | text | 支払期限 |
+| SCREEN_INVOICE_CREATE | paymentMethod | BUSINESS_MASTER.invoice.invoice.paymentMethod | no | select | BANK/ON_SITE/OTHER |
+| SCREEN_INVOICE_CREATE | bankAccount | BUSINESS_MASTER.invoice.invoice.bankAccount | no | textarea | 振込先（自由記述） |
+| SCREEN_INVOICE_CREATE | invoiceStatus | BUSINESS_MASTER.invoice.invoice.invoiceStatus | no | select | DRAFT/ISSUED/PAID |
+
+### 4.3 UI上の最小ルール
+- invoiceStatus=DRAFT の場合は docPrice を未確定として扱ってもよい（ただし最終は BUSINESS_SPEC に従う）
+- invoiceStatus=ISSUED の場合は、docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
+
