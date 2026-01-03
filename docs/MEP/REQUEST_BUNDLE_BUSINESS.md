@@ -3,34 +3,34 @@
 本書は、AIが追加で要求しがちなファイル群を「1枚」に束ねた生成物である。
 新チャットで REQUEST が発生した場合は、原則として本書を貼れば追加要求を抑止できる。
 本書は時刻・ランID等を含めず、入力ファイルが同じなら差分が出ないことを前提とする。
-生成: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\build_request_bundle.py
-ソース定義: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\request_bundle_sources_business.txt
+生成: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/build_request_bundle.py
+ソース定義: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/request_bundle_sources_business.txt
 
 ---
 
 ## 収録ファイル一覧（存在するもの）
-- docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
-- docs\MEP\CHAT_PACKET.md
-- docs\MEP\INDEX.md
-- docs\MEP\PLAYBOOK.md
-- docs\MEP\PLAYBOOK_SUMMARY.md
-- docs\MEP\RUNBOOK.md
-- docs\MEP\RUNBOOK_SUMMARY.md
-- docs\MEP\STATE_CURRENT.md
-- docs\MEP\STATE_SUMMARY.md
-- docs\MEP\UPGRADE_GATE.md
-- platform\MEP\03_BUSINESS\tictactoe\master_spec.md
-- platform\MEP\03_BUSINESS\よりそい堂\00_CURRENT_SCOPE_NOTE.md
-- platform\MEP\03_BUSINESS\よりそい堂\01_INDEX.md
-- platform\MEP\03_BUSINESS\よりそい堂\03_TODO.md
-- platform\MEP\03_BUSINESS\よりそい堂\04_DOC_EXAMPLE_STATUS.md
-- platform\MEP\03_BUSINESS\よりそい堂\99__ci_trigger.md
-- platform\MEP\03_BUSINESS\よりそい堂\99__ci_trigger_cleanup.md
-- platform\MEP\03_BUSINESS\よりそい堂\BUSINESS_PACKET.md
-- platform\MEP\03_BUSINESS\よりそい堂\code\README.md
-- platform\MEP\03_BUSINESS\よりそい堂\ui_spec.md
-- platform\MEP\90_CHANGES\CHANGELOG.md
-- platform\MEP\90_CHANGES\CURRENT_SCOPE.md
+- docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+- docs/MEP/CHAT_PACKET.md
+- docs/MEP/INDEX.md
+- docs/MEP/PLAYBOOK.md
+- docs/MEP/PLAYBOOK_SUMMARY.md
+- docs/MEP/RUNBOOK.md
+- docs/MEP/RUNBOOK_SUMMARY.md
+- docs/MEP/STATE_CURRENT.md
+- docs/MEP/STATE_SUMMARY.md
+- docs/MEP/UPGRADE_GATE.md
+- platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+- platform/MEP/03_BUSINESS/よりそい堂/00_CURRENT_SCOPE_NOTE.md
+- platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
+- platform/MEP/03_BUSINESS/よりそい堂/03_TODO.md
+- platform/MEP/03_BUSINESS/よりそい堂/04_DOC_EXAMPLE_STATUS.md
+- platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger.md
+- platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
+- platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
+- platform/MEP/03_BUSINESS/よりそい堂/code/README.md
+- platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+- platform/MEP/90_CHANGES/CHANGELOG.md
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 
 ---
 
@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 196065
+- included_total_bytes: 195861
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -50,7 +50,7 @@
 
 ---
 
-### FILE: docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
+### FILE: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 - sha256: 7cfe777c553e8743f16b34fec199fee9fc5cce4c2a640daf34d37a9294b1fa8e
 - bytes: 1726
 
@@ -86,7 +86,7 @@
 
 ---
 
-### FILE: docs\MEP\CHAT_PACKET.md
+### FILE: docs/MEP/CHAT_PACKET.md
 - sha256: 20a1841378cdf376622aff7ef1244e9f42f88719aa1bfac817bab9701bdddc58
 - bytes: 11639
 
@@ -475,7 +475,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\INDEX.md
+### FILE: docs/MEP/INDEX.md
 - sha256: af63073ceed57794dcfdb1cbc1ed025147341d241489cb0a64025ab1124c52e6
 - bytes: 1428
 
@@ -529,7 +529,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK.md
+### FILE: docs/MEP/PLAYBOOK.md
 - sha256: 806af7c0f0487afede2136d617dd0c1134d0a3421c7871a430e32a86971bf12d
 - bytes: 2190
 
@@ -617,7 +617,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK_SUMMARY.md
+### FILE: docs/MEP/PLAYBOOK_SUMMARY.md
 - sha256: 4b3888d4438d090d5d37fc0388f28c2e19af475ce59dfb7c278414d4532f6086
 - bytes: 632
 
@@ -642,7 +642,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\RUNBOOK.md
+### FILE: docs/MEP/RUNBOOK.md
 - sha256: 0b2de462ad051da90b51c3ae74aa3295b3d7a7c2bdabd23ee24230e8c0540f31
 - bytes: 2135
 
@@ -719,7 +719,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\RUNBOOK_SUMMARY.md
+### FILE: docs/MEP/RUNBOOK_SUMMARY.md
 - sha256: 757400985bcb574392a4875937f5cf80c6c87ee7f0dfb7b23cd216fd1988c003
 - bytes: 528
 
@@ -742,7 +742,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\STATE_CURRENT.md
+### FILE: docs/MEP/STATE_CURRENT.md
 - sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - bytes: 0
 
@@ -753,7 +753,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\STATE_SUMMARY.md
+### FILE: docs/MEP/STATE_SUMMARY.md
 - sha256: 6bb2dd1f8925e2c890ecce24b6bf503729c65462f8ff1c705e318b40057d703d
 - bytes: 2014
 
@@ -821,7 +821,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\UPGRADE_GATE.md
+### FILE: docs/MEP/UPGRADE_GATE.md
 - sha256: 1ceb57bbf8900cf5a6d53c241f1720e689aa3b6bb535dce444e3a5736d4ef92c
 - bytes: 1531
 
@@ -865,7 +865,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\tictactoe\master_spec.md
+### FILE: platform/MEP/03_BUSINESS/tictactoe/master_spec.md
 - sha256: e7a82f7a6240f473815a656b55985d6146bdbb7da38901862f4e218f7d4009a3
 - bytes: 605
 
@@ -900,7 +900,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\00_CURRENT_SCOPE_NOTE.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/00_CURRENT_SCOPE_NOTE.md
 - sha256: 3c6b2d913dbd817f451daad29881d8cd1706ba0ea782d3def42b922187d6d751
 - bytes: 588
 
@@ -920,7 +920,7 @@ CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\01_INDEX.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
 - sha256: 5ad0b0f08da6232a549d91d2a00ca745b627d5f1720376f724790f8ba3d160f6
 - bytes: 341
 
@@ -942,7 +942,7 @@ Rule:
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\03_TODO.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/03_TODO.md
 - sha256: 6613a293d452a2910a420626f9c51d4e62979a1b12877c4f8976cc7d74f94e31
 - bytes: 242
 
@@ -961,7 +961,7 @@ Hits:
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\04_DOC_EXAMPLE_STATUS.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/04_DOC_EXAMPLE_STATUS.md
 - sha256: 2073ceb9e3d28e67d425a7f1eb891577684235111f3c8826b45669f63eafb7f3
 - bytes: 79745
 
@@ -987,7 +987,7 @@ Policy:
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\99__ci_trigger.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger.md
 - sha256: 617a2aa5f4268124a9d3462ead4907e1f22917060c9a6292d689f0c244aa197c
 - bytes: 100
 
@@ -1002,7 +1002,7 @@ Policy:
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\99__ci_trigger_cleanup.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
 - sha256: fe18cd3947c9e24107ef295ae96c01fc490bf36f31ab652a607b22e82aa79157
 - bytes: 39
 
@@ -1013,7 +1013,7 @@ Policy:
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\BUSINESS_PACKET.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
 - sha256: fcfaba51862fcc0782a363ef442095a23fb92fd4183578defff2b36edfd805db
 - bytes: 84716
 
@@ -1238,7 +1238,7 @@ This directory is the canonical entry point for business-side code/assets for �
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\code\README.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/code/README.md
 - sha256: aaa3dad7ea832722566d5ab943505eea0986907285305246248057f916769f98
 - bytes: 327
 
@@ -1255,7 +1255,7 @@ This directory is the canonical entry point for business-side code/assets for �
 
 ---
 
-### FILE: platform\MEP\03_BUSINESS\よりそい堂\ui_spec.md
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 - sha256: 555488256b076b6fd02568e05d8f968a29b8d5c757011c77048305cadc45fcd3
 - bytes: 3939
 
@@ -1421,7 +1421,7 @@ UI 実装は、本書との差分として管理される
 
 ---
 
-### FILE: platform\MEP\90_CHANGES\CHANGELOG.md
+### FILE: platform/MEP/90_CHANGES/CHANGELOG.md
 - sha256: 6bc9c570650d84195afea5b1f71c7356865bd833b4ddcf12fdedddace9e3e08d
 - bytes: 12
 
@@ -1432,7 +1432,7 @@ UI 実装は、本書との差分として管理される
 
 ---
 
-### FILE: platform\MEP\90_CHANGES\CURRENT_SCOPE.md
+### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - sha256: e793bb118eab2710a0bf2602273eff2bad706e9702086fae4633acef8040669b
 - bytes: 1384
 

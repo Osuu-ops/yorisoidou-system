@@ -3,49 +3,49 @@
 本書は、AIが追加で要求しがちなファイル群を「1枚」に束ねた生成物である。
 新チャットで REQUEST が発生した場合は、原則として本書を貼れば追加要求を抑止できる。
 本書は時刻・ランID等を含めず、入力ファイルが同じなら差分が出ないことを前提とする。
-生成: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\build_request_bundle.py
-ソース定義: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\request_bundle_sources_system.txt
+生成: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/build_request_bundle.py
+ソース定義: /home/runner/work/yorisoidou-system/yorisoidou-system/docs/MEP/request_bundle_sources_system.txt
 
 ---
 
 ## 収録ファイル一覧（存在するもの）
-- docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
-- docs\MEP\CHAT_PACKET.md
-- docs\MEP\INDEX.md
-- docs\MEP\PLAYBOOK.md
-- docs\MEP\PLAYBOOK_SUMMARY.md
-- docs\MEP\RUNBOOK.md
-- docs\MEP\RUNBOOK_SUMMARY.md
-- docs\MEP\STATE_CURRENT.md
-- docs\MEP\STATE_SUMMARY.md
-- docs\MEP\UPGRADE_GATE.md
-- platform\MEP\01_CORE\99__ci_trigger.md
-- platform\MEP\01_CORE\99__ci_trigger_cleanup.md
-- platform\MEP\01_CORE\definitions\SYMBOLS.md
-- platform\MEP\01_CORE\foundation\API_IO_BOUNDARY_CANON.md
-- platform\MEP\01_CORE\foundation\CI_GUARD_CANON.md
-- platform\MEP\01_CORE\foundation\CONTENT_IMMUTABILITY_CANON.md
-- platform\MEP\01_CORE\foundation\GENERATION_FORM_ROLE_DECLARATION.md
-- platform\MEP\01_CORE\foundation\MEP_BUSINESS_BOUNDARY.md
-- platform\MEP\01_CORE\foundation\MEP_CONCEPTUAL_MODEL.md
-- platform\MEP\01_CORE\foundation\MEP_EXECUTION_CANON.md
-- platform\MEP\01_CORE\foundation\MEP_INTEGRATION_COMPILER_PROTOCOL.md
-- platform\MEP\01_CORE\foundation\MEP_MEP_STRUCTURE.md
-- platform\MEP\01_CORE\foundation\MEP_PROTOCOL.md
-- platform\MEP\01_CORE\foundation\Z_AXIOMS_CANON.md
-- platform\MEP\01_CORE\system\boot\YD_boot_v3.11.md
-- platform\MEP\01_CORE\system\protocol\DISTRIBUTION_POLICY.md
-- platform\MEP\01_CORE\system\protocol\INTERFACE_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\MUSIC_GENERATION_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\OPERATION_GOVERNANCE.md
-- platform\MEP\01_CORE\system\protocol\SYSTEM_GUARD_AXIOMS.md
-- platform\MEP\01_CORE\system\protocol\system_protocol.md
-- platform\MEP\01_CORE\system\protocol\UI_APPLICATION_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\UI_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\VOICE_GENERATION_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\YOUTUBE_GENERATION_PROTOCOL.md
-- platform\MEP\01_CORE\system\protocol\Z_OBSERVATION_PROTOCOL.md
-- platform\MEP\01_CORE\system\uiux\UI_spec_MEP.md
+- docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+- docs/MEP/CHAT_PACKET.md
+- docs/MEP/INDEX.md
+- docs/MEP/PLAYBOOK.md
+- docs/MEP/PLAYBOOK_SUMMARY.md
+- docs/MEP/RUNBOOK.md
+- docs/MEP/RUNBOOK_SUMMARY.md
+- docs/MEP/STATE_CURRENT.md
+- docs/MEP/STATE_SUMMARY.md
+- docs/MEP/UPGRADE_GATE.md
+- platform/MEP/01_CORE/99__ci_trigger.md
+- platform/MEP/01_CORE/99__ci_trigger_cleanup.md
+- platform/MEP/01_CORE/definitions/SYMBOLS.md
+- platform/MEP/01_CORE/foundation/API_IO_BOUNDARY_CANON.md
+- platform/MEP/01_CORE/foundation/CI_GUARD_CANON.md
+- platform/MEP/01_CORE/foundation/CONTENT_IMMUTABILITY_CANON.md
+- platform/MEP/01_CORE/foundation/GENERATION_FORM_ROLE_DECLARATION.md
+- platform/MEP/01_CORE/foundation/MEP_BUSINESS_BOUNDARY.md
+- platform/MEP/01_CORE/foundation/MEP_CONCEPTUAL_MODEL.md
+- platform/MEP/01_CORE/foundation/MEP_EXECUTION_CANON.md
+- platform/MEP/01_CORE/foundation/MEP_INTEGRATION_COMPILER_PROTOCOL.md
+- platform/MEP/01_CORE/foundation/MEP_MEP_STRUCTURE.md
+- platform/MEP/01_CORE/foundation/MEP_PROTOCOL.md
+- platform/MEP/01_CORE/foundation/Z_AXIOMS_CANON.md
+- platform/MEP/01_CORE/system/boot/YD_boot_v3.11.md
+- platform/MEP/01_CORE/system/protocol/DISTRIBUTION_POLICY.md
+- platform/MEP/01_CORE/system/protocol/INTERFACE_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/MUSIC_GENERATION_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/OPERATION_GOVERNANCE.md
+- platform/MEP/01_CORE/system/protocol/SYSTEM_GUARD_AXIOMS.md
+- platform/MEP/01_CORE/system/protocol/UI_APPLICATION_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/UI_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/VOICE_GENERATION_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/YOUTUBE_GENERATION_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/Z_OBSERVATION_PROTOCOL.md
+- platform/MEP/01_CORE/system/protocol/system_protocol.md
+- platform/MEP/01_CORE/system/uiux/UI_spec_MEP.md
 
 ---
 
@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 102232
+- included_total_bytes: 98910
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -65,7 +65,7 @@
 
 ---
 
-### FILE: docs\MEP\AI_OUTPUT_CONTRACT_POWERSHELL.md
+### FILE: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 - sha256: 7cfe777c553e8743f16b34fec199fee9fc5cce4c2a640daf34d37a9294b1fa8e
 - bytes: 1726
 
@@ -101,7 +101,7 @@
 
 ---
 
-### FILE: docs\MEP\CHAT_PACKET.md
+### FILE: docs/MEP/CHAT_PACKET.md
 - sha256: 20a1841378cdf376622aff7ef1244e9f42f88719aa1bfac817bab9701bdddc58
 - bytes: 11639
 
@@ -490,7 +490,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\INDEX.md
+### FILE: docs/MEP/INDEX.md
 - sha256: af63073ceed57794dcfdb1cbc1ed025147341d241489cb0a64025ab1124c52e6
 - bytes: 1428
 
@@ -544,7 +544,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK.md
+### FILE: docs/MEP/PLAYBOOK.md
 - sha256: 806af7c0f0487afede2136d617dd0c1134d0a3421c7871a430e32a86971bf12d
 - bytes: 2190
 
@@ -632,7 +632,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\PLAYBOOK_SUMMARY.md
+### FILE: docs/MEP/PLAYBOOK_SUMMARY.md
 - sha256: 4b3888d4438d090d5d37fc0388f28c2e19af475ce59dfb7c278414d4532f6086
 - bytes: 632
 
@@ -657,7 +657,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\RUNBOOK.md
+### FILE: docs/MEP/RUNBOOK.md
 - sha256: 0b2de462ad051da90b51c3ae74aa3295b3d7a7c2bdabd23ee24230e8c0540f31
 - bytes: 2135
 
@@ -734,7 +734,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\RUNBOOK_SUMMARY.md
+### FILE: docs/MEP/RUNBOOK_SUMMARY.md
 - sha256: 757400985bcb574392a4875937f5cf80c6c87ee7f0dfb7b23cd216fd1988c003
 - bytes: 528
 
@@ -757,7 +757,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\STATE_CURRENT.md
+### FILE: docs/MEP/STATE_CURRENT.md
 - sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - bytes: 0
 
@@ -768,7 +768,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\STATE_SUMMARY.md
+### FILE: docs/MEP/STATE_SUMMARY.md
 - sha256: 6bb2dd1f8925e2c890ecce24b6bf503729c65462f8ff1c705e318b40057d703d
 - bytes: 2014
 
@@ -836,7 +836,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: docs\MEP\UPGRADE_GATE.md
+### FILE: docs/MEP/UPGRADE_GATE.md
 - sha256: 1ceb57bbf8900cf5a6d53c241f1720e689aa3b6bb535dce444e3a5736d4ef92c
 - bytes: 1531
 
@@ -880,7 +880,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: platform\MEP\01_CORE\99__ci_trigger.md
+### FILE: platform/MEP/01_CORE/99__ci_trigger.md
 - sha256: 617a2aa5f4268124a9d3462ead4907e1f22917060c9a6292d689f0c244aa197c
 - bytes: 100
 
@@ -895,7 +895,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: platform\MEP\01_CORE\99__ci_trigger_cleanup.md
+### FILE: platform/MEP/01_CORE/99__ci_trigger_cleanup.md
 - sha256: fe18cd3947c9e24107ef295ae96c01fc490bf36f31ab652a607b22e82aa79157
 - bytes: 39
 
@@ -906,7 +906,7 @@ scope-guard enforcement test 20260103-002424
 
 ---
 
-### FILE: platform\MEP\01_CORE\definitions\SYMBOLS.md
+### FILE: platform/MEP/01_CORE/definitions/SYMBOLS.md
 - sha256: d1c2bb3a2866e000fa4ba0f077d38ce3b1b3c7ba748ea00691b2910438b322c1
 - bytes: 4498
 
@@ -1173,7 +1173,7 @@ history: []
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\API_IO_BOUNDARY_CANON.md
+### FILE: platform/MEP/01_CORE/foundation/API_IO_BOUNDARY_CANON.md
 - sha256: 6f04447c90bab0079783f915d4f86c3e86d8f5375e894f24276ab58f9fcbf460
 - bytes: 2735
 
@@ -1319,7 +1319,7 @@ MEP の API 実装として不適合とする。
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\CI_GUARD_CANON.md
+### FILE: platform/MEP/01_CORE/foundation/CI_GUARD_CANON.md
 - sha256: 4f14253ce5b25984399ce9bf50a150a29b44e5fb48b31aab9750e9250f57d111
 - bytes: 3212
 
@@ -1450,7 +1450,7 @@ GitHub の Pull Request と Actions（CI）を **外部ゲート**として用�
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\CONTENT_IMMUTABILITY_CANON.md
+### FILE: platform/MEP/01_CORE/foundation/CONTENT_IMMUTABILITY_CANON.md
 - sha256: b14ab8dafadf18c61491c32123527fb936fc0c1478b5974445750d16c111f00e
 - bytes: 3245
 
@@ -1597,7 +1597,7 @@ AI は以下を厳守する。
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\GENERATION_FORM_ROLE_DECLARATION.md
+### FILE: platform/MEP/01_CORE/foundation/GENERATION_FORM_ROLE_DECLARATION.md
 - sha256: 9ff8f6fde9f3f9474b5f1ca8169c850c027a80def97f1e685cc158b4bca9e9aa
 - bytes: 1649
 
@@ -1628,7 +1628,7 @@ AI は以下を厳守する。
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_BUSINESS_BOUNDARY.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_BUSINESS_BOUNDARY.md
 - sha256: 41505357f50675f2e9edff520cbe42f16f4ea30cd1ffccbdb0c6d4f6c6059777
 - bytes: 3130
 
@@ -1790,7 +1790,7 @@ MEP_core と MEP_business の運用境界・責務分離は
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_CONCEPTUAL_MODEL.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_CONCEPTUAL_MODEL.md
 - sha256: bddbc4c54a48837a3c0fd1684286829ca510924e562bbf142a2da2edda8b86f1
 - bytes: 3005
 
@@ -1933,7 +1933,7 @@ Z はあくまで
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_EXECUTION_CANON.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_EXECUTION_CANON.md
 - sha256: a923c5b8aa79f1672531a01e282ea473220a04cf082dd481ab3e3c4e307f99e5
 - bytes: 4341
 
@@ -2186,7 +2186,7 @@ MEP における
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_INTEGRATION_COMPILER_PROTOCOL.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_INTEGRATION_COMPILER_PROTOCOL.md
 - sha256: 6ba933a5b844b24a9679ad4f8263d39712e688f639d4f7668cab04c4e1b4c614
 - bytes: 4543
 
@@ -2390,7 +2390,7 @@ MEP の思想を変更しない。
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_MEP_STRUCTURE.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_MEP_STRUCTURE.md
 - sha256: 56b6ae327f0825c8d084e71f934349d2c61efbb0867e2f01feb7fc6c1384519d
 - bytes: 3511
 
@@ -2543,7 +2543,7 @@ foundation 配下に置くための参照用統合文書である。
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\MEP_PROTOCOL.md
+### FILE: platform/MEP/01_CORE/foundation/MEP_PROTOCOL.md
 - sha256: 9acca062c4b8fcae34c9b4ac68a906aa20c315b0d6171447f70ef8c83c6b991e
 - bytes: 4492
 
@@ -2744,7 +2744,7 @@ MEP プロジェクトにおける
 
 ---
 
-### FILE: platform\MEP\01_CORE\foundation\Z_AXIOMS_CANON.md
+### FILE: platform/MEP/01_CORE/foundation/Z_AXIOMS_CANON.md
 - sha256: 0d491c3306aaff9beb1c337d671a5a8a58c145c58b88dffb78f62b783bbdbb8a
 - bytes: 2780
 
@@ -2897,7 +2897,7 @@ Z に関する
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\boot\YD_boot_v3.11.md
+### FILE: platform/MEP/01_CORE/system/boot/YD_boot_v3.11.md
 - sha256: 88d53ad88a6668aec5f39b6e38effcdcfa48a5612607c526630ace3db763c077
 - bytes: 4374
 
@@ -3041,7 +3041,7 @@ END OF BOOT FILE
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\DISTRIBUTION_POLICY.md
+### FILE: platform/MEP/01_CORE/system/protocol/DISTRIBUTION_POLICY.md
 - sha256: 19bf612e70b7e3999fa34a4f725330a7143cf3532675cf6eab506c10855616e7
 - bytes: 717
 
@@ -3082,7 +3082,7 @@ END OF BOOT FILE
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\INTERFACE_PROTOCOL.md
+### FILE: platform/MEP/01_CORE/system/protocol/INTERFACE_PROTOCOL.md
 - sha256: 01eb9c3bf07a09d9f1351031c6b75ba6429b64e90ecfb0df1df9b7348d981cca
 - bytes: 3190
 
@@ -3243,7 +3243,7 @@ UI × SYSTEM の責務境界・不可侵原則・優先順位は
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\MUSIC_GENERATION_PROTOCOL.md
+### FILE: platform/MEP/01_CORE/system/protocol/MUSIC_GENERATION_PROTOCOL.md
 - sha256: 0cf86496183ec9aa0ae958b47a51a27c7e17f987c324b49818dcf51a38c3c241
 - bytes: 457
 
@@ -3280,7 +3280,7 @@ UI × SYSTEM の責務境界・不可侵原則・優先順位は
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\OPERATION_GOVERNANCE.md
+### FILE: platform/MEP/01_CORE/system/protocol/OPERATION_GOVERNANCE.md
 - sha256: 6278a9b632abbcfbbefba39d7497d0c5d93c34cf17512f3e023e94e620591727
 - bytes: 410
 
@@ -3311,7 +3311,7 @@ UI × SYSTEM の責務境界・不可侵原則・優先順位は
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\SYSTEM_GUARD_AXIOMS.md
+### FILE: platform/MEP/01_CORE/system/protocol/SYSTEM_GUARD_AXIOMS.md
 - sha256: e78d6bc477c27fb15b97c803bcb7fd07c04e82adb865ea6d45cd41bbe405edbe
 - bytes: 4511
 
@@ -3512,7 +3512,482 @@ Z の存在有無に関わらず
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\system_protocol.md
+### FILE: platform/MEP/01_CORE/system/protocol/UI_APPLICATION_PROTOCOL.md
+- sha256: 9e474ac94f38ecbe967efe9740eb18dc1ef1439573865dd1d1216b9fbc75fd2d
+- bytes: 868
+
+```text
+# UI Application Protocol
+（MEP UI 適用仕様）
+
+## 位置づけ
+本書は、MEP システムにおける UI の適用方法を定義する。
+UI は MEP の外部に位置し、MEP 本体・判断・統治を持たない。
+
+## UI 種別
+- 仮UI（UIなし／手順・CLIベース）
+
+## UI が触る API
+- diff 投稿 API
+- read_only 取得 API
+
+※ candidate / Z.evaluate / S.commit は UI から触らない。
+
+## UI 入力単位
+- 1 diff / 1 実行
+
+## UI 実行
+- トリガー：手動のみ
+- 実行頻度：都度実行
+
+## 失敗時の扱い
+- UI 上の表示なし
+- ログ（CI / Z.evaluate）のみを正とする
+
+## 再実行ルール
+- 再実行は禁止
+- 必ず差し戻し（diff 修正 → 新 diff 投入）
+
+## UI 出力
+- 画面出力なし
+- ログのみ
+
+## UI 操作ログ
+- 取得しない
+- CI / Z.evaluate ログのみを正とする
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/system/protocol/UI_PROTOCOL.md
+- sha256: 7b80a339e0e53c8339d414dc8457c8fbacd78c75e94e095323f00dd96cf4d226
+- bytes: 3923
+
+```text
+<!--
+参照定義ファイル：
+MEP/definitions/SYMBOLS.md
+
+運用ルール：
+本ファイル内に出現するすべての参照記号（@Sxxxx）は、
+個別指定や列挙を行わず、
+上記「参照定義ファイル」を唯一の正として解決する。
+
+本ファイルは、参照関係の宣言・管理を行わない。
+-->
+
+
+
+# UI_PROTOCOL
+
+MEP プロジェクト  
+UI 統治・状態意味プロトコル  
+（人間可視化層・唯一の正）
+
+---
+
+## 0. 本書の位置づけ
+
+本書（UI_PROTOCOL）は、  
+MEP プロジェクトにおける **UI の責務・状態表現・意味制約**を定義する  
+唯一のプロトコルである。
+
+本書は、
+
+- MEP_PROTOCOL に完全従属する
+- system_protocol の内部制御を表出しない
+- 業務仕様（master_spec）を定義しない
+
+UI に関する判断・表現は、  
+本書に定義された範囲でのみ許可される。
+
+---
+
+## 1. UI の最重要思想
+
+UI は、  
+**操作を誘導するものではなく、状態を理解させるためのもの**である。
+
+UI の第一目的は、  
+「今、何が起きているか」を人間が誤解なく把握できることとする。
+
+---
+
+## 2. 内部フェーズとの分離
+
+UI 状態と、  
+SYSTEM の内部フェーズ（A/B/T/C/D/R/S 等）は  
+**完全に分離**される。
+
+内部フェーズ名・識別子・遷移は、  
+UI に表示してはならない。
+
+---
+
+## 3. UI 状態表現の原則
+
+UI 状態は、
+
+- 人間向け日本語名のみを正とする
+- 内部識別子を持ち込まない
+- 有限個に固定する
+
+UI 状態は、  
+**同時に複数成立してはならない。**
+
+---
+
+## 4. UI 状態一覧（固定）
+
+UI は、以下の状態のみを持つ。
+
+- 未開始  
+- 編集中  
+- 処理中  
+- 業務エラー  
+- システムエラー  
+- 完了  
+
+上記以外の UI 状態は存在しない。
+
+---
+
+## 5. 各 UI 状態の意味定義
+
+- **未開始**：作業は開始されていない  
+- **編集中**：人間が入力・修正を行っている  
+- **処理中**：SYSTEM が処理を実行している  
+- **業務エラー**：監査 NG 等、業務判断により修正が必要  
+- **システムエラー**：SYSTEM 破綻・処理不能状態  
+- **完了**：UI 上の処理区切りを示す便宜的状態  
+
+「完了」は、  
+恒久的な最終状態を意味しない。
+
+---
+
+## 6. エラー状態の分離原則
+
+- **業務エラー**：修正（R）対象  
+- **システムエラー**：再試行・復旧・リセット対象  
+
+R（修正）は、  
+**業務エラー専用**であり、  
+復旧操作を意味しない。
+
+---
+
+## 7. 進捗表示の制約
+
+進捗表示（スピナー等）は、  
+**処理中状態でのみ**許可される。
+
+編集中状態では、  
+進捗表示を行ってはならない。
+
+---
+
+## 8. 作業対象と UI 状態の分離
+
+カルテ／マスタは、  
+UI 状態ではなく **作業対象**に過ぎない。
+
+作業対象の名称を、  
+UI 状態として扱ってはならない。
+
+---
+
+## 9. UI 表示文言の制約
+
+UI の説明文は、  
+以下のみを短文で記述する。
+
+- 今の状態
+- 次にできること
+
+理由説明・背景説明・解説は禁止する。
+
+---
+
+## 10. 設計統治原則
+
+UI 挙動を変更する場合、  
+**必ず UI_PROTOCOL を先に修正する。**
+
+UI_PROTOCOL を修正せずに行われた  
+UI 挙動変更は無効とする。
+
+---
+
+## 11. 設計責任の最終原則
+
+**説明できない UI 挙動は、設計ミスとみなす。**
+
+理由を説明できない状態・遷移・表示は、  
+存在してはならない。
+
+---
+
+## 12. 最終宣言
+
+本書をもって、
+
+MEP プロジェクトにおける  
+UI の状態定義・意味境界・設計責任は  
+**確定**とする。
+
+これ以降の UI 変更は、  
+本書を前提とした **別フェーズ**とする。
+
+---
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/system/protocol/VOICE_GENERATION_PROTOCOL.md
+- sha256: a6505d0a87acff6576cf19ccc1b56b7c44a9dba85081925cedaff1121b7951f9
+- bytes: 461
+
+```text
+# Voice Generation Protocol
+（AI ボイス生成仕様）
+
+## 生成方式
+- 全文一括生成
+
+## 話者数
+- フルボイス（全員）
+
+## 話者固定
+- メインキャラクターは固定ボイス
+- その他登場人物も役割単位で固定可能（拡張余地のみ）
+
+## 再生成条件
+- 新しい diff が投入された場合のみ
+
+## 出力形式
+- 音声ファイル（WAV）
+- 1生成 = 1ファイル
+- 上書き禁止（履歴保持）
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/system/protocol/YOUTUBE_GENERATION_PROTOCOL.md
+- sha256: 8e9de796fa867139b6e9701e68fd367d9d68d113289ad06e6bbc087ba3f0eb7b
+- bytes: 462
+
+```text
+# YouTube Generation Protocol
+（YouTube 制作仕様）
+
+## 生成対象
+- 台本
+
+## 生成単位
+- 1本単位（当面）
+- 安定後に複数単位へ拡張可能
+
+## 差分修正
+- 修正は必ず diff で行う
+- 既存台本の上書きは禁止
+- 再生成は差分反映のみ
+
+## 再生成条件
+- 人為的に新しい diff が投入された場合のみ
+
+## 出力物の保存
+- リポジトリ内（MEP 管理下）
+- 履歴保持
+- 上書き禁止
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/system/protocol/Z_OBSERVATION_PROTOCOL.md
+- sha256: c410887f6b7dc864a160dc016ba76965fc0e3b8f1016cf0e26ab4224018a3488
+- bytes: 4145
+
+```text
+<!--
+参照定義ファイル：
+MEP/definitions/SYMBOLS.md
+
+運用ルール：
+本ファイル内に出現するすべての参照記号（@Sxxxx）は、
+個別指定や列挙を行わず、
+上記「参照定義ファイル」を唯一の正として解決する。
+
+本ファイルは、参照関係の宣言・管理を行わない。
+-->
+
+# Z_OBSERVATION_PROTOCOL
+
+MEP プロジェクト  
+Z（並走監視）観測および材料取扱い定義  
+（SYSTEM 側補助プロトコル）
+
+---
+
+## 0. 本書の位置づけ
+
+本書（Z_OBSERVATION_PROTOCOL）は、  
+MEP における **Z（並走監視概念）を SYSTEM 上でどのように観測し、  
+その結果をどのように扱うか**を定義する補助プロトコルである。
+
+本書は、
+
+- MEP_PROTOCOL に定義された思想・統治原則
+- system_protocol に定義されたフェーズ制御・遷移原則
+
+の **いずれにも反しない範囲**でのみ効力を持つ。
+
+本書は、
+
+- フェーズを定義しない
+- 遷移を定義しない
+- 判断を定義しない
+- 制御を定義しない
+
+---
+
+## 1. Z の SYSTEM 上での扱い方針
+
+SYSTEM は、  
+MEP_PROTOCOL に定義された Z を  
+**実体・機構・モジュールとして実装しない。**
+
+Z は、  
+SYSTEM にとって **直接参照される存在ではなく**、  
+SYSTEM が生成・保持する各種情報を  
+**人間が Z 的観点で解釈可能な状態に保つための  
+観測上の前提概念**として扱われる。
+
+---
+
+## 2. 観測対象（Z 観測材料）
+
+SYSTEM は、  
+以下の情報を **通常処理の副産物として保持**する。
+
+- フェーズ進行履歴
+- 生成物の構造状態
+- 監査結果（T / D の出力）
+- 差分適用履歴
+- 再試行・差戻しの履歴
+
+これらはすべて、
+
+- Z 専用に生成されるものではなく
+- SYSTEM の通常責務として存在する情報
+
+である。
+
+---
+
+## 3. Z 観測材料の性質
+
+Z 観測材料は、以下の性質を持つ。
+
+- 解釈されない
+- 評価されない
+- OK / NG に変換されない
+- 遷移条件に使用されない
+
+Z 観測材料は、  
+**人間が後段で自由文判断を行うための参考情報**としてのみ存在する。
+
+---
+
+## 4. SYSTEM の禁止事項
+
+SYSTEM は、以下を **絶対に行ってはならない。**
+
+- Z 観測材料を用いた自動判定
+- Z 観測材料を用いたフェーズ遷移
+- Z 観測材料を用いた停止・継続判断
+- Z 観測材料の集約によるスコア化・フラグ化
+- Z 観測材料の UI 上での強制可視化
+
+---
+
+## 5. 人間判断との関係
+
+SYSTEM は、  
+Z 観測材料を **人間判断の入力として直接提供しない。**
+
+人間が Z 的観点で判断を行う場合、
+
+- SYSTEM の保持する各種情報
+- MEP_PROTOCOL に定義された思想
+- system_protocol に定義されたフェーズ原則
+
+を **総合的に参照**することによって行う。
+
+この判断は、
+
+- 自由文によってのみ行われ
+- SYSTEM によって解釈されず
+- SYSTEM の挙動を直接変更しない
+
+---
+
+## 6. system_protocol との関係
+
+本書は、
+
+- system_protocol のフェーズ定義
+- フェーズ遷移順序
+- 監査フェーズ（T / D）
+- 差戻し（R）および保存（S）
+
+の **いずれにも介入しない。**
+
+Z 観測材料は、  
+system_protocol 上の  
+**既存フェーズ挙動の外側**でのみ参照され得る。
+
+---
+
+## 7. 拡張および変更の原則
+
+Z 観測に関する拡張・変更は、
+
+- 観測材料の追加
+- 記録粒度の調整
+- 表現形式の変更
+
+に限定される。
+
+判断・制御・遷移に関わる変更は、  
+本書の範囲外とする。
+
+---
+
+## 8. 最終宣言
+
+本書をもって、
+
+- Z は SYSTEM 上で **制御対象ではなく観測前提として扱われる**
+- Z 観測材料は **判断材料ではあるが判断根拠ではない**
+- 人間の意図と SYSTEM の進行は **構造的に乖離しない**
+
+ことを確定する。
+
+本書は、  
+MEP における **Z の SYSTEM 側取り扱いに関する最終定義**とする。
+
+---
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/system/protocol/system_protocol.md
 - sha256: 8dbd0806afa9e4bfb229132b97638c14974916cb622dd26bba21dafa50b5b0dd
 - bytes: 5032
 
@@ -3760,482 +4235,7 @@ MEP_PROTOCOL に基づく **別フェーズ**とする。
 
 ---
 
-### FILE: platform\MEP\01_CORE\system\protocol\UI_APPLICATION_PROTOCOL.md
-- sha256: 9e474ac94f38ecbe967efe9740eb18dc1ef1439573865dd1d1216b9fbc75fd2d
-- bytes: 868
-
-```text
-# UI Application Protocol
-（MEP UI 適用仕様）
-
-## 位置づけ
-本書は、MEP システムにおける UI の適用方法を定義する。
-UI は MEP の外部に位置し、MEP 本体・判断・統治を持たない。
-
-## UI 種別
-- 仮UI（UIなし／手順・CLIベース）
-
-## UI が触る API
-- diff 投稿 API
-- read_only 取得 API
-
-※ candidate / Z.evaluate / S.commit は UI から触らない。
-
-## UI 入力単位
-- 1 diff / 1 実行
-
-## UI 実行
-- トリガー：手動のみ
-- 実行頻度：都度実行
-
-## 失敗時の扱い
-- UI 上の表示なし
-- ログ（CI / Z.evaluate）のみを正とする
-
-## 再実行ルール
-- 再実行は禁止
-- 必ず差し戻し（diff 修正 → 新 diff 投入）
-
-## UI 出力
-- 画面出力なし
-- ログのみ
-
-## UI 操作ログ
-- 取得しない
-- CI / Z.evaluate ログのみを正とする
-```
-
-
----
-
-### FILE: platform\MEP\01_CORE\system\protocol\UI_PROTOCOL.md
-- sha256: 7b80a339e0e53c8339d414dc8457c8fbacd78c75e94e095323f00dd96cf4d226
-- bytes: 3923
-
-```text
-<!--
-参照定義ファイル：
-MEP/definitions/SYMBOLS.md
-
-運用ルール：
-本ファイル内に出現するすべての参照記号（@Sxxxx）は、
-個別指定や列挙を行わず、
-上記「参照定義ファイル」を唯一の正として解決する。
-
-本ファイルは、参照関係の宣言・管理を行わない。
--->
-
-
-
-# UI_PROTOCOL
-
-MEP プロジェクト  
-UI 統治・状態意味プロトコル  
-（人間可視化層・唯一の正）
-
----
-
-## 0. 本書の位置づけ
-
-本書（UI_PROTOCOL）は、  
-MEP プロジェクトにおける **UI の責務・状態表現・意味制約**を定義する  
-唯一のプロトコルである。
-
-本書は、
-
-- MEP_PROTOCOL に完全従属する
-- system_protocol の内部制御を表出しない
-- 業務仕様（master_spec）を定義しない
-
-UI に関する判断・表現は、  
-本書に定義された範囲でのみ許可される。
-
----
-
-## 1. UI の最重要思想
-
-UI は、  
-**操作を誘導するものではなく、状態を理解させるためのもの**である。
-
-UI の第一目的は、  
-「今、何が起きているか」を人間が誤解なく把握できることとする。
-
----
-
-## 2. 内部フェーズとの分離
-
-UI 状態と、  
-SYSTEM の内部フェーズ（A/B/T/C/D/R/S 等）は  
-**完全に分離**される。
-
-内部フェーズ名・識別子・遷移は、  
-UI に表示してはならない。
-
----
-
-## 3. UI 状態表現の原則
-
-UI 状態は、
-
-- 人間向け日本語名のみを正とする
-- 内部識別子を持ち込まない
-- 有限個に固定する
-
-UI 状態は、  
-**同時に複数成立してはならない。**
-
----
-
-## 4. UI 状態一覧（固定）
-
-UI は、以下の状態のみを持つ。
-
-- 未開始  
-- 編集中  
-- 処理中  
-- 業務エラー  
-- システムエラー  
-- 完了  
-
-上記以外の UI 状態は存在しない。
-
----
-
-## 5. 各 UI 状態の意味定義
-
-- **未開始**：作業は開始されていない  
-- **編集中**：人間が入力・修正を行っている  
-- **処理中**：SYSTEM が処理を実行している  
-- **業務エラー**：監査 NG 等、業務判断により修正が必要  
-- **システムエラー**：SYSTEM 破綻・処理不能状態  
-- **完了**：UI 上の処理区切りを示す便宜的状態  
-
-「完了」は、  
-恒久的な最終状態を意味しない。
-
----
-
-## 6. エラー状態の分離原則
-
-- **業務エラー**：修正（R）対象  
-- **システムエラー**：再試行・復旧・リセット対象  
-
-R（修正）は、  
-**業務エラー専用**であり、  
-復旧操作を意味しない。
-
----
-
-## 7. 進捗表示の制約
-
-進捗表示（スピナー等）は、  
-**処理中状態でのみ**許可される。
-
-編集中状態では、  
-進捗表示を行ってはならない。
-
----
-
-## 8. 作業対象と UI 状態の分離
-
-カルテ／マスタは、  
-UI 状態ではなく **作業対象**に過ぎない。
-
-作業対象の名称を、  
-UI 状態として扱ってはならない。
-
----
-
-## 9. UI 表示文言の制約
-
-UI の説明文は、  
-以下のみを短文で記述する。
-
-- 今の状態
-- 次にできること
-
-理由説明・背景説明・解説は禁止する。
-
----
-
-## 10. 設計統治原則
-
-UI 挙動を変更する場合、  
-**必ず UI_PROTOCOL を先に修正する。**
-
-UI_PROTOCOL を修正せずに行われた  
-UI 挙動変更は無効とする。
-
----
-
-## 11. 設計責任の最終原則
-
-**説明できない UI 挙動は、設計ミスとみなす。**
-
-理由を説明できない状態・遷移・表示は、  
-存在してはならない。
-
----
-
-## 12. 最終宣言
-
-本書をもって、
-
-MEP プロジェクトにおける  
-UI の状態定義・意味境界・設計責任は  
-**確定**とする。
-
-これ以降の UI 変更は、  
-本書を前提とした **別フェーズ**とする。
-
----
-```
-
-
----
-
-### FILE: platform\MEP\01_CORE\system\protocol\VOICE_GENERATION_PROTOCOL.md
-- sha256: a6505d0a87acff6576cf19ccc1b56b7c44a9dba85081925cedaff1121b7951f9
-- bytes: 461
-
-```text
-# Voice Generation Protocol
-（AI ボイス生成仕様）
-
-## 生成方式
-- 全文一括生成
-
-## 話者数
-- フルボイス（全員）
-
-## 話者固定
-- メインキャラクターは固定ボイス
-- その他登場人物も役割単位で固定可能（拡張余地のみ）
-
-## 再生成条件
-- 新しい diff が投入された場合のみ
-
-## 出力形式
-- 音声ファイル（WAV）
-- 1生成 = 1ファイル
-- 上書き禁止（履歴保持）
-```
-
-
----
-
-### FILE: platform\MEP\01_CORE\system\protocol\YOUTUBE_GENERATION_PROTOCOL.md
-- sha256: 8e9de796fa867139b6e9701e68fd367d9d68d113289ad06e6bbc087ba3f0eb7b
-- bytes: 462
-
-```text
-# YouTube Generation Protocol
-（YouTube 制作仕様）
-
-## 生成対象
-- 台本
-
-## 生成単位
-- 1本単位（当面）
-- 安定後に複数単位へ拡張可能
-
-## 差分修正
-- 修正は必ず diff で行う
-- 既存台本の上書きは禁止
-- 再生成は差分反映のみ
-
-## 再生成条件
-- 人為的に新しい diff が投入された場合のみ
-
-## 出力物の保存
-- リポジトリ内（MEP 管理下）
-- 履歴保持
-- 上書き禁止
-```
-
-
----
-
-### FILE: platform\MEP\01_CORE\system\protocol\Z_OBSERVATION_PROTOCOL.md
-- sha256: c410887f6b7dc864a160dc016ba76965fc0e3b8f1016cf0e26ab4224018a3488
-- bytes: 4145
-
-```text
-<!--
-参照定義ファイル：
-MEP/definitions/SYMBOLS.md
-
-運用ルール：
-本ファイル内に出現するすべての参照記号（@Sxxxx）は、
-個別指定や列挙を行わず、
-上記「参照定義ファイル」を唯一の正として解決する。
-
-本ファイルは、参照関係の宣言・管理を行わない。
--->
-
-# Z_OBSERVATION_PROTOCOL
-
-MEP プロジェクト  
-Z（並走監視）観測および材料取扱い定義  
-（SYSTEM 側補助プロトコル）
-
----
-
-## 0. 本書の位置づけ
-
-本書（Z_OBSERVATION_PROTOCOL）は、  
-MEP における **Z（並走監視概念）を SYSTEM 上でどのように観測し、  
-その結果をどのように扱うか**を定義する補助プロトコルである。
-
-本書は、
-
-- MEP_PROTOCOL に定義された思想・統治原則
-- system_protocol に定義されたフェーズ制御・遷移原則
-
-の **いずれにも反しない範囲**でのみ効力を持つ。
-
-本書は、
-
-- フェーズを定義しない
-- 遷移を定義しない
-- 判断を定義しない
-- 制御を定義しない
-
----
-
-## 1. Z の SYSTEM 上での扱い方針
-
-SYSTEM は、  
-MEP_PROTOCOL に定義された Z を  
-**実体・機構・モジュールとして実装しない。**
-
-Z は、  
-SYSTEM にとって **直接参照される存在ではなく**、  
-SYSTEM が生成・保持する各種情報を  
-**人間が Z 的観点で解釈可能な状態に保つための  
-観測上の前提概念**として扱われる。
-
----
-
-## 2. 観測対象（Z 観測材料）
-
-SYSTEM は、  
-以下の情報を **通常処理の副産物として保持**する。
-
-- フェーズ進行履歴
-- 生成物の構造状態
-- 監査結果（T / D の出力）
-- 差分適用履歴
-- 再試行・差戻しの履歴
-
-これらはすべて、
-
-- Z 専用に生成されるものではなく
-- SYSTEM の通常責務として存在する情報
-
-である。
-
----
-
-## 3. Z 観測材料の性質
-
-Z 観測材料は、以下の性質を持つ。
-
-- 解釈されない
-- 評価されない
-- OK / NG に変換されない
-- 遷移条件に使用されない
-
-Z 観測材料は、  
-**人間が後段で自由文判断を行うための参考情報**としてのみ存在する。
-
----
-
-## 4. SYSTEM の禁止事項
-
-SYSTEM は、以下を **絶対に行ってはならない。**
-
-- Z 観測材料を用いた自動判定
-- Z 観測材料を用いたフェーズ遷移
-- Z 観測材料を用いた停止・継続判断
-- Z 観測材料の集約によるスコア化・フラグ化
-- Z 観測材料の UI 上での強制可視化
-
----
-
-## 5. 人間判断との関係
-
-SYSTEM は、  
-Z 観測材料を **人間判断の入力として直接提供しない。**
-
-人間が Z 的観点で判断を行う場合、
-
-- SYSTEM の保持する各種情報
-- MEP_PROTOCOL に定義された思想
-- system_protocol に定義されたフェーズ原則
-
-を **総合的に参照**することによって行う。
-
-この判断は、
-
-- 自由文によってのみ行われ
-- SYSTEM によって解釈されず
-- SYSTEM の挙動を直接変更しない
-
----
-
-## 6. system_protocol との関係
-
-本書は、
-
-- system_protocol のフェーズ定義
-- フェーズ遷移順序
-- 監査フェーズ（T / D）
-- 差戻し（R）および保存（S）
-
-の **いずれにも介入しない。**
-
-Z 観測材料は、  
-system_protocol 上の  
-**既存フェーズ挙動の外側**でのみ参照され得る。
-
----
-
-## 7. 拡張および変更の原則
-
-Z 観測に関する拡張・変更は、
-
-- 観測材料の追加
-- 記録粒度の調整
-- 表現形式の変更
-
-に限定される。
-
-判断・制御・遷移に関わる変更は、  
-本書の範囲外とする。
-
----
-
-## 8. 最終宣言
-
-本書をもって、
-
-- Z は SYSTEM 上で **制御対象ではなく観測前提として扱われる**
-- Z 観測材料は **判断材料ではあるが判断根拠ではない**
-- 人間の意図と SYSTEM の進行は **構造的に乖離しない**
-
-ことを確定する。
-
-本書は、  
-MEP における **Z の SYSTEM 側取り扱いに関する最終定義**とする。
-
----
-```
-
-
----
-
-### FILE: platform\MEP\01_CORE\system\uiux\UI_spec_MEP.md
+### FILE: platform/MEP/01_CORE/system/uiux/UI_spec_MEP.md
 - sha256: 82cb9fbf4db1552992a635471593ea2a690a8f49bee06ebbdce820741c1ce6ac
 - bytes: 5257
 
