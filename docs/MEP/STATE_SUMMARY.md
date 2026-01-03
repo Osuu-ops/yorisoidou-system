@@ -61,4 +61,5 @@
 - Links
 - RUNBOOK（復旧カード）
 - PLAYBOOK（次の指示）
+- STATE_SUMMARY（現在地サマリ）
 
