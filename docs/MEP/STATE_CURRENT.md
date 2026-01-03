@@ -103,3 +103,4 @@ AI出力は本契約に従う（違反する出力は運用上NG）。
 - $pr = (gh pr list --state all --base main --search "head:auto/chat-packet-update-" --limit 1 --json number --jq '.[0].number')
 - if (-not $pr) { throw "auto/chat-packet-update PR が見つかりません（履歴0件）" }
 - gh pr checks $pr
+
