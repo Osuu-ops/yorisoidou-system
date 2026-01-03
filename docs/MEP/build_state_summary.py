@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
-ROOT = Path(__file__).resolve().parents[2]  # repo root
+ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs" / "MEP"
 
 STATE_CURRENT = DOCS / "STATE_CURRENT.md"
@@ -13,6 +13,7 @@ INDEX = DOCS / "INDEX.md"
 RUNBOOK = DOCS / "RUNBOOK.md"
 PLAYBOOK = DOCS / "PLAYBOOK.md"
 CONTRACT = DOCS / "AI_OUTPUT_CONTRACT_POWERSHELL.md"
+UPGRADE_GATE = DOCS / "UPGRADE_GATE.md"
 OUT = DOCS / "STATE_SUMMARY.md"
 
 
@@ -39,7 +40,6 @@ def h1_h2(md: str) -> list[str]:
 
 
 def cards(md: str) -> list[str]:
-    # "## CARD-xx: ..." pattern
     xs = []
     for m in re.finditer(r"^##\s+(CARD-[0-9]{2}:[^\n]+)$", md, flags=re.MULTILINE):
         xs.append(m.group(1).strip())
@@ -80,11 +80,24 @@ def render() -> str:
     play_cards = cards(play_md)
 
     lines: list[str] = []
-    lines.append("# STATE_SUMMARY（現在地サマリ） v1.0")
+    lines.append("# STATE_SUMMARY（現在地サマリ） v1.1")
     lines.append("")
     lines.append("本書は `STATE_CURRENT / INDEX / RUNBOOK / PLAYBOOK` をもとに、現在地を 1枚に圧縮した生成物である。")
     lines.append("本書は時刻・ランID等を含めず、入力が変わらない限り差分が出ないことを前提とする。")
     lines.append("生成: docs/MEP/build_state_summary.py")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## Start Pack（新チャット開始入力：最小）")
+    lines.append("- まず本書（STATE_SUMMARY.md）だけを貼って開始する。")
+    lines.append("- 追加が必要な場合のみ、AIは REQUEST 形式（最大3件）で要求する。")
+    lines.append("- 原則の追加入力は次の順：CHAT_PACKET → STATE_CURRENT → PLAYBOOK/RUNBOOK。")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## Upgrade Gate（開始直後に必ず実施する固定ゲート）")
+    lines.append("- AIは着手前に必ず実施：矛盾検出 → 観測コマンド提示 → 次の一手カード確定。")
+    lines.append("- 仕様（唯一の正）：docs/MEP/UPGRADE_GATE.md（存在しない場合は作成PRを起案）。")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -105,15 +118,6 @@ def render() -> str:
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("## STATE_CURRENT の主要見出し")
-    if state_heads:
-        for h in state_heads[:40]:
-            lines.append(f"- {h}")
-    else:
-        lines.append("- （未取得）STATE_CURRENT.md を確認")
-    lines.append("")
-    lines.append("---")
-    lines.append("")
     lines.append("## PLAYBOOK カード一覧")
     if play_cards:
         for c in play_cards:
@@ -129,6 +133,15 @@ def render() -> str:
             lines.append(f"- {c}")
     else:
         lines.append("- （未取得）RUNBOOK.md を確認")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## STATE_CURRENT の主要見出し")
+    if state_heads:
+        for h in state_heads[:40]:
+            lines.append(f"- {h}")
+    else:
+        lines.append("- （未取得）STATE_CURRENT.md を確認")
     lines.append("")
     lines.append("---")
     lines.append("")
