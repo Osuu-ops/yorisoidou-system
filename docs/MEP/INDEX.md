@@ -42,3 +42,6 @@
 ## REQUEST_BUNDLE（追加要求ファイル束）
 - REQUEST_BUNDLE_SYSTEM.md（SYSTEM側の要求ファイル束）
 - REQUEST_BUNDLE_BUSINESS.md（BUSINESS側の要求ファイル束）
+
+## IDEA_VAULT（アイデア避難所）
+- IDEA_VAULT.md（アイデア散逸防止。ID化は採用候補のみ）
