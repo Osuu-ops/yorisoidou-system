@@ -6,5 +6,5 @@
 ---
 
 ## カード一覧
-- （未取得）RUNBOOK.md を確認
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 

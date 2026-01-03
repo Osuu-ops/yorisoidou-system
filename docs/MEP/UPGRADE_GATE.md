@@ -32,3 +32,19 @@
 - 新チャット開始で、STATE_SUMMARY から開始できる
 - 必要に応じて REQUEST（最大3件）で追加情報を取得できる
 - 取得後、観測→次の一手→1PR、の一本道が成立する
+
+---
+
+## Lease / Continue Target（開始直後の固定手順） v1.1
+
+開始直後、AIは必ず以下を実行する。
+
+1) LEASE を適用する（CURRENT に含まれる：HANDOFF_ID / HANDOFF_OVERVIEW / CONTINUE_TARGET）
+2) UPGRADE_GATE を適用する（矛盾検出 → 観測 → 次の一手カード確定）
+3) CONTINUE_TARGET を決定する
+   - AUTO: open PR / failing checks / RUNBOOK異常 → 1つに確定
+   - FIXED: CURRENT 指定の CARD-ID を優先（ただし DIRTY は例外なく停止）
+4) 出力は PowerShell 単一コピペ一本道（ID手入力禁止、ghで自動解決）
+5) 1サイクルは「観測 → 1PR」まで（複数PR同時進行は禁止）
+
+本手順に違反した場合は LEASE_BREAK として DIRTY 扱いで停止する。

@@ -100,3 +100,41 @@
 ### 次の遷移
 - 解消できたら PLAYBOOK へ復帰
 - 解消できないなら DIRTY
+
+---
+
+## CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+
+### 症状
+- PowerShell/端末が落ちた
+- rebase/merge/cherry-pick が途中で止まった
+- 状況が不明だが、安全に観測へ戻りたい
+
+### 目的
+- ローカルの途中状態を安全に解除し、DIRTY を検出したら停止する
+- Continue Target（open PR → failing checks → RUNBOOK）へ戻す
+
+### 手順（PowerShell 単一コピペ）
+~~~powershell
+$ErrorActionPreference = "Stop"
+$repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
+
+& git rebase --abort 2>$null | Out-Null
+& git merge --abort 2>$null | Out-Null
+& git cherry-pick --abort 2>$null | Out-Null
+
+$porcelain = (& git status --porcelain)
+if (-not [string]::IsNullOrWhiteSpace($porcelain)) {
+  git status
+  throw "DIRTY: 未コミット変更あり（人間判断へ）"
+}
+
+git checkout main | Out-Null
+git pull --ff-only | Out-Null
+
+gh pr list --repo $repo --state open
+~~~
+
+### 判定
+- DIRTY が出たら停止して人間判断へ
+- clean なら観測に復帰
