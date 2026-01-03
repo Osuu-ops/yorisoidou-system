@@ -1,0 +1,13 @@
+﻿# One path per line. Lines starting with # are comments.
+# BUSINESS側の束は、いまは docs/MEP の運用束を中心に同型で生成する。
+# 将来 platform/MEP/03_BUSINESS/... を束ねたい場合はここにパスを追加する。
+docs/MEP/STATE_SUMMARY.md
+docs/MEP/STATE_CURRENT.md
+docs/MEP/INDEX.md
+docs/MEP/PLAYBOOK.md
+docs/MEP/PLAYBOOK_SUMMARY.md
+docs/MEP/RUNBOOK.md
+docs/MEP/RUNBOOK_SUMMARY.md
+docs/MEP/UPGRADE_GATE.md
+docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
+docs/MEP/CHAT_PACKET.md

@@ -35,3 +35,10 @@
 
 ## UPGRADE_GATE（開始ゲート）
 - UPGRADE_GATE.md（開始直後に100点化してから着手する固定ゲート）
+
+## HANDOFF_100（引継ぎ100点）
+- HANDOFF_100.md（新チャット1通目に貼る1枚）
+
+## REQUEST_BUNDLE（追加要求ファイル束）
+- REQUEST_BUNDLE_SYSTEM.md（SYSTEM側の要求ファイル束）
+- REQUEST_BUNDLE_BUSINESS.md（BUSINESS側の要求ファイル束）
