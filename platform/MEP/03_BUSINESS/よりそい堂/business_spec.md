@@ -205,3 +205,28 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE の推測代入
 - STATUS の任意変更
 - LOCATION 欠落の放置（警告として扱い、管理で回収）
+
+<!-- EXPENSE_SPEC_PHASE1 -->
+## EXPENSE（経費）— BUSINESS_SPEC（Phase-1）
+
+### 目的
+- 経費（EXPENSE）を「確定した支出記録」として保持し、受注（Order_ID）へ接続する。
+- 経費の“確定”は推測ではなく、確定入力（または完了同期で確定されたUSED部材）に限定する。
+
+### 入力入口（不変）
+- 完了同期により USED 部材の PRICE が経費として確定される（master_spec 9章 / Expense_Master）
+- 手動の経費追加は、確定情報（領収/金額/日付/対象）を入力できる入口（運用/将来UI）
+- 推測代入は禁止
+
+### 最小データ（業務要件）
+- EXP_ID（経費ID：月内連番、再利用不可）
+- Order_ID（接続キー）
+- PART_ID（関連部材がある場合）
+- PRICE（確定金額）
+- USED_DATE（使用/支出日）
+- CreatedAt（記録日時）
+
+### 禁止事項
+- PRICE 推測代入
+- EXP_ID 再発番/再利用
+- Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）
