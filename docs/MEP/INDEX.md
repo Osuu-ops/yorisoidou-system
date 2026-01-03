@@ -23,3 +23,6 @@
 
 ## PLAYBOOK（次の指示）
 - PLAYBOOK.md（常に次の一手を返すカード集）
+
+## STATE_SUMMARY（現在地サマリ）
+- STATE_SUMMARY.md（STATE/PLAYBOOK/RUNBOOK/INDEX を1枚に圧縮した生成物）
