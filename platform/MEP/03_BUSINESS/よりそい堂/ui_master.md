@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 ROLE: UI_MASTER (screen/components/field mappings)
@@ -59,3 +59,81 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - receiptStatus=DRAFT の場合：下書きとしてプレビュー可能
 - receiptStatus=ISSUED の場合：docName/docDesc/docPrice が揃っていることを推奨チェックしてよい
 
+<!-- ORDER_UI_MASTER_PHASE1 -->
+## ORDER（受注）— UI_MASTER（Phase-1）
+
+本節は ORDER（受注）に関する UI 辞書（表示/入力の最小定義）を追加する。
+※ orderStatus/STATUS は **業務ロジックが確定**し、UIは表示のみ（手入力で確定/変更しない）。
+
+### Screens（最小）
+- SCREEN_ORDER_INTake（受注取り込み）
+  - 目的：UF01（raw/通知全文）から受注素材を入力し、登録へ進める
+- SCREEN_ORDER_SCHEDULE（予定/担当）
+  - 目的：施工予定（scheduledDate/timeSlot）と担当（assignee）を扱う（未確定を許容）
+- SCREEN_ORDER_VIEW（閲覧）
+  - 目的：OV01 相当の受注閲覧で、状態・予定・メモを確認できる
+
+### Fields（UI表示/入力）
+- raw
+  - label: 通知全文 / 1行メモ
+  - ui: textarea
+  - required: true
+- name
+  - label: お名前
+  - ui: text
+  - required: false（素材が無い場合を許容）
+- phone
+  - label: 電話番号
+  - ui: tel
+  - required: false
+- addressFull
+  - label: 住所（全文）
+  - ui: text
+  - required: false
+- preferred1 / preferred2
+  - label: 希望日
+  - ui: datetime/text（運用に合わせる）
+  - required: false
+
+- orderStatus
+  - label: 状態
+  - ui: badge（read-only）
+  - rule: UIは決めない（表示のみ）
+
+- scheduledDate
+  - label: 施工予定日
+  - ui: date
+  - required: false（未確定を許容）
+- scheduledTimeSlot
+  - label: 時間帯
+  - ui: select
+  - values: AM / PM / EVENING / ANY / TBD
+  - default: TBD
+- scheduledTimeNote
+  - label: 時間補足
+  - ui: text
+  - required: false
+
+- assignee
+  - label: 担当者
+  - ui: text/select（運用に合わせる）
+  - required: false
+- priority
+  - label: 優先度
+  - ui: select
+  - values: NORMAL / HIGH / URGENT
+  - default: NORMAL
+- intakeChannel
+  - label: 入口
+  - ui: select
+  - values: UF01 / FIX / DOC / OTHER
+  - default: UF01
+- orderMemo
+  - label: 受注メモ
+  - ui: textarea
+  - required: false
+  - rule: HistoryNotes と役割が衝突しない範囲で使用
+
+### Display Rules（最小）
+- scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
+- required/optional の表示は UI_PROTOCOL に従う。
