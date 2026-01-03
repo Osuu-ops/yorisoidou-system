@@ -80,3 +80,26 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ### 5.3 最小ルール（辞書側の補足）
 - dueDate / paymentMethod / bankAccount は未設定でも INVOICE を作成可（BUSINESS_SPEC側と対応）
 
+## 6. 領収（RECEIPT）追加フィールド
+
+本セクションは BUSINESS_SPEC の「領収（RECEIPT）」を実務で回すための追加辞書である。
+
+### 6.1 追加フィールド（辞書）
+| domain | entity | field | type | required | constraints | description |
+|---|---|---|---|---|---|---|
+| receipt | receipt | receivedDate | string | no | YYYY-MM-DD or free text | 受領日 |
+| receipt | receipt | paymentMethod | enum | no | CASH/BANK/OTHER | 支払方法 |
+| receipt | receipt | receiptStatus | enum | no | DRAFT/ISSUED | 領収状態 |
+
+### 6.2 列挙（enum）
+- paymentMethod:
+  - CASH（現金）
+  - BANK（振込）
+  - OTHER（その他）
+- receiptStatus:
+  - DRAFT（下書き）
+  - ISSUED（発行）
+
+### 6.3 最小ルール（辞書側の補足）
+- receivedDate / paymentMethod は未設定でも RECEIPT を作成可（BUSINESS_SPEC側と対応）
+
