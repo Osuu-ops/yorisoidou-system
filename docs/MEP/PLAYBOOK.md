@@ -89,3 +89,17 @@
 - docs/MEP/IDEA_VAULT.md（避難所）
 - docs/MEP/IDEA_INDEX.md（候補一覧）
 - docs/MEP/IDEA_RECEIPTS.md（実装レシート）
+
+## CARD: IDEA → Receipt → PR（mep_idea_receipt）
+
+目的：
+- 採用したIDEAを「実装レシート（IDEA_RECEIPTS）」として固定し、必要ならPRとして提出する。
+
+実行（非対話／例）：
+- powershell: .\tools\mep_idea_receipt.ps1 -IdeaId abcd1234efgh -Ref "PR#999" -Desc "Implemented the idea"
+- usage:     .\tools\mep_idea_receipt.ps1 -Help
+
+参照：
+- docs/MEP/IDEA_VAULT.md（避難所）
+- docs/MEP/IDEA_INDEX.md（候補一覧）
+- docs/MEP/IDEA_RECEIPTS.md（実装レシート）
