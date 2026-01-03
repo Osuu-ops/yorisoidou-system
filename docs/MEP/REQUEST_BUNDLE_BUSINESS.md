@@ -38,7 +38,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 197669
+- included_total_bytes: 197904
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -484,8 +484,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/INDEX.md
-- sha256: 2afebf1d37b05137cd6c804b4eae6b87deafb1fff5c759b57e79508b61ff0361
-- bytes: 1684
+- sha256: 73a3ac2ac6b087320abbe6afcff5189d6f7b9ffed2efaca27b7cdb904fd1cdb5
+- bytes: 1798
 
 ```text
 ﻿# MEP INDEX（入口） v1.0
@@ -539,6 +539,9 @@ scope-guard enforcement test 20260103-002424
 ## IDEA_INDEX（統合用一覧）
 - IDEA_INDEX.md（ACTIVEから生成。番号で選ぶ）
 - IDEA_VAULT.md（本体。ACTIVE/ARCHIVE）
+
+## IDEA_RECEIPTS（実装レシート）
+- IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
 ```
 
 
@@ -796,8 +799,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 3f767bec217b0c08d6b9d606b9b673eacd2ab11fc5ff8b298adf4be8b4f75484
-- bytes: 2342
+- sha256: 7706186ab87ec8fa30780eb799dda236299c3a2250e1cf7b9e936f9483d3fab7
+- bytes: 2382
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -865,6 +868,7 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - REQUEST_BUNDLE（追加要求ファイル束）
 - IDEA_VAULT（アイデア避難所）
 - IDEA_INDEX（統合用一覧）
+- IDEA_RECEIPTS（実装レシート）
 ```
 
 
@@ -1482,8 +1486,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 2eacfbb40c98ccd386ceaf32c77352dc97f2fd3c5e950b939e0cd64f50a3fdc0
-- bytes: 1408
+- sha256: c1a9d90d701e23ee502479f3122ab17276f1008764ae049193811d893704e0ee
+- bytes: 1489
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -1502,6 +1506,9 @@ UI 実装は、本書との差分として管理される
 - platform/MEP/01_CORE/_SCOPE_SUGGEST_FORCE_20260103-135009.txt
 - platform/MEP/90_CHANGES/_SCOPE_SUGGEST_DOD_20260103-072904.txt
 - tools/mep_handoff.ps1
+- tools/mep_idea_capture.ps1
+- tools/mep_idea_list.ps1
+- tools/mep_idea_pick.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
