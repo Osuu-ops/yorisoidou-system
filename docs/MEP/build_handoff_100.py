@@ -33,12 +33,6 @@ def sha256_hex(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
-def hof_id_from_current_body(current_body: str) -> str:
-    # Stable ID: hash of CURRENT body (excluding ID line)
-    h = sha256_hex(current_body)
-    return "HOF:" + h[:12]
-
-
 def extract_block(text: str, begin: str, end: str) -> str | None:
     m = re.search(re.escape(begin) + r"(.*?)" + re.escape(end), text, flags=re.DOTALL)
     if not m:
@@ -56,8 +50,7 @@ def set_block(text: str, begin: str, end: str, body: str) -> str:
     return text + "\n" + repl + "\n"
 
 
-def compact_lines(md: str, max_lines: int = 18) -> str:
-    # Compact preview for overview (deterministic)
+def compact_lines(md: str, max_lines: int) -> str:
     out = []
     for ln in md.splitlines():
         ln2 = ln.rstrip()
@@ -74,7 +67,6 @@ def render_current_body_without_meta() -> str:
     pb = read_text(PLAYBOOK_SUMMARY).strip()
     rb = read_text(RUNBOOK_SUMMARY).strip()
 
-    # Overview is compact, the rest can stay detailed enough to be self-sufficient.
     ov_state = compact_lines(state, 14) if state else "- （未生成）STATE_SUMMARY.md を確認"
     ov_pb = compact_lines(pb, 12) if pb else "- （未生成）PLAYBOOK_SUMMARY.md を確認"
     ov_rb = compact_lines(rb, 12) if rb else "- （未生成）RUNBOOK_SUMMARY.md を確認"
@@ -133,17 +125,16 @@ def render_current_body_without_meta() -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_current_with_id() -> str:
-    # Build body first, then compute ID, then prepend stable meta lines
+def render_current_with_meta() -> str:
     body = render_current_body_without_meta()
-    hid = hof_id_from_current_body(body)
+    hid = "HOF:" + sha256_hex(body)[:12]
 
-    meta = []
+    meta: list[str] = []
     meta.append(f"HANDOFF_ID: {hid}")
-meta.append("HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\\tools\\mep_handoff.ps1")
-meta.append("HANDOFF_TRIGGER_BUNDLE: 追加が必要なら次の1行だけを返す： Get-Content docs/MEP/REQUEST_BUNDLE_SYSTEM.md -Raw -Encoding UTF8  /  Get-Content docs/MEP/REQUEST_BUNDLE_BUSINESS.md -Raw -Encoding UTF8")
+    meta.append("HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\\tools\\mep_handoff.ps1")
+    meta.append("HANDOFF_TRIGGER_BUNDLE: 追加が必要なら次の1行だけを返す： Get-Content docs/MEP/REQUEST_BUNDLE_SYSTEM.md -Raw -Encoding UTF8  /  Get-Content docs/MEP/REQUEST_BUNDLE_BUSINESS.md -Raw -Encoding UTF8")
     meta.append("CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。")
-    meta.append("NOTE: IDだけ貼る場合は、この3行（HANDOFF_ID/CONTINUE_TARGET/概要）を一緒に貼ると前提が即時共有できる。")
+    meta.append("NOTE: IDだけ貼る場合は、少なくとも HANDOFF_ID と HANDOFF_OVERVIEW を同時に貼る（前提共有のため）。")
     meta.append("")
     return "\n".join(meta) + body
 
@@ -176,9 +167,9 @@ def trim_archive(archive_body: str) -> str:
 
 def main() -> None:
     existing = read_text(OUT)
-    new_current = render_current_with_id()
+    new_current = render_current_with_meta()
 
-    # ensure markers exist
+    # If markers missing, create fresh
     if CURRENT_BEGIN not in existing or CURRENT_END not in existing or ARCHIVE_BEGIN not in existing or ARCHIVE_END not in existing:
         skeleton = ""
         skeleton = set_block(skeleton, CURRENT_BEGIN, CURRENT_END, new_current)
@@ -190,10 +181,8 @@ def main() -> None:
     prev_current = extract_block(existing, CURRENT_BEGIN, CURRENT_END) or ""
     archive_body = extract_block(existing, ARCHIVE_BEGIN, ARCHIVE_END) or ""
 
-    # If current changed, append previous snapshot to archive
     if prev_current.strip() and sha256_hex(prev_current) != sha256_hex(new_current):
-        entry = render_archive_entry(prev_current)
-        archive_body = entry + "\n\n" + archive_body
+        archive_body = render_archive_entry(prev_current) + "\n\n" + archive_body
 
     archive_body = trim_archive(archive_body)
 
@@ -207,4 +196,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
