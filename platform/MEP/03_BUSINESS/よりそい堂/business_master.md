@@ -140,3 +140,47 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ### UI 表示ルール（最小）
 - scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
 - orderStatus は UI で“決めない”。表示・検索・監督（管理タスク参照）にのみ使う。
+
+<!-- WORK_FIELDS_PHASE1 -->
+## WORK（施工）— BUSINESS_MASTER（辞書）
+
+本節は WORK（施工/完了報告）に関する辞書（field/enum）を定義する。
+※ “完了確定” は現場タスク完了が起点（master_spec 9章）。UI/人が任意に完了確定してはならない。
+
+### Fields（Phase-1）
+- workDoneAt
+  - type: datetime（ISO / Asia/Tokyo）
+  - source: field-report（現場完了の結果）
+  - required: true（完了確定時）
+- workDoneComment
+  - type: string（全文）
+  - source: field-report（完了コメント）
+  - required: true（完了確定時）
+  - rule: 未使用部材の抽出対象になり得る（書式は master_spec 9.3）
+- unusedPartsList
+  - type: list<string>
+  - source: derived（workDoneComment から抽出）
+  - required: false（抽出失敗は管理警告で扱う）
+- photosBefore
+  - type: list<url|string>
+  - required: false
+- photosAfter
+  - type: list<url|string>
+  - required: false
+- photosParts
+  - type: list<url|string>
+  - required: false
+- photosExtra
+  - type: list<url|string>
+  - required: false
+- videoInspection
+  - type: url|string
+  - required: false
+- workSummary
+  - type: string
+  - required: false
+  - rule: 要約の作り込みで業務判断を置換しない（素材の要点メモに留める）
+
+### Derived / Effects（参照）
+- 完了同期により、Parts/EX/Expense/在庫戻しが確定される（business_spec / master_spec に従う）
+- 不備（写真不足/LOCATION不整合/価格未確定 等）は管理警告対象
