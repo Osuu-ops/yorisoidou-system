@@ -1,8 +1,8 @@
 # STATE_SUMMARY（現在地サマリ） v1.0
 
 本書は `STATE_CURRENT / INDEX / RUNBOOK / PLAYBOOK` をもとに、現在地を 1枚に圧縮した生成物である。
-本書は **時刻やランID等を含めず**、入力が変わらない限り差分が出ないことを前提とする。
-生成: `docs/MEP/build_state_summary.py`
+本書は時刻・ランID等を含めず、入力が変わらない限り差分が出ないことを前提とする。
+生成: docs/MEP/build_state_summary.py
 
 ---
 
@@ -13,11 +13,11 @@
 ---
 
 ## 参照導線（固定）
-- CHAT_PACKET: `docs/MEP/CHAT_PACKET.md`（新チャット開始入力）
-- 現在地: `docs/MEP/STATE_CURRENT.md`（唯一の現在地）
-- 次の指示: `docs/MEP/PLAYBOOK.md`
-- 復旧: `docs/MEP/RUNBOOK.md`
-- 出力契約: `docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md`（PowerShell単一コピペ一本道）
+- CHAT_PACKET: docs/MEP/CHAT_PACKET.md（新チャット開始入力）
+- 現在地: docs/MEP/STATE_CURRENT.md（唯一の現在地）
+- 次の指示: docs/MEP/PLAYBOOK.md
+- 復旧: docs/MEP/RUNBOOK.md
+- 出力契約: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md（PowerShell単一コピペ一本道）
 
 ---
 
@@ -61,3 +61,4 @@
 - Links
 - RUNBOOK（復旧カード）
 - PLAYBOOK（次の指示）
+

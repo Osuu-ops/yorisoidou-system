@@ -22,36 +22,31 @@ def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
 
 
-def extract_top_headings(md: str) -> list[str]:
-    # Capture H1/H2 headings only, ignore code fences (we avoid them in these docs anyway).
-    lines = md.splitlines()
+def h1_h2(md: str) -> list[str]:
     out: list[str] = []
-    for ln in lines:
+    for ln in md.splitlines():
         if ln.startswith("# "):
             out.append(ln[2:].strip())
         elif ln.startswith("## "):
             out.append(ln[3:].strip())
-    # Deduplicate while preserving order
     seen = set()
     uniq = []
-    for h in out:
-        if h not in seen:
-            seen.add(h)
-            uniq.append(h)
+    for x in out:
+        if x not in seen:
+            seen.add(x)
+            uniq.append(x)
     return uniq
 
 
-def extract_cards(md: str) -> list[str]:
-    # Cards are headings like "## CARD-xx: ..."
-    cards = []
+def cards(md: str) -> list[str]:
+    # "## CARD-xx: ..." pattern
+    xs = []
     for m in re.finditer(r"^##\s+(CARD-[0-9]{2}:[^\n]+)$", md, flags=re.MULTILINE):
-        cards.append(m.group(1).strip())
-    return cards
+        xs.append(m.group(1).strip())
+    return xs
 
 
-def extract_first_paragraph_under_heading(md: str, heading_prefix: str) -> str:
-    # Find a heading that starts with heading_prefix (e.g., "目的")
-    # Return the first non-empty paragraph after it (up to blank line).
+def first_para_under_heading(md: str, heading_prefix: str) -> str:
     lines = md.splitlines()
     idx = None
     for i, ln in enumerate(lines):
@@ -60,37 +55,36 @@ def extract_first_paragraph_under_heading(md: str, heading_prefix: str) -> str:
             break
     if idx is None:
         return ""
-    # Collect paragraph
-    para = []
+    buf = []
     for ln in lines[idx + 1:]:
         if ln.strip() == "":
-            if para:
+            if buf:
                 break
             continue
         if ln.startswith("#"):
             break
-        para.append(ln.rstrip())
-    return "\n".join(para).strip()
+        buf.append(ln.rstrip())
+    return "\n".join(buf).strip()
 
 
 def render() -> str:
     state_md = read_text(STATE_CURRENT)
     index_md = read_text(INDEX)
-    runbook_md = read_text(RUNBOOK)
-    playbook_md = read_text(PLAYBOOK)
+    run_md = read_text(RUNBOOK)
+    play_md = read_text(PLAYBOOK)
 
-    purpose = extract_first_paragraph_under_heading(state_md, "目的")
-    state_heads = extract_top_headings(state_md)
-    index_heads = extract_top_headings(index_md)
-    run_cards = extract_cards(runbook_md)
-    play_cards = extract_cards(playbook_md)
+    purpose = first_para_under_heading(state_md, "目的（不変）") or first_para_under_heading(state_md, "目的")
+    state_heads = h1_h2(state_md)
+    index_heads = h1_h2(index_md)
+    run_cards = cards(run_md)
+    play_cards = cards(play_md)
 
     lines: list[str] = []
     lines.append("# STATE_SUMMARY（現在地サマリ） v1.0")
     lines.append("")
     lines.append("本書は `STATE_CURRENT / INDEX / RUNBOOK / PLAYBOOK` をもとに、現在地を 1枚に圧縮した生成物である。")
-    lines.append("本書は **時刻やランID等を含めず**、入力が変わらない限り差分が出ないことを前提とする。")
-    lines.append("生成: `docs/MEP/build_state_summary.py`")
+    lines.append("本書は時刻・ランID等を含めず、入力が変わらない限り差分が出ないことを前提とする。")
+    lines.append("生成: docs/MEP/build_state_summary.py")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -103,11 +97,11 @@ def render() -> str:
     lines.append("---")
     lines.append("")
     lines.append("## 参照導線（固定）")
-    lines.append("- CHAT_PACKET: `docs/MEP/CHAT_PACKET.md`（新チャット開始入力）")
-    lines.append("- 現在地: `docs/MEP/STATE_CURRENT.md`（唯一の現在地）")
-    lines.append("- 次の指示: `docs/MEP/PLAYBOOK.md`")
-    lines.append("- 復旧: `docs/MEP/RUNBOOK.md`")
-    lines.append("- 出力契約: `docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md`（PowerShell単一コピペ一本道）")
+    lines.append("- CHAT_PACKET: docs/MEP/CHAT_PACKET.md（新チャット開始入力）")
+    lines.append("- 現在地: docs/MEP/STATE_CURRENT.md（唯一の現在地）")
+    lines.append("- 次の指示: docs/MEP/PLAYBOOK.md")
+    lines.append("- 復旧: docs/MEP/RUNBOOK.md")
+    lines.append("- 出力契約: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md（PowerShell単一コピペ一本道）")
     lines.append("")
     lines.append("---")
     lines.append("")
@@ -145,12 +139,11 @@ def render() -> str:
     else:
         lines.append("- （未取得）INDEX.md を確認")
     lines.append("")
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 def main() -> None:
-    out = render()
-    OUT.write_text(out, encoding="utf-8", newline="\n")
+    OUT.write_text(render(), encoding="utf-8", newline="\n")
     print(f"Generated: {OUT}")
 
 
