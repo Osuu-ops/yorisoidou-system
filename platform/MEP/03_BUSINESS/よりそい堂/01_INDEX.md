@@ -17,3 +17,16 @@ Rule:
 ## 入口
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec.md（案内専用）
 
+## 分離（Phase-1）: 4ファイル構成
+
+### 役割（固定）
+- 唯一の正（実体・当面）：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+- BUSINESS_MASTER: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
+- BUSINESS_SPEC:   platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
+- UI_MASTER:       platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
+- UI_SPEC:         platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+
+### フェーズ方針
+- Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
+- Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
+
