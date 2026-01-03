@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
@@ -103,3 +103,40 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ### 6.3 最小ルール（辞書側の補足）
 - receivedDate / paymentMethod は未設定でも RECEIPT を作成可（BUSINESS_SPEC側と対応）
 
+<!-- ORDER_FIELDS_PHASE1 -->
+## ORDER（受注）— BUSINESS_MASTER（辞書）
+
+本節は「受注（ORDER）」に関する辞書（enum/field）を定義する。
+※ master_spec の原則どおり、Order の状態（STATUS/orderStatus）は **業務ロジックが確定**し、人/AI/UIが任意に決定してはならない。
+
+### Fields（追加：Phase-1）
+- orderStatus
+  - type: string（表示用）
+  - source: business-logic（自動確定）
+  - rule: UIは表示のみ。手入力で確定/変更してはならない。
+- scheduledDate
+  - type: date（YYYY-MM-DD, Asia/Tokyo）
+  - meaning: 施工予定日（確定/未確定を含む“予定”）
+- scheduledTimeSlot
+  - type: enum
+  - values: AM / PM / EVENING / ANY / TBD
+  - rule: TBD は「未確定」を意味する（UIで明示）
+- scheduledTimeNote
+  - type: string（任意）
+  - meaning: 時間帯の補足（例：10時以降希望、管理会社連絡後確定 等）
+- assignee
+  - type: string（任意）
+  - meaning: 担当者（表示名/コードいずれでも可。確定は運用/実装で制約）
+- priority
+  - type: enum
+  - values: NORMAL / HIGH / URGENT
+- intakeChannel
+  - type: enum
+  - values: UF01 / FIX / DOC / OTHER
+- orderMemo
+  - type: string（任意）
+  - meaning: 受注に関する補足（HistoryNotes と役割が衝突しない範囲で使用）
+
+### UI 表示ルール（最小）
+- scheduledTimeSlot=TBD の場合、「時間未確定」を明示して表示する。
+- orderStatus は UI で“決めない”。表示・検索・監督（管理タスク参照）にのみ使う。
