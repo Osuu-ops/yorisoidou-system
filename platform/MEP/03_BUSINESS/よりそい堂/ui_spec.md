@@ -347,3 +347,26 @@ UI 実装は、本書との差分として管理される
   - PART_ID
   - PRICE
 - STATUS は変更しない（価格確定のみ）
+
+<!-- EXPENSE_FLOW_PHASE1 -->
+
+## EXPENSE_FLOW（経費の導線）
+
+### 目的
+- 経費入力 → 確認 → 完了 の導線を固定する。
+- 金額は確定のみ（推測代入禁止）。
+
+### 画面
+- SCREEN_EXPENSE_CREATE
+- SCREEN_EXPENSE_CONFIRM
+- SCREEN_EXPENSE_DONE
+
+### 入力→確認（VALIDATION）
+- 必須：
+  - Order_ID
+  - PRICE
+  - USED_DATE
+
+### 完了（SUBMIT）
+- 送信中は二重送信防止（UI_PROTOCOL 準拠）
+- 完了画面で「記録しました」を明示
