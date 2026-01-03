@@ -55,3 +55,9 @@
 
 ## Tools
 - [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
+
+---
+
+## Lease / Continue Target（追加）
+- LEASE: docs/MEP/LEASE.md
+- CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
