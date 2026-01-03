@@ -205,6 +205,12 @@ AIは本書に従ってのみ情報要求を行う。
 ## 5) この作業（INDEX方式）のスコープ
 - 触って良い: docs/MEP/**, START_HERE.md, Docs Index Guard
 - 原則触らない: platform/MEP/** および CI/運用の核（入口以外のworkflow等）
+
+## 運用契約（PowerShell単一コピペ）
+
+- AI出力は **PowerShell単一コピペ一本道**を原則とする（分岐・差し替え禁止）。
+- ID/番号はユーザー手入力禁止。AIが gh で自動解決して提示する。
+- 唯一の正：docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 ```
 
 ---
@@ -299,6 +305,8 @@ scope-guard enforcement test 20260103-002424
 
  - scopeguard-dod-test: 20260103-051233
  - ruleset-dod-test: 20260103-053612
+ - required4-dod-test: 20260103-060125
+ - seed-mep-gate: 20260103-062802
 ```
 
 ---
