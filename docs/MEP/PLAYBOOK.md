@@ -12,6 +12,7 @@
 入力（原則）：
 - docs/MEP/CHAT_PACKET.md（全文）
 - docs/MEP/STATE_CURRENT.md（全文）
+- 開始直後は UPGRADE_GATE を適用：docs/MEP/UPGRADE_GATE.md
 
 以後：
 - 追加情報が必要な場合のみ、AIは REQUEST 形式（最大3件）で要求する。
@@ -76,3 +77,4 @@
 - 人間判断入力に変換（採用/破棄を明示）
 - 最小差分PRで再実行
 - RUNBOOK: CARD-05
+

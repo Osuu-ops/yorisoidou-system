@@ -104,3 +104,7 @@ AI出力は本契約に従う（違反する出力は運用上NG）。
 - if (-not $pr) { throw "auto/chat-packet-update PR が見つかりません（履歴0件）" }
 - gh pr checks $pr
 
+
+## UPGRADE_GATE（開始直後の固定ゲート）
+- 新チャット開始直後に適用する：docs/MEP/UPGRADE_GATE.md
+- 目的：矛盾検出 → 観測 → 次の一手カード確定 → 1PRで着手（迷子防止）

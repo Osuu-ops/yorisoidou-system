@@ -26,3 +26,6 @@
 
 ## STATE_SUMMARY（現在地サマリ）
 - STATE_SUMMARY.md（STATE/PLAYBOOK/RUNBOOK/INDEX を1枚に圧縮した生成物）
+
+## UPGRADE_GATE（開始ゲート）
+- UPGRADE_GATE.md（開始直後に100点化してから着手する固定ゲート）
