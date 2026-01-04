@@ -1,10 +1,11 @@
 # tools/mep_autopilot.ps1
-# Purpose: fully automatic error loop (self-heal + sweep) with DEADLOCK STOP.
-# Behavior:
-# - Safe PR patterns: auto/*, auto/*suggest*, auto/*chat-packet*, docs(MEP) CHAT_PACKET, chore(scope) suggest, biz/*-normalize-*.
-# - Safe PR: CLEAN+MERGEABLE + checks green => MERGE (confirmed y) + verify state; CONFLICTING/DIRTY => CLOSE (best-effort).
-# - docs guard fail => self-heal by rebuilding CHAT_PACKET on PR head branch + push fix commit.
-# - Deadlock breaker: if snapshot does not change for N rounds => stop with reason + remaining PRs.
+# ASCII-only autopilot: avoids Unicode that can break parsing on some Windows setups.
+# Safe PR set: auto/* + scope-suggest/chat-packet-update + docs(MEP) CHAT_PACKET + chore(scope) suggest + biz/*-normalize-*.
+# Actions:
+# - CLEAN+MERGEABLE + checks green => MERGE (pipe "y"), verify state change.
+# - CONFLICTING/DIRTY => CLOSE, verify state change.
+# - docs guard fail => self-heal by rebuilding CHAT_PACKET on PR head branch and pushing a fix commit.
+# Deadlock: stop early if snapshot unchanged for N rounds.
 
 param(
   [int]$MaxRounds = 40,
@@ -24,7 +25,7 @@ $repo  = (& $ghExe repo view --json nameWithOwner -q .nameWithOwner 2>$null | Ou
 if (-not $repo) { throw "gh repo view failed. Run: gh auth status" }
 
 function GetOpenPrs() {
-  $j = (& $ghExe pr list --repo $repo --state open --base main --limit 100 --json number,title,headRefName,createdAt,url 2>$null | Out-String).Trim()
+  $j = (& $ghExe pr list --repo $repo --state open --base main --limit 200 --json number,title,headRefName,createdAt,url 2>$null | Out-String).Trim()
   if (-not $j) { return @() }
   return @($j | ConvertFrom-Json)
 }
@@ -61,10 +62,9 @@ function IsSafe($pr) {
 function ClosePr([int]$n) {
   $out = (& $ghExe pr close $n --repo $repo 2>&1 | Out-String).Trim()
   $code = $LASTEXITCODE
-  if ($code -ne 0 -and $out -notmatch "Closed" -and $out -notmatch "already closed" -and $out -notmatch "✓") {
-    throw ("close failed: " + $out)
+  if ($code -ne 0 -and $out -notmatch "(?i)closed" -and $out -notmatch "(?i)already closed") {
+    throw ("close_failed: " + $out)
   }
-  # verify closed (best-effort)
   for ($i=1; $i -le 20; $i++) {
     $p = GetPrInfo $n
     if ($p.state -ne "OPEN") { return }
@@ -73,15 +73,14 @@ function ClosePr([int]$n) {
 }
 
 function MergePr([int]$n) {
-  # confirm input for gh
   $out = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch 2>&1 | Out-String
   $code = $LASTEXITCODE
-  $looksOk = ($out -match "Merged" -or $out -match "✓")
-  if ($code -ne 0 -and (-not $looksOk)) {
+  $okByText = ($out -match "(?i)merged" -or $out -match "(?i)squash" -or $out -match "(?i)merged pull request")
+  if ($code -ne 0 -and (-not $okByText)) {
     $out2 = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch --admin 2>&1 | Out-String
     $code2 = $LASTEXITCODE
-    $looksOk2 = ($out2 -match "Merged" -or $out2 -match "✓")
-    if ($code2 -ne 0 -and (-not $looksOk2)) { throw ("merge failed: " + $out2.Trim()) }
+    $okByText2 = ($out2 -match "(?i)merged" -or $out2 -match "(?i)squash" -or $out2 -match "(?i)merged pull request")
+    if ($code2 -ne 0 -and (-not $okByText2)) { throw ("merge_failed: " + $out2.Trim()) }
   }
   for ($i=1; $i -le 60; $i++) {
     $p = GetPrInfo $n
@@ -89,7 +88,7 @@ function MergePr([int]$n) {
     if ($p.state -ne "OPEN") { return }
     Start-Sleep -Seconds 2
   }
-  throw "merge did not finalize"
+  throw "merge_did_not_finalize"
 }
 
 function SelfHealChatPacket([string]$headRefName) {
@@ -120,17 +119,18 @@ function SelfHealChatPacket([string]$headRefName) {
 }
 
 function Snapshot($open) {
-  # snapshot includes PR number + mergeability + check summary bucket
   $parts = @()
   foreach ($p in ($open | Sort-Object number)) {
     $n = [int]$p.number
     $info = GetPrInfo $n
-    $chk = ""
+    $t = ""
     try { $t = TryChecksText $n } catch { $t = "" }
-    if (-not $t -or $t -match "no checks reported") { $chk = "NOCHK" }
-    elseif ($t -match "(?m)\bfail\b" -or $t -match "(?m)\bfailing\b") { $chk = "FAIL" }
-    elseif ($t -match "(?m)\bpending\b") { $chk = "PEND" }
-    else { $chk = "PASS" }
+    $chk = "NOCHK"
+    if ($t -and $t -notmatch "no checks reported") {
+      if ($t -match "(?m)\bfail\b" -or $t -match "(?m)\bfailing\b") { $chk = "FAIL" }
+      elseif ($t -match "(?m)\bpending\b") { $chk = "PEND" }
+      else { $chk = "PASS" }
+    }
     $parts += ("{0}:{1}:{2}:{3}" -f $n,$info.mergeable,$info.mergeStateStatus,$chk)
   }
   return ($parts -join "|")
@@ -176,7 +176,6 @@ for ($round=1; $round -le $MaxRounds; $round++) {
     $info = GetPrInfo $n
     if ($info.state -ne "OPEN") { continue }
 
-    # allow GitHub to compute mergeability
     for ($k=1; $k -le 12; $k++) {
       if ($info.mergeable -ne "UNKNOWN" -and $info.mergeStateStatus -ne "UNKNOWN") { break }
       Start-Sleep -Seconds 2
@@ -191,18 +190,18 @@ for ($round=1; $round -le $MaxRounds; $round++) {
 
     $checks = TryChecksText $n
     if ($checks -match "(?m)\bguard\s+fail\b" -and $info.headRefName) {
-      Write-Host ("SELF-HEAL  #{0} CHAT_PACKET on {1}" -f $n,$info.headRefName)
+      Write-Host ("SELF_HEAL  #{0} chat_packet_on={1}" -f $n,$info.headRefName)
       $ok = SelfHealChatPacket $info.headRefName
       if ($ok) { Start-Sleep -Seconds 3; $checks = TryChecksText $n }
     }
 
     if (-not (ChecksGreen $checks)) {
-      Write-Host ("AUTO WAIT   #{0} checks not green yet" -f $n)
+      Write-Host ("AUTO WAIT   #{0} checks_not_green" -f $n)
       continue
     }
 
     if (-not ($info.mergeable -eq "MERGEABLE" -and $info.mergeStateStatus -eq "CLEAN")) {
-      Write-Host ("AUTO WAIT   #{0} mergeability not CLEAN yet ({1}/{2})" -f $n,$info.mergeable,$info.mergeStateStatus)
+      Write-Host ("AUTO WAIT   #{0} mergeability_not_clean ({1}/{2})" -f $n,$info.mergeable,$info.mergeStateStatus)
       continue
     }
 
@@ -213,7 +212,6 @@ for ($round=1; $round -le $MaxRounds; $round++) {
   if ($stagnant -ge $StagnationRounds) {
     Write-Host ""
     Write-Host "DEADLOCK: snapshot unchanged. Stop early."
-    Write-Host "Remaining open PRs:"
     (GetOpenPrs | Sort-Object number | Format-Table number,headRefName,title,createdAt,url -AutoSize | Out-String) | Write-Host
     return
   }
