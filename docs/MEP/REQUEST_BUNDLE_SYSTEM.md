@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108017
+- included_total_bytes: 108009
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -978,8 +978,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 9d56bccb19695b44d30a5421786419b7025cb15f05fabada464d473393ed82a3
-- bytes: 760
+- sha256: 8f2394547fe9601d5db5afab36cbed0906a2398634857ee73dd87b273de2c4c8
+- bytes: 752
 
 ```text
 # STATE_CURRENT (MEP)
@@ -989,7 +989,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
 
 ## CURRENT_SCOPE (canonical)
-- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・**
+- platform/MEP/03_BUSINESS/よりそい堂/**
 
 ## Guards / Safety
 - Text Integrity Guard (PR): enabled
