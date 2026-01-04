@@ -27,6 +27,7 @@
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger.md
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
 - platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
+- platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
 - platform/MEP/03_BUSINESS/よりそい堂/business_master.md
 - platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
 - platform/MEP/03_BUSINESS/よりそい堂/code/README.md
@@ -42,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 247733
+- included_total_bytes: 249372
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -91,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: d987502830503ff9f1cfa5dc3bedecbd64290ba68b0fa9516ff9e694ca9bf9cc
-- bytes: 13165
+- sha256: 5409828a293c04bbd178f5662479e76afd02be3d1d58dee55a0e744b6dd16f0f
+- bytes: 13649
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -262,7 +263,7 @@ checks:
 
 ## AI_BOOT.md（AI挙動固定）  (docs/MEP/AI_BOOT.md)
 ```
-﻿# AI_BOOT（AI挙動固定） v1.0
+# AI_BOOT（AI挙動固定） v1.0
 
 ## 目的
 本書は、新チャットでAIが迷わず進行するための「要求フォーマット」と「禁止事項」を固定する。
@@ -271,6 +272,10 @@ AIは本書に従ってのみ情報要求を行う。
 ---
 
 ## 絶対禁止
+- 出力に「ネストしたコードブロック」や「複数のコードブロック混在」を作らない（本文中に ``` を入れ子にしない）。
+- Git/GitHub/PowerShell 操作は必ず **単一の ```powershell ブロック**で提示する（途中で別ブロックを挿入しない）。
+- 説明はコード内コメントに寄せ、ブロック外で手順を分割しない。
+- PowerShell の Here-String は **@' '@** を使用する（@" "@ は禁止）。
 - 「全部貼れ」「10ファイル貼れ」等の大量提示要求
 - ローカル操作を前提とした手順提示（GitHub内で完結させる）
 - 入口整備（docs/MEP）を超えるスコープ拡張（再設計・改善提案の無限化）
@@ -1537,6 +1542,34 @@ This directory is the canonical entry point for business-side code/assets for �
 
 ---
 
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
+- sha256: b6471908fc228691085f282f471ba60084982fc592d5473ec2026d106a112308
+- bytes: 794
+
+```text
+# よりそい堂 BUSINESS INDEX（入口）
+
+## 0. 唯一の正（固定）
+- 仕様本文（唯一の正・実体）：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
+- master_spec.md は案内専用（本文は置かない）
+- ui_spec.md は導線/表示のみ（意味変更しない）
+- business_spec.md は業務フロー/例外/運用の最小定義（Phase-1）
+
+## 1. 読む順番（固定）
+1) master_spec.md（案内）
+2) master_spec（唯一の正）
+3) business_spec.md（業務フロー/例外）
+4) ui_spec.md（UI適用：導線/表示）
+
+## 2. 編集ルール（固定）
+- 変更は 1テーマ = 1PR
+- 巨大な全文置換・整形だけのコミットは禁止（差分最小）
+- 仕様本文を変える場合は必ず master_spec を編集
+```
+
+
+---
+
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
 - sha256: 25c62dfad22f64bd6aec70f0d3be9c06c8b6d014829bdab987e1554d953f9097
 - bytes: 11776
@@ -2180,11 +2213,11 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
-- sha256: 5ee72b1ea6454c530373dd3bef5f994d73f2e6e53c7bfae3f242d7a78f3e360e
-- bytes: 572
+- sha256: 8ec9f8cbd32430512d349e57343948965f07429b29dcf2c2d4c2f50325ec6993
+- bytes: 933
 
 ```text
-﻿<!--
+<!--
 ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
 CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 -->
@@ -2198,6 +2231,12 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ## 編集ルール（固定）
 - 仕様の本文を編集する場合は **必ず master_spec を編集**する
 - master_spec.md は案内・要点・手順のみ（本文は置かない）
+
+## 関連（このディレクトリ内）
+
+- INDEX（入口・読む順番）：platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
+- 業務スペック（フロー/例外/最小定義）：platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
+- UI適用仕様（導線/表示のみ・意味変更なし）：platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
 ```
 
 
