@@ -366,9 +366,28 @@ RequestStatus（固定列挙）：
 禁止事項（固定）：
 - 人・AI・UI が “勝手に” RESOLVED にしない（監督判断または確定処理に従属）。
 - status の推測代入は禁止（曖昧さは REVIEW として OPEN のまま保持する）。
+3.7.4 ResolutionMetadata（解決情報｜固定）
 
+目的：
+・RequestStatus=RESOLVED / CANCELLED の「根拠（誰が・いつ・何で）」を最小限で固定し、
+  “勝手に解決扱い” の混入を防ぐ。
+・健康スコア（9.4 D）と 管理警告ラベル（8.4.1）の未処理判定（OPEN）を、運用として確実に反転できる状態にする。
 
-3.8 logs/system・logs/extra（業務ログ）
+解決情報フィールド（固定）：
+- ResolvedAt       : 解決確定日時（必須：RESOLVED/CANCELLED の場合）
+- ResolvedBy       : 解決者（任意：運用上の記録。空を許容）
+- ResolutionNote   : 解決メモ（任意：理由/対応内容。空を許容）
+
+最小ルール（固定）：
+- RequestStatus を RESOLVED または CANCELLED に遷移させる場合、ResolvedAt を必ず記録する。
+- ResolvedBy / ResolutionNote は運用で記録してよいが、未記入でも status を妨げない（必須化は別テーマ）。
+- RequestStatus=OPEN の間は ResolvedAt を空で保持する（“解決済みと誤認させる”ための値を入れない）。
+
+禁止事項（固定）：
+- 人・AI・UI が推測で RESOLVED/CANCELLED にしない（監督判断または確定処理に従属）。
+- OPEN のまま ResolvedAt を入れる等、状態と矛盾する記録を作らない（矛盾は整合性NGとして扱う）。
+
+3.8 logs/system・logs/extra（業務ログ）・logs/extra（業務ログ）
 業務ルール：
 ・重要アクションは記録し、履歴追跡の根拠とする
 ・検索（OV02）の対象となる（章11）
