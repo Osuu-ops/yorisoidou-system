@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 249372
+- included_total_bytes: 249418
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1910,8 +1910,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 25383cbd2e8a54509e0ef93ecbde24fc6a71ced0630c2029d00774fb0a8551a9
-- bytes: 11248
+- sha256: 9acab072081f66024814e1267c036546d229c4368a7a8064d83d0f8bdd122b10
+- bytes: 11294
 
 ```text
 <!--
@@ -2036,25 +2036,25 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 施工の途中経過は、運用上のメモとして残してよいが、台帳確定のトリガーではない。
 
 ### 最小データ（業務要件）
-- workDoneAt（完了日時）
-- workDoneComment（完了コメント全文：未使用部材記載を含み得る）
-- photosBefore / photosAfter / photosParts / photosExtra（任意：不足は管理警告）
-- videoInspection（任意）
-- workSummary（任意：要約の作り込みで業務判断を置換しない）
+- `workDoneAt`（完了日時）
+- `workDoneComment`（完了コメント全文：未使用部材記載を含み得る）
+- `photosBefore` / `photosAfter` / `photosParts` / `photosExtra`（任意：不足は管理警告）
+- `videoInspection`（任意）
+- `workSummary`（任意：要約の作り込みで業務判断を置換しない）
 
 ### 完了コメント規約（抽出）
 - 未使用部材は、以下の書式で列挙できること（master_spec 9.3 準拠）：
-  例）未使用：BP-YYYYMM-AAxx-PAyy, BM-YYYYMM-AAxx-MAyy
+  - 例）未使用：BP-YYYYMM-AAxx-PAyy, BM-YYYYMM-AAxx-MAyy
 - 抽出結果は在庫戻し（STATUS=STOCK）へ利用される（LOCATION 整合が必須）
 
 ### 完了時に起きる業務（概要）
-- Order の完了日時・状態更新・最終同期日時の更新
-- DELIVERED 部材の USED 化、EX/Expense の確定、未使用部材の STOCK 戻し
-- 不備（価格未入力/写真不足/LOCATION不整合 等）は管理警告対象
+- Order の完了日時・状態更新・最終同期日時の更新。
+- DELIVERED 部材の USED 化、EX/Expense の確定、未使用部材の STOCK 戻し。
+- 不備（価格未入力 / 写真不足 / LOCATION 不整合 等）は管理警告対象。
 
 ### 禁止事項
-- 人/AI/UI が Order の STATUS/orderStatus を任意に確定/変更してはならない
-- 完了同期の代替として、別経路で台帳を確定させてはならない
+- 人 / AI / UI が Order の STATUS / orderStatus を任意に確定・変更してはならない。
+- 完了同期の代替として、別経路で台帳を確定させてはならない。
 
 <!-- PARTS_SPEC_PHASE1 -->
 
