@@ -215,7 +215,7 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## CURRENT_SCOPE (canonical)
 - platform/MEP/03_BUSINESS/よりそい堂/**
@@ -231,6 +231,7 @@ AIは本書に従ってのみ情報要求を行う。
 ## How to start a new conversation
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
+- (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
 ```
 
 ---
