@@ -25,4 +25,6 @@ ui_spec.md text eol=lf
 # YAML workflows also LF (avoid CRLF diffs)
 *.yml text eol=lf
 *.yaml text eol=lf
+docs/MEP/CHAT_PACKET.md text eol=lf
+docs/MEP/IDEA_INDEX.md text eol=lf
 
