@@ -1,4 +1,4 @@
-﻿# MEP INDEX（入口） v1.0
+# MEP INDEX（入口） v1.0
 
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
@@ -66,3 +66,7 @@
 
 ## RUNBOOK（追加）
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
+
+## DOC_STATUS（追加）
+- [DOC_REGISTRY](./DOC_REGISTRY.md)  — 文書状態台帳（ACTIVE/STABLE/GENERATED）
+
