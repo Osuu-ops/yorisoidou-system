@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -145,25 +145,25 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 <!-- PHASE1_PARTS_SPEC_BLOCK (derived; do not edit meaning) -->
 ### Phase-1: PARTS（部材）— 業務最小定義（派生）
 参照（唯一の正）：
-- master_spec: 3.4 Parts_Master / 3.4.1 Parts STATUS / 6 部材体系 / 7 UF06/UF07 / 9 完了同期
+- master_spec: 3.4 Parts_Master / 3.4.1 Parts STATUS / 6 部材体系 / 7 UF06/UF07 / 9 完了同期。
 
 最小目的：
 - 部材（BP/BM）の発注→納品→使用→在庫の追跡を、Order_ID と PART_ID で破綻なく再現する。
 
 業務状態（固定）：
-- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
+- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED。
 
 最小トリガー（固定）：
-- UF06（発注確定）: ORDERED または STOCK_ORDERED（Order_ID有無で判定）
-- UF06（納品確定）: DELIVERED（DELIVERED_AT 記録）
-- UF07（価格入力）: PRICE 確定（状態は原則維持）
-- 完了同期（現場完了起点）: DELIVERED の対象を USED へ（使用確定）
-- 未使用部材コメント抽出: STOCK 戻し（LOCATION 整合必須）
+- UF06（発注確定）: ORDERED または STOCK_ORDERED（Order_ID有無で判定）。
+- UF06（納品確定）: DELIVERED（DELIVERED_AT 記録）。
+- UF07（価格入力）: PRICE 確定（状態は原則維持）。
+- 完了同期（現場完了起点）: DELIVERED の対象を USED へ（使用確定）。
+- 未使用部材コメント抽出: STOCK 戻し（LOCATION 整合必須）。
 
 不変条件（固定）：
-- BP は納品時に PRICE を確定（未確定は警告対象）
-- BM は PRICE=0（経費対象外）
-- LOCATION は STATUS=STOCK の部材で必須
+- BP は納品時に PRICE を確定（未確定は警告対象）。
+- BM は PRICE=0（経費対象外）。
+- LOCATION は STATUS=STOCK の部材で必須。
 <!-- END PHASE1_PARTS_SPEC_BLOCK -->
 ## PARTS（部材）— BUSINESS_SPEC（Phase-1）
 
@@ -274,3 +274,4 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE 推測代入
 - EXP_ID 再発番/再利用
 - Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）
+
