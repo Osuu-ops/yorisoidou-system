@@ -235,21 +235,21 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 <!-- PHASE1_EXPENSE_SPEC_BLOCK (derived; do not edit meaning) -->
 ### Phase-1: EXPENSE（経費）— 業務最小定義（派生）
 参照（唯一の正）：
-- master_spec: 3.6 Expense_Master / 3.6.1 Expense確定 / 9 完了同期 / 8.4.1 警告
+- master_spec: 3.6 Expense_Master / 3.6.1 Expense確定 / 9 完了同期 / 8.4.1 警告。
 
 最小目的：
 - USED（使用確定）になった BP の PRICE を根拠に、確定経費として一意に記録する。
 
 確定トリガー（固定）：
-- 完了同期（現場完了起点）でのみ確定（作成/追記）
+- 完了同期（現場完了起点）でのみ確定（作成/追記）。
 
 対象範囲（固定）：
-- BP（メーカー手配品）: PRICE確定が前提（未確定は警告）
-- BM: PRICE=0（経費対象外／経費に入れない）
+- BP（メーカー手配品）: PRICE確定が前提（未確定は警告）。
+- BM: PRICE=0（経費対象外／経費に入れない）。
 
 不変条件（固定）：
-- 推測代入は禁止（PRICEは確定値のみ）
-- 既存Expenseの削除は禁止（履歴保全）
+- 推測代入は禁止（PRICEは確定値のみ）。
+- 既存Expenseの削除は禁止（履歴保全）。
 <!-- END PHASE1_EXPENSE_SPEC_BLOCK -->
 ## EXPENSE（経費）— BUSINESS_SPEC（Phase-1）
 
@@ -274,4 +274,5 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE 推測代入
 - EXP_ID 再発番/再利用
 - Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）
+
 
