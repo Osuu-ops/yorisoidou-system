@@ -12,6 +12,15 @@
 3) business_spec.md（業務フロー/例外）
 4) ui_spec.md（UI適用：導線/表示）
 
+
+## Phase-2 Quick Links（業務統合の要点）
+
+- business_spec.md（Phase-2）:
+  - Integration Contract（統合契約）: ./business_spec.md#integration-contractphase-2todoistclickupledger-統合契約
+  - Recovery Queue（回収キュー）: ./business_spec.md#recovery-queuephase-2
+  - IdempotencyKey（イベント別）: ./business_spec.md#idempotencykeyイベント別固定
+  - Runtime Audit Checklist（expected/unexpected）: ./business_spec.md#runtime-audit-checklistexpectedunexpected固定参照用
+
 ## 2. 編集ルール（固定）
 - 変更は 1テーマ = 1PR
 - 巨大な全文置換・整形だけのコミットは禁止（差分最小）
