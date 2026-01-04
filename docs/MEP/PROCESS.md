@@ -30,3 +30,14 @@ scope-guard enforcement test 20260103-002424
 ## PowerShell 実行環境（必須）
 - MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
 - 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
+
+## Autopilot（自動エラー回し／open PR 収束）
+
+### 使い方（1回コピペ）
+- open PR が 0 なら即終了。
+- safe PR は自動で merge/close。
+- manual PR が残った場合は一覧だけ出して停止（＝あなたの判断待ち）。
+
+~~~powershell
+.\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
+~~~
