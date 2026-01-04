@@ -20,6 +20,7 @@
 - tools/mep_idea_finalize.ps1
 - tools/mep_idea_receipt.ps1
 - tools/mep_chat_packet_min.ps1
+- .github/ISSUE_TEMPLATE/mep_dispatch.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
