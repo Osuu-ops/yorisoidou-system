@@ -21,7 +21,6 @@
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
