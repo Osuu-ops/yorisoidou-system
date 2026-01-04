@@ -1,7 +1,7 @@
 
 
 <!-- HANDOFF_CURRENT_BEGIN -->
-HANDOFF_ID: HOF:bc1332901730
+HANDOFF_ID: HOF:7e7b8269dece
 HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -61,7 +61,6 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 
 ■ アイデア一覧（番号で統合）
 1. One-paste capture wrapper idea; implemented as scripts + merged PR  [IDEA:e61113b095cb]
-2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 
 ■ 統合の指示例
 - 新チャットで：『アイデア統合 1 3』→ PowerShellで： .\tools\mep_idea_pick.ps1 1 3 → 貼り付け → 『統合して進めて』
@@ -180,11 +179,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 <!-- HANDOFF_CURRENT_END -->
 
 <!-- HANDOFF_ARCHIVE_BEGIN -->
-### ARCHIVE_ENTRY sha256:a9bc218977a26400efa13044ecb2e9fce70e8194bbcfeb1d7e90a20742028c0f
+### ARCHIVE_ENTRY sha256:ddba3fa6bf9998baca52d3ebc59835821fc99bd7cf4f381fac17108a5da6af79
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:7752897df1d8
+> HANDOFF_ID: HOF:bc1332901730
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -243,7 +242,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 > 
 > ■ アイデア一覧（番号で統合）
-> 1. tools: add idea capture + list scripts  [IDEA:e61113b095cb]
+> 1. One-paste capture wrapper idea; implemented as scripts + merged PR  [IDEA:e61113b095cb]
 > 2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 > 
 > ■ 統合の指示例
@@ -542,11 +541,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:830daf24862b5ba92e4cc32ec74429f22accd36b4db92b3b4dcec0053c861772
+### ARCHIVE_ENTRY sha256:a9bc218977a26400efa13044ecb2e9fce70e8194bbcfeb1d7e90a20742028c0f
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:1119c14359d5
+> HANDOFF_ID: HOF:7752897df1d8
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -605,7 +604,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 > 
 > ■ アイデア一覧（番号で統合）
-> 1. & {  [IDEA:e61113b095cb]
+> 1. tools: add idea capture + list scripts  [IDEA:e61113b095cb]
 > 2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 > 
 > ■ 統合の指示例
@@ -1085,11 +1084,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:7b2e9e22971f0eaaa4ca0e99fca6605f3a970e681e24de8c4ca901fa141f605f
+### ARCHIVE_ENTRY sha256:830daf24862b5ba92e4cc32ec74429f22accd36b4db92b3b4dcec0053c861772
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:010f6a97f617
+> HANDOFF_ID: HOF:1119c14359d5
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -1190,6 +1189,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > 
 > ## STATE_CURRENT の主要見出し
 > - STATE_CURRENT (MEP)
+> - Doc status registry（重複防止）
 > - CURRENT_SCOPE (canonical)
 > - Guards / Safety
 > - Current objective
@@ -1214,6 +1214,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## INDEX の主要見出し
+> - MEP INDEX（入口） v1.0
 > - 参照順（固定）
 > - Links
 > - RUNBOOK（復旧カード）
@@ -1230,6 +1231,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - Tools
 > - Lease / Continue Target（追加）
 > - RUNBOOK（追加）
+> - DOC_STATUS（追加）
 > 
 > ---
 > 
