@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 107461
+- included_total_bytes: 108088
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 279a819bf803ab3d145f02d98d3f5c8fa5390f56377d45df17f70634d8c7d497
-- bytes: 11662
+- sha256: c0a98f39c873c0d0226804151351df54e9def46b2ad541269035a4b251124786
+- bytes: 12289
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -113,19 +113,37 @@
 - 先頭に「今回の目的（1行）」を追記しても良い。
 - AIは REQUEST 形式で最大3件まで、必要箇所だけ要求する。
 
-### HANDOFF_TRIGGER（引っ越し）
+---
 
-あなたがこのチャットで「引っ越ししたい」と言ったら、AIは必ず次を返す（余計な説明なし）。
+## START_HERE.md（入口）  (START_HERE.md)
+```
+﻿# START_HERE（MEP入口） v1.1
 
-1) パス（固定・1行）
-yorisoidou-system/docs/MEP/CHAT_PACKET.md
+## 役割
+本書は新チャット開始の唯一の入口である。
+新チャット1通目は「目的（1行）」＋本書を貼って開始する。
 
-2) 引継ぎメモ（短文・自由文／最大3行）
-- いま進めていること（何の作業中か）
-- 現在地（main clean / open PR 0 など事実1行）
-- 次にやる1手（1テーマ=1PRで何をするか）
+---
 
-※ID指定は不要。短文で「この話の続きをする」確証が得られれば十分。
+## 最小手数の推奨（貼り付け）
+- 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
+- CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+---
+
+## 参照順（固定）
+1. docs/MEP/STATE_CURRENT.md（現在地）
+2. docs/MEP/ARCHITECTURE.md（構造）
+3. docs/MEP/PROCESS.md（手続き）
+4. docs/MEP/GLOSSARY.md（用語）
+5. docs/MEP/GOLDEN_PATH.md（完走例）
+
+---
+
+## AIの要求ルール（必須）
+- 「全部貼れ」「大量ファイル貼れ」は禁止。
+- 追加が必要な場合のみ、最大3件まで、必ず次の形式で要求する。
+
 ### REQUEST
 - file: <ファイルパス>
 - heading: <見出し名>
@@ -178,7 +196,7 @@ checks:
 
 ## INDEX.md（目次）  (docs/MEP/INDEX.md)
 ```
-﻿# MEP INDEX（入口） v1.0
+# MEP INDEX（入口） v1.0
 
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
@@ -246,6 +264,9 @@ checks:
 
 ## RUNBOOK（追加）
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
+
+## DOC_STATUS（追加）
+- [DOC_REGISTRY](./DOC_REGISTRY.md)  — 文書状態台帳（ACTIVE/STABLE/GENERATED）
 ```
 
 ---
@@ -306,6 +327,10 @@ AIは本書に従ってのみ情報要求を行う。
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
 # STATE_CURRENT (MEP)
+
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
 
 ## CURRENT_SCOPE (canonical)
 - platform/MEP/03_BUSINESS/よりそい堂/**
