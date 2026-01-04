@@ -480,60 +480,17 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - PRICE（確定値のみ）
   - USED_DATE
   - CreatedAt
-- Warnings / Blockers（管理回収）:
+- Warnings / Blockers（管理回収）:（= Recovery Queue）
   - Order_ID
   - category（BLOCKER / WARNING）
-  - reason（例：PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備）
+  - reason（例：PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備 / 必須未入力）
   - detectedAt（検出日時）
-  - resolvedAt（解消日時：運用）
-
-### フォーム別の書き込み先（固定）
-
-#### 1) 現場完了フォーム（WORK 完了報告）
-- Order:
-  - workDoneAt ← `workDoneAt`
-  - workDoneComment ← `workDoneComment`
-  - orderStatus / STATUS ← 完了同期で更新（Phase-1: WORK 参照）
-  - lastSyncedAt ← 完了同期実行時刻
-- Parts:
-  - 未使用部材抽出（workDoneComment）→ 対象 PART_ID の STATUS を STOCK に戻す（LOCATION 整合必須）
-  - DELIVERED → USED 化（完了同期で確定）
-- Expense:
-  - USED（使用確定）になった BP の PRICE を根拠に Expense を確定（Phase-1: EXPENSE 参照）
-- Warnings/Blockers:
-  - 写真不足 → WARNING
-  - 抽出不備 → WARNING（在庫戻し対象がある場合は BLOCKER に昇格し得る）
-  - LOCATION 不整合 → BLOCKER
-  - BP の PRICE 未確定 → BLOCKER
-
-#### 2) UF06-ORDER（発注確定）
-- Parts:
-  - 採用行確定 → PART_ID / OD_ID を発行し STATUS=ORDERED（Order_ID 無しなら STOCK_ORDERED）
-  - BM は PRICE=0（経費対象外）
-- Warnings/Blockers:
-  - 発注確定意思が無い（採用行無し）→ BLOCKER（確定処理を停止）
-
-#### 3) UF06-DELIVER（納品確定）
-- Parts:
-  - STATUS=DELIVERED
-  - DELIVERED_AT を記録
-  - BP の PRICE を確定（未確定は BLOCKER）
-  - LOCATION（運用入力；STOCK対象で必須）
-- Warnings/Blockers:
-  - PRICE 未確定（BP）→ BLOCKER
-  - LOCATION 欠落（STOCK対象）→ WARNING（在庫戻し対象では BLOCKER に昇格し得る）
-
-#### 4) UF07-PRICE（価格入力）
-- Parts:
-  - BP の PRICE を確定（状態は原則維持）
-- Warnings/Blockers:
-  - PRICE 未入力 → BLOCKER
-  - 推測代入 → BLOCKER
-
-#### 5) EXPENSE-ADD（経費の手動追加：将来UI/運用）
-- Expense:
-  - Order_ID / PRICE / USED_DATE / 対象（摘要）を記録（許可する場合の最小セット）
-- Warnings/Blockers:
+  - detectedBy（検出契機：WORK完了 / UF06 / UF07 / 手動）
+  - details（原文/補足：例 完了コメント、写真不足の内訳 等）
+  - status（OPEN / RESOLVED）
+  - resolvedAt（解消日時）
+  - resolvedBy（解消者）
+  - resolutionNote（解消メモ）
   - Order_ID 無し経費 → BLOCKER（Phase-1 方針）
 ## ID Issuance & UI Responsibility（Phase-2）
 
