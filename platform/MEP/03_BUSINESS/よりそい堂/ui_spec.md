@@ -224,3 +224,7 @@ UIの禁止事項（固定）：
 - UI は RequestStatus を確定しない（OPEN/RESOLVED/CANCELLED の判断は業務ロジック）。
 - UI は “勝手に解決扱い（RESOLVED/CANCELLED）” にしない。
 - 未確定（判定不能）の場合は、一覧導線を出して “監督判断” に寄せる。
+
+<!-- PHASE1_MARKERS (do not change meaning; for Go/No-Go checks only) -->
+<!-- PARTS_FLOW_PHASE1 -->
+<!-- EXPENSE_FLOW_PHASE1 -->
