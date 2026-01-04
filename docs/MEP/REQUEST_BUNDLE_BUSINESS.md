@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 273819
+- included_total_bytes: 280772
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -92,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: dd747df5e7567ecae944c16fefeac256fdae401196dd3d1f8bf5604f4e527ed6
-- bytes: 15602
+- sha256: 2066a80bc9e34090828ece640804ef0134fee4346870fa4f21dbb9f118b007b7
+- bytes: 16538
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -124,6 +124,9 @@
 
 - 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
 - CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
 
 ---
 
@@ -348,7 +351,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -365,6 +368,8 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## Current objective
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
 
 ## How to start a new conversation
 Tell the assistant:
@@ -425,7 +430,7 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ## PROCESS.md（実行テンプレ）  (docs/MEP/PROCESS.md)
 ```
-# PROCESS（手続き） v1.1
+﻿# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -433,8 +438,11 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ---
 
-## 基本原則（必須）
 
+## Post-merge（必須）
+- MERGE後、docs/MEP/STATE_CURRENT.md に `YYYY-MM-DD: (PR #NNN) 要点` を 1〜3行だけ追記する（肥大化禁止）。
+- 追記対象：運用ルール・ゲート・境界、または BUSINESS の契約/責務分界/同期/冪等/競合回収。
+- 禁止：長文化、全文貼替、整形だけコミット、DOC_REGISTRYで GENERATED とされる生成物を手で直すこと。
 ## docs/MEP 生成物同期（必須）
 - docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
 - Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
@@ -1021,11 +1029,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 88b5d1cf39264a1459fdfd9ec2610b61d17071341fbdc4e498e8a3c112c0ca9f
-- bytes: 932
+- sha256: 8ed44193444601bcdae13ecdd04c325ea12fc7bac1e917594289d041d4391115
+- bytes: 1146
 
 ```text
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -1042,6 +1050,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ## Current objective
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
 
 ## How to start a new conversation
 Tell the assistant:
@@ -1053,8 +1063,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
-- bytes: 2129
+- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
+- bytes: 2107
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1080,7 +1090,6 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
@@ -1949,8 +1958,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 1a52159d174b27a0c761d447dbec69f287ad6d40715cd7be2d32202c2d7a45d4
-- bytes: 33716
+- sha256: c0300bfa06312dfbc84545581c0bae7b41531b9662b1d6769dd252f7943e7d2d
+- bytes: 39541
 
 ```text
 <!--
@@ -2640,6 +2649,116 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - LOCATION不整合: 対象部材の LOCATION が整合し、STOCK 戻しが可能であること。
 - 写真不足: 必要写真が追補されたこと（不足の内訳は details に記録）。
 - 抽出不備: 完了コメントの形式が修正され、未使用部材の抽出が可能であること。
+### Request linkage（固定）
+
+#### 位置づけ（固定）
+- Recovery Queue は「不備回収の運用キュー」であり、Request は「申請台帳（master_spec 3.7）」である。
+- いずれも OPEN を“未処理”として扱うが、意味は異なるため混同しない（Recovery=回収、Request=申請）。
+- UI/人が勝手に RESOLVED/CANCELLED を確定しない（解消は根拠と記録を伴う）。
+
+#### 連携ルール（最小｜固定）
+- BLOCKER/WARNING を検出したら、まず Recovery Queue に status=OPEN で登録する（冪等）。
+- 次に該当する場合は、Request も併せて status=OPEN で登録してよい（推奨）：
+  - BP の PRICE 未確定 → Request.Category=UF07（targetType=PART_ID / targetId=PART_ID / partId=PART_ID / price=確定値）
+  - LOCATION 不整合 / 抽出不備 / 写真不足 / 監督判断が必要 → Request.Category=REVIEW（targetType=Order_ID / targetId=Order_ID）
+- 既に対応する Request（OPEN）が存在する場合は、重複作成せず「参照リンク（参照ID/URL等）」のみを残す（冪等・増殖防止）。
+
+#### 理由→推奨アクション（固定）
+- PRICE未確定（BP）:
+  - Recovery Queue: BLOCKER / OPEN
+  - Request: UF07 を推奨（価格確定の申請）
+- LOCATION不整合（在庫戻し対象）:
+  - Recovery Queue: BLOCKER / OPEN
+  - Request: REVIEW を推奨（監督判断/是正の回収）
+- 写真不足:
+  - Recovery Queue: WARNING / OPEN（Phase-1 の分類に従属）
+  - Request: REVIEW（MISSING_INFO）を推奨（追補回収）
+- 抽出不備（未使用部材/完了コメント書式）:
+  - Recovery Queue: WARNING / OPEN（在庫戻し対象が実在し処理停止が必要な場合は BLOCKER に昇格し得る）
+  - Request: REVIEW を推奨（追補・監督回収）
+
+#### 解消（RESOLVED）の定義（固定）
+- Recovery Queue を RESOLVED にしてよい条件は、master_spec の確定データが整合し、不備が解消していること。
+  - PRICE未確定 → Parts_Master.PRICE が確定値で埋まり、対象の警告（ALERT_PRICE_MISSING 等）が消える。
+  - LOCATION不整合 → 対象部材の LOCATION が整合し、STOCK 戻しが可能である。
+  - 写真不足 → DONE/CLOSED の要件を満たし、写真不足フラグが解消している。
+  - 抽出不備 → 未使用部材抽出が成功し、必要な在庫戻し/記録が完了している。
+- Request を併設した場合：
+  - RequestStatus=RESOLVED/CANCELLED になったとき、対応する Recovery Queue は RESOLVED にしてよい（ただし上記の台帳整合が満たされていること）。
+  - RequestStatus=OPEN の間は、Recovery Queue を勝手に RESOLVED にしない。
+
+### 冪等（Recovery Queue 登録）【固定】
+- 登録は必ず冪等でなければならない（再送・二重起動で増殖しない）。
+- 推奨 idempotencyKey（固定要素）：
+  - Order_ID + reason + detectedBy + (PART_ID がある場合は PART_ID)
+- 同一 idempotencyKey は 1 件に正規化し、二重登録は「同一案件の再観測」として扱う（details の追記は許容、行増殖は禁止）。
+
+### IdempotencyKey（イベント別｜固定）
+
+#### 目的（固定）
+- 再送・二重起動・順序逆転が起きても、台帳（Ledger）が増殖せず、状態が破綻しないことを保証する。
+- ここで定義する idempotencyKey は「同一イベント判定」の唯一の基準とする。
+
+#### 共通フォーマット（固定）
+- idempotencyKey は次の要素で構成する（区切りは実装でよい。要素の意味は固定）：
+  - eventType（固定語）
+  - primaryId（Order_ID または PART_ID 等。イベントの主対象）
+  - eventAt（イベント確定時刻：入力/受信の確定時刻）
+  - sourceId（任意：外部イベントID等。取得できる場合のみ）
+
+- primaryId が確定できない場合は Runtime 破綻として扱い、Recovery Queue に OPEN 登録する（増殖防止）。
+
+#### イベント別（固定）
+1) UF01（受注登録）
+- eventType: UF01_SUBMIT
+- primaryId: Order_ID
+- eventAt: UF01 登録の確定時刻
+- sourceId: 任意（媒体側の通知ID等）
+
+2) UF06-ORDER（発注確定）
+- eventType: UF06_ORDER
+- primaryId: PART_ID（発行後は PART_ID を主対象とする）
+- eventAt: 発注確定時刻
+- sourceId: 任意
+
+3) UF06-DELIVER（納品確定）
+- eventType: UF06_DELIVER
+- primaryId: PART_ID
+- eventAt: 納品確定時刻（DELIVERED_AT）
+- sourceId: 任意
+
+4) UF07-PRICE（価格確定）
+- eventType: UF07_PRICE
+- primaryId: PART_ID
+- eventAt: 価格確定時刻
+- sourceId: 任意
+
+5) UF08（追加報告）
+- eventType: UF08_SUBMIT
+- primaryId: Order_ID
+- eventAt: 追加報告確定時刻
+- sourceId: 任意
+
+6) WORK 完了（現場完了）
+- eventType: WORK_DONE
+- primaryId: Order_ID
+- eventAt: workDoneAt（完了日時）
+- sourceId: 任意（現場UI側イベントID等）
+
+7) 更新（再同期）
+- eventType: RESYNC
+- primaryId: Order_ID（Order 単位の再同期）または NONE（全体再同期）
+- eventAt: 再同期の開始時刻
+- sourceId: 任意
+
+#### 重複イベントの扱い（固定）
+- 同一 idempotencyKey のイベントが再到達した場合：
+  - Ledger を増殖させない（二重行追加・二重通知禁止）。
+  - “同一イベントの再観測”として扱い、details/log の追記は許容する（ただし台帳の主要レコード増殖は禁止）。
+- idempotencyKey が異なるが、同一 primaryId に対して短時間に競合が発生した場合：
+  - 自動で辻褄合わせをしない。
+  - Recovery Queue（OPEN）へ登録し、監督回収に寄せる（Integration Contract に従属）。
+
 ## DoD（Phase-2）
 
 ### 目的
