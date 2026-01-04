@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 112709
+- included_total_bytes: 113645
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 2066a80bc9e34090828ece640804ef0134fee4346870fa4f21dbb9f118b007b7
-- bytes: 16538
+- sha256: c4e6446a6615d05ad8cc70a3b995fa88d80acfe50428a7daf45331d473b733e0
+- bytes: 17474
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -486,6 +486,18 @@ scope-guard enforcement test 20260103-002424
 ~~~powershell
 .\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
 ~~~
+
+## Autorecovery（よくある詰まりの自動解消）
+この節は「危険でないのに毎回詰まる」パターンを、手順として固定して再発をゼロにする。
+
+- PR作成前に必ず push する（Head ref not a branch / sha blank 防止）:
+  - `git push -u origin HEAD`
+- `gh` の `--json` 引数は PowerShell で分割されやすいので、常に全体をクォートする:
+  - 例: `gh pr view 123 --json "state,mergeStateStatus,url"`
+- PowerShell では `-q`（jq式）周りのクォート事故が起きやすい。原則として:
+  - `--json ...` の出力を `ConvertFrom-Json` で処理する（`-q` 依存を避ける）。
+- 誤って main に戻ってしまった場合でも、人間判断なしで復旧できるようにする:
+  - 「作業ブランチ候補を自動検出 → checkout → push → PR作成/再利用 → auto-merge → main同期」を 1ブロックで実行する。
 ```
 
 ---

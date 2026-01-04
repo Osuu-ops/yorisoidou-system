@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 280772
+- included_total_bytes: 285732
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -92,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 2066a80bc9e34090828ece640804ef0134fee4346870fa4f21dbb9f118b007b7
-- bytes: 16538
+- sha256: c4e6446a6615d05ad8cc70a3b995fa88d80acfe50428a7daf45331d473b733e0
+- bytes: 17474
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -476,6 +476,18 @@ scope-guard enforcement test 20260103-002424
 ~~~powershell
 .\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
 ~~~
+
+## Autorecovery（よくある詰まりの自動解消）
+この節は「危険でないのに毎回詰まる」パターンを、手順として固定して再発をゼロにする。
+
+- PR作成前に必ず push する（Head ref not a branch / sha blank 防止）:
+  - `git push -u origin HEAD`
+- `gh` の `--json` 引数は PowerShell で分割されやすいので、常に全体をクォートする:
+  - 例: `gh pr view 123 --json "state,mergeStateStatus,url"`
+- PowerShell では `-q`（jq式）周りのクォート事故が起きやすい。原則として:
+  - `--json ...` の出力を `ConvertFrom-Json` で処理する（`-q` 依存を避ける）。
+- 誤って main に戻ってしまった場合でも、人間判断なしで復旧できるようにする:
+  - 「作業ブランチ候補を自動検出 → checkout → push → PR作成/再利用 → auto-merge → main同期」を 1ブロックで実行する。
 ```
 
 ---
@@ -1591,8 +1603,8 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
-- sha256: b6471908fc228691085f282f471ba60084982fc592d5473ec2026d106a112308
-- bytes: 794
+- sha256: a825fe00e1050b2adf7c5ac07d850886585f2f0fe4ec4e5e7c431f18e71a5456
+- bytes: 1312
 
 ```text
 # よりそい堂 BUSINESS INDEX（入口）
@@ -1608,6 +1620,15 @@ This directory is the canonical entry point for business-side code/assets for �
 2) master_spec（唯一の正）
 3) business_spec.md（業務フロー/例外）
 4) ui_spec.md（UI適用：導線/表示）
+
+
+## Phase-2 Quick Links（業務統合の要点）
+
+- business_spec.md（Phase-2）:
+  - Integration Contract（統合契約）: ./business_spec.md#integration-contractphase-2todoistclickupledger-統合契約
+  - Recovery Queue（回収キュー）: ./business_spec.md#recovery-queuephase-2
+  - IdempotencyKey（イベント別）: ./business_spec.md#idempotencykeyイベント別固定
+  - Runtime Audit Checklist（expected/unexpected）: ./business_spec.md#runtime-audit-checklistexpectedunexpected固定参照用
 
 ## 2. 編集ルール（固定）
 - 変更は 1テーマ = 1PR
@@ -1958,8 +1979,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: c0300bfa06312dfbc84545581c0bae7b41531b9662b1d6769dd252f7943e7d2d
-- bytes: 39541
+- sha256: 5307aaafd90f802be57c44132b89f0b6c37a61badf8886da79168cd64b87cb3c
+- bytes: 43047
 
 ```text
 <!--
@@ -2758,6 +2779,69 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - idempotencyKey が異なるが、同一 primaryId に対して短時間に競合が発生した場合：
   - 自動で辻褄合わせをしない。
   - Recovery Queue（OPEN）へ登録し、監督回収に寄せる（Integration Contract に従属）。
+
+### Runtime Audit Checklist（expected/unexpected｜固定・参照用）
+
+#### 目的（固定）
+- 実行後に「必ず起きるべき副作用（expected effect）」と「起きてはならない副作用（unexpected effect）」を、イベント別に一覧化し、監査の探し回りをゼロにする。
+- 本節は監査観点の固定であり、実装方法・ログ形式の詳細は別テーマで扱う。
+
+#### 監査の原則（固定）
+- expected effect が欠落している場合：Runtime NG（破綻）として扱い、Recovery Queue（OPEN）へ登録する。
+- unexpected effect が発生した場合：Runtime NG（破綻）として扱い、Recovery Queue（OPEN）へ登録する。
+- 自動で辻褄合わせをしない（Integration Contract に従属）。
+
+#### イベント別 expected effect（最小｜固定）
+1) UF01_SUBMIT（受注登録）
+- Order_YYYY に 1 行以上の追加（Order_ID が発行済みである）
+- CU_Master / UP_Master は「新規 or 再利用」のいずれかが成立している（参照整合が壊れていない）
+- logs/system 相当へ記録が残る（参照用）
+
+2) UF06_ORDER（発注確定）
+- Parts_Master に新規行追加（PART_ID / OD_ID / STATUS=ORDERED or STOCK_ORDERED）
+- BP の PRICE は未確定を許容（BM は PRICE=0 固定）
+- Order_ID 無し発注は STOCK_ORDERED として扱われる（Phase-1 EXCEPTIONS）
+
+3) UF06_DELIVER（納品確定）
+- Parts_Master の対象 PART_ID が STATUS=DELIVERED へ遷移
+- DELIVERED_AT が記録されている
+- BP の PRICE は最終的に確定値で埋まる（未確定は BLOCKER として回収される）
+
+4) UF07_PRICE（価格確定）
+- Parts_Master の対象 PART_ID に PRICE が確定値で記録される
+- STATUS は原則変更しない（価格確定のみ）
+
+5) UF08_SUBMIT（追加報告）
+- 追加報告の記録が残る（logs/extra または Request/相当台帳）
+- OV01 参照で追跡可能な形（Order_ID 接続）が成立している
+
+6) WORK_DONE（現場完了）
+- Order の完了根拠（workDoneAt / workDoneComment）と最終同期が記録される
+- DELIVERED 部材の USED 化が成立する（対象が USED へ遷移）
+- BP（USED）の PRICE を根拠に Expense が確定記録される（EXP_ID 発行）
+- 未使用部材が抽出され、在庫戻し（STOCK）と LOCATION 整合が成立する（不整合は BLOCKER 回収）
+
+7) RESYNC（更新／再同期）
+- Ledger の確定状態が UI（現場/管理）へ再投影される（参照整合が回復する）
+- 冪等：同一 RESYNC の再実行で台帳が増殖しない
+
+#### イベント別 unexpected effect（代表例｜固定）
+共通（全イベント）：
+- ID 再発番／再利用（Order_ID / PART_ID / EXP_ID 等の重複・改変）
+- 二重行増殖（同一 idempotencyKey で主要台帳が増える）
+- 異常日付（未来日／逆転）を確定値として保存
+- 本番とテストの混在（テストIDの本番混入）
+
+UF系（入力）：
+- 入力禁止経路（管理UI等）からの確定値書込みが発生する
+
+完了同期：
+- PRICE 推測代入で Expense を確定してしまう
+- LOCATION 欠落のまま STOCK 戻しが完了扱いになる
+
+#### NG 時の出力（固定）
+- NG は Recovery Queue（OPEN）へ登録する（reason / detectedBy / details / idempotencyKey）。
+- 必要に応じて Request（REVIEW）を併設して監督回収に寄せる（Request linkage に従属）。
 
 ## DoD（Phase-2）
 
