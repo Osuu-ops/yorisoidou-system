@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108906
+- included_total_bytes: 108887
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 4103afd74b4f57e563ce1fb176c23660221ff444788114714f4150ddae2754c1
-- bytes: 12927
+- sha256: 464a2ee55cc1bcd846ec905829574407800a9d254c190e7ff5c8f6821efe91c6
+- bytes: 12908
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -326,11 +326,7 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-﻿# STATE_CURRENT (MEP)
-
-## Doc status registry（重複防止）
-- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
-- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -340,6 +336,7 @@ AIは本書に従ってのみ情報要求を行う。
 - platform/MEP/03_BUSINESS/よりそい堂/**
 
 ## Guards / Safety
+- Required checks は「PRで必ず表示されるチェック名」のみに限定する（schedule/dispatch専用チェック名を入れると永久BLOCKEDになり得る）。
 - Text Integrity Guard (PR): enabled
 - Halfwidth Kana Guard: enabled
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
