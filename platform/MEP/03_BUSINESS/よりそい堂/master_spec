@@ -304,7 +304,7 @@ UP_ID / CU_ID / 物件番号 / 物件名 / 郵便番号 / 住所 / 建物種別 
 主キー：Order_ID
 主要項目：
 Order_ID / UP_ID / CU_ID / 媒体コード / 顧客名 / 電話 / 郵便番号 / 住所 / addressFull / addressCityTown /
-希望日1 / 希望日2 / 見積金額 / 備考（raw全文） / summary / STATUS /
+希望日1 / 希望日2 / 見積金額 / 備考（raw全文） / summary / STATUS / alertLabels /
 CreatedAt / UpdatedAt / LastSyncedAt / HistoryNotes
 業務ルール：
 ・HistoryNotes は自由記述で、内部の Order_ID と相互参照できる
