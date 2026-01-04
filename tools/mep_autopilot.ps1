@@ -1,13 +1,13 @@
 # tools/mep_autopilot.ps1
-# 目的: open PR を自動で収束させる（人間が考える所だけ残す）
-# 方針:
-# - auto系は原則自動: CLEAN+checks green => merge / CONFLICTING or DIRTY => close
-# - docs/MEP PR で guard fail が出たら: PRブランチで build_chat_packet.py を回して self-heal してから再判定
-# - biz/work-normalize-* は「整形PR」扱いで自動マージ対象（CONFLICTINGならクローズ）
-# - それ以外の biz/* は基本 “人間判断” として触らず一覧表示（必要なら allowlist を増やす）
+# Purpose: fully-automatic error loop for "common" PR churn.
+# Rules:
+# - Safe set is auto/* plus known generated PR patterns plus biz/work-normalize-* (format-only).
+# - Safe PR: CLEAN+MERGEABLE and checks green => auto-merge; CONFLICTING/DIRTY => auto-close.
+# - If checks include "guard fail" on docs/MEP, attempt self-heal by rebuilding CHAT_PACKET on PR branch and pushing a fix commit.
+# - Non-safe PRs are listed only (human-thinking zone).
 
 param(
-  [int]$MaxRounds = 20,
+  [int]$MaxRounds = 30,
   [int]$SleepSeconds = 5
 )
 
@@ -47,14 +47,14 @@ function ChecksGreen([string]$t) {
   if ($hasPass -and (-not $hasPending) -and (-not $hasFail)) { return $true }
   return $false
 }
-function GhOk([string[]]$args, [string[]]$successPatterns) {
+function GhOk([string[]]$args, [string[]]$okPatterns) {
   $out = (& $ghExe @args 2>&1 | Out-String).Trim()
   $code = $LASTEXITCODE
   if ($code -eq 0) { return $true }
-  foreach ($p in $successPatterns) { if ($out -match $p) { return $true } }
+  foreach ($p in $okPatterns) { if ($out -match $p) { return $true } }
   return $false
 }
-function IsAutoSafe($pr) {
+function IsSafe($pr) {
   if ($pr.headRefName -like "auto/*") { return $true }
   if ($pr.headRefName -like "auto/scope-suggest*") { return $true }
   if ($pr.headRefName -like "auto/chat-packet-update*") { return $true }
@@ -63,21 +63,20 @@ function IsAutoSafe($pr) {
   if ($pr.headRefName -like "biz/work-normalize-*") { return $true }
   return $false
 }
-function SelfHealChatPacketOnBranch([string]$headRefName) {
+function SelfHealChatPacket([string]$headRefName) {
   if (-not (Test-Path "docs/MEP/build_chat_packet.py")) { return $false }
 
   git fetch origin $headRefName | Out-Null
 
   $existsLocal = $false
   try { git show-ref --verify --quiet ("refs/heads/{0}" -f $headRefName); if ($LASTEXITCODE -eq 0) { $existsLocal = $true } } catch {}
+
   if ($existsLocal) { git checkout $headRefName | Out-Null } else { git checkout -b $headRefName ("origin/{0}" -f $headRefName) | Out-Null }
   git reset --hard ("origin/{0}" -f $headRefName) | Out-Null
   git clean -fd | Out-Null
 
   $ran = $false
-  try { & python "docs/MEP/build_chat_packet.py"; $ran = $true } catch {
-    try { & py -3 "docs/MEP/build_chat_packet.py"; $ran = $true } catch { $ran = $false }
-  }
+  try { & python "docs/MEP/build_chat_packet.py"; $ran = $true } catch { try { & py -3 "docs/MEP/build_chat_packet.py"; $ran = $true } catch { $ran = $false } }
   if (-not $ran) { git checkout main | Out-Null; return $false }
 
   $st = (git status --porcelain)
@@ -93,10 +92,6 @@ function SelfHealChatPacketOnBranch([string]$headRefName) {
   return $true
 }
 
-Write-Host ("repo={0}" -f $repo)
-Write-Host ("MaxRounds={0} SleepSeconds={1}" -f $MaxRounds,$SleepSeconds)
-Write-Host ""
-
 # Safety + sync main
 try { git rebase --abort 2>$null | Out-Null } catch {}
 try { git merge  --abort 2>$null | Out-Null } catch {}
@@ -106,31 +101,35 @@ git checkout main | Out-Null
 git reset --hard origin/main | Out-Null
 git clean -fd | Out-Null
 
+Write-Host ("repo={0}" -f $repo)
+Write-Host ("MaxRounds={0} SleepSeconds={1}" -f $MaxRounds,$SleepSeconds)
+Write-Host ""
+
 for ($round=1; $round -le $MaxRounds; $round++) {
   $open = GetOpenPrs
   if (-not $open -or $open.Count -eq 0) { Write-Host "open PR = 0"; return }
 
-  $safe = @($open | Where-Object { IsAutoSafe $_ } | Sort-Object number)
-  $manual = @($open | Where-Object { -not (IsAutoSafe $_) } | Sort-Object number)
+  $safe = @($open | Where-Object { IsSafe $_ } | Sort-Object number)
+  $manual = @($open | Where-Object { -not (IsSafe $_) } | Sort-Object number)
 
   Write-Host ("=== Round {0}/{1} ===" -f $round,$MaxRounds)
-  Write-Host ("open={0} safe_auto={1} manual={2}" -f $open.Count,$safe.Count,$manual.Count)
+  Write-Host ("open={0} safe={1} manual={2}" -f $open.Count,$safe.Count,$manual.Count)
 
   if ($manual.Count -gt 0) {
     Write-Host ""
-    Write-Host "=== Manual PRs (human thinking required) ==="
+    Write-Host "=== Manual PRs (human-thinking zone) ==="
     $manual | Format-Table number,headRefName,title,createdAt,url -AutoSize | Out-String | Write-Host
   }
 
-  if ($safe.Count -eq 0) { Write-Host "No safe-auto PRs left."; return }
+  if ($safe.Count -eq 0) { Write-Host "No safe PRs left."; return }
 
   foreach ($p in $safe) {
     $n = [int]$p.number
     $info = GetPrInfo $n
     if ($info.state -ne "OPEN") { continue }
 
-    # let GitHub compute mergeability
-    for ($k=1; $k -le 10; $k++) {
+    # wait for mergeability calc
+    for ($k=1; $k -le 12; $k++) {
       if ($info.mergeable -ne "UNKNOWN" -and $info.mergeStateStatus -ne "UNKNOWN") { break }
       Start-Sleep -Seconds 2
       $info = GetPrInfo $n
@@ -138,16 +137,15 @@ for ($round=1; $round -le $MaxRounds; $round++) {
 
     if ($info.mergeable -eq "CONFLICTING" -or $info.mergeStateStatus -in @("DIRTY","CONFLICTING")) {
       Write-Host ("AUTO CLOSE  #{0} {1}" -f $n,$info.title)
-      if (-not (GhOk @("pr","close",$n,"--repo",$repo) @("Closed pull request","already closed","✓.*Closed"))) { throw ("close failed #"+$n) }
+      if (-not (GhOk @("pr","close",$n,"--repo",$repo) @("Closed pull request","already closed","✓.*Closed","closed"))) { throw ("close failed #"+$n) }
       continue
     }
 
     $checks = TryChecksText $n
 
-    # self-heal: docs guard fail の典型に対して CHAT_PACKET 再生成を試す
     if ($checks -match "(?m)\bguard\s+fail\b" -and $info.headRefName) {
-      Write-Host ("SELF-HEAL  #{0} rebuild CHAT_PACKET on {1}" -f $n,$info.headRefName)
-      $ok = SelfHealChatPacketOnBranch $info.headRefName
+      Write-Host ("SELF-HEAL  #{0} CHAT_PACKET on {1}" -f $n,$info.headRefName)
+      $ok = SelfHealChatPacket $info.headRefName
       if ($ok) { Start-Sleep -Seconds 3; $checks = TryChecksText $n }
     }
 
