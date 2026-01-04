@@ -571,7 +571,6 @@ rootCause（固定キー）：
 禁止事項（補助｜固定）：
 - UIや人が、未定義語を rootCauseValues に入れない（固定集合外はNG）。
 - 起点が曖昧なのに “推測” で rootCause を埋めない（曖昧さは REVIEW のまま保持）。
-禁止事項（補助｜固定）：
 - UIや人が、signals の内容判定（鮮明/不鮮明等）で reviewType を決めない（将来テーマ）。
 - REVIEW を RESOLVED/CANCELLED にする場合は ResolutionMetadata（3.7.4）に従う。
 
