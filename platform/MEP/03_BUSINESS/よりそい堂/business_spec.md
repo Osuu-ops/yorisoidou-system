@@ -629,9 +629,21 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - WARNING:
   - 同期は継続し、回収キューへ登録する（運用で回収）。
   - 次回以降の同期で自動解消はしない（人の解消を原則とする）。
+### どこへ記録するか（実装境界｜固定）
 
-### どこへ記録するか（実装境界）
-- 仕様上は「回収キュー（台帳）」として記録する。
+- 唯一の正（Authority）は Ledger（台帳）である。
+- Recovery Queue は Ledger に「回収キュー台帳」として 1 行で記録する（例：Sheets の Recovery_Queue シート）。
+- Todoist / ClickUp は “投影（通知・作業管理）” であり、Ledger の確定値を上書きしない（管理UI入力禁止の原則）。
+- 相互参照（固定）:
+  - Ledger 行に taskIdTodoist / taskIdClickUp / url 等の参照IDを保持する（作業はタスクで進めてもよいが、状態の唯一の正は Ledger）。
+- 冪等（固定）:
+  - 登録キー（例）rqKey = Hash(Order_ID + category + reason + detectedBy + detectedAt)
+  - 同一 rqKey の再登録は「新規行を増やさず」更新で吸収する（重複通知・重複タスク禁止）。
+- 解消（固定）:
+  - status を RESOLVED に更新し、resolvedAt / resolvedBy / resolutionNote を記録する。
+  - Todoist/ClickUp の完了は “投影の反映” として行ってよいが、Ledger を自動で RESOLVED にしてはならない（根拠付き更新のみ）。
+
+
 - 実装では、次のいずれか（または併用）でよい：
   - 台帳（Sheets 等）に 1 行として追記
   - タスク（Todoist 等）を起票し、台帳には参照IDを残す
