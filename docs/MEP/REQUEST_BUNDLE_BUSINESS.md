@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 247449
+- included_total_bytes: 247733
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -91,8 +91,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 464a2ee55cc1bcd846ec905829574407800a9d254c190e7ff5c8f6821efe91c6
-- bytes: 12908
+- sha256: d987502830503ff9f1cfa5dc3bedecbd64290ba68b0fa9516ff9e694ca9bf9cc
+- bytes: 13165
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -420,6 +420,10 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 git checkout main
 git pull --ff-only
 scope-guard enforcement test 20260103-002424
+
+## PowerShell 実行環境（必須）
+- MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
+- 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
 ```
 
 ---
@@ -2816,8 +2820,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 5e5ad98bb7355ab079b243bb2dc95d4de9e8a5aa4d3f43b9709ab3e4b2efb3e2
-- bytes: 1580
+- sha256: 422dd25f60865d6200208facc4770a8202b41b3a33a1902ac1d48cceae5184b9
+- bytes: 1607
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -2842,6 +2846,7 @@ UIの禁止事項（固定）：
 - tools/mep_idea_finalize.ps1
 - tools/mep_idea_receipt.ps1
 - tools/mep_chat_packet_min.ps1
+- tools/mep_pwsh_guard.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
