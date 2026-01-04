@@ -107,6 +107,7 @@ checks:
 - [GLOSSARY](./GLOSSARY.md)
 - [GOLDEN_PATH](./GOLDEN_PATH.md)
 
+
 ## RUNBOOK（復旧カード）
 - RUNBOOK.md（異常時は診断ではなく次の一手だけを返す）
 
@@ -165,7 +166,56 @@ checks:
 ## AI_BOOT.md（AI挙動固定）  (docs/MEP/AI_BOOT.md)
 ```
 # AI_BOOT（AI挙動固定） v1.0
-（本文は docs/MEP/AI_BOOT.md を参照）
+
+## 目的
+本書は、新チャットでAIが迷わず進行するための「要求フォーマット」と「禁止事項」を固定する。
+AIは本書に従ってのみ情報要求を行う。
+
+---
+
+## 絶対禁止
+- 出力に「ネストしたコードブロック」や「複数のコードブロック混在」を作らない（本文中に ``` を入れ子にしない）。
+- Git/GitHub/PowerShell 操作は必ず **単一の ```powershell ブロック**で提示する（途中で別ブロックを挿入しない）。
+- 説明はコード内コメントに寄せ、ブロック外で手順を分割しない。
+- PowerShell の Here-String は **@' '@** を使用する（@" "@ は禁止）。
+- 「全部貼れ」「10ファイル貼れ」等の大量提示要求
+- ローカル操作を前提とした手順提示（GitHub内で完結させる）
+- 入口整備（docs/MEP）を超えるスコープ拡張（再設計・改善提案の無限化）
+
+---
+
+## AIの情報要求フォーマット（必須）
+不足情報がある場合、AIは必ず次の形式で要求する：
+
+### REQUEST
+- file: <ファイルパス>
+- heading: <見出し名（h2/h3等）>
+- reason: <その見出しが必要な理由（1行）>
+
+（複数必要な場合も最大3件まで。3件を超える要求は禁止。）
+
+---
+
+## 進行の優先順位（固定）
+1) docs/MEP/INDEX.md（入口）
+2) docs/MEP/STATE_CURRENT.md（現在地）
+3) docs/MEP/ARCHITECTURE.md（構造）
+4) docs/MEP/PROCESS.md（手続き）
+5) docs/MEP/GLOSSARY.md（用語）
+6) docs/MEP/GOLDEN_PATH.md（完走例）
+
+---
+
+## 不足情報の扱い（固定）
+- AIは推測で補完しない。必要なら REQUEST フォーマットで要求する。
+- ただし、要求は最大3件まで。足りない場合は「まずINDEX/STATE_CURRENTの更新PR」を提案して止める。
+
+---
+
+## 合格条件（AI側のDone判定）
+- INDEXから必要文書へ辿れる
+- 「唯一の正」「触って良い/悪い領域」「PR運用」が明文化されている
+- AIが REQUEST フォーマットで必要箇所だけ要求できる
 ```
 
 ---
@@ -173,15 +223,76 @@ checks:
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
 # STATE_CURRENT (MEP)
-（本文は docs/MEP/STATE_CURRENT.md を参照）
+
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
+
+## CURRENT_SCOPE (canonical)
+- platform/MEP/03_BUSINESS/よりそい堂/**
+
+## Guards / Safety
+- Required checks は「PRで必ず表示されるチェック名」のみに限定する（schedule/dispatch専用チェック名を入れると永久BLOCKEDになり得る）。
+- Text Integrity Guard (PR): enabled
+- Halfwidth Kana Guard: enabled
+- UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
+
+## Current objective
+- Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+
+## How to start a new conversation
+Tell the assistant:
+- "Read docs/MEP/START_HERE.md and proceed."
+- (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
 ```
 
 ---
 
 ## ARCHITECTURE.md（構造・境界）  (docs/MEP/ARCHITECTURE.md)
 ```
-# ARCHITECTURE（構造） v1.1
-（本文は docs/MEP/ARCHITECTURE.md を参照）
+﻿# ARCHITECTURE（構造） v1.1
+
+## 目的
+MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境界）として固定する。
+
+---
+
+## 唯一の正（Source of Truth）
+- **唯一の正は main ブランチ**である。
+- 変更は必ず **Pull Request** で行い、**Required checks** を通過してからマージする。
+
+---
+
+## 入口（参照開始点）
+- 入口は **START_HERE.md → docs/MEP/INDEX.md** を唯一の導線とする。
+- 新チャットでは原則 INDEX だけを貼り、追加が必要な場合は **AI_BOOT の REQUEST 形式**で要求する。
+
+---
+
+## 触って良い領域 / 触ってはいけない領域（運用境界）
+### 触って良い（今回のINDEX方式のスコープ）
+- docs/MEP/**
+- START_HERE.md
+- .github/workflows/docs_index_guard.yml（入口の整合ガード）
+
+### 原則触らない（別PR・別スコープ）
+- platform/MEP/**（MEP本体・業務仕様の実体）
+- .github/workflows/* のうち、入口整合ガード以外（CI/運用の核）
+- MEP のプロトコル/キャノン/マスター類（変更するなら必ず専用PRでスコープを切る）
+
+---
+
+## 変更の粒度（事故防止）
+- 文書の整形（改行/空白/並べ替え）だけのコミットを作らない。
+- 巨大ファイルの全文置換を避け、差分を最小化する。
+- AIが要求する追加提示は最大3件まで（AI_BOOT準拠）。
+
+---
+
+## 運用上の合格条件（DoD）
+- docs/MEP/INDEX.md から各文書へ到達できる（リンク/パスが正しい）
+- 「唯一の正」「触って良い/悪い領域」「PR運用」が明文化されている
+- 入口破損は Docs Index Guard で検出できる
 ```
 
 ---
@@ -190,10 +301,121 @@ checks:
 ```
 # PROCESS（手続き） v1.1
 
+## 目的
+本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
+新チャットでは原則 INDEX だけを貼り、追加が必要な場合のみ AI_BOOT の REQUEST 形式で要求する。
+
+---
+
+## 基本原則（必須）
+
 ## docs/MEP 生成物同期（必須）
 - docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
-- schedule/dispatch 専用のチェック名は Required checks に入れない（PRに出ず永久BLOCKEDになり得る）。
+- Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
 - 失敗時は「Chat Packet Update (Dispatch) → 生成PRをマージ → 元PRへ戻る」で復旧する。
+- 変更は必ず PR で行う（main 直コミット禁止）
+- Required checks（semantic-audit / semantic-audit-business）が OK のみマージ可能
+- 変更スコープは1つだけ（混ぜない）
+- 巨大ファイルの全文置換や整形だけのコミットを避ける
+
+---
+
+## 実行テンプレ（PowerShell / gh）— これをコピペで回す
+
+### 0) main 同期
+```powershell
+git checkout main
+git pull --ff-only
+scope-guard enforcement test 20260103-002424
+
+## PowerShell 実行環境（必須）
+- MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
+- 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
+```
+
+---
+
+## GLOSSARY.md（用語）  (docs/MEP/GLOSSARY.md)
+```
+﻿# GLOSSARY（用語） v1.0
+
+- B運用: Required checks OKのみマージ
+- A運用: 手動保険ルート
+- TIG: Text Integrity Guard
+- INDEX方式: 入口だけ貼り、必要箇所だけ要求
+
+
+ - scopeguard-dod-test: 20260103-051233
+ - ruleset-dod-test: 20260103-053612
+ - required4-dod-test: 20260103-060125
+ - seed-mep-gate: 20260103-062802
+```
+
+---
+
+## GOLDEN_PATH.md（完走例）  (docs/MEP/GOLDEN_PATH.md)
+```
+﻿# GOLDEN_PATH（完走例） v1.1
+
+## 目的
+抽象説明ではなく「実際にこのリポジトリで通った完走例」を固定し、
+次AI/新チャットが同じ手順で迷わず再現できるようにする。
+
+---
+
+## 完走例A：INDEX方式導入（入口整備）— 実績
+
+### 目的
+「マスタ1枚コピペ」運用から脱却し、GitHub上に読む順番（入口）を固定する。
+
+### 実施内容（PR単位）
+1) 入口セット作成（START_HERE + docs/MEP + AI_BOOT + Guard）
+- PR: #119
+- 追加/作成:
+  - START_HERE.md
+  - docs/MEP/INDEX.md
+  - docs/MEP/AI_BOOT.md
+  - docs/MEP/STATE_CURRENT.md（雛形）
+  - docs/MEP/ARCHITECTURE.md（雛形）
+  - docs/MEP/PROCESS.md（雛形）
+  - docs/MEP/GLOSSARY.md（雛形）
+  - docs/MEP/GOLDEN_PATH.md（雛形）
+  - .github/workflows/docs_index_guard.yml
+- チェック:
+  - semantic-audit / semantic-audit-business（Required）
+  - Text Integrity Guard (PR)
+  - Docs Index Guard
+- 結果: merged
+
+2) ARCHITECTURE 境界の明文化（汚染防止）
+- PR: #121
+- 変更:
+  - docs/MEP/ARCHITECTURE.md を v1.1 に更新（触って良い/悪い領域、粒度、DoD）
+- 結果: merged
+
+3) STATE_CURRENT の実務固定（B/A/TIG/Auto PR Gate の使い分け）
+- PR: #122
+- 変更:
+  - docs/MEP/STATE_CURRENT.md を v1.1 に更新（運用状態と使用条件を明文化）
+- 結果: merged
+
+---
+
+## 完走手順テンプレ（毎回これで回す）
+1) main を最新化
+2) 作業ブランチ作成（スコープは1つだけ）
+3) 変更（差分は最小）
+4) PR作成
+5) Required checks が全て OK を確認
+6) squash merge（ブランチ削除）
+7) main を再同期
+
+---
+
+## 注意（事故防止）
+- 「全部貼れ」「大量ファイル貼れ」は禁止。必要なら AI_BOOT の REQUEST 形式で最大3件まで。
+- 文書の整形だけのコミットを作らない。巨大ファイルの全文置換を避ける。
+- 入口整備のPRは docs/MEP/** と START_HERE.md と docs_index_guard のみに限定する。
 ```
 
 ---
