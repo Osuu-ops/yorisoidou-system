@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 239315
+- included_total_bytes: 241131
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -91,8 +91,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: a8b5a7c0b41af4a7f84b486dd8ed7b02e54895e1c74edb243ceedf52cf9eaa01
-- bytes: 11980
+- sha256: f9f191f6245718d3689699c2978ef6b559dff0ff99eb111dd2ad57932cfbffbf
+- bytes: 12210
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -101,6 +101,13 @@
 - 新チャット1通目に **このファイル全文** を貼る。
 - 先頭に「今回の目的（1行）」を追記しても良い。
 - AIは REQUEST 形式で最大3件まで、必要箇所だけ要求する。
+
+### HANDOFF_TRIGGER（引っ越し）
+
+- あなたが「引っ越し」または「引っ越ししたい」と言ったら、
+  AIは次の **1行だけ** を返す（説明なし）：
+
+yorisoidou-system/docs/MEP/CHAT_PACKET.md
 
 ---
 
@@ -2424,8 +2431,8 @@ ROLE: UI_MASTER (screen/components/field mappings)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: c2d636394d055256ca82a15219f00f3b233c9273954e9b38f182111fd74b6ff4
-- bytes: 6357
+- sha256: 628a4f73a949946cf56effef160f9ce0b717cc506a0280321e8e5639d80bc4ab
+- bytes: 7943
 
 ```text
 <!--
@@ -2626,6 +2633,34 @@ DOC系の業務定義（唯一の正）は master_spec を参照する：
 - ALERT_PHOTO_INSUFFICIENT がある場合は、写真セクション（before/after）への導線を表示してよい。
 - ADDRESS_VARIANCE / TIME_ANOMALY / TEXT_ANOMALY / PARTS_INCONSISTENCY がある場合は、
   “違和感素材” セクション（signals一覧）への導線を表示してよい。
+
+## REQUEST_LIST_FLOW（表示／導線のみ）
+
+本節は「未処理申請（RequestStatus=OPEN）」の一覧へ導く導線を定義する。
+業務上の意味・判定・状態遷移は master_spec が唯一の正であり、本 ui_spec は再定義しない。
+
+参照（唯一の正）：
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec
+  - 3.7 Request（申請台帳）
+  - 3.7.3 RequestStatus（OPEN/RESOLVED/CANCELLED）
+  - 3.7.4 ResolutionMetadata（ResolvedAt等）
+  - 8.4.1 管理警告ラベル（ALERT_REQUEST_PENDING_*）
+  - 9.4 健康スコア（D: RequestStatus=OPEN）
+
+表示・導線（固定）：
+1) 管理タスク（監督UI）
+- ALERT_REQUEST_PENDING_FIX / ALERT_REQUEST_PENDING_REVIEW が存在する場合、
+  「未処理申請（OPEN）」一覧へのリンク（またはボタン）を表示してよい。
+- 一覧は “RequestStatus=OPEN のみ” を表示対象とする（未処理の定義は master_spec に従属）。
+
+2) OV01（閲覧カルテ）
+- 健康スコア付近、または警告ラベル付近に「未処理申請（OPEN）」への導線を表示してよい。
+- クリックで “未処理申請一覧（OPEN）” へ遷移し、該当 Order_ID でフィルタしてよい（表示のみ）。
+
+UIの禁止事項（固定）：
+- UI は RequestStatus を確定しない（OPEN/RESOLVED/CANCELLED の判断は業務ロジック）。
+- UI は “勝手に解決扱い（RESOLVED/CANCELLED）” にしない。
+- 未確定（判定不能）の場合は、一覧導線を出して “監督判断” に寄せる。
 ```
 
 
