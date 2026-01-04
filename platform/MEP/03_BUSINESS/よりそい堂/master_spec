@@ -409,6 +409,63 @@ PayloadJSON（共通ルール）：
 - 未定義 Category の追加は禁止（追加は diff で本節を更新してのみ許可）
 - TargetID に別種IDを混在させない（Order_ID欄にPART_ID等を入れない）
 
+3.7.2 PayloadJSON schema（最小必須キー｜固定）
+
+目的：
+・Request.PayloadJSON の最小必須キーを Category ごとに固定し、
+  入力の欠落・解釈ブレ・実装依存の混乱を防ぐ。
+・「必須」は業務上の必須。UIは入力補助を行うが、正の確定は業務ロジックが行う。
+
+共通（全Category共通ルール）：
+- payloadVersion : "1.0"（必須：将来の互換のため固定）
+- category       : Category と一致（必須：二重確認）
+- targetType     : Order_ID / PART_ID / CU_ID / UP_ID / NONE（必須：TargetID型）
+- targetId       : 上記 targetType の型に一致（必須。ただし targetType=NONE の場合は空可）
+
+DOC（Category=DOC）：
+- docType        : ESTIMATE / INVOICE / RECEIPT（必須）
+- docName        : 宛名（必須）
+- docDesc        : 内容（必須）
+- priceStatus    : TBD / FINAL（必須）
+- docPrice       : priceStatus=FINAL の場合必須（TBD の場合は空可）
+- splitPolicy    : NONE / MANUAL（任意）
+- scopeCategory  : 分割時の区分（任意：EQUIPMENT / INTERIOR 等）
+- docMemo        : 補足（任意）
+
+FIX（Category=FIX）：
+- fixType        : 修正種別（必須：例：ORDER_CANCEL / PART_CANCEL / TYPE_CHANGE / VALUE_FIX / STOCK_DETACH 等）
+- requestSummary : 申請理由の短文（必須）
+- details        : 詳細（任意：自由文/構造化）
+- decisionRequired : true/false（必須：監督判断が必要なら true）
+- riskLevel      : LOW / MED / HIGH（任意：運用上の目安）
+
+UF07（Category=UF07）：
+- partId         : PART_ID（必須：targetType=PART_ID と一致させる）
+- price          : 数値（必須：確定入力のみ）
+- priceCurrency  : JPY（任意：省略時JPY）
+- memo           : 補足（任意）
+
+UF08（Category=UF08）：
+- orderId        : Order_ID（必須：targetType=Order_ID と一致させる）
+- note           : 追加説明（任意）
+- photos         : 参照リスト（任意：URL/IDの配列）
+- memo           : 補足（任意）
+
+NOTE_ADD（Category=NOTE_ADD）：
+- noteType       : EMAIL_ADD / WARNING_ADD / REMARK_ADD / CONTACT_ADD（必須）
+- value          : 追記内容（必須）
+- memo           : 補足（任意）
+
+REVIEW（Category=REVIEW）：
+- reviewType     : HEALTH_CHECK / INCONSISTENCY / MISSING_INFO / APPROVAL（必須）
+- requestSummary : 依頼の短文（必須）
+- memo           : 補足（任意）
+
+禁止事項（固定）：
+- payloadVersion を勝手に変えない（変更は diff で本節更新）
+- category/targetType/targetId の不整合を許容しない（不整合は申請不備として扱う）
+- 未定義キーの乱立は禁止（必要になった場合は本節へ追加し、正規化する）
+
 ──────────────────────────────────
 4. 住所体系（業務要件）
 ──────────────────────────────────
