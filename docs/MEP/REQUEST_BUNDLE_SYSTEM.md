@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 107170
+- included_total_bytes: 107282
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -967,11 +967,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 1967e4b4a65cfefb609e072c278966854a1d7752ec2d046320ebf7669a3f89fa
-- bytes: 465
+- sha256: 45fc47c02e5561a70887f9d6043e1046e3a2b60be4285cb1fadd8cdeaeb1e7fc
+- bytes: 555
 
 ```text
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## CURRENT_SCOPE (canonical)
 - platform/MEP/03_BUSINESS/よりそい堂/**
@@ -987,14 +987,15 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ## How to start a new conversation
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
+- (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: f22dd8828835f2323e503d7ad9d86bf5c0cea8058b3122188826a4fcc4f606b9
-- bytes: 2013
+- sha256: f6d36f6ae08ba80cfe250bcff60033504c93d05544b537f5feabea466d141d72
+- bytes: 2035
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1020,6 +1021,7 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
 - Current objective
