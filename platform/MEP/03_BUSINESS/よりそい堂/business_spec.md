@@ -852,6 +852,39 @@ UF系（入力）：
 - NG は Recovery Queue（OPEN）へ登録する（reason / detectedBy / details / idempotencyKey）。
 - 必要に応じて Request（REVIEW）を併設して監督回収に寄せる（Request linkage に従属）。
 
+### RuntimeSelfTest（テスト走行｜固定）
+
+#### 目的（固定）
+- Runtime監査（expected/unexpected）が実運用で機能することを、**本番データに触れず**に検証する。
+- 汚染（本番とテスト混在）を絶対に起こさない形で、UF/完了同期/回収の最短ループを通す。
+
+#### 実行タイミング（固定）
+- 次のいずれかに該当する変更を main へ入れる前に、必ず 1 回実行する：
+  - UF01/UF06/UF07/UF08/FIX/DOC/完了同期/更新（再同期）に関わる変更
+  - Idempotency / Recovery Queue / Request linkage / Runtime Audit Checklist に関わる変更
+  - 外部連携（Todoist/ClickUp/AI補助）の経路に関わる変更
+- 入口整備や文言のみ（意味変更なし）の変更では必須としない（任意）。
+
+#### テストデータ規約（固定）
+- テスト走行は **テストID（0番）**を用い、本番と混在させない。
+- テストデータは集計/閲覧/検索の対象外とする（本番汚染防止）。
+- 既存のテストID規約（master_spec）に従属する。
+
+#### テストシナリオ（最小｜固定）
+1) UF01_SUBMIT：テスト受注を 1 件登録（Order_ID 発行）
+2) UF06_ORDER：テスト部材を発注として登録（PART_ID/OD_ID、STATUS=ORDERED）
+3) UF06_DELIVER：納品確定（STATUS=DELIVERED、DELIVERED_AT 記録）
+4) UF07_PRICE：BPのPRICE確定（推測代入禁止）
+5) UF08_SUBMIT：追加報告を 1 件記録（Order_ID 接続）
+6) FIX_SUBMIT：修正申請を 1 件記録（危険修正は確定しない）
+7) DOC_SUBMIT：書類申請を 1 件記録
+8) WORK_DONE：完了同期を実行し、USED/EXP/在庫戻し（必要なら未使用部材コメント）まで通す
+
+#### 合格条件（固定）
+- Runtime Audit Checklist の expected effect がイベント別に満たされる。
+- unexpected effect が発生しない（特に：ID再発番、二重行増殖、本番混入）。
+- NG の場合は自動で辻褄合わせをせず、Recovery Queue（OPEN）へ登録される（回収導線が成立する）。
+
 ## DoD（Phase-2）
 
 ### 目的
