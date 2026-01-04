@@ -497,13 +497,13 @@ FIX（Category=FIX）：
 - riskLevel      : LOW / MED / HIGH（任意：運用上の目安）
 
 UF07（Category=UF07）：
-- partId         : PART_ID（必須：targetType=PART_ID と一致させる）
+- partId         : PART_ID（必須：targetType=PART_ID と一致、かつ targetId と同値）
 - price          : 数値（必須：確定入力のみ）
 - priceCurrency  : JPY（任意：省略時JPY）
 - memo           : 補足（任意）
 
 UF08（Category=UF08）：
-- orderId        : Order_ID（必須：targetType=Order_ID と一致させる）
+- orderId        : Order_ID（必須：targetType=Order_ID と一致、かつ targetId と同値）
 - note           : 追加説明（任意）
 - photos         : 参照リスト（任意：URL/IDの配列）
 - memo           : 補足（任意）
