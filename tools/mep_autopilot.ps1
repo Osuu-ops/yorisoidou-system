@@ -1,16 +1,15 @@
 # tools/mep_autopilot.ps1
-# Autopilot that survives gh stderr/nonzero by calling gh via cmd.exe (no NativeCommandError).
+# Autopilot: self-heal + sweep, robust against gh stderr success (PowerShell NativeCommandError).
+# Approach:
+# - Wrap native gh calls with local ErrorActionPreference=Continue, and capture 2>&1.
+# - Confirm merge/close by re-reading PR state.
+# - Deadlock stop when snapshot unchanged for N rounds.
 # Safe PR patterns: auto/*, auto/scope-suggest*, auto/chat-packet-update*, docs(MEP) update CHAT_PACKET, chore(scope) suggest, biz/*-normalize-*.
-# Actions:
-# - CLEAN+MERGEABLE + checks green => MERGE (pipe "y"), verify PR state changes.
-# - CONFLICTING/DIRTY => CLOSE, verify PR state changes.
-# - docs guard fail => self-heal by rebuilding CHAT_PACKET on PR head branch and pushing a fix commit.
-# Deadlock: stop early if snapshot unchanged for N rounds.
 
 param(
   [int]$MaxRounds = 40,
   [int]$SleepSeconds = 5,
-  [int]$StagnationRounds = 3
+  [int]$StagnationRounds = 2
 )
 
 $ErrorActionPreference="Stop"
@@ -24,14 +23,6 @@ $ghExe = (Get-Command gh -ErrorAction Stop).Source
 $repo  = (& $ghExe repo view --json nameWithOwner -q .nameWithOwner 2>$null | Out-String).Trim()
 if (-not $repo) { throw "gh repo view failed. Run: gh auth status" }
 
-function Invoke-GhCmd([string]$cmdLine) {
-  # cmd /c ""<ghExe>" <cmdLine> 2>&1"
-  $wrapped = '""' + $ghExe + '" ' + $cmdLine + ' 2>&1"'
-  $out = cmd /c $wrapped
-  $txt = ($out | Out-String).Trim()
-  return [pscustomobject]@{ exit=$LASTEXITCODE; text=$txt }
-}
-
 function GetOpenPrs() {
   $j = (& $ghExe pr list --repo $repo --state open --base main --limit 200 --json number,title,headRefName,createdAt,url 2>$null | Out-String).Trim()
   if (-not $j) { return @() }
@@ -40,8 +31,21 @@ function GetOpenPrs() {
 function GetPrInfo([int]$n) {
   return (& $ghExe pr view $n --repo $repo --json number,state,mergeable,mergeStateStatus,url,title,headRefName,baseRefName,mergedAt 2>$null | ConvertFrom-Json)
 }
+
+function Invoke-GhText([string[]]$args) {
+  $old = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $t = (& $ghExe @args 2>&1 | Out-String).Trim()
+    $code = $LASTEXITCODE
+    return [pscustomobject]@{ exit=$code; text=$t }
+  } finally {
+    $ErrorActionPreference = $old
+  }
+}
+
 function TryChecksText([int]$n) {
-  $r = Invoke-GhCmd ("pr checks " + $n + " --repo " + $repo)
+  $r = Invoke-GhText @("pr","checks",$n,"--repo",$repo)
   if ($r.text -match "no checks reported") { return $r.text }
   return $r.text
 }
@@ -65,10 +69,10 @@ function IsSafe($pr) {
 }
 
 function ClosePr([int]$n) {
-  $r = Invoke-GhCmd ("pr close " + $n + " --repo " + $repo)
+  $r = Invoke-GhText @("pr","close",$n,"--repo",$repo)
   $ok = ($r.exit -eq 0) -or ($r.text -match "(?i)closed") -or ($r.text -match "(?i)already closed")
   if (-not $ok) { throw ("close_failed: " + $r.text) }
-  for ($i=1; $i -le 20; $i++) {
+  for ($i=1; $i -le 30; $i++) {
     $p = GetPrInfo $n
     if ($p.state -ne "OPEN") { return }
     Start-Sleep -Seconds 1
@@ -76,14 +80,24 @@ function ClosePr([int]$n) {
 }
 
 function MergePr([int]$n) {
-  $r = Invoke-GhCmd ("pr merge " + $n + " --repo " + $repo + " --squash --delete-branch")
-  $ok = ($r.exit -eq 0) -or ($r.text -match "(?i)merged") -or ($r.text -match "(?i)squash")
-  if (-not $ok) {
-    $r2 = Invoke-GhCmd ("pr merge " + $n + " --repo " + $repo + " --squash --delete-branch --admin")
-    $ok2 = ($r2.exit -eq 0) -or ($r2.text -match "(?i)merged") -or ($r2.text -match "(?i)squash")
-    if (-not $ok2) { throw ("merge_failed: " + $r2.text) }
+  # pipe y to satisfy confirmation
+  $old = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $out = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch 2>&1 | Out-String
+    $code = $LASTEXITCODE
+    $ok = ($code -eq 0) -or ($out -match "(?i)merged") -or ($out -match "(?i)squash")
+    if (-not $ok) {
+      $out2 = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch --admin 2>&1 | Out-String
+      $code2 = $LASTEXITCODE
+      $ok2 = ($code2 -eq 0) -or ($out2 -match "(?i)merged") -or ($out2 -match "(?i)squash")
+      if (-not $ok2) { throw ("merge_failed: " + $out2.Trim()) }
+    }
+  } finally {
+    $ErrorActionPreference = $old
   }
-  for ($i=1; $i -le 60; $i++) {
+
+  for ($i=1; $i -le 90; $i++) {
     $p = GetPrInfo $n
     if ($p.state -eq "MERGED") { return }
     if ($p.state -ne "OPEN") { return }
