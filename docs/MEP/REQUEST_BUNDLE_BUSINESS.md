@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 246535
+- included_total_bytes: 247073
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2548,8 +2548,8 @@ UI責務（固定）：
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: c1cae13adfc7f8940e8c4cfe112c2892d64466cd79c7645e17a64e6c917c1cd4
-- bytes: 8074
+- sha256: 51979abeecf2e6388108ab6b63cd296ba9fd5ca4a5575785e3a556ad044d715f
+- bytes: 8612
 
 ```text
 <!--
@@ -2618,6 +2618,20 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 次にユーザーが取るべき行動を示す
 
 4. 入力項目の意味配置
+
+## Request入力の整合チェック（UI制約｜意味変更なし）
+
+本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
+
+- targetType / targetId は必須（master_spec 3.7.2）
+- UF07（価格申請）の場合：
+  - targetType = PART_ID
+  - partId は必須
+  - **partId と targetId は同値**（矛盾は送信不可）
+- UF08（追加報告）の場合：
+  - targetType = Order_ID
+  - orderId は必須
+  - **orderId と targetId は同値**（矛盾は送信不可）
 4.1 入力項目の原則
 
 ユーザーが 意味を理解できない専門語を使わない
