@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 107282
+- included_total_bytes: 107374
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 3488c0a3fd92cbf11a4b84c2ddb781183e22fb1fd2af56455086bd8ee520971d
-- bytes: 11888
+- sha256: a8b5a7c0b41af4a7f84b486dd8ed7b02e54895e1c74edb243ceedf52cf9eaa01
+- bytes: 11980
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -323,7 +323,7 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## CURRENT_SCOPE (canonical)
 - platform/MEP/03_BUSINESS/よりそい堂/**
@@ -339,6 +339,7 @@ AIは本書に従ってのみ情報要求を行う。
 ## How to start a new conversation
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
+- (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
 ```
 
 ---
