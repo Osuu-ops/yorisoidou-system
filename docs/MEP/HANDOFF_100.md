@@ -1439,11 +1439,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:bc94f3db7827df38c3318efbe614dd353498d14dd7ead751282956b9a406b339
+### ARCHIVE_ENTRY sha256:fd7ad09238421a6968428bfbd7c797e37c679f874f64c91a325a4f871951f878
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:3d796c4c7722
+> HANDOFF_ID: HOF:7e7b8269dece
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -1542,6 +1542,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## STATE_CURRENT の主要見出し
+> - STATE_CURRENT (MEP)
 > - Doc status registry（重複防止）
 > - CURRENT_SCOPE (canonical)
 > - Guards / Safety
