@@ -313,4 +313,23 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 
 ### 補足（規約の再確認）
 - BM は PRICE=0（経費対象外）であり、経費として記録しない。
+## DoD（Phase-1）
+
+### 目的
+- Phase-1 が「運用として成立し、次フェーズへ進める」状態を、確認可能な条件で固定する。
+
+### 完了条件（確認可能）
+- WORK（施工）の完了同期を起点として、次が仕様どおりに確定されること：
+  - Order（受注）：完了日時・状態・最終同期日時が更新される。
+  - PARTS（部材）：DELIVERED → USED 化、および未使用部材の STOCK 戻し（LOCATION 整合必須）が行われる。
+  - EXPENSE（経費）：USED（使用確定）になった BP の PRICE を根拠に確定経費が記録される。
+- WARNINGS & BLOCKERS（Phase-1）の分類が適用されること：
+  - BLOCKER は完了同期を停止する。
+  - WARNING は同期は進め、管理で回収する。
+- EXCEPTIONS（Phase-1）の例外規約が適用されること：
+  - Order_ID 無しの発注（在庫発注）は STATUS=STOCK_ORDERED として扱える。
+  - Order_ID 無しの経費は Phase-1 では禁止（混在させない）。
+- 不変条件が破られないこと（破綻防止）：
+  - PRICE の推測代入は禁止（確定値のみ）。
+  - ID（EXP_ID 等）の再発番／再利用は禁止。
 
