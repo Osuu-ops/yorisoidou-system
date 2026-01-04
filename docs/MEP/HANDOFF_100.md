@@ -177,11 +177,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 <!-- HANDOFF_CURRENT_END -->
 
 <!-- HANDOFF_ARCHIVE_BEGIN -->
-### ARCHIVE_ENTRY sha256:6f4e0b1a2167003c5ac82b947c5ac4e6ccd542f0c81ae19166bec8dae73976f1
+### ARCHIVE_ENTRY sha256:7b2e9e22971f0eaaa4ca0e99fca6605f3a970e681e24de8c4ca901fa141f605f
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:3cc34a2a1206
+> HANDOFF_ID: HOF:010f6a97f617
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -240,7 +240,8 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 > 
 > ■ アイデア一覧（番号で統合）
-> 1. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
+> 1. & {  [IDEA:e61113b095cb]
+> 2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 > 
 > ■ 統合の指示例
 > - 新チャットで：『アイデア統合 1 3』→ PowerShellで： .\tools\mep_idea_pick.ps1 1 3 → 貼り付け → 『統合して進めて』
@@ -1239,11 +1240,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:db552a8f37e1be9de80705d6830c77463d3634a8b9f6c4140682771abf237d02
+### ARCHIVE_ENTRY sha256:6f4e0b1a2167003c5ac82b947c5ac4e6ccd542f0c81ae19166bec8dae73976f1
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:a21a3e282052
+> HANDOFF_ID: HOF:3cc34a2a1206
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -1342,6 +1343,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## STATE_CURRENT の主要見出し
+> - STATE_CURRENT (MEP)
 > - CURRENT_SCOPE (canonical)
 > - Guards / Safety
 > - Current objective
