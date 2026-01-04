@@ -1,9 +1,9 @@
 # tools/mep_autopilot.ps1
-# ASCII-only autopilot: avoids Unicode that can break parsing on some Windows setups.
-# Safe PR set: auto/* + scope-suggest/chat-packet-update + docs(MEP) CHAT_PACKET + chore(scope) suggest + biz/*-normalize-*.
+# Autopilot that survives gh stderr/nonzero by calling gh via cmd.exe (no NativeCommandError).
+# Safe PR patterns: auto/*, auto/scope-suggest*, auto/chat-packet-update*, docs(MEP) update CHAT_PACKET, chore(scope) suggest, biz/*-normalize-*.
 # Actions:
-# - CLEAN+MERGEABLE + checks green => MERGE (pipe "y"), verify state change.
-# - CONFLICTING/DIRTY => CLOSE, verify state change.
+# - CLEAN+MERGEABLE + checks green => MERGE (pipe "y"), verify PR state changes.
+# - CONFLICTING/DIRTY => CLOSE, verify PR state changes.
 # - docs guard fail => self-heal by rebuilding CHAT_PACKET on PR head branch and pushing a fix commit.
 # Deadlock: stop early if snapshot unchanged for N rounds.
 
@@ -24,6 +24,14 @@ $ghExe = (Get-Command gh -ErrorAction Stop).Source
 $repo  = (& $ghExe repo view --json nameWithOwner -q .nameWithOwner 2>$null | Out-String).Trim()
 if (-not $repo) { throw "gh repo view failed. Run: gh auth status" }
 
+function Invoke-GhCmd([string]$cmdLine) {
+  # cmd /c ""<ghExe>" <cmdLine> 2>&1"
+  $wrapped = '""' + $ghExe + '" ' + $cmdLine + ' 2>&1"'
+  $out = cmd /c $wrapped
+  $txt = ($out | Out-String).Trim()
+  return [pscustomobject]@{ exit=$LASTEXITCODE; text=$txt }
+}
+
 function GetOpenPrs() {
   $j = (& $ghExe pr list --repo $repo --state open --base main --limit 200 --json number,title,headRefName,createdAt,url 2>$null | Out-String).Trim()
   if (-not $j) { return @() }
@@ -33,12 +41,9 @@ function GetPrInfo([int]$n) {
   return (& $ghExe pr view $n --repo $repo --json number,state,mergeable,mergeStateStatus,url,title,headRefName,baseRefName,mergedAt 2>$null | ConvertFrom-Json)
 }
 function TryChecksText([int]$n) {
-  try { return (& $ghExe pr checks $n --repo $repo 2>&1 | Out-String).Trim() }
-  catch {
-    $t = ($_ | Out-String).Trim()
-    if ($t -match "no checks reported") { return $t }
-    throw
-  }
+  $r = Invoke-GhCmd ("pr checks " + $n + " --repo " + $repo)
+  if ($r.text -match "no checks reported") { return $r.text }
+  return $r.text
 }
 function ChecksGreen([string]$t) {
   if (-not $t) { return $false }
@@ -60,11 +65,9 @@ function IsSafe($pr) {
 }
 
 function ClosePr([int]$n) {
-  $out = (& $ghExe pr close $n --repo $repo 2>&1 | Out-String).Trim()
-  $code = $LASTEXITCODE
-  if ($code -ne 0 -and $out -notmatch "(?i)closed" -and $out -notmatch "(?i)already closed") {
-    throw ("close_failed: " + $out)
-  }
+  $r = Invoke-GhCmd ("pr close " + $n + " --repo " + $repo)
+  $ok = ($r.exit -eq 0) -or ($r.text -match "(?i)closed") -or ($r.text -match "(?i)already closed")
+  if (-not $ok) { throw ("close_failed: " + $r.text) }
   for ($i=1; $i -le 20; $i++) {
     $p = GetPrInfo $n
     if ($p.state -ne "OPEN") { return }
@@ -73,14 +76,12 @@ function ClosePr([int]$n) {
 }
 
 function MergePr([int]$n) {
-  $out = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch 2>&1 | Out-String
-  $code = $LASTEXITCODE
-  $okByText = ($out -match "(?i)merged" -or $out -match "(?i)squash" -or $out -match "(?i)merged pull request")
-  if ($code -ne 0 -and (-not $okByText)) {
-    $out2 = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch --admin 2>&1 | Out-String
-    $code2 = $LASTEXITCODE
-    $okByText2 = ($out2 -match "(?i)merged" -or $out2 -match "(?i)squash" -or $out2 -match "(?i)merged pull request")
-    if ($code2 -ne 0 -and (-not $okByText2)) { throw ("merge_failed: " + $out2.Trim()) }
+  $r = Invoke-GhCmd ("pr merge " + $n + " --repo " + $repo + " --squash --delete-branch")
+  $ok = ($r.exit -eq 0) -or ($r.text -match "(?i)merged") -or ($r.text -match "(?i)squash")
+  if (-not $ok) {
+    $r2 = Invoke-GhCmd ("pr merge " + $n + " --repo " + $repo + " --squash --delete-branch --admin")
+    $ok2 = ($r2.exit -eq 0) -or ($r2.text -match "(?i)merged") -or ($r2.text -match "(?i)squash")
+    if (-not $ok2) { throw ("merge_failed: " + $r2.text) }
   }
   for ($i=1; $i -le 60; $i++) {
     $p = GetPrInfo $n
