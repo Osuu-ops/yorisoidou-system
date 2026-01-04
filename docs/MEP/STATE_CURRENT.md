@@ -5,7 +5,7 @@
 - STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
 
 ## CURRENT_SCOPE (canonical)
-- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・**
+- platform/MEP/03_BUSINESS/よりそい堂/**
 
 ## Guards / Safety
 - Text Integrity Guard (PR): enabled
