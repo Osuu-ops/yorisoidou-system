@@ -278,8 +278,23 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE 推測代入。
 - EXP_ID 再発番/再利用。
 - Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）。
+## WARNINGS & BLOCKERS（Phase-1）
 
+### 目的
+- Phase-1 の運用で「完了同期を止めるべき不備（BLOCKER）」と、「同期は進めて管理で回収する不備（WARNING）」を固定する。
+- 判定は人/AI/UI の恣意で変えず、本章の分類に従う。
 
+### BLOCKER（完了同期を停止）
+- LOCATION 不整合（在庫戻し対象の部材で LOCATION が欠落/不一致）。
+- BP の PRICE 未確定（経費確定の根拠となる PRICE を確定できない）。
 
+### WARNING（同期は進めるが管理回収）
+- 写真不足（photosBefore / photosAfter / photosParts / photosExtra の不足）。
+- 価格未入力（ただし「経費確定が必要な BP の PRICE 未確定」は BLOCKER）。
+- 完了コメント抽出不備（未使用部材の抽出ができない/形式不備）。※在庫戻し対象がある場合は BLOCKER 扱いに昇格し得る。
 
+### 参照（出典）
+- WORK: 「不備（価格未入力 / 写真不足 / LOCATION 不整合 等）は管理警告対象」
+- PARTS: PRICE/LOCATION の不変条件、未使用 STOCK 戻しの LOCATION 整合
+- EXPENSE: PRICE は確定値のみ（推測代入禁止）
 
