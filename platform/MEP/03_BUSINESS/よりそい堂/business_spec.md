@@ -172,63 +172,63 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 受注（Order_ID）と部材（PART_ID/OD_ID/AA/PA/MA）を正しく接続し、完了同期で経費確定へ繋ぐ。
 
 ### 入力入口（不変）
-- UF06（発注/納品）が工程の主入口（master_spec 7章）
-- UF07（価格入力）は BP の価格未確定を補完する入口（master_spec 7.3）
-- 価格/区分/状態の“確定”は業務ルールに従い、人/AI/UI が任意に決めない
+- UF06（発注/納品）が工程の主入口（master_spec 7章）。
+- UF07（価格入力）は BP の価格未確定を補完する入口（master_spec 7.3）。
+- 価格/区分/状態の“確定”は業務ルールに従い、人/AI/UI が任意に決めない。
 
 ### 部材区分（BP/BM）
-- BP（メーカー手配品）
-  - 納品時に PRICE を確定する（未確定は警告）
-- BM（既製品/支給品等）
-  - PRICE=0（経費対象外）
-- BP/BM の区分変更は危険修正（申請/FIX）に分類し、直接確定しない
+- BP（メーカー手配品）。
+  - 納品時に PRICE を確定する（未確定は警告）。
+- BM（既製品/支給品等）。
+  - PRICE=0（経費対象外）。
+- BP/BM の区分変更は危険修正（申請/FIX）に分類し、直接確定しない。
 
 ### 主要IDと接続（要点）
-- PART_ID：部材の貫通ID（BP/BM体系）
-- AA：部材群の永続番号（タスク名へ反映）
-- PA/MA：枝番（BP=PA, BM=MA）
-- OD_ID：同一受注内の発注行補助ID
-- 接続の中心は Order_ID（受注）
-  - Order_ID の無い発注は STOCK_ORDERED として扱う（在庫発注）
+- PART_ID：部材の貫通ID（BP/BM体系）。
+- AA：部材群の永続番号（タスク名へ反映）。
+- PA/MA：枝番（BP=PA, BM=MA）。
+- OD_ID：同一受注内の発注行補助ID。
+- 接続の中心は Order_ID（受注）。
+  - Order_ID の無い発注は STOCK_ORDERED として扱う（在庫発注）。
 
 ### STATUS（部材状態：固定）
-- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
-- 変更は工程イベントにより行う（発注/納品/完了同期）
-- 人/AI/UI が任意に書き換えない
+- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED。
+- 変更は工程イベントにより行う（発注/納品/完了同期）。
+- 人/AI/UI が任意に書き換えない。
 
 ### LOCATION（在庫ロケーション）
-- STATUS=STOCK の部材は LOCATION を必須とする（欠落は管理警告）
-- 未使用部材の STOCK 戻しでも LOCATION 整合が必須
+- STATUS=STOCK の部材は LOCATION を必須とする（欠落は管理警告）。
+- 未使用部材の STOCK 戻しでも LOCATION 整合が必須。
 
 ### 発注（UF06: ORDER）業務（概要）
-- 採用行のみを発注として確定する
-- 確定結果：
-  - PART_ID/OD_ID 発行
-  - STATUS=ORDERED（Order_ID 無しの場合は STOCK_ORDERED）
-  - BP は PRICE 未定、BM は PRICE=0
+- 採用行のみを発注として確定する。
+- 確定結果：。
+  - PART_ID/OD_ID 発行。
+  - STATUS=ORDERED（Order_ID 無しの場合は STOCK_ORDERED）。
+  - BP は PRICE 未定、BM は PRICE=0。
 
 ### 納品（UF06: DELIVER）業務（概要）
-- 確定結果：
-  - STATUS=DELIVERED
-  - DELIVERED_AT 記録
-  - BP は PRICE 入力必須（納品時確定）
-  - LOCATION 記録（在庫・管理に必要）
-  - AA群を抽出し、現場タスク名へ反映する
+- 確定結果：。
+  - STATUS=DELIVERED。
+  - DELIVERED_AT 記録。
+  - BP は PRICE 入力必須（納品時確定）。
+  - LOCATION 記録（在庫・管理に必要）。
+  - AA群を抽出し、現場タスク名へ反映する。
 
 ### 価格入力（UF07）業務（概要）
-- BP の PRICE 未入力を補完し、業務として価格を確定する
-- 部材STATUSは原則変更しない（価格確定のみ）
-- 価格未確定は管理警告の対象
+- BP の PRICE 未入力を補完し、業務として価格を確定する。
+- 部材STATUSは原則変更しない（価格確定のみ）。
+- 価格未確定は管理警告の対象。
 
 ### 完了同期との関係（要点）
-- 現場完了により、DELIVERED 部材が USED 化され、EX/Expense が確定される
-- 未使用部材は STOCK 戻し（LOCATION 整合必須）
+- 現場完了により、DELIVERED 部材が USED 化され、EX/Expense が確定される。
+- 未使用部材は STOCK 戻し（LOCATION 整合必須）。
 
 ### 禁止事項
-- ID の再利用/改変、AA 再発番
-- PRICE の推測代入
-- STATUS の任意変更
-- LOCATION 欠落の放置（警告として扱い、管理で回収）
+- ID の再利用/改変、AA 再発番。
+- PRICE の推測代入。
+- STATUS の任意変更。
+- LOCATION 欠落の放置（警告として扱い、管理で回収）。
 
 <!-- EXPENSE_SPEC_PHASE1 -->
 
@@ -274,5 +274,6 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE 推測代入
 - EXP_ID 再発番/再利用
 - Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）
+
 
 
