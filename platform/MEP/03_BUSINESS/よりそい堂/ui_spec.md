@@ -64,6 +64,20 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 次にユーザーが取るべき行動を示す
 
 4. 入力項目の意味配置
+
+## Request入力の整合チェック（UI制約｜意味変更なし）
+
+本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
+
+- targetType / targetId は必須（master_spec 3.7.2）
+- UF07（価格申請）の場合：
+  - targetType = PART_ID
+  - partId は必須
+  - **partId と targetId は同値**（矛盾は送信不可）
+- UF08（追加報告）の場合：
+  - targetType = Order_ID
+  - orderId は必須
+  - **orderId と targetId は同値**（矛盾は送信不可）
 4.1 入力項目の原則
 
 ユーザーが 意味を理解できない専門語を使わない
