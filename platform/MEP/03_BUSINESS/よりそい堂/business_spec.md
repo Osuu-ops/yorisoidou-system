@@ -332,4 +332,67 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 不変条件が破られないこと（破綻防止）：
   - PRICE の推測代入は禁止（確定値のみ）。
   - ID（EXP_ID 等）の再発番／再利用は禁止。
+## UI/Form Capture Spec（Phase-2）
+
+### 目的
+- Phase-1 で固定した WORK / PARTS / EXPENSE / WARNINGS & BLOCKERS / EXCEPTIONS を、入力（フォーム/画面）として「何を・いつ・必須で」取得するかを固定する。
+- 本章は入力仕様のみを扱い、業務ロジックの意味は Phase-1 各章に委譲する。
+
+### 入力タイミング（固定）
+- UF06（発注/納品）: PARTS の工程イベント入力。
+- UF07（価格入力）: BP の PRICE 確定入力（原則 STATUS は変えない）。
+- 現場完了（完了コメント）: WORK の完了同期起点（台帳確定・在庫戻し・経費確定）。
+
+### 画面/フォーム別の最小入力項目
+
+#### 1) 現場完了（WORK 完了報告）
+- 必須:
+  - `workDoneAt`（datetime）
+  - `workDoneComment`（text; 未使用部材抽出対象）
+- 任意（不足は WARNING）:
+  - `photosBefore`（images[]）
+  - `photosAfter`（images[]）
+  - `photosParts`（images[]）
+  - `photosExtra`（images[]）
+  - `videoInspection`（video）
+  - `workSummary`（text; 判断を置換しない）
+- 入力後の検証（Phase-1 参照）:
+  - 未使用部材の抽出に失敗 / 形式不備 → WARNING（在庫戻し対象がある場合は BLOCKER に昇格し得る）
+  - LOCATION 不整合（在庫戻し対象） → BLOCKER
+  - BP の PRICE 未確定（経費確定不可） → BLOCKER
+
+#### 2) UF06（発注確定）
+- 必須:
+  - 対象行の採用（発注確定の意思）
+- 自動/派生（入力しないが確認対象）:
+  - PART_ID / OD_ID の発行
+  - STATUS=ORDERED（Order_ID 無しの場合は STOCK_ORDERED）
+  - BP は PRICE 未定、BM は PRICE=0
+- 例外（Phase-1 EXCEPTIONS 参照）:
+  - Order_ID 無し発注（在庫発注）: 許可（STOCK_ORDERED）
+
+#### 3) UF06（納品確定）
+- 必須:
+  - 納品確定（DELIVER）
+  - `DELIVERED_AT`（datetime）
+  - （BPの場合）PRICE の確定入力（UF07 を使う運用でも可。ただし最終的に未確定は BLOCKER）
+- 任意/運用:
+  - LOCATION（在庫・管理に必要。STATUS=STOCK の場合は必須）
+- 入力後の検証（Phase-1 参照）:
+  - BP の PRICE 未確定 → BLOCKER（経費確定不可）
+  - LOCATION 欠落（STOCK対象） → WARNING（在庫戻し対象では BLOCKER）
+
+#### 4) UF07（価格入力）
+- 対象:
+  - BP の PRICE 未入力を補完する
+- 必須:
+  - `PRICE`（number; 推測代入禁止）
+- 制約:
+  - 原則 STATUS は変更しない（価格確定のみ）
+
+#### 5) 経費の手動追加（将来UI/運用）
+- Phase-1 方針:
+  - Order_ID 無し経費は禁止（混在させない）
+- 必須（許可する場合の最小セット）:
+  - Order_ID / 金額（PRICE）/ 日付（USED_DATE）/ 対象（摘要）
 
