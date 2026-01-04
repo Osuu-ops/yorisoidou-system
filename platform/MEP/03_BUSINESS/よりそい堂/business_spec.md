@@ -395,4 +395,64 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - Order_ID 無し経費は禁止（混在させない）
 - 必須（許可する場合の最小セット）:
   - Order_ID / 金額（PRICE）/ 日付（USED_DATE）/ 対象（摘要）
+## UI/Form Split & Validation（Phase-2）
+
+### 目的
+- UI/Form Capture Spec（Phase-2）で定義した入力を、実運用のフォーム/画面単位に分割して固定する。
+- 送信時のバリデーション結果を WARNINGS & BLOCKERS（Phase-1）にマッピングし、処理の分岐（同期停止/管理回収）を固定する。
+
+### 基本方針（固定）
+- 送信は原則受け付ける（現場で入力を止めない）。
+- ただし、BLOCKER に該当する場合は「完了同期を停止」し、管理回収（要対応）に回す。
+- WARNING は同期は進め、管理回収（要確認）に回す。
+
+### フォーム/画面の分割（固定）
+1) 現場完了フォーム（WORK 完了報告）
+2) UF06-ORDER（発注確定）
+3) UF06-DELIVER（納品確定）
+4) UF07-PRICE（価格入力）
+5) EXPENSE-ADD（経費の手動追加：将来UI/運用）
+
+### バリデーション（フォーム別）
+
+#### 1) 現場完了フォーム（WORK 完了報告）
+- 必須未入力 → BLOCKER
+  - `workDoneAt` 未入力
+  - `workDoneComment` 未入力
+- BLOCKER（同期停止）
+  - LOCATION 不整合（在庫戻し対象の部材で LOCATION が欠落/不一致）
+  - BP の PRICE 未確定（経費確定が必要な BP の PRICE を確定できない）
+- WARNING（同期継続＋管理回収）
+  - 写真不足（photosBefore / photosAfter / photosParts / photosExtra の不足）
+  - 完了コメント抽出不備（未使用部材抽出ができない/形式不備）
+    - 注：在庫戻し対象がある場合は BLOCKER に昇格し得る
+
+#### 2) UF06-ORDER（発注確定）
+- BLOCKER（送信拒否ではなく、確定処理を停止）
+  - 対象行の採用が無い（発注確定意思が不明）
+- EXCEPTIONS（Phase-1 参照）
+  - Order_ID 無し発注は許可（在庫発注: STATUS=STOCK_ORDERED）
+
+#### 3) UF06-DELIVER（納品確定）
+- 必須未入力 → BLOCKER
+  - `DELIVERED_AT` 未入力
+- BLOCKER
+  - （BP）PRICE が最終的に未確定（経費確定不可）
+- WARNING
+  - LOCATION 欠落（STATUS=STOCK 対象で LOCATION が未入力）
+    - 注：在庫戻し対象（未使用戻し）が発生する場合は BLOCKER に昇格し得る
+
+#### 4) UF07-PRICE（価格入力）
+- 必須未入力 → BLOCKER
+  - `PRICE` 未入力
+- BLOCKER
+  - PRICE が推測代入（根拠無し）※運用上禁止
+- 制約
+  - STATUS は原則変更しない（価格確定のみ）
+
+#### 5) EXPENSE-ADD（経費の手動追加：将来UI/運用）
+- Phase-1 方針（固定）
+  - Order_ID 無し経費は禁止（混在させない）→ BLOCKER
+- 必須未入力 → BLOCKER
+  - Order_ID / PRICE / USED_DATE / 対象（摘要）
 
