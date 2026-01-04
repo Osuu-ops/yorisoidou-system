@@ -196,3 +196,31 @@ DOC系の業務定義（唯一の正）は master_spec を参照する：
 - ALERT_PHOTO_INSUFFICIENT がある場合は、写真セクション（before/after）への導線を表示してよい。
 - ADDRESS_VARIANCE / TIME_ANOMALY / TEXT_ANOMALY / PARTS_INCONSISTENCY がある場合は、
   “違和感素材” セクション（signals一覧）への導線を表示してよい。
+
+## REQUEST_LIST_FLOW（表示／導線のみ）
+
+本節は「未処理申請（RequestStatus=OPEN）」の一覧へ導く導線を定義する。
+業務上の意味・判定・状態遷移は master_spec が唯一の正であり、本 ui_spec は再定義しない。
+
+参照（唯一の正）：
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec
+  - 3.7 Request（申請台帳）
+  - 3.7.3 RequestStatus（OPEN/RESOLVED/CANCELLED）
+  - 3.7.4 ResolutionMetadata（ResolvedAt等）
+  - 8.4.1 管理警告ラベル（ALERT_REQUEST_PENDING_*）
+  - 9.4 健康スコア（D: RequestStatus=OPEN）
+
+表示・導線（固定）：
+1) 管理タスク（監督UI）
+- ALERT_REQUEST_PENDING_FIX / ALERT_REQUEST_PENDING_REVIEW が存在する場合、
+  「未処理申請（OPEN）」一覧へのリンク（またはボタン）を表示してよい。
+- 一覧は “RequestStatus=OPEN のみ” を表示対象とする（未処理の定義は master_spec に従属）。
+
+2) OV01（閲覧カルテ）
+- 健康スコア付近、または警告ラベル付近に「未処理申請（OPEN）」への導線を表示してよい。
+- クリックで “未処理申請一覧（OPEN）” へ遷移し、該当 Order_ID でフィルタしてよい（表示のみ）。
+
+UIの禁止事項（固定）：
+- UI は RequestStatus を確定しない（OPEN/RESOLVED/CANCELLED の判断は業務ロジック）。
+- UI は “勝手に解決扱い（RESOLVED/CANCELLED）” にしない。
+- 未確定（判定不能）の場合は、一覧導線を出して “監督判断” に寄せる。
