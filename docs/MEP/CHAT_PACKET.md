@@ -323,6 +323,10 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 git checkout main
 git pull --ff-only
 scope-guard enforcement test 20260103-002424
+
+## PowerShell 実行環境（必須）
+- MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
+- 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
 ```
 
 ---
