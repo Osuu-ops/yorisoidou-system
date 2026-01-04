@@ -1,4 +1,4 @@
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -8,6 +8,7 @@
 - platform/MEP/03_BUSINESS/よりそい堂/**
 
 ## Guards / Safety
+- Required checks は「PRで必ず表示されるチェック名」のみに限定する（schedule/dispatch専用チェック名を入れると永久BLOCKEDになり得る）。
 - Text Integrity Guard (PR): enabled
 - Halfwidth Kana Guard: enabled
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
