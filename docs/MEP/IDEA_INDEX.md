@@ -5,6 +5,4 @@
 生成: docs/MEP/build_idea_index.py
 
 ---
-
 1. One-paste capture wrapper idea; implemented as scripts + merged PR  [IDEA:e61113b095cb]
-
