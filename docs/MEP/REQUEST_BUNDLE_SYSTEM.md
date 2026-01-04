@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 107374
+- included_total_bytes: 107604
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: a8b5a7c0b41af4a7f84b486dd8ed7b02e54895e1c74edb243ceedf52cf9eaa01
-- bytes: 11980
+- sha256: f9f191f6245718d3689699c2978ef6b559dff0ff99eb111dd2ad57932cfbffbf
+- bytes: 12210
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -112,6 +112,13 @@
 - 新チャット1通目に **このファイル全文** を貼る。
 - 先頭に「今回の目的（1行）」を追記しても良い。
 - AIは REQUEST 形式で最大3件まで、必要箇所だけ要求する。
+
+### HANDOFF_TRIGGER（引っ越し）
+
+- あなたが「引っ越し」または「引っ越ししたい」と言ったら、
+  AIは次の **1行だけ** を返す（説明なし）：
+
+yorisoidou-system/docs/MEP/CHAT_PACKET.md
 
 ---
 
