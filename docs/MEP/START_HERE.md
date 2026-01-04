@@ -1,4 +1,4 @@
-﻿# START_HERE (MEP Bootstrap)
+# START_HERE (MEP Bootstrap)
 
 This repository is the single source of truth. Do NOT rely on chat memory.
 You MUST reconstruct context from files in this order.
@@ -12,9 +12,15 @@ You MUST reconstruct context from files in this order.
 ## 1. Read order (always)
 1) docs/MEP/STATE_CURRENT.md
 2) platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-3) platform/MEP/03_BUSINESS/よりそい堂/master_spec
-4) platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-5) docs/MEP/RUNBOOK.md (only if operational procedure is needed)
+3) platform/MEP/03_BUSINESS/よりそい堂/master_spec   (canonical; no extension)
+4) platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md     (UI-only; no business meaning)
+5) docs/MEP/CHAT_STYLE_CONTRACT.md                    (one-paste rules)
+6) docs/MEP/RUNBOOK.md                                (only if operational recovery is needed)
+
+補足（重要）：
+- master_spec の「唯一の正」は拡張子なしの実体ファイル。
+- ui_spec は表示/導線のみ。業務の意味（必須条件/状態/確定）は master_spec が唯一の正。
+- Request（申請台帳）の契約は master_spec 3.7.1（Category）/ 3.7.2（Payload schema）を参照。
 
 ## 2. First response rules (when a new chat starts)
 - State the detected CURRENT_SCOPE and target master_spec path.
