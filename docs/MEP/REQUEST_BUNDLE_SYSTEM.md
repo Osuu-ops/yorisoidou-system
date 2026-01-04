@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108511
+- included_total_bytes: 108710
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -983,11 +983,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 1e885f3a3b06293b0c6c832b9f27ab62cfe74920f2a0e210dd43840834662c98
-- bytes: 755
+- sha256: 88b5d1cf39264a1459fdfd9ec2610b61d17071341fbdc4e498e8a3c112c0ca9f
+- bytes: 932
 
 ```text
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -997,6 +997,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - platform/MEP/03_BUSINESS/よりそい堂/**
 
 ## Guards / Safety
+- Required checks は「PRで必ず表示されるチェック名」のみに限定する（schedule/dispatch専用チェック名を入れると永久BLOCKEDになり得る）。
 - Text Integrity Guard (PR): enabled
 - Halfwidth Kana Guard: enabled
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
@@ -1014,8 +1015,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
-- bytes: 2107
+- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
+- bytes: 2129
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1041,6 +1042,7 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
