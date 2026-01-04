@@ -339,9 +339,9 @@ EXP_ID / Order_ID / PART_ID / CU_ID / UP_ID / PRICE / USED_DATE / CreatedAt
 ・USED 部材の PRICE を確定経費として記録する唯一の正
 ・金額の推測・代入は禁止（確定入力のみ）
 
-3.7 Request（申請台帳：FIX/DOC/UF07/UF08）
+3.7 Request（申請台帳：FIX/DOC/UF07/UF08/NOTE_ADD/REVIEW）
 主要項目：
-Timestamp / Category / TargetID / PayloadJSON / Requester / Memo / RequestStatus / ResolvedAt / ResolvedBy / ResolutionNote
+Timestamp / Category / TargetID（=PayloadJSON.targetId） / PayloadJSON / Requester / Memo / RequestStatus / ResolvedAt / ResolvedBy / ResolutionNote
 業務ルール：
 ・修正／書類／金額補完／追加報告を申請として保持する箱
 ・内容は業務ルールに従って解釈・反映される
@@ -458,6 +458,7 @@ TargetID（型の固定）：
 - NONE       : 対象IDなし（例：REVIEW の一般依頼など。許可する場合のみ）
 
 PayloadJSON（共通ルール）：
+※ TargetID は PayloadJSON.targetId と同値で保持し、targetType/targetId により型不整合を検出する（3.7.2）。
 - 申請の入力値は「素材」であり、確定は業務ロジックが行う（判断権の原則）。
 - 形式は JSON とし、必須キーは Category ごとに定義される（本書の該当章に従う）。
 
