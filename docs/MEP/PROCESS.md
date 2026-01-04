@@ -1,4 +1,4 @@
-﻿# PROCESS（手続き） v1.1
+# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -7,6 +7,11 @@
 ---
 
 ## 基本原則（必須）
+
+## docs/MEP 生成物同期（必須）
+- docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
+- Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
+- 失敗時は「Chat Packet Update (Dispatch) → 生成PRをマージ → 元PRへ戻る」で復旧する。
 - 変更は必ず PR で行う（main 直コミット禁止）
 - Required checks（semantic-audit / semantic-audit-business）が OK のみマージ可能
 - 変更スコープは1つだけ（混ぜない）
