@@ -21,6 +21,7 @@
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
 - Current objective
