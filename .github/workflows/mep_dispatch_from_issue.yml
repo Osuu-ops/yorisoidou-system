@@ -14,22 +14,136 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'mep-dispatch')
     runs-on: ubuntu-latest
     steps:
-      - name: Acknowledge
+      - name: Checkout (main)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Parse issue form fields
+        id: parse
         uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
             const body = issue.body || "";
+
+            function extract(field) {
+              const re = new RegExp(`###\\s*${field}\\s*\\n+([\\s\\S]*?)(\\n###\\s|$)`, "i");
+              const m = body.match(re);
+              if (!m) return "";
+              return (m[1] || "").trim();
+            }
+
+            const theme = extract("theme");
+            const intent = extract("intent").toUpperCase();
+            const payload = extract("payload");
+
+            core.setOutput("theme", theme);
+            core.setOutput("intent", intent);
+            core.setOutput("payload", payload);
+
+            const lines = [];
+            lines.push("MEP Dispatch received.");
+            lines.push("");
+            lines.push(`- theme: ${theme || "(missing)"}`);
+            lines.push(`- intent: ${intent || "(missing)"}`);
+            lines.push(`- payload: ${payload ? "(provided)" : "(missing)"}`);
+            lines.push("");
+            lines.push("Note: intent=OBSERVE is implemented. UPDATE_SPEC/REGENERATE will be added next.");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: lines.join("\n")
+            });
+
+      - name: OBSERVE (report)
+        if: steps.parse.outputs.intent == 'OBSERVE'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const cp = require("child_process");
+
+            function read(path) {
+              try { return fs.readFileSync(path, "utf8"); } catch { return null; }
+            }
+            function firstLines(s, n) {
+              return s.split(/\r?\n/).slice(0, n).join("\n");
+            }
+
+            const theme = "${{ steps.parse.outputs.theme }}";
+            const intent = "${{ steps.parse.outputs.intent }}";
+
+            const head = cp.execSync("git rev-parse HEAD").toString("utf8").trim();
+            const stateCurrent = read("docs/MEP/STATE_CURRENT.md") || "";
+            const currentScope = read("platform/MEP/90_CHANGES/CURRENT_SCOPE.md") || "";
+            const startHere = read("docs/MEP/START_HERE.md") || "";
+            const contract = read("docs/MEP/CHAT_STYLE_CONTRACT.md") || "";
+            const masterSpec = read("platform/MEP/03_BUSINESS/よりそい堂/master_spec") || "";
+            const uiSpec = read("platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md") || "";
+
+            const scopeLine = (stateCurrent.split(/\r?\n/).find(l => l.match(/^\s*-\s*platform\/MEP\/03_BUSINESS\/よりそい堂\/\*\*/)) || "").trim();
+
+            const lines = currentScope.split(/\r?\n/);
+            let inList = false;
+            const bullets = [];
+            for (const ln of lines) {
+              if (/^\s*##\s*変更対象（Scope-IN）/.test(ln)) { inList = true; continue; }
+              if (inList && /^\s*##\s*/.test(ln)) break;
+              if (inList && /^\s*-\s+/.test(ln)) bullets.push(ln.trim());
+            }
+
+            const sus = [];
+            if (startHere.includes(" -replace ")) sus.push("START_HERE contains ' -replace '");
+            if (contract.includes(" -replace ")) sus.push("CHAT_STYLE_CONTRACT contains ' -replace '");
+            if (startHere.includes("Write-Output")) sus.push("START_HERE contains 'Write-Output'");
+            if (contract.includes("Write-Output")) sus.push("CHAT_STYLE_CONTRACT contains 'Write-Output'");
+
+            const report = [];
+            report.push("MEP OBSERVE REPORT");
+            report.push("");
+            report.push(`- theme: ${theme || "(missing)"}`);
+            report.push(`- intent: ${intent}`);
+            report.push(`- main HEAD (checked out): ${head}`);
+            report.push("");
+            report.push("CURRENT_SCOPE (canonical):");
+            report.push(scopeLine ? `- ${scopeLine}` : "- (not found)");
+            report.push("");
+            report.push(`Scope-IN bullet count: ${bullets.length}`);
+            report.push(bullets.slice(0, 25).map(b => `- ${b}`).join("\n") || "- (none)");
+            report.push("");
+            report.push("Suspicious fragments on main:");
+            report.push(sus.length ? sus.map(s => `- ${s}`).join("\n") : "- none");
+            report.push("");
+            report.push("master_spec preview (first 30 lines):");
+            report.push(firstLines(masterSpec || "(missing)", 30));
+            report.push("");
+            report.push("ui_spec preview (first 20 lines):");
+            report.push(firstLines(uiSpec || "(missing)", 20));
+
+            const body = "```text\n" + report.join("\n") + "\n```";
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body
+            });
+
+      - name: Not implemented yet (UPDATE_SPEC/REGENERATE)
+        if: steps.parse.outputs.intent != 'OBSERVE'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue.number,
               body: [
-                "MEP Dispatch received.",
+                "This intent is not implemented yet in the dispatch workflow.",
                 "",
-                "- Next: implement parsing of issue form fields (theme/intent/payload).",
-                "- Then: run OBSERVE or create PR for UPDATE_SPEC/REGENERATE.",
-                "",
-                "Current status: skeleton workflow only (no repo changes)."
-              ].join("\\n")
+                "- Supported now: OBSERVE",
+                "- Next PR: implement UPDATE_SPEC/REGENERATE with safe two-step (draft -> approve label -> PR)."
+              ].join("\n")
             });
