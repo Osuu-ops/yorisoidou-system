@@ -516,6 +516,8 @@ REVIEW（Category=REVIEW）：
 - reviewType     : HEALTH_CHECK / INCONSISTENCY / MISSING_INFO / APPROVAL（必須）
 - requestSummary : 依頼の短文（必須）
 - memo           : 補足（任意）
+- rootCauseKind    : ALERT_LABEL / SIGNAL / PHOTO_FLAG（任意：空を許容）
+- rootCauseValues  : 文字列配列（任意：空を許容。複数可）
 3.7.2.1 REVIEW.reviewType（列挙と起点｜固定）
 
 目的：
