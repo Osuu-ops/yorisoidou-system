@@ -191,6 +191,18 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - 添付不足（写真不足など）は “警告” として扱い、送信は止めない（管理警告で吸収）
 
 <!-- PARTS_UI_MASTER_PHASE1 -->
+
+<!-- PHASE1_PARTS_UI_MASTER_BLOCK (derived; do not edit meaning) -->
+### Phase-1: PARTS UI（表示/導線）— 最小（派生）
+参照（唯一の正）：
+- master_spec: 7 UF06/UF07 / 3.4 / 3.4.1 / 9
+- ui_spec: ALERT_LABELS / REQUEST_LIST_FLOW（表示のみ）
+
+UI責務（固定）：
+- 入力補助・表示・導線のみ（確定は業務ロジック／判断権の原則）
+- Parts の一覧表示（PART_ID / PART_TYPE / AA/PA/MA / STATUS / PRICE / LOCATION）
+- 未確定（PRICE未入力、未納品、LOCATION欠落等）は警告ラベル/導線で可視化（確定はしない）
+<!-- END PHASE1_PARTS_UI_MASTER_BLOCK -->
 ## PARTS（部材）— UI_MASTER（Phase-1）
 
 本節は PARTS（部材：発注/納品/価格入力）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
@@ -281,6 +293,18 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - UI は STATUS を任意に編集しない（表示のみ、または非表示でも可）
 
 <!-- EXPENSE_UI_MASTER_PHASE1 -->
+
+<!-- PHASE1_EXPENSE_UI_MASTER_BLOCK (derived; do not edit meaning) -->
+### Phase-1: EXPENSE UI（表示/導線）— 最小（派生）
+参照（唯一の正）：
+- master_spec: 3.6 / 3.6.1 / 9 / 8.4.1
+- ui_spec: OV01 表示（参照のみ）
+
+UI責務（固定）：
+- 経費（Expense_Master）の表示（EXP_ID / Order_ID / PART_ID / PRICE / USED_DATE）
+- 推測計算や確定操作はしない（確定は完了同期）
+- PRICE未確定などは警告ラベルで可視化（確定はしない）
+<!-- END PHASE1_EXPENSE_UI_MASTER_BLOCK -->
 ## EXPENSE（経費）— UI_MASTER（Phase-1）
 
 ### Screens（最小）

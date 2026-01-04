@@ -186,6 +186,26 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - 不備（写真不足/LOCATION不整合/価格未確定 等）は管理警告対象
 
 <!-- PARTS_FIELDS_PHASE1 -->
+
+<!-- PHASE1_PARTS_FIELDS_BLOCK (derived; do not edit meaning) -->
+### Phase-1: Parts_Master（部材台帳）— 最小フィールド（派生）
+参照（唯一の正）：master_spec 3.4 / 3.4.1 / 6 / 7 / 9
+
+主キー：PART_ID
+
+主要項目（業務的意味を持つ列）：
+- PART_ID / AA番号 / PA/MA番号 / PART_TYPE（BP/BM）
+- Order_ID / OD_ID
+- 品番 / 数量 / メーカー
+- PRICE / STATUS
+- CREATED_AT / DELIVERED_AT / USED_DATE
+- MEMO / LOCATION
+
+必須（最小）：
+- STATUS=STOCK の場合：LOCATION 必須
+- PART_TYPE=BP の場合：納品時に PRICE 確定（未確定は警告）
+- PART_TYPE=BM の場合：PRICE=0（固定）
+<!-- END PHASE1_PARTS_FIELDS_BLOCK -->
 ## PARTS（部材）— BUSINESS_MASTER（辞書）
 
 本節は PARTS（部材）に関する辞書（field/enum/補助辞書）を定義する。
@@ -269,6 +289,21 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - BP/BM 区分変更は危険修正（申請/FIX）として扱う
 
 <!-- EXPENSE_FIELDS_PHASE1 -->
+
+<!-- PHASE1_EXPENSE_FIELDS_BLOCK (derived; do not edit meaning) -->
+### Phase-1: Expense_Master（経費台帳）— 最小フィールド（派生）
+参照（唯一の正）：master_spec 3.6 / 3.6.1 / 9
+
+主キー：EXP_ID
+
+主要項目（業務的意味を持つ列）：
+- EXP_ID / Order_ID / PART_ID / CU_ID / UP_ID
+- PRICE / USED_DATE / CreatedAt
+
+最小ルール（固定）：
+- 完了同期で BP の PRICE を根拠に確定（推測代入禁止）
+- BM は経費対象外（PRICE=0）
+<!-- END PHASE1_EXPENSE_FIELDS_BLOCK -->
 ## EXPENSE（経費）— BUSINESS_MASTER（辞書）
 
 ### Fields（Phase-1）
