@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 246112
+- included_total_bytes: 246093
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -967,11 +967,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 8f2394547fe9601d5db5afab36cbed0906a2398634857ee73dd87b273de2c4c8
-- bytes: 752
+- sha256: 1e885f3a3b06293b0c6c832b9f27ab62cfe74920f2a0e210dd43840834662c98
+- bytes: 755
 
 ```text
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -998,8 +998,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
-- bytes: 2129
+- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
+- bytes: 2107
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1025,7 +1025,6 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
