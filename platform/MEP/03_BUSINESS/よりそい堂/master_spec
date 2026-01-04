@@ -341,11 +341,32 @@ EXP_ID / Order_ID / PART_ID / CU_ID / UP_ID / PRICE / USED_DATE / CreatedAt
 
 3.7 Request（申請台帳：FIX/DOC/UF07/UF08）
 主要項目：
-Timestamp / Category / TargetID / PayloadJSON / Requester / Memo
+Timestamp / Category / TargetID / PayloadJSON / Requester / Memo / RequestStatus / ResolvedAt / ResolvedBy / ResolutionNote
 業務ルール：
 ・修正／書類／金額補完／追加報告を申請として保持する箱
 ・内容は業務ルールに従って解釈・反映される
 ・危険修正は明確に区別し、直接適用を禁止する（章10）
+
+3.7.3 RequestStatus（処理状態｜固定）
+
+目的：
+・「未処理申請（FIX/REVIEW）」の判定基準を、業務として再現可能に固定する。
+・健康スコア（9.4 D）および 管理警告ラベル（8.4.1）の “未処理” 根拠は本節に従う。
+
+RequestStatus（固定列挙）：
+- OPEN      : 未処理（監督判断/対応待ち）
+- RESOLVED  : 解決済み（判断・対応が完了）
+- CANCELLED : 取消（申請を無効化）
+
+最小ルール（固定）：
+- 新規作成された Request は RequestStatus=OPEN とする。
+- 監督判断または対応が完了した時点で RESOLVED に遷移してよい。
+- 申請を取り下げた場合は CANCELLED に遷移してよい。
+
+禁止事項（固定）：
+- 人・AI・UI が “勝手に” RESOLVED にしない（監督判断または確定処理に従属）。
+- status の推測代入は禁止（曖昧さは REVIEW として OPEN のまま保持する）。
+
 
 3.8 logs/system・logs/extra（業務ログ）
 業務ルール：
@@ -704,8 +725,8 @@ Order_ID / addressCityTown / 顧客名 / STATUS / 健康スコア / 違和感素
 - ALERT_TEXT_ANOMALY         : 文章異常（11.1.2 signals C）
 - ALERT_PARTS_INCONSISTENCY  : 部材整合異常（11.1.2 signals D）
 - ALERT_PHOTO_INSUFFICIENT   : 写真不足（11.1.1）
-- ALERT_REQUEST_PENDING_FIX  : FIX未処理（decisionRequired=true）（章3.7/10）
-- ALERT_REQUEST_PENDING_REVIEW : REVIEW未処理（章3.7）
+- ALERT_REQUEST_PENDING_FIX  : FIXで RequestStatus=OPEN（decisionRequired=true）（章3.7/10）
+- ALERT_REQUEST_PENDING_REVIEW : REVIEWで RequestStatus=OPEN（章3.7）
 
 最小ルール（固定）：
 - ALERT_PHOTO_INSUFFICIENT は 11.1.1 の写真不足フラグ=TRUE の場合に付与する。
@@ -805,8 +826,8 @@ C) 記録品質（上限 -25）
 ※ 写真不足／違和感素材は「素材フラグ」を元に判定し、UIや人が断定的に値を作らない（判断権の原則）
 
 D) 未処理申請／監督要求（上限 -15）
-- Request に FIX（decisionRequired=true）未処理が残る               : -10
-- Request に REVIEW（未処理）が残る                                 : -5
+- Request に FIX（decisionRequired=true）で RequestStatus=OPEN が残る               : -10
+- Request に REVIEW で RequestStatus=OPEN が残る                                 : -5
 ※ D は合計が -15 を下回らない（最大 -15 まで）
 
 点数帯の運用（固定）：
