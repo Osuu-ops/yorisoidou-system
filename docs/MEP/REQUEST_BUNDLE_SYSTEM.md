@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108887
+- included_total_bytes: 109144
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 464a2ee55cc1bcd846ec905829574407800a9d254c190e7ff5c8f6821efe91c6
-- bytes: 12908
+- sha256: d987502830503ff9f1cfa5dc3bedecbd64290ba68b0fa9516ff9e694ca9bf9cc
+- bytes: 13165
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -431,6 +431,10 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 git checkout main
 git pull --ff-only
 scope-guard enforcement test 20260103-002424
+
+## PowerShell 実行環境（必須）
+- MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
+- 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
 ```
 
 ---
