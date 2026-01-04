@@ -530,11 +530,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:db552a8f37e1be9de80705d6830c77463d3634a8b9f6c4140682771abf237d02
+### ARCHIVE_ENTRY sha256:6f4e0b1a2167003c5ac82b947c5ac4e6ccd542f0c81ae19166bec8dae73976f1
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:a21a3e282052
+> HANDOFF_ID: HOF:3cc34a2a1206
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -633,6 +633,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## STATE_CURRENT の主要見出し
+> - STATE_CURRENT (MEP)
 > - CURRENT_SCOPE (canonical)
 > - Guards / Safety
 > - Current objective
@@ -1762,11 +1763,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ## カード一覧
 > - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 
-### ARCHIVE_ENTRY sha256:bede6389752cff08f9fcecc723427fa13daaed3917d3cf90a38ba928c279b2b9
+### ARCHIVE_ENTRY sha256:db552a8f37e1be9de80705d6830c77463d3634a8b9f6c4140682771abf237d02
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:71f18d6ff093
+> HANDOFF_ID: HOF:a21a3e282052
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -1793,14 +1794,14 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > 生成: docs/MEP/build_state_summary.py
 > ---
 > ## 目的（STATE_CURRENTから要約）
-> 本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-> UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+> - （未取得）STATE_CURRENT.md の「目的」節を確認
 > ---
 > ## 参照導線（固定）
 > - CHAT_PACKET: docs/MEP/CHAT_PACKET.md（新チャット開始入力）
 > - 現在地: docs/MEP/STATE_CURRENT.md（唯一の現在地）
 > - 次の指示: docs/MEP/PLAYBOOK.md
 > - 復旧: docs/MEP/RUNBOOK.md
+> - 出力契約: docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md（PowerShell単一コピペ一本道）
 > 
 > ■ 次の一手（PLAYBOOK_SUMMARY 抜粋）
 > # PLAYBOOK_SUMMARY（次の指示サマリ） v1.0
@@ -1851,8 +1852,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## 目的（STATE_CURRENTから要約）
-> 本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-> UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+> - （未取得）STATE_CURRENT.md の「目的」節を確認
 > 
 > ---
 > 
@@ -1866,11 +1866,10 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > ---
 > 
 > ## STATE_CURRENT の主要見出し
-> - STATE_CURRENT（現在地） v1.2
-> - 目的
-> - 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
-> - 2) 重要ルール（固定）
-> - 3) 次の改良 Top3（一本道）
+> - CURRENT_SCOPE (canonical)
+> - Guards / Safety
+> - Current objective
+> - How to start a new conversation
 > 
 > ---
 > 
