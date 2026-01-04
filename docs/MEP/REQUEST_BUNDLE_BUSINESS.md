@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 241119
+- included_total_bytes: 246112
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -91,8 +91,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 279a819bf803ab3d145f02d98d3f5c8fa5390f56377d45df17f70634d8c7d497
-- bytes: 11662
+- sha256: c0a98f39c873c0d0226804151351df54e9def46b2ad541269035a4b251124786
+- bytes: 12289
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -102,19 +102,37 @@
 - 先頭に「今回の目的（1行）」を追記しても良い。
 - AIは REQUEST 形式で最大3件まで、必要箇所だけ要求する。
 
-### HANDOFF_TRIGGER（引っ越し）
+---
 
-あなたがこのチャットで「引っ越ししたい」と言ったら、AIは必ず次を返す（余計な説明なし）。
+## START_HERE.md（入口）  (START_HERE.md)
+```
+﻿# START_HERE（MEP入口） v1.1
 
-1) パス（固定・1行）
-yorisoidou-system/docs/MEP/CHAT_PACKET.md
+## 役割
+本書は新チャット開始の唯一の入口である。
+新チャット1通目は「目的（1行）」＋本書を貼って開始する。
 
-2) 引継ぎメモ（短文・自由文／最大3行）
-- いま進めていること（何の作業中か）
-- 現在地（main clean / open PR 0 など事実1行）
-- 次にやる1手（1テーマ=1PRで何をするか）
+---
 
-※ID指定は不要。短文で「この話の続きをする」確証が得られれば十分。
+## 最小手数の推奨（貼り付け）
+- 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
+- CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+---
+
+## 参照順（固定）
+1. docs/MEP/STATE_CURRENT.md（現在地）
+2. docs/MEP/ARCHITECTURE.md（構造）
+3. docs/MEP/PROCESS.md（手続き）
+4. docs/MEP/GLOSSARY.md（用語）
+5. docs/MEP/GOLDEN_PATH.md（完走例）
+
+---
+
+## AIの要求ルール（必須）
+- 「全部貼れ」「大量ファイル貼れ」は禁止。
+- 追加が必要な場合のみ、最大3件まで、必ず次の形式で要求する。
+
 ### REQUEST
 - file: <ファイルパス>
 - heading: <見出し名>
@@ -167,7 +185,7 @@ checks:
 
 ## INDEX.md（目次）  (docs/MEP/INDEX.md)
 ```
-﻿# MEP INDEX（入口） v1.0
+# MEP INDEX（入口） v1.0
 
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
@@ -235,6 +253,9 @@ checks:
 
 ## RUNBOOK（追加）
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
+
+## DOC_STATUS（追加）
+- [DOC_REGISTRY](./DOC_REGISTRY.md)  — 文書状態台帳（ACTIVE/STABLE/GENERATED）
 ```
 
 ---
@@ -295,6 +316,10 @@ AIは本書に従ってのみ情報要求を行う。
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
 # STATE_CURRENT (MEP)
+
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
 
 ## CURRENT_SCOPE (canonical)
 - platform/MEP/03_BUSINESS/よりそい堂/**
@@ -1502,8 +1527,8 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
-- sha256: d2252e54947369effd7214ad9b926f0fb53df8f117f829276868377a39aebd2e
-- bytes: 10541
+- sha256: 25c62dfad22f64bd6aec70f0d3be9c06c8b6d014829bdab987e1554d953f9097
+- bytes: 11776
 
 ```text
 <!--
@@ -1694,6 +1719,26 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - 不備（写真不足/LOCATION不整合/価格未確定 等）は管理警告対象
 
 <!-- PARTS_FIELDS_PHASE1 -->
+
+<!-- PHASE1_PARTS_FIELDS_BLOCK (derived; do not edit meaning) -->
+### Phase-1: Parts_Master（部材台帳）— 最小フィールド（派生）
+参照（唯一の正）：master_spec 3.4 / 3.4.1 / 6 / 7 / 9
+
+主キー：PART_ID
+
+主要項目（業務的意味を持つ列）：
+- PART_ID / AA番号 / PA/MA番号 / PART_TYPE（BP/BM）
+- Order_ID / OD_ID
+- 品番 / 数量 / メーカー
+- PRICE / STATUS
+- CREATED_AT / DELIVERED_AT / USED_DATE
+- MEMO / LOCATION
+
+必須（最小）：
+- STATUS=STOCK の場合：LOCATION 必須
+- PART_TYPE=BP の場合：納品時に PRICE 確定（未確定は警告）
+- PART_TYPE=BM の場合：PRICE=0（固定）
+<!-- END PHASE1_PARTS_FIELDS_BLOCK -->
 ## PARTS（部材）— BUSINESS_MASTER（辞書）
 
 本節は PARTS（部材）に関する辞書（field/enum/補助辞書）を定義する。
@@ -1777,6 +1822,21 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - BP/BM 区分変更は危険修正（申請/FIX）として扱う
 
 <!-- EXPENSE_FIELDS_PHASE1 -->
+
+<!-- PHASE1_EXPENSE_FIELDS_BLOCK (derived; do not edit meaning) -->
+### Phase-1: Expense_Master（経費台帳）— 最小フィールド（派生）
+参照（唯一の正）：master_spec 3.6 / 3.6.1 / 9
+
+主キー：EXP_ID
+
+主要項目（業務的意味を持つ列）：
+- EXP_ID / Order_ID / PART_ID / CU_ID / UP_ID
+- PRICE / USED_DATE / CreatedAt
+
+最小ルール（固定）：
+- 完了同期で BP の PRICE を根拠に確定（推測代入禁止）
+- BM は経費対象外（PRICE=0）
+<!-- END PHASE1_EXPENSE_FIELDS_BLOCK -->
 ## EXPENSE（経費）— BUSINESS_MASTER（辞書）
 
 ### Fields（Phase-1）
@@ -1806,8 +1866,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 713692dc67e54fa208af18622586f46686b0c717220bc11d9d7bb652d1142b74
-- bytes: 9309
+- sha256: 25383cbd2e8a54509e0ef93ecbde24fc6a71ced0630c2029d00774fb0a8551a9
+- bytes: 11248
 
 ```text
 <!--
@@ -1953,6 +2013,30 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 完了同期の代替として、別経路で台帳を確定させてはならない
 
 <!-- PARTS_SPEC_PHASE1 -->
+
+<!-- PHASE1_PARTS_SPEC_BLOCK (derived; do not edit meaning) -->
+### Phase-1: PARTS（部材）— 業務最小定義（派生）
+参照（唯一の正）：
+- master_spec: 3.4 Parts_Master / 3.4.1 Parts STATUS / 6 部材体系 / 7 UF06/UF07 / 9 完了同期
+
+最小目的：
+- 部材（BP/BM）の発注→納品→使用→在庫の追跡を、Order_ID と PART_ID で破綻なく再現する。
+
+業務状態（固定）：
+- STOCK / ORDERED / DELIVERED / USED / STOCK_ORDERED
+
+最小トリガー（固定）：
+- UF06（発注確定）: ORDERED または STOCK_ORDERED（Order_ID有無で判定）
+- UF06（納品確定）: DELIVERED（DELIVERED_AT 記録）
+- UF07（価格入力）: PRICE 確定（状態は原則維持）
+- 完了同期（現場完了起点）: DELIVERED の対象を USED へ（使用確定）
+- 未使用部材コメント抽出: STOCK 戻し（LOCATION 整合必須）
+
+不変条件（固定）：
+- BP は納品時に PRICE を確定（未確定は警告対象）
+- BM は PRICE=0（経費対象外）
+- LOCATION は STATUS=STOCK の部材で必須
+<!-- END PHASE1_PARTS_SPEC_BLOCK -->
 ## PARTS（部材）— BUSINESS_SPEC（Phase-1）
 
 ### 目的
@@ -2019,6 +2103,26 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - LOCATION 欠落の放置（警告として扱い、管理で回収）
 
 <!-- EXPENSE_SPEC_PHASE1 -->
+
+<!-- PHASE1_EXPENSE_SPEC_BLOCK (derived; do not edit meaning) -->
+### Phase-1: EXPENSE（経費）— 業務最小定義（派生）
+参照（唯一の正）：
+- master_spec: 3.6 Expense_Master / 3.6.1 Expense確定 / 9 完了同期 / 8.4.1 警告
+
+最小目的：
+- USED（使用確定）になった BP の PRICE を根拠に、確定経費として一意に記録する。
+
+確定トリガー（固定）：
+- 完了同期（現場完了起点）でのみ確定（作成/追記）
+
+対象範囲（固定）：
+- BP（メーカー手配品）: PRICE確定が前提（未確定は警告）
+- BM: PRICE=0（経費対象外／経費に入れない）
+
+不変条件（固定）：
+- 推測代入は禁止（PRICEは確定値のみ）
+- 既存Expenseの削除は禁止（履歴保全）
+<!-- END PHASE1_EXPENSE_SPEC_BLOCK -->
 ## EXPENSE（経費）— BUSINESS_SPEC（Phase-1）
 
 ### 目的
@@ -2089,8 +2193,8 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
-- sha256: e1bc2de72b359e31ed4e04f8dfa0aed76b4fe4f08a2dfb4004b33edc99175b9b
-- bytes: 11092
+- sha256: 8b689660ee5d20a6e0e830ce560a62e8b6eac0e14586a4ee9960db96dd71ea5f
+- bytes: 12284
 
 ```text
 <!--
@@ -2286,6 +2390,18 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - 添付不足（写真不足など）は “警告” として扱い、送信は止めない（管理警告で吸収）
 
 <!-- PARTS_UI_MASTER_PHASE1 -->
+
+<!-- PHASE1_PARTS_UI_MASTER_BLOCK (derived; do not edit meaning) -->
+### Phase-1: PARTS UI（表示/導線）— 最小（派生）
+参照（唯一の正）：
+- master_spec: 7 UF06/UF07 / 3.4 / 3.4.1 / 9
+- ui_spec: ALERT_LABELS / REQUEST_LIST_FLOW（表示のみ）
+
+UI責務（固定）：
+- 入力補助・表示・導線のみ（確定は業務ロジック／判断権の原則）
+- Parts の一覧表示（PART_ID / PART_TYPE / AA/PA/MA / STATUS / PRICE / LOCATION）
+- 未確定（PRICE未入力、未納品、LOCATION欠落等）は警告ラベル/導線で可視化（確定はしない）
+<!-- END PHASE1_PARTS_UI_MASTER_BLOCK -->
 ## PARTS（部材）— UI_MASTER（Phase-1）
 
 本節は PARTS（部材：発注/納品/価格入力）に関する UI 辞書（画面/表示/入力の最小定義）を追加する。
@@ -2376,6 +2492,18 @@ ROLE: UI_MASTER (screen/components/field mappings)
 - UI は STATUS を任意に編集しない（表示のみ、または非表示でも可）
 
 <!-- EXPENSE_UI_MASTER_PHASE1 -->
+
+<!-- PHASE1_EXPENSE_UI_MASTER_BLOCK (derived; do not edit meaning) -->
+### Phase-1: EXPENSE UI（表示/導線）— 最小（派生）
+参照（唯一の正）：
+- master_spec: 3.6 / 3.6.1 / 9 / 8.4.1
+- ui_spec: OV01 表示（参照のみ）
+
+UI責務（固定）：
+- 経費（Expense_Master）の表示（EXP_ID / Order_ID / PART_ID / PRICE / USED_DATE）
+- 推測計算や確定操作はしない（確定は完了同期）
+- PRICE未確定などは警告ラベルで可視化（確定はしない）
+<!-- END PHASE1_EXPENSE_UI_MASTER_BLOCK -->
 ## EXPENSE（経費）— UI_MASTER（Phase-1）
 
 ### Screens（最小）
