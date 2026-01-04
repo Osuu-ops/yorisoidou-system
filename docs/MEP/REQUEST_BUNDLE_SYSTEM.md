@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 109144
+- included_total_bytes: 109628
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: d987502830503ff9f1cfa5dc3bedecbd64290ba68b0fa9516ff9e694ca9bf9cc
-- bytes: 13165
+- sha256: 5409828a293c04bbd178f5662479e76afd02be3d1d58dee55a0e744b6dd16f0f
+- bytes: 13649
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -273,7 +273,7 @@ checks:
 
 ## AI_BOOT.md（AI挙動固定）  (docs/MEP/AI_BOOT.md)
 ```
-﻿# AI_BOOT（AI挙動固定） v1.0
+# AI_BOOT（AI挙動固定） v1.0
 
 ## 目的
 本書は、新チャットでAIが迷わず進行するための「要求フォーマット」と「禁止事項」を固定する。
@@ -282,6 +282,10 @@ AIは本書に従ってのみ情報要求を行う。
 ---
 
 ## 絶対禁止
+- 出力に「ネストしたコードブロック」や「複数のコードブロック混在」を作らない（本文中に ``` を入れ子にしない）。
+- Git/GitHub/PowerShell 操作は必ず **単一の ```powershell ブロック**で提示する（途中で別ブロックを挿入しない）。
+- 説明はコード内コメントに寄せ、ブロック外で手順を分割しない。
+- PowerShell の Here-String は **@' '@** を使用する（@" "@ は禁止）。
 - 「全部貼れ」「10ファイル貼れ」等の大量提示要求
 - ローカル操作を前提とした手順提示（GitHub内で完結させる）
 - 入口整備（docs/MEP）を超えるスコープ拡張（再設計・改善提案の無限化）
