@@ -685,6 +685,50 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - LOCATION不整合: 対象部材の LOCATION が整合し、STOCK 戻しが可能であること。
 - 写真不足: 必要写真が追補されたこと（不足の内訳は details に記録）。
 - 抽出不備: 完了コメントの形式が修正され、未使用部材の抽出が可能であること。
+### Request linkage（固定）
+
+#### 位置づけ（固定）
+- Recovery Queue は「不備回収の運用キュー」であり、Request は「申請台帳（master_spec 3.7）」である。
+- いずれも OPEN を“未処理”として扱うが、意味は異なるため混同しない（Recovery=回収、Request=申請）。
+- UI/人が勝手に RESOLVED/CANCELLED を確定しない（解消は根拠と記録を伴う）。
+
+#### 連携ルール（最小｜固定）
+- BLOCKER/WARNING を検出したら、まず Recovery Queue に status=OPEN で登録する（冪等）。
+- 次に該当する場合は、Request も併せて status=OPEN で登録してよい（推奨）：
+  - BP の PRICE 未確定 → Request.Category=UF07（targetType=PART_ID / targetId=PART_ID / partId=PART_ID / price=確定値）
+  - LOCATION 不整合 / 抽出不備 / 写真不足 / 監督判断が必要 → Request.Category=REVIEW（targetType=Order_ID / targetId=Order_ID）
+- 既に対応する Request（OPEN）が存在する場合は、重複作成せず「参照リンク（参照ID/URL等）」のみを残す（冪等・増殖防止）。
+
+#### 理由→推奨アクション（固定）
+- PRICE未確定（BP）:
+  - Recovery Queue: BLOCKER / OPEN
+  - Request: UF07 を推奨（価格確定の申請）
+- LOCATION不整合（在庫戻し対象）:
+  - Recovery Queue: BLOCKER / OPEN
+  - Request: REVIEW を推奨（監督判断/是正の回収）
+- 写真不足:
+  - Recovery Queue: WARNING / OPEN（Phase-1 の分類に従属）
+  - Request: REVIEW（MISSING_INFO）を推奨（追補回収）
+- 抽出不備（未使用部材/完了コメント書式）:
+  - Recovery Queue: WARNING / OPEN（在庫戻し対象が実在し処理停止が必要な場合は BLOCKER に昇格し得る）
+  - Request: REVIEW を推奨（追補・監督回収）
+
+#### 解消（RESOLVED）の定義（固定）
+- Recovery Queue を RESOLVED にしてよい条件は、master_spec の確定データが整合し、不備が解消していること。
+  - PRICE未確定 → Parts_Master.PRICE が確定値で埋まり、対象の警告（ALERT_PRICE_MISSING 等）が消える。
+  - LOCATION不整合 → 対象部材の LOCATION が整合し、STOCK 戻しが可能である。
+  - 写真不足 → DONE/CLOSED の要件を満たし、写真不足フラグが解消している。
+  - 抽出不備 → 未使用部材抽出が成功し、必要な在庫戻し/記録が完了している。
+- Request を併設した場合：
+  - RequestStatus=RESOLVED/CANCELLED になったとき、対応する Recovery Queue は RESOLVED にしてよい（ただし上記の台帳整合が満たされていること）。
+  - RequestStatus=OPEN の間は、Recovery Queue を勝手に RESOLVED にしない。
+
+### 冪等（Recovery Queue 登録）【固定】
+- 登録は必ず冪等でなければならない（再送・二重起動で増殖しない）。
+- 推奨 idempotencyKey（固定要素）：
+  - Order_ID + reason + detectedBy + (PART_ID がある場合は PART_ID)
+- 同一 idempotencyKey は 1 件に正規化し、二重登録は「同一案件の再観測」として扱う（details の追記は許容、行増殖は禁止）。
+
 ## DoD（Phase-2）
 
 ### 目的
