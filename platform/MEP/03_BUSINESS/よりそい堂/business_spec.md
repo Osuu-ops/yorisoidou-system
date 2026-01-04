@@ -298,3 +298,4 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PARTS: PRICE/LOCATION の不変条件、未使用 STOCK 戻しの LOCATION 整合
 - EXPENSE: PRICE は確定値のみ（推測代入禁止）
 
+
