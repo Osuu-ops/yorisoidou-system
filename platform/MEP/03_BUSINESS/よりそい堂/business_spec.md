@@ -535,4 +535,41 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - Order_ID / PRICE / USED_DATE / 対象（摘要）を記録（許可する場合の最小セット）
 - Warnings/Blockers:
   - Order_ID 無し経費 → BLOCKER（Phase-1 方針）
+## ID Issuance & UI Responsibility（Phase-2）
+
+### 目的
+- ID（採番）を「いつ・誰（どの処理）が・どの入力を根拠に」発行するかを固定し、実装・運用のブレを防ぐ。
+- 再発番/再利用は禁止（Phase-1 不変条件）を前提とする。
+
+### 対象ID（本章で固定する範囲）
+- PART_ID（部材ID）
+- OD_ID（同一受注内の発注行補助ID）
+- AA / PA / MA（部材群/枝番：タスク名へ反映）
+- EXP_ID（経費ID：月内連番）
+
+### 発行タイミングと責務（固定）
+
+#### PART_ID / OD_ID
+- 発行タイミング: UF06-ORDER（発注確定）で「採用行確定」した瞬間に発行する。
+- 発行責務: UF06-ORDER の確定処理（人/AI/UI の恣意ではなく処理が発行する）。
+- 例外: Order_ID 無し発注（在庫発注）は許可し、STATUS=STOCK_ORDERED として発行する（Phase-1 EXCEPTIONS 参照）。
+
+#### AA / PA / MA（タスク名・枝番体系）
+- 発行タイミング:
+  - AA: 部材群の永続番号として、PART_ID 発行時に確定する（タスク名へ反映）。
+  - PA/MA: 枝番として、BP=PA / BM=MA を PART_ID 発行時に確定する。
+- 発行責務: PART_ID 発行処理（UF06-ORDER）で確定し、後からの任意変更は行わない。
+- 変更扱い: BP/BM 区分変更や枝番変更は危険修正（申請/FIX）として別途扱う（Phase-1: PARTS 参照）。
+
+#### EXP_ID
+- 発行タイミング:
+  - 完了同期（現場完了起点）で EXPENSE を確定する瞬間に発行する。
+  - 手動経費追加（将来UI/運用）で経費を確定する瞬間に発行する。
+- 発行責務: EXPENSE の確定処理（台帳記録処理）が発行する。
+- 禁止: 再発番/再利用は禁止（履歴保全）。
+
+### UIの責務（固定）
+- UI は ID を入力させない（表示・参照は許可）。
+- UI は「確定の意思」を入力させる（採用行確定、納品確定、価格確定、完了報告）。
+- ID 発行は確定処理が行い、UI は発行結果を表示する。
 
