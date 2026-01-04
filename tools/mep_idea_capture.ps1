@@ -1,79 +1,96 @@
-﻿# tools/mep_idea_capture.ps1
-# Usage:
-#   1) チャットで「アイデアまとめて」
-#   2) 返ってきた要約をコピー（Ctrl+C）
-#   3) .\tools\mep_idea_capture.ps1
+param(
+  [Parameter(Mandatory=$false, Position=0)]
+  [string]$Text
+)
+
 $ErrorActionPreference = "Stop"
 
-if (git status --porcelain) { throw "Working tree is not clean. Commit/stash changes first." }
-$repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
+function Get-RepoRoot {
+  $p = (Get-Location).Path
+  while ($true) {
+    if (Test-Path (Join-Path $p ".git")) { return $p }
+    $parent = Split-Path $p -Parent
+    if ($parent -eq $p -or [string]::IsNullOrWhiteSpace($parent)) { break }
+    $p = $parent
+  }
+  throw "Run inside a git repository (could not find .git)."
+}
 
-$txt = (Get-Clipboard -Raw | Out-String).Trim()
-if (-not $txt) { throw "Clipboard is empty. Copy the AI summary first, then run again." }
+function New-ShortId([string]$inputText) {
+  $utc = [DateTime]::UtcNow.ToString("yyyyMMddHHmmssffff")
+  $seed = ($utc + "`n" + $inputText)
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes($seed)
+  $hash = $sha.ComputeHash($bytes)
+  ($hash | ForEach-Object { $_.ToString("x2") } | Select-Object -First 12) -join ""
+}
 
-# Show evidence (first line)
-$first = ($txt -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ }) | Select-Object -First 1
-if (-not $first) { $first = "(empty)" }
-if ($first.Length -gt 120) { $first = $first.Substring(0,119) + "…" }
-Write-Host ("OK: Read idea from clipboard. First line: {0}" -f $first)
+function Read-Utf8Raw([string]$path) {
+  if (-not (Test-Path $path)) { return $null }
+  $raw = Get-Content -LiteralPath $path -Raw
+  return ($raw -replace "`r`n","`n" -replace "`r","`n")
+}
 
-# Sync main
-git checkout main | Out-Null
-git fetch origin main | Out-Null
-git reset --hard origin/main | Out-Null
+function Write-Utf8Lf([string]$path, [string]$content) {
+  $dir = Split-Path $path -Parent
+  if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  $bytes = $utf8NoBom.GetBytes(($content -replace "`r`n","`n" -replace "`r","`n"))
+  [System.IO.File]::WriteAllBytes($path, $bytes)
+}
 
-$vaultPath = "docs/MEP/IDEA_VAULT.md"
-if (-not (Test-Path $vaultPath)) { throw "Missing: $vaultPath" }
+$root = Get-RepoRoot
+Set-Location $root
 
-# Compute IDEA_ID from content
-$sha = (Get-FileHash -InputStream ([System.IO.MemoryStream]::new([System.Text.Encoding]::UTF8.GetBytes($txt))) -Algorithm SHA256).Hash.ToLower()
-$ideaId = "IDEA:" + $sha.Substring(0,12)
+# Repo must be clean to avoid accidental mixed commits
+if (git status --porcelain) { git status; throw "DIRTY: working tree not clean" }
 
-# One-line DESC = first non-empty line
-$desc = $first
-if ($desc.Length -gt 90) { $desc = $desc.Substring(0,89) + "…" }
+$vault = Join-Path $root "docs\MEP\IDEA_VAULT.md"
+if (-not (Test-Path $vault)) { throw "Missing: docs/MEP/IDEA_VAULT.md" }
 
-# Build entry
-$bodyBullets = ($txt -split "`r?`n" | ForEach-Object { $_.TrimEnd() } | Where-Object { $_ -ne "" } | ForEach-Object { "  - " + $_ }) -join "`r`n"
+if ([string]::IsNullOrWhiteSpace($Text)) {
+  try { $Text = Get-Clipboard -Raw } catch { $Text = $null }
+}
+if ($null -eq $Text) { $Text = "" }
+$Text = $Text.ToString().Trim()
+if ([string]::IsNullOrWhiteSpace($Text)) { throw "Idea text is empty. Stop." }
 
+$id = New-ShortId $Text
+$ideaId = "IDEA:$id"
+
+$now = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
 $entry = @"
 ### IDEA_ID: $ideaId
 - TITLE: (captured)
-- DESC: $desc
+- DESC: (captured)
 - STATUS: candidate
 - TAGS:
-- SOURCE: chat -> clipboard capture
+- SOURCE: tools/mep_idea_capture.ps1
 - BODY:
-$bodyBullets
-"@.Trim() + "`r`n`r`n"
+  - captured_at: $now
+  - text: |
+$(($Text -split "`n" | ForEach-Object { "    " + $_ }) -join "`n")
+"@
 
-# Insert under ACTIVE (top), prevent duplicates
-$raw = Get-Content $vaultPath -Raw -Encoding UTF8
-if ($raw -notmatch "(?s)## ACTIVE") { throw "IDEA_VAULT missing '## ACTIVE' section." }
-if ($raw -match [regex]::Escape("### IDEA_ID: $ideaId")) { throw "Already exists in IDEA_VAULT: $ideaId" }
+$raw = Read-Utf8Raw $vault
+if ($null -eq $raw) { throw "Failed to read: $vault" }
 
-$raw2 = $raw -replace "(?s)(## ACTIVE[^\r\n]*\r?\n)", ('$1' + "`r`n" + $entry)
-Set-Content -Path $vaultPath -Value $raw2 -Encoding UTF8
+# Insert right after '## ACTIVE' heading (first occurrence).
+$needle = "## ACTIVE"
+$idx = $raw.IndexOf($needle)
+if ($idx -lt 0) { throw "IDEA_VAULT.md missing '## ACTIVE' section." }
 
-# Regenerate IDEA_INDEX locally
-if (Get-Command py -ErrorAction SilentlyContinue) { py -3 docs/MEP/build_idea_index.py | Out-Host }
-elseif (Get-Command python -ErrorAction SilentlyContinue) { python docs/MEP/build_idea_index.py | Out-Host }
+# Find end of the ACTIVE heading line
+$lineEnd = $raw.IndexOf("`n", $idx)
+if ($lineEnd -lt 0) { $lineEnd = $raw.Length }
 
-# Commit/PR/auto-merge (human-authored)
-$ts = Get-Date -Format "yyyyMMdd-HHmmss"
-$branch = "work/idea-capture-$ts"
-git checkout -b $branch | Out-Null
+$before = $raw.Substring(0, $lineEnd + 1)
+$after  = $raw.Substring($lineEnd + 1)
 
-git add $vaultPath "docs/MEP/IDEA_INDEX.md"
-git commit -m ("docs(MEP): capture idea " + $ideaId) | Out-Null
-git push -u origin $branch | Out-Null
+# Ensure blank line separation
+$newContent = $before + "`n" + $entry.TrimEnd() + "`n`n" + $after.TrimStart()
 
-$prUrl = (gh pr create -R $repo -B main -H $branch -t ("docs(MEP): capture idea " + $ideaId) -b ("Captured idea into IDEA_VAULT (candidate) and refreshed IDEA_INDEX. " + $ideaId))
-Write-Host $prUrl
+Write-Utf8Lf $vault $newContent
 
-$pr = (gh pr list -R $repo --state open --head $branch --json number --jq '.[0].number')
-if (-not $pr) { throw "Failed to resolve PR number." }
-
-gh pr merge $pr -R $repo --auto --squash --delete-branch | Out-Null
-
-Write-Host ("OK: Captured {0}. Use list: .\tools\mep_idea_list.ps1" -f $ideaId)
+Write-Host ("Captured: {0}" -f $ideaId) -ForegroundColor Cyan
+Write-Host ("Updated: {0}" -f $vault) -ForegroundColor Cyan
