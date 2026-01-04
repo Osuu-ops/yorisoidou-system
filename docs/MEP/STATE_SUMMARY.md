@@ -22,6 +22,7 @@
 
 ## STATE_CURRENT の主要見出し
 - STATE_CURRENT (MEP)
+- Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
 - Current objective
@@ -46,6 +47,7 @@
 ---
 
 ## INDEX の主要見出し
+- MEP INDEX（入口） v1.0
 - 参照順（固定）
 - Links
 - RUNBOOK（復旧カード）
@@ -62,4 +64,5 @@
 - Tools
 - Lease / Continue Target（追加）
 - RUNBOOK（追加）
+- DOC_STATUS（追加）
 
