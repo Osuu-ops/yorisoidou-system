@@ -1,4 +1,4 @@
-# PROCESS（手続き） v1.1
+﻿# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -6,8 +6,11 @@
 
 ---
 
-## 基本原則（必須）
 
+## Post-merge（必須）
+- MERGE後、docs/MEP/STATE_CURRENT.md に `YYYY-MM-DD: (PR #NNN) 要点` を 1〜3行だけ追記する（肥大化禁止）。
+- 追記対象：運用ルール・ゲート・境界、または BUSINESS の契約/責務分界/同期/冪等/競合回収。
+- 禁止：長文化、全文貼替、整形だけコミット、DOC_REGISTRYで GENERATED とされる生成物を手で直すこと。
 ## docs/MEP 生成物同期（必須）
 - docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
 - Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
@@ -41,3 +44,4 @@ scope-guard enforcement test 20260103-002424
 ~~~powershell
 .\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
 ~~~
+
