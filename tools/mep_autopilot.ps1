@@ -1,14 +1,15 @@
 # tools/mep_autopilot.ps1
-# Purpose: fully-automatic error loop for "common" PR churn.
-# Rules:
-# - Safe set is auto/* plus known generated PR patterns plus biz/work-normalize-* (format-only).
-# - Safe PR: CLEAN+MERGEABLE and checks green => auto-merge; CONFLICTING/DIRTY => auto-close.
-# - If checks include "guard fail" on docs/MEP, attempt self-heal by rebuilding CHAT_PACKET on PR branch and pushing a fix commit.
-# - Non-safe PRs are listed only (human-thinking zone).
+# Purpose: fully automatic error loop (self-heal + sweep) with DEADLOCK STOP.
+# Behavior:
+# - Safe PR patterns: auto/*, auto/*suggest*, auto/*chat-packet*, docs(MEP) CHAT_PACKET, chore(scope) suggest, biz/*-normalize-*.
+# - Safe PR: CLEAN+MERGEABLE + checks green => MERGE (confirmed y) + verify state; CONFLICTING/DIRTY => CLOSE (best-effort).
+# - docs guard fail => self-heal by rebuilding CHAT_PACKET on PR head branch + push fix commit.
+# - Deadlock breaker: if snapshot does not change for N rounds => stop with reason + remaining PRs.
 
 param(
-  [int]$MaxRounds = 30,
-  [int]$SleepSeconds = 5
+  [int]$MaxRounds = 40,
+  [int]$SleepSeconds = 5,
+  [int]$StagnationRounds = 3
 )
 
 $ErrorActionPreference="Stop"
@@ -28,7 +29,7 @@ function GetOpenPrs() {
   return @($j | ConvertFrom-Json)
 }
 function GetPrInfo([int]$n) {
-  return (& $ghExe pr view $n --repo $repo --json number,state,mergeable,mergeStateStatus,url,title,headRefName,baseRefName 2>$null | ConvertFrom-Json)
+  return (& $ghExe pr view $n --repo $repo --json number,state,mergeable,mergeStateStatus,url,title,headRefName,baseRefName,mergedAt 2>$null | ConvertFrom-Json)
 }
 function TryChecksText([int]$n) {
   try { return (& $ghExe pr checks $n --repo $repo 2>&1 | Out-String).Trim() }
@@ -47,30 +48,56 @@ function ChecksGreen([string]$t) {
   if ($hasPass -and (-not $hasPending) -and (-not $hasFail)) { return $true }
   return $false
 }
-function GhOk([string[]]$args, [string[]]$okPatterns) {
-  $out = (& $ghExe @args 2>&1 | Out-String).Trim()
-  $code = $LASTEXITCODE
-  if ($code -eq 0) { return $true }
-  foreach ($p in $okPatterns) { if ($out -match $p) { return $true } }
-  return $false
-}
 function IsSafe($pr) {
   if ($pr.headRefName -like "auto/*") { return $true }
   if ($pr.headRefName -like "auto/scope-suggest*") { return $true }
   if ($pr.headRefName -like "auto/chat-packet-update*") { return $true }
   if ($pr.title -like "docs(MEP): update CHAT_PACKET*") { return $true }
   if ($pr.title -like "chore(scope): suggest Scope-IN*") { return $true }
-  if ($pr.headRefName -like "biz/work-normalize-*") { return $true }
+  if ($pr.headRefName -like "biz/*-normalize-*") { return $true }
   return $false
 }
+
+function ClosePr([int]$n) {
+  $out = (& $ghExe pr close $n --repo $repo 2>&1 | Out-String).Trim()
+  $code = $LASTEXITCODE
+  if ($code -ne 0 -and $out -notmatch "Closed" -and $out -notmatch "already closed" -and $out -notmatch "✓") {
+    throw ("close failed: " + $out)
+  }
+  # verify closed (best-effort)
+  for ($i=1; $i -le 20; $i++) {
+    $p = GetPrInfo $n
+    if ($p.state -ne "OPEN") { return }
+    Start-Sleep -Seconds 1
+  }
+}
+
+function MergePr([int]$n) {
+  # confirm input for gh
+  $out = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch 2>&1 | Out-String
+  $code = $LASTEXITCODE
+  $looksOk = ($out -match "Merged" -or $out -match "✓")
+  if ($code -ne 0 -and (-not $looksOk)) {
+    $out2 = @('y') | & $ghExe pr merge $n --repo $repo --squash --delete-branch --admin 2>&1 | Out-String
+    $code2 = $LASTEXITCODE
+    $looksOk2 = ($out2 -match "Merged" -or $out2 -match "✓")
+    if ($code2 -ne 0 -and (-not $looksOk2)) { throw ("merge failed: " + $out2.Trim()) }
+  }
+  for ($i=1; $i -le 60; $i++) {
+    $p = GetPrInfo $n
+    if ($p.state -eq "MERGED") { return }
+    if ($p.state -ne "OPEN") { return }
+    Start-Sleep -Seconds 2
+  }
+  throw "merge did not finalize"
+}
+
 function SelfHealChatPacket([string]$headRefName) {
   if (-not (Test-Path "docs/MEP/build_chat_packet.py")) { return $false }
 
   git fetch origin $headRefName | Out-Null
-
   $existsLocal = $false
   try { git show-ref --verify --quiet ("refs/heads/{0}" -f $headRefName); if ($LASTEXITCODE -eq 0) { $existsLocal = $true } } catch {}
-
   if ($existsLocal) { git checkout $headRefName | Out-Null } else { git checkout -b $headRefName ("origin/{0}" -f $headRefName) | Out-Null }
   git reset --hard ("origin/{0}" -f $headRefName) | Out-Null
   git clean -fd | Out-Null
@@ -92,6 +119,23 @@ function SelfHealChatPacket([string]$headRefName) {
   return $true
 }
 
+function Snapshot($open) {
+  # snapshot includes PR number + mergeability + check summary bucket
+  $parts = @()
+  foreach ($p in ($open | Sort-Object number)) {
+    $n = [int]$p.number
+    $info = GetPrInfo $n
+    $chk = ""
+    try { $t = TryChecksText $n } catch { $t = "" }
+    if (-not $t -or $t -match "no checks reported") { $chk = "NOCHK" }
+    elseif ($t -match "(?m)\bfail\b" -or $t -match "(?m)\bfailing\b") { $chk = "FAIL" }
+    elseif ($t -match "(?m)\bpending\b") { $chk = "PEND" }
+    else { $chk = "PASS" }
+    $parts += ("{0}:{1}:{2}:{3}" -f $n,$info.mergeable,$info.mergeStateStatus,$chk)
+  }
+  return ($parts -join "|")
+}
+
 # Safety + sync main
 try { git rebase --abort 2>$null | Out-Null } catch {}
 try { git merge  --abort 2>$null | Out-Null } catch {}
@@ -102,18 +146,24 @@ git reset --hard origin/main | Out-Null
 git clean -fd | Out-Null
 
 Write-Host ("repo={0}" -f $repo)
-Write-Host ("MaxRounds={0} SleepSeconds={1}" -f $MaxRounds,$SleepSeconds)
+Write-Host ("MaxRounds={0} SleepSeconds={1} StagnationRounds={2}" -f $MaxRounds,$SleepSeconds,$StagnationRounds)
 Write-Host ""
+
+$prev = ""
+$stagnant = 0
 
 for ($round=1; $round -le $MaxRounds; $round++) {
   $open = GetOpenPrs
   if (-not $open -or $open.Count -eq 0) { Write-Host "open PR = 0"; return }
 
+  $snap = Snapshot $open
+  if ($snap -eq $prev) { $stagnant++ } else { $stagnant = 0; $prev = $snap }
+
   $safe = @($open | Where-Object { IsSafe $_ } | Sort-Object number)
   $manual = @($open | Where-Object { -not (IsSafe $_) } | Sort-Object number)
 
   Write-Host ("=== Round {0}/{1} ===" -f $round,$MaxRounds)
-  Write-Host ("open={0} safe={1} manual={2}" -f $open.Count,$safe.Count,$manual.Count)
+  Write-Host ("open={0} safe={1} manual={2} stagnant={3}/{4}" -f $open.Count,$safe.Count,$manual.Count,$stagnant,$StagnationRounds)
 
   if ($manual.Count -gt 0) {
     Write-Host ""
@@ -121,14 +171,12 @@ for ($round=1; $round -le $MaxRounds; $round++) {
     $manual | Format-Table number,headRefName,title,createdAt,url -AutoSize | Out-String | Write-Host
   }
 
-  if ($safe.Count -eq 0) { Write-Host "No safe PRs left."; return }
-
   foreach ($p in $safe) {
     $n = [int]$p.number
     $info = GetPrInfo $n
     if ($info.state -ne "OPEN") { continue }
 
-    # wait for mergeability calc
+    # allow GitHub to compute mergeability
     for ($k=1; $k -le 12; $k++) {
       if ($info.mergeable -ne "UNKNOWN" -and $info.mergeStateStatus -ne "UNKNOWN") { break }
       Start-Sleep -Seconds 2
@@ -137,12 +185,11 @@ for ($round=1; $round -le $MaxRounds; $round++) {
 
     if ($info.mergeable -eq "CONFLICTING" -or $info.mergeStateStatus -in @("DIRTY","CONFLICTING")) {
       Write-Host ("AUTO CLOSE  #{0} {1}" -f $n,$info.title)
-      if (-not (GhOk @("pr","close",$n,"--repo",$repo) @("Closed pull request","already closed","✓.*Closed","closed"))) { throw ("close failed #"+$n) }
+      ClosePr $n
       continue
     }
 
     $checks = TryChecksText $n
-
     if ($checks -match "(?m)\bguard\s+fail\b" -and $info.headRefName) {
       Write-Host ("SELF-HEAL  #{0} CHAT_PACKET on {1}" -f $n,$info.headRefName)
       $ok = SelfHealChatPacket $info.headRefName
@@ -160,11 +207,15 @@ for ($round=1; $round -le $MaxRounds; $round++) {
     }
 
     Write-Host ("AUTO MERGE  #{0} {1}" -f $n,$info.title)
-    if (-not (GhOk @("pr","merge",$n,"--repo",$repo,"--squash","--delete-branch") @("Merged pull request","✓.*Merged","Merged\."))) {
-      if (-not (GhOk @("pr","merge",$n,"--repo",$repo,"--squash","--delete-branch","--admin") @("Merged pull request","✓.*Merged","Merged\."))) {
-        throw ("merge failed #"+$n)
-      }
-    }
+    MergePr $n
+  }
+
+  if ($stagnant -ge $StagnationRounds) {
+    Write-Host ""
+    Write-Host "DEADLOCK: snapshot unchanged. Stop early."
+    Write-Host "Remaining open PRs:"
+    (GetOpenPrs | Sort-Object number | Format-Table number,headRefName,title,createdAt,url -AutoSize | Out-String) | Write-Host
+    return
   }
 
   Start-Sleep -Seconds $SleepSeconds
