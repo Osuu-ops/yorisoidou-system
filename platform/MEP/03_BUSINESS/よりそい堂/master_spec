@@ -590,6 +590,61 @@ orderId / docType / docName / docDesc / docPrice / docMemo
 ・生成物は受注に紐づく業務記録として保存される
 
 ──────────────────────────────────
+10.4 DOC系ステータスと導線（見積／請求／領収｜業務定義）
+──────────────────────────────────
+
+目的：
+・見積／請求／領収の「必須条件」「状態」「分割」を業務として固定し、
+  UIや実装に業務判断が散逸しないようにする。
+
+前提：
+・申請（Request）に記録される入力は、業務ロジックが解釈して確定する。
+・UIは本章の意味を表示・誘導するだけで、正を決めない（判断権の原則）。
+
+10.4.1 共通フィールド（DOC系）
+- orderId（任意：紐付け可能なら付与）
+- docType（必須）: ESTIMATE / INVOICE / RECEIPT
+- docName（必須）: 宛名
+- docDesc（必須）: 内容（業務説明）
+- docPrice（条件付き）: 金額
+- docMemo（任意）: 補足
+
+10.4.2 価格の確定状態（priceStatus）
+- priceStatus: TBD / FINAL
+  - TBD: 価格未確定（docPrice空を許容）
+  - FINAL: 価格確定（docPrice必須）
+
+10.4.3 見積（ESTIMATE）の業務導線（最小）
+- 作成 → プレビュー（確認） → 確定
+- 必須条件：docName / docDesc
+- priceStatus=FINAL の場合：docPrice を必須
+
+10.4.4 分割ポリシー（splitPolicy）
+- splitPolicy: NONE / MANUAL
+  - MANUAL: 1案件を複数DOCに分けて扱う（例：設備と内装）
+  - 分割時は scopeCategory を付与して区分できる（例：EQUIPMENT / INTERIOR）
+  - 分割の採否・構成（何通作るか／区分）は業務ロジックが確定し、UIは入力補助のみ
+
+10.4.5 請求（INVOICE）の状態（invoiceStatus）
+- invoiceStatus: DRAFT / ISSUED / PAID
+  - DRAFT: 下書き（未発行）
+  - ISSUED: 発行済み（支払待ち）
+  - PAID: 入金済み
+- 原則必須：docName / docDesc / docPrice
+  - 未確定運用を許容する場合は invoiceStatus=DRAFT + priceStatus=TBD を併用する
+
+10.4.6 領収（RECEIPT）の状態（receiptStatus）
+- receiptStatus: DRAFT / ISSUED
+  - DRAFT: 下書き
+  - ISSUED: 発行済み
+- 原則必須：docName / docDesc / docPrice
+
+10.4.7 禁止事項（業務破壊防止）
+- UIや人が、priceStatus/invoiceStatus/receiptStatus を恣意的に確定しない
+- docPrice の推測・代入は禁止（確定入力のみ）
+- 分割の結果（何通作るか／区分）は、業務ロジックの確定に従う
+
+──────────────────────────────────
 11. 閲覧・検索（OV01 / OV02）業務仕様
 ──────────────────────────────────
 
