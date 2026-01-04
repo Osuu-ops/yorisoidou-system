@@ -729,6 +729,72 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - Order_ID + reason + detectedBy + (PART_ID がある場合は PART_ID)
 - 同一 idempotencyKey は 1 件に正規化し、二重登録は「同一案件の再観測」として扱う（details の追記は許容、行増殖は禁止）。
 
+### IdempotencyKey（イベント別｜固定）
+
+#### 目的（固定）
+- 再送・二重起動・順序逆転が起きても、台帳（Ledger）が増殖せず、状態が破綻しないことを保証する。
+- ここで定義する idempotencyKey は「同一イベント判定」の唯一の基準とする。
+
+#### 共通フォーマット（固定）
+- idempotencyKey は次の要素で構成する（区切りは実装でよい。要素の意味は固定）：
+  - eventType（固定語）
+  - primaryId（Order_ID または PART_ID 等。イベントの主対象）
+  - eventAt（イベント確定時刻：入力/受信の確定時刻）
+  - sourceId（任意：外部イベントID等。取得できる場合のみ）
+
+- primaryId が確定できない場合は Runtime 破綻として扱い、Recovery Queue に OPEN 登録する（増殖防止）。
+
+#### イベント別（固定）
+1) UF01（受注登録）
+- eventType: UF01_SUBMIT
+- primaryId: Order_ID
+- eventAt: UF01 登録の確定時刻
+- sourceId: 任意（媒体側の通知ID等）
+
+2) UF06-ORDER（発注確定）
+- eventType: UF06_ORDER
+- primaryId: PART_ID（発行後は PART_ID を主対象とする）
+- eventAt: 発注確定時刻
+- sourceId: 任意
+
+3) UF06-DELIVER（納品確定）
+- eventType: UF06_DELIVER
+- primaryId: PART_ID
+- eventAt: 納品確定時刻（DELIVERED_AT）
+- sourceId: 任意
+
+4) UF07-PRICE（価格確定）
+- eventType: UF07_PRICE
+- primaryId: PART_ID
+- eventAt: 価格確定時刻
+- sourceId: 任意
+
+5) UF08（追加報告）
+- eventType: UF08_SUBMIT
+- primaryId: Order_ID
+- eventAt: 追加報告確定時刻
+- sourceId: 任意
+
+6) WORK 完了（現場完了）
+- eventType: WORK_DONE
+- primaryId: Order_ID
+- eventAt: workDoneAt（完了日時）
+- sourceId: 任意（現場UI側イベントID等）
+
+7) 更新（再同期）
+- eventType: RESYNC
+- primaryId: Order_ID（Order 単位の再同期）または NONE（全体再同期）
+- eventAt: 再同期の開始時刻
+- sourceId: 任意
+
+#### 重複イベントの扱い（固定）
+- 同一 idempotencyKey のイベントが再到達した場合：
+  - Ledger を増殖させない（二重行追加・二重通知禁止）。
+  - “同一イベントの再観測”として扱い、details/log の追記は許容する（ただし台帳の主要レコード増殖は禁止）。
+- idempotencyKey が異なるが、同一 primaryId に対して短時間に競合が発生した場合：
+  - 自動で辻褄合わせをしない。
+  - Recovery Queue（OPEN）へ登録し、監督回収に寄せる（Integration Contract に従属）。
+
 ## DoD（Phase-2）
 
 ### 目的
