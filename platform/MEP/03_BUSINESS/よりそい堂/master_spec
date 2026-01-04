@@ -673,6 +673,32 @@ Order_ID / addressCityTown / 顧客名 / STATUS / 健康スコア / 違和感素
 ・違和感素材（住所ゆらぎ／時系列異常／文章異常など）
 ・追加報告や価格入力の不足
 ・業務整合性エラー（検査NG）
+8.4.1 管理警告ラベル（固定｜監督UIの表示根拠）
+
+目的：
+・管理警告（8.4）を「何が理由で鳴っているか」をラベルとして固定し、
+  監督UI（管理タスク／OV01）で “次に潰すべき不足” を迷わず判断できる状態にする。
+・ラベルの確定は業務ロジックが行い、UI/人が恣意的に決めない（判断権の原則）。
+
+ラベル（固定列挙）：
+- ALERT_PRICE_MISSING        : BPのPRICE未確定が残る（章3.6/7/9）
+- ALERT_PARTS_PENDING        : 未納品部材が残る（ORDERED / STOCK_ORDERED）（章3.4/7）
+- ALERT_ADDRESS_VARIANCE     : 住所ゆらぎ（11.1.2 signals A）
+- ALERT_TIME_ANOMALY         : 時系列異常（11.1.2 signals B）
+- ALERT_TEXT_ANOMALY         : 文章異常（11.1.2 signals C）
+- ALERT_PARTS_INCONSISTENCY  : 部材整合異常（11.1.2 signals D）
+- ALERT_PHOTO_INSUFFICIENT   : 写真不足（11.1.1）
+- ALERT_REQUEST_PENDING_FIX  : FIX未処理（decisionRequired=true）（章3.7/10）
+- ALERT_REQUEST_PENDING_REVIEW : REVIEW未処理（章3.7）
+
+最小ルール（固定）：
+- ALERT_PHOTO_INSUFFICIENT は 11.1.1 の写真不足フラグ=TRUE の場合に付与する。
+- ALERT_*_ANOMALY / _VARIANCE / _INCONSISTENCY は 11.1.2 の各 signal=TRUE の場合に付与する。
+- 複数ラベルの同時付与を許容する（優先順位は監督側の判断。将来テーマで固定してよい）。
+
+禁止事項（固定）：
+- UIや人がラベルを直接確定しない（素材と状態を入力・参照するのみ）。
+- 推測でラベルを付与しない（明白な不足・矛盾のみ。曖昧さは REVIEW に落とす）。
 
 8.5 未使用部材処理（業務要件）
 完了報告から未使用部材IDを抽出し、在庫（STOCK）へ戻す。
