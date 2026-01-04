@@ -568,40 +568,12 @@ rootCause（固定キー）：
 - rootCauseKind/rootCauseValues を付与できない（起点が曖昧）場合は、空のままでもよい（判断権の原則）。
   その場合は requestSummary/memo で監督判断に寄せる。
 - 付与する場合でも、値は上記の固定集合参照のみ（自由語の新設は禁止）。
-
-禁止事項（固定）：
+禁止事項（補助｜固定）：
 - UIや人が、未定義語を rootCauseValues に入れない（固定集合外はNG）。
 - 起点が曖昧なのに “推測” で rootCause を埋めない（曖昧さは REVIEW のまま保持）。
-
-禁止事項（固定）：
+禁止事項（補助｜固定）：
 - UIや人が、signals の内容判定（鮮明/不鮮明等）で reviewType を決めない（将来テーマ）。
 - REVIEW を RESOLVED/CANCELLED にする場合は ResolutionMetadata（3.7.4）に従う。
-3.7.2.2 REVIEW.rootCause（起点情報｜固定）
-
-目的：
-・REVIEW（監督レビュー要求）が「何を起点に作られたか」を、業務として再現可能に最小固定する。
-・reviewType（3.7.2 / 3.7.2.1）と整合し、UI/人の恣意で“後付けの理由”を作らない状態にする。
-
-rootCause（固定キー）：
-- rootCauseKind    : ALERT_LABEL / SIGNAL / PHOTO_FLAG（任意：空を許容）
-- rootCauseValues  : 文字列配列（任意：空を許容。複数可）
-
-値の許容範囲（固定）：
-- rootCauseKind=ALERT_LABEL の場合：
-  - rootCauseValues は master_spec 8.4.1 の「管理警告ラベル（固定列挙）」の名称のみを許容する。
-- rootCauseKind=SIGNAL の場合：
-  - rootCauseValues は master_spec 11.1.2 の signals 名称のみを許容する（例：ADDRESS_VARIANCE / TIME_SEQUENCE_ANOMALY 等）。
-- rootCauseKind=PHOTO_FLAG の場合：
-  - rootCauseValues は master_spec 11.1.1 の写真不足フラグ（PHOTO_INSUFFICIENT 相当）のみを許容する。
-
-最小ルール（固定）：
-- rootCauseKind/rootCauseValues を付与できない（起点が曖昧）場合は、空のままでもよい（判断権の原則）。
-  その場合は requestSummary/memo で監督判断に寄せる。
-- 付与する場合でも、値は上記の固定集合参照のみ（自由語の新設は禁止）。
-
-禁止事項（固定）：
-- UIや人が、未定義語を rootCauseValues に入れない（固定集合外はNG）。
-- 起点が曖昧なのに “推測” で rootCause を埋めない（曖昧さは REVIEW のまま保持）。
 
 禁止事項（固定）：
 - payloadVersion を勝手に変えない（変更は diff で本節更新）
