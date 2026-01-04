@@ -603,6 +603,31 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 重要イベント（UF/完了/再同期/競合/回収）は logs/system（または同等の台帳ログ）に必ず記録する。
 - 記録は監督の根拠であり、UI/人が確定値を作るために使用しない（判断権の原則）。
 
+### 再同期（Reconcile / Resync）責務（固定）
+
+- 定義（固定）:
+  - 再同期とは「Ledger（台帳）の確定状態を UI に再投影して整合を回復する」ことである。
+  - UI の値で Ledger を上書きする用途に使用しない（UI→Ledger は素材入力のみ）。
+- トリガ（固定）:
+  - 手動（管理の指示）
+  - BLOCKER 解消後（回収完了）
+  - 定期（任意：運用で採用する場合のみ。実装PRで固定）
+- 入力（最小セット｜固定）:
+  - Order_ID
+  - target（Order / Parts / Expense / Recovery Queue）
+  - reason（なぜ再同期するか）
+  - requestedAt（要求時刻）
+- 競合（固定）:
+  - 再同期の結果、競合（Ledger と UI の不整合、重複イベント、素材不一致）が検出された場合は自動で辻褄合わせをしない。
+  - Recovery Queue（OPEN）へ登録し、監督回収へ寄せる。
+- 冪等（固定）:
+  - resyncKey = Hash(Order_ID + target + reason + requestedAt)
+  - 同一 resyncKey の再実行は「結果を増殖させない」（重複通知・重複タスク禁止）。
+- 出力（固定）:
+  - projectedAt（投影時刻）
+  - diffSummary（投影差分の要約）
+  - ledgerHead（投影に使った Ledger の基準（例：hash/timestamp））
+
 ## Recovery Queue（Phase-2）
 
 ### 目的
