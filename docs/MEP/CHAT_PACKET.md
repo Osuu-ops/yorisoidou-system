@@ -5,6 +5,13 @@
 - 先頭に「今回の目的（1行）」を追記しても良い。
 - AIは REQUEST 形式で最大3件まで、必要箇所だけ要求する。
 
+### HANDOFF_TRIGGER（引っ越し）
+
+- あなたが「引っ越し」または「引っ越ししたい」と言ったら、
+  AIは次の **1行だけ** を返す（説明なし）：
+
+yorisoidou-system/docs/MEP/CHAT_PACKET.md
+
 ---
 
 ## START_HERE.md（入口）  (START_HERE.md)
