@@ -1,34 +1,12 @@
-# PATCH: derive BUSINESS master_spec from STATE_CURRENT (CURRENT_SCOPE)
-$STATE_CURRENT_PATH = "docs/MEP/STATE_CURRENT.md"
-if (-not (Test-Path $STATE_CURRENT_PATH)) { throw "Missing: docs/MEP/STATE_CURRENT.md" }
-
-$state = Get-Content -LiteralPath $STATE_CURRENT_PATH -Raw -Encoding UTF8
-
-# Extract first scope line like: - platform/MEP/03_BUSINESS/<NAME>/**
-$scopeLine = ($state -split "
-" | Where-Object { $_ -match '^\s*-\s*platform/MEP/03_BUSINESS/.+/\*\*' } | Select-Object -First 1)
-if (-not $scopeLine) { throw "Cannot derive BUSINESS scope from STATE_CURRENT.md" }
-
-$scopeLine = $scopeLine.Trim()
-# Remove leading "- " then strip trailing "/**"
-$scopePath = ($scopeLine -replace '^\s*-\s*', '')
-$scopePath = ($scopePath -replace '/\*\*\s*$', '')
-
-# Canonical master_spec is under that folder
-$BUSINESS_MASTER_SPEC = Join-Path $scopePath "master_spec"
-if (-not (Test-Path $BUSINESS_MASTER_SPEC)) {
-  throw "Cannot find BUSINESS master_spec at derived path: $BUSINESS_MASTER_SPEC"
-}
-# END PATCH
-param()
+﻿param()
 
 $ErrorActionPreference = "Stop"
 
 # CHAT_PACKET_MIN generator (PS5.1-safe)
-# - No hardcoded non-ASCII path literals
-# - Dynamically resolves BUSINESS master_spec under platform/MEP/03_BUSINESS/*/master_spec
+# - param() is the FIRST statement (prevents ParserError)
+# - Avoids non-ASCII hardcoded literals in code (dynamic BUSINESS path)
 # - Includes IDEA_INDEX if present
-# - Normalizes embedded text to LF
+# - Normalizes embedded content to LF
 
 $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $headSha = (& git rev-parse HEAD).Trim()
@@ -38,8 +16,12 @@ try { $repoUrl = (& git remote get-url origin).Trim() } catch { $repoUrl = "" }
 
 function Resolve-BusinessMasterSpecPath {
   $all = (& git ls-tree --full-tree -r HEAD --name-only) | ForEach-Object { $_.Trim() }
+
+  # Prefer extensionless master_spec under BUSINESS
   $cands = @($all | Where-Object { $_ -like "platform/MEP/03_BUSINESS/*/master_spec" })
   if ($cands.Count -eq 0) { throw "Cannot find BUSINESS master_spec under platform/MEP/03_BUSINESS/*/master_spec." }
+
+  # Prefer one whose sibling ui_spec.md exists
   foreach ($p in $cands) {
     $dir = (Split-Path $p -Parent) -replace "\\","/"
     $ui  = "$dir/ui_spec.md"
