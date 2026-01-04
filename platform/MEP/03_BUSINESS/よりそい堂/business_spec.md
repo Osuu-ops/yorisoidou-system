@@ -133,7 +133,11 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 
 ### 完了時に起きる業務（概要）
 - Order の完了日時・状態更新・最終同期日時の更新。
-- DELIVERED 部材の USED 化、EX/Expense の確定、未使用部材の STOCK 戻し。
+- 部材（PARTS）の確定：
+  - DELIVERED 部材の USED 化（使用確定）。
+  - 未使用部材の STOCK 戻し（LOCATION 整合必須）。
+- 経費（EXPENSE）の確定：
+  - USED（使用確定）になった BP の PRICE を根拠に、確定経費として記録する。
 - 不備（価格未入力 / 写真不足 / LOCATION 不整合 等）は管理警告対象。
 
 ### 禁止事項
@@ -274,6 +278,7 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - PRICE 推測代入。
 - EXP_ID 再発番/再利用。
 - Order_ID 無しの経費混在（例外運用をする場合は別途定義して停止）。
+
 
 
 
