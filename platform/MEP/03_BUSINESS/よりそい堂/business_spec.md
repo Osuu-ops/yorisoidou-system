@@ -297,5 +297,20 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - WORK: 「不備（価格未入力 / 写真不足 / LOCATION 不整合 等）は管理警告対象」
 - PARTS: PRICE/LOCATION の不変条件、未使用 STOCK 戻しの LOCATION 整合
 - EXPENSE: PRICE は確定値のみ（推測代入禁止）
+## EXCEPTIONS（Phase-1）
 
+### 目的
+- Phase-1 で「許可する例外」と「禁止する例外」を固定し、運用判断のブレを防ぐ。
+
+### 許可（Phase-1 で扱う）
+- Order_ID 無しの発注は「在庫発注」として許可する（STATUS=STOCK_ORDERED）。
+  - 参照: PARTS（部材）章「Order_ID の無い発注は STOCK_ORDERED」。
+  - 注: 後から Order に紐づけ直す運用を行う場合は、危険修正（申請/FIX）として扱い、別途手順を定義する。
+
+### 禁止（Phase-1 では扱わない）
+- Order_ID 無しの経費は禁止する（台帳混在させない）。
+  - 必要な場合は Phase-2 で例外運用として別途定義してから解禁する。
+
+### 補足（規約の再確認）
+- BM は PRICE=0（経費対象外）であり、経費として記録しない。
 
