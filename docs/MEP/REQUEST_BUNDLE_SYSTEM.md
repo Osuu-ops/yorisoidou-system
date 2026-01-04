@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 107604
+- included_total_bytes: 108017
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -519,11 +519,11 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/INDEX.md
-- sha256: bca9213eff86c124897517d5590e5bf7bc2911a2d3b6a2665c787c0c4f295ddb
-- bytes: 2189
+- sha256: 3ae34213ad7b0bacb33fbcbbf5ac287c3555438530932b302662a1f60924f814
+- bytes: 2303
 
 ```text
-﻿# MEP INDEX（入口） v1.0
+# MEP INDEX（入口） v1.0
 
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
@@ -591,6 +591,9 @@ scope-guard enforcement test 20260103-002424
 
 ## RUNBOOK（追加）
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
+
+## DOC_STATUS（追加）
+- [DOC_REGISTRY](./DOC_REGISTRY.md)  — 文書状態台帳（ACTIVE/STABLE/GENERATED）
 ```
 
 
@@ -975,14 +978,18 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 45fc47c02e5561a70887f9d6043e1046e3a2b60be4285cb1fadd8cdeaeb1e7fc
-- bytes: 555
+- sha256: 9d56bccb19695b44d30a5421786419b7025cb15f05fabada464d473393ed82a3
+- bytes: 760
 
 ```text
 # STATE_CURRENT (MEP)
 
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
+
 ## CURRENT_SCOPE (canonical)
-- platform/MEP/03_BUSINESS/よりそい堂/**
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・**
 
 ## Guards / Safety
 - Text Integrity Guard (PR): enabled
@@ -1002,8 +1009,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: f6d36f6ae08ba80cfe250bcff60033504c93d05544b537f5feabea466d141d72
-- bytes: 2035
+- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
+- bytes: 2129
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1030,6 +1037,7 @@ Tell the assistant:
 
 ## STATE_CURRENT の主要見出し
 - STATE_CURRENT (MEP)
+- Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
 - Current objective
@@ -1054,6 +1062,7 @@ Tell the assistant:
 ---
 
 ## INDEX の主要見出し
+- MEP INDEX（入口） v1.0
 - 参照順（固定）
 - Links
 - RUNBOOK（復旧カード）
@@ -1070,6 +1079,7 @@ Tell the assistant:
 - Tools
 - Lease / Continue Target（追加）
 - RUNBOOK（追加）
+- DOC_STATUS（追加）
 ```
 
 
