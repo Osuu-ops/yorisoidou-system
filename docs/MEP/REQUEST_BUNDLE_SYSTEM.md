@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108009
+- included_total_bytes: 107461
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: f9f191f6245718d3689699c2978ef6b559dff0ff99eb111dd2ad57932cfbffbf
-- bytes: 12210
+- sha256: 279a819bf803ab3d145f02d98d3f5c8fa5390f56377d45df17f70634d8c7d497
+- bytes: 11662
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -115,42 +115,17 @@
 
 ### HANDOFF_TRIGGER（引っ越し）
 
-- あなたが「引っ越し」または「引っ越ししたい」と言ったら、
-  AIは次の **1行だけ** を返す（説明なし）：
+あなたがこのチャットで「引っ越ししたい」と言ったら、AIは必ず次を返す（余計な説明なし）。
 
+1) パス（固定・1行）
 yorisoidou-system/docs/MEP/CHAT_PACKET.md
 
----
+2) 引継ぎメモ（短文・自由文／最大3行）
+- いま進めていること（何の作業中か）
+- 現在地（main clean / open PR 0 など事実1行）
+- 次にやる1手（1テーマ=1PRで何をするか）
 
-## START_HERE.md（入口）  (START_HERE.md)
-```
-﻿# START_HERE（MEP入口） v1.1
-
-## 役割
-本書は新チャット開始の唯一の入口である。
-新チャット1通目は「目的（1行）」＋本書を貼って開始する。
-
----
-
-## 最小手数の推奨（貼り付け）
-- 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
-- CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
-
----
-
-## 参照順（固定）
-1. docs/MEP/STATE_CURRENT.md（現在地）
-2. docs/MEP/ARCHITECTURE.md（構造）
-3. docs/MEP/PROCESS.md（手続き）
-4. docs/MEP/GLOSSARY.md（用語）
-5. docs/MEP/GOLDEN_PATH.md（完走例）
-
----
-
-## AIの要求ルール（必須）
-- 「全部貼れ」「大量ファイル貼れ」は禁止。
-- 追加が必要な場合のみ、最大3件まで、必ず次の形式で要求する。
-
+※ID指定は不要。短文で「この話の続きをする」確証が得られれば十分。
 ### REQUEST
 - file: <ファイルパス>
 - heading: <見出し名>
