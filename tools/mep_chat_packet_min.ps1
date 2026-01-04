@@ -1,4 +1,26 @@
-﻿param()
+# PATCH: derive BUSINESS master_spec from STATE_CURRENT (CURRENT_SCOPE)
+$STATE_CURRENT_PATH = "docs/MEP/STATE_CURRENT.md"
+if (-not (Test-Path $STATE_CURRENT_PATH)) { throw "Missing: docs/MEP/STATE_CURRENT.md" }
+
+$state = Get-Content -LiteralPath $STATE_CURRENT_PATH -Raw -Encoding UTF8
+
+# Extract first scope line like: - platform/MEP/03_BUSINESS/<NAME>/**
+$scopeLine = ($state -split "
+" | Where-Object { $_ -match '^\s*-\s*platform/MEP/03_BUSINESS/.+/\*\*' } | Select-Object -First 1)
+if (-not $scopeLine) { throw "Cannot derive BUSINESS scope from STATE_CURRENT.md" }
+
+$scopeLine = $scopeLine.Trim()
+# Remove leading "- " then strip trailing "/**"
+$scopePath = ($scopeLine -replace '^\s*-\s*', '')
+$scopePath = ($scopePath -replace '/\*\*\s*$', '')
+
+# Canonical master_spec is under that folder
+$BUSINESS_MASTER_SPEC = Join-Path $scopePath "master_spec"
+if (-not (Test-Path $BUSINESS_MASTER_SPEC)) {
+  throw "Cannot find BUSINESS master_spec at derived path: $BUSINESS_MASTER_SPEC"
+}
+# END PATCH
+param()
 
 $ErrorActionPreference = "Stop"
 
