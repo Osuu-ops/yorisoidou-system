@@ -1,4 +1,4 @@
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
