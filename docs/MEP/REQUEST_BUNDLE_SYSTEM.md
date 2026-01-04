@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 111222
+- included_total_bytes: 111581
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 525b7102f7851a3f8be1fca83ad19c1757012fbb8ddffd3a57fcf59ba0412149
-- bytes: 15243
+- sha256: dd747df5e7567ecae944c16fefeac256fdae401196dd3d1f8bf5604f4e527ed6
+- bytes: 15602
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -467,6 +467,17 @@ scope-guard enforcement test 20260103-002424
 ## PowerShell 実行環境（必須）
 - MEP 操作は **pwsh（PowerShell 7）** を使用する（Windows PowerShell 5.1 は禁止）。
 - 5.1 で起動してしまった場合は tools/mep_pwsh_guard.ps1 の方式で pwsh に転送して実行する。
+
+## Autopilot（自動エラー回し／open PR 収束）
+
+### 使い方（1回コピペ）
+- open PR が 0 なら即終了。
+- safe PR は自動で merge/close。
+- manual PR が残った場合は一覧だけ出して停止（＝あなたの判断待ち）。
+
+~~~powershell
+.\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
+~~~
 ```
 
 ---
