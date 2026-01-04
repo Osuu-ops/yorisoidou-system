@@ -218,7 +218,7 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -294,7 +294,7 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ## PROCESS.md（実行テンプレ）  (docs/MEP/PROCESS.md)
 ```
-﻿# PROCESS（手続き） v1.1
+# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -303,6 +303,11 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 ---
 
 ## 基本原則（必須）
+
+## docs/MEP 生成物同期（必須）
+- docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
+- Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
+- 失敗時は「Chat Packet Update (Dispatch) → 生成PRをマージ → 元PRへ戻る」で復旧する。
 - 変更は必ず PR で行う（main 直コミット禁止）
 - Required checks（semantic-audit / semantic-audit-business）が OK のみマージ可能
 - 変更スコープは1つだけ（混ぜない）
