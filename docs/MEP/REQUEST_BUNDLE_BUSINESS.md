@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 268971
+- included_total_bytes: 273819
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1949,11 +1949,11 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 5a6d67358d902ea24fa0369ed66a903ad5a5a6d54b1c9b86a3f895ebfb0c320b
-- bytes: 28868
+- sha256: 1a52159d174b27a0c761d447dbec69f287ad6d40715cd7be2d32202c2d7a45d4
+- bytes: 33716
 
 ```text
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -2527,6 +2527,80 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - UI は ID を入力させない（表示・参照は許可）。
 - UI は「確定の意思」を入力させる（採用行確定、納品確定、価格確定、完了報告）。
 - ID 発行は確定処理が行い、UI は発行結果を表示する。
+## Integration Contract（Phase-2｜Todoist×ClickUp×Ledger 統合契約）
+
+### 目的
+- Todoist（現場）と ClickUp（管理）を併用しつつ、台帳（Ledger）を唯一の正として破綻なく同期するための契約を固定する。
+- 「双方向」「スイッチ」「更新（再同期）」「競合」「冪等」を曖昧にせず、汚染・バグの再発を防ぐ。
+- 実装手段（GAS/関数名/Webhook方式等）は定義しない（運用契約のみ）。業務の意味は master_spec を唯一の正として参照する。
+
+### 正の階層（Authority｜固定）
+- Ledger（台帳：Sheets 等）：業務データの唯一の正（Order/Parts/Expense/Request/Recovery Queue 等）。
+- Orchestrator（業務ロジック）：正式値（住所/ID/STATUS/PRICE/健康スコア/警告）を確定する唯一の決定者（実装手段は問わない）。
+- Field UI（現場 UI）：完了報告の起点 UI。現場の入力は「素材」であり、確定は Orchestrator が行う。
+- Management UI（管理 UI）：監督・警告受信・優先度管理。**入力禁止（確定値を作らない）**。
+- AI補助：素材抽出・監査・警告候補のみ（判断禁止）。
+
+### 双方向同期の定義（固定）
+本契約における「双方向」とは、**相互に確定値を書き換え合うことではない**。
+- Ledger → UI（投影）：Ledger の確定情報を、現場/管理 UI へ参照情報として反映する。
+- UI → Ledger（素材入力）：UI で許可された入力（例：現場完了コメント）を、確定処理の素材として受け取る。
+禁止：
+- 管理 UI（ClickUp）からの入力を Ledger の確定値として取り込むこと。
+- UI が STATUS / PRICE / ID 等を確定すること。
+
+### 同期対象（最小セット｜固定）
+1) Ledger → Field UI（現場）
+- Order_ID
+- 顧客名（表示用）
+- addressCityTown（正式値）
+- 媒体（表示用）
+- AA群（必要時：タスク名反映）
+
+2) Ledger → Management UI（管理）
+- Order_ID / 顧客名 / addressCityTown
+- STATUS（参照のみ）
+- alertLabels（参照のみ）
+- 健康スコア（参照のみ）
+- 未処理（OPEN）有無（Request / Recovery Queue）
+- BLOCKER/WARNING の要点（理由・対象ID）
+
+3) UI → Ledger（素材として受けるもの）
+- 現場完了：完了日時、完了コメント全文（未使用部材抽出素材）
+- 追加報告：写真・説明等（確定は Orchestrator）
+- 価格入力：確定値のみ（推測代入禁止）
+
+### スイッチ（切替）の意味（固定）
+切替は「併用を成立させる統治スイッチ」であり、入力経路や同期範囲を安全に制御する。
+- IntegrationMode（統合モード）：
+  - DUAL（標準）：現場 UI + 管理 UI に投影する。
+  - FIELD_ONLY：現場 UI のみ投影する。
+  - MGMT_ONLY：管理 UI のみ投影する（例外運用）。
+  - LEDGER_ONLY：外部連携を停止し台帳のみで運用する。
+- FieldSource（現場完了の唯一入口）：**TODOIST** を唯一の正として固定する（併用は競合が常態化するため原則禁止）。
+- maintenanceMode：master_spec の定義に従い、true の間は更新系を停止し閲覧・検査・ログを優先する（連携も停止側へ寄せる）。
+
+### 冪等（Idempotency）と更新（再同期）の契約（固定）
+- 次のイベントは冪等でなければならない：
+  - UF01 / UF06（発注・納品）/ UF07 / UF08 / 完了同期 / 更新（再同期）
+- 同一イベントの重複到達（再送・二重起動）は、結果を増殖させない（二重行・二重通知禁止）。
+- 更新（再同期）は「Ledger の確定状態を UI に再投影して整合を回復する」ことを主目的とする。
+  - UI の値で Ledger を上書きする用途に使用しない。
+
+### 競合・破綻の扱い（固定）
+競合例：
+- 同一 Order_ID に対して短時間に複数の完了イベントが到達する。
+- 入力素材（完了コメント等）が一致しない。
+- Ledger の確定状態と UI 投影が不整合になる。
+処理：
+- 自動で辻褄合わせをしない。
+- **Recovery Queue（OPEN）へ登録**し、監督回収に寄せる。
+- 勝手に RESOLVED にしない（解消は根拠を伴う）。
+
+### 観測（ログ）最小要件（固定）
+- 重要イベント（UF/完了/再同期/競合/回収）は logs/system（または同等の台帳ログ）に必ず記録する。
+- 記録は監督の根拠であり、UI/人が確定値を作るために使用しない（判断権の原則）。
+
 ## Recovery Queue（Phase-2）
 
 ### 目的
@@ -2577,6 +2651,7 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - Form → Ledger Mapping（Phase-2）が存在し、フォーム入力が Order/Parts/Expense/Warnings にどう記録されるかが固定されている。
 - ID Issuance & UI Responsibility（Phase-2）が存在し、PART_ID/OD_ID/AA/PA/MA/EXP_ID の発行責務とタイミングが固定されている。
 - Recovery Queue（Phase-2）が存在し、BLOCKER/WARNING の回収（登録→通知→解消→記録）が固定されている。
+- Integration Contract（Phase-2）が存在し、統合の責務分界・同期範囲・切替・冪等・競合時の回収が固定されている。
 ```
 
 
