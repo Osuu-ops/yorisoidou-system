@@ -1,0 +1,37 @@
+﻿name: MEP Dispatch
+description: Run MEP via GitHub (UI入口). One theme = one PR.
+title: "[MEP] <theme>"
+labels: ["mep-dispatch"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is an execution request for MEP. Do not paste large files. Describe intent and payload.
+  - type: input
+    id: theme
+    attributes:
+      label: theme
+      description: One theme = one PR (e.g., health_score, doc_split_policy)
+      placeholder: health_score
+    validations:
+      required: true
+  - type: dropdown
+    id: intent
+    attributes:
+      label: intent
+      description: What to do
+      options:
+        - OBSERVE
+        - UPDATE_SPEC
+        - REGENERATE
+    validations:
+      required: true
+  - type: textarea
+    id: payload
+    attributes:
+      label: payload
+      description: Free text instructions or spec text to add. Keep it small.
+      placeholder: |
+        Add health-score deduction rules to master_spec section 9.4 ...
+    validations:
+      required: true
