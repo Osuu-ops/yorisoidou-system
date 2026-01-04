@@ -378,6 +378,18 @@ scope-guard enforcement test 20260103-002424
 ~~~powershell
 .\tools\mep_autopilot.ps1 -MaxRounds 120 -SleepSeconds 5 -StagnationRounds 12
 ~~~
+
+## Autorecovery（よくある詰まりの自動解消）
+この節は「危険でないのに毎回詰まる」パターンを、手順として固定して再発をゼロにする。
+
+- PR作成前に必ず push する（Head ref not a branch / sha blank 防止）:
+  - `git push -u origin HEAD`
+- `gh` の `--json` 引数は PowerShell で分割されやすいので、常に全体をクォートする:
+  - 例: `gh pr view 123 --json "state,mergeStateStatus,url"`
+- PowerShell では `-q`（jq式）周りのクォート事故が起きやすい。原則として:
+  - `--json ...` の出力を `ConvertFrom-Json` で処理する（`-q` 依存を避ける）。
+- 誤って main に戻ってしまった場合でも、人間判断なしで復旧できるようにする:
+  - 「作業ブランチ候補を自動検出 → checkout → push → PR作成/再利用 → auto-merge → main同期」を 1ブロックで実行する。
 ```
 
 ---
