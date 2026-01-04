@@ -1,4 +1,4 @@
-﻿# IDEA_VAULT（アイデア避難所） v1.0
+# IDEA_VAULT（アイデア避難所） v1.0
 
 本書は、チャット引っ越し・並走・汚染の中でも「アイデアが散逸しない」ための最小避難所である。
 
@@ -25,11 +25,12 @@
 ## ACTIVE（現役：引っ張り出し対象）
 
 ### IDEA_ID: IDEA:e61113b095cb
-- TITLE: (captured)
-- DESC: & {
-- STATUS: candidate
+- TITLE: IDEA capture tooling (implemented)
+- DESC: One-paste capture wrapper idea; implemented as scripts + merged PR
+- STATUS: implemented
 - TAGS:
 - SOURCE: chat -> clipboard capture
+- RESULT: implemented (PR #407)
 - BODY:
   - & {
   -   $ErrorActionPreference = "Stop"
