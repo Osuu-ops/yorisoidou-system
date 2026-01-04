@@ -21,6 +21,7 @@
 - tools/mep_idea_receipt.ps1
 - tools/mep_chat_packet_min.ps1
 - tools/mep_pwsh_guard.ps1
+- tools/mep_gate_doctor.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
