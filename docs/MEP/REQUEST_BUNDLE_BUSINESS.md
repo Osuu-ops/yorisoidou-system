@@ -42,7 +42,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 237370
+- included_total_bytes: 239315
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2424,8 +2424,8 @@ ROLE: UI_MASTER (screen/components/field mappings)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 6ca476394f868d0d615d48ce862a3cd4f4dfa02bd61f10811fe04556b9949b07
-- bytes: 4412
+- sha256: c2d636394d055256ca82a15219f00f3b233c9273954e9b38f182111fd74b6ff4
+- bytes: 6357
 
 ```text
 <!--
@@ -2594,6 +2594,38 @@ DOC系の業務定義（唯一の正）は master_spec を参照する：
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec
   - 10.3 DOC（書類リクエスト）
   - 10.4 DOC系ステータスと導線（見積／請求／領収｜業務定義）
+
+## ALERT_LABELS（表示／導線のみ）
+
+本節は「管理警告ラベル」を UI 上でどこにどう表示するかの導線を定義する。
+業務上の意味・判定・列挙は master_spec が唯一の正であり、本 ui_spec は再定義しない。
+
+参照（唯一の正）：
+- platform/MEP/03_BUSINESS/よりそい堂/master_spec
+  - 8.4 管理警告（業務要件）
+  - 8.4.1 管理警告ラベル（固定｜監督UIの表示根拠）
+  - 11.1.1 写真不足フラグの根拠
+  - 11.1.2 違和感素材フラグ（signals）
+
+表示位置（推奨・固定）：
+1) 管理タスク（監督UI）
+- タスク名や本文の上部に「警告ラベル」を一覧表示する。
+- 表示は短いラベル（例：PHOTO_INSUFFICIENT / ADDRESS_VARIANCE 等）を基本とし、必要なら日本語補足を併記する。
+- 複数ラベルがある場合は並列表示し、優先順位は UI で強制しない（監督判断）。
+
+2) OV01（閲覧カルテ）
+- 健康スコア付近、または概要セクションに「警告ラベル」を一覧表示する。
+- ラベルクリック（または展開）で、該当する根拠（写真不足／signals種別）への説明表示へ遷移してよい。
+
+表示ルール（固定）：
+- UI はラベルを“確定”しない。業務ロジックが確定したラベルを表示するのみ。
+- 未確定（判定不能）の場合はラベルを出さない。曖昧さは REVIEW 申請導線へ誘導する。
+
+導線（固定）：
+- ALERT_REQUEST_PENDING_* がある場合は、申請一覧（Request）への導線を表示してよい。
+- ALERT_PHOTO_INSUFFICIENT がある場合は、写真セクション（before/after）への導線を表示してよい。
+- ADDRESS_VARIANCE / TIME_ANOMALY / TEXT_ANOMALY / PARTS_INCONSISTENCY がある場合は、
+  “違和感素材” セクション（signals一覧）への導線を表示してよい。
 ```
 
 
