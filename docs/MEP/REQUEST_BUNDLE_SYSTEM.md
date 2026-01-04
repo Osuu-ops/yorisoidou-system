@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 111581
+- included_total_bytes: 112709
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: dd747df5e7567ecae944c16fefeac256fdae401196dd3d1f8bf5604f4e527ed6
-- bytes: 15602
+- sha256: 2066a80bc9e34090828ece640804ef0134fee4346870fa4f21dbb9f118b007b7
+- bytes: 16538
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -134,6 +134,9 @@
 
 - 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
 - CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
 
 ---
 
@@ -358,7 +361,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -375,6 +378,8 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## Current objective
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
 
 ## How to start a new conversation
 Tell the assistant:
@@ -435,7 +440,7 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ## PROCESS.md（実行テンプレ）  (docs/MEP/PROCESS.md)
 ```
-# PROCESS（手続き） v1.1
+﻿# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -443,8 +448,11 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ---
 
-## 基本原則（必須）
 
+## Post-merge（必須）
+- MERGE後、docs/MEP/STATE_CURRENT.md に `YYYY-MM-DD: (PR #NNN) 要点` を 1〜3行だけ追記する（肥大化禁止）。
+- 追記対象：運用ルール・ゲート・境界、または BUSINESS の契約/責務分界/同期/冪等/競合回収。
+- 禁止：長文化、全文貼替、整形だけコミット、DOC_REGISTRYで GENERATED とされる生成物を手で直すこと。
 ## docs/MEP 生成物同期（必須）
 - docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
 - Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
@@ -1031,11 +1039,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 88b5d1cf39264a1459fdfd9ec2610b61d17071341fbdc4e498e8a3c112c0ca9f
-- bytes: 932
+- sha256: 8ed44193444601bcdae13ecdd04c325ea12fc7bac1e917594289d041d4391115
+- bytes: 1146
 
 ```text
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -1052,6 +1060,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ## Current objective
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
 
 ## How to start a new conversation
 Tell the assistant:
@@ -1063,8 +1073,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
-- bytes: 2129
+- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
+- bytes: 2107
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1090,7 +1100,6 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
