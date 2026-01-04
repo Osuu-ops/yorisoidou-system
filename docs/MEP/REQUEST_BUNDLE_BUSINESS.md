@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 285732
+- included_total_bytes: 286127
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -92,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: c4e6446a6615d05ad8cc70a3b995fa88d80acfe50428a7daf45331d473b733e0
-- bytes: 17474
+- sha256: e1a956dec0b66317f4e1d43ab9c3fc02cb94254bfc5b207d3d83539dfd3640c5
+- bytes: 18462
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -272,7 +272,7 @@ checks:
 
 ## AI_BOOT.md（AI挙動固定）  (docs/MEP/AI_BOOT.md)
 ```
-# AI_BOOT（AI挙動固定） v1.0
+﻿# AI_BOOT（AI挙動固定） v1.0
 
 ## 目的
 本書は、新チャットでAIが迷わず進行するための「要求フォーマット」と「禁止事項」を固定する。
@@ -305,6 +305,32 @@ AIは本書に従ってのみ情報要求を行う。
 
 ## 採否判断ゲート（コード生成の前に必須）
 
+
+## 意思決定ゲート（Decision Gate｜コード禁止）
+
+テーマが来たら、AIは必ず **次だけ** を返す（コード／コマンド／手順は禁止）：
+
+- 目的（何を解決するか）
+- 前提（制約／触って良い範囲／触らない範囲）
+- 選択肢（最大3案）
+- 評価（良い/悪い、リスク、コスト、DoD）
+- 推奨案（AIの結論）
+- 最終確認（採用/不採用/保留を選ばせる）
+
+## 実装ゲート（Adoption Trigger｜採用宣言が出るまでコード禁止）
+
+ユーザーが明示したときだけコード解禁：
+
+- 「採用して進めて」
+- 「この内容で採用」
+- 「実装に入って」
+
+この宣言が無い限り、AIは **コマンドも手順も出さない**。
+
+## 例外（人間が命令したときだけ）
+
+ユーザーが「今すぐそのコマンドを出して」等を明示した場合のみ、その瞬間だけコマンドを出す。
+それ以外は出さない。
 ### 原則（正式採用）
 - テーマ提示だけでは、AIはコード/コマンド/手順を出さない（深掘り→採否判断が先）。
 - 人間が「採用/実装開始」を明示した場合のみ、実装フェーズへ進む。
@@ -1979,8 +2005,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 5307aaafd90f802be57c44132b89f0b6c37a61badf8886da79168cd64b87cb3c
-- bytes: 43047
+- sha256: 05f920476a46aeb35a084e4d09f6824b6989102d04bcfb8ee12cb21f0fd64788
+- bytes: 42454
 
 ```text
 <!--
@@ -2465,60 +2491,17 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - PRICE（確定値のみ）
   - USED_DATE
   - CreatedAt
-- Warnings / Blockers（管理回収）:
+- Warnings / Blockers（管理回収）:（= Recovery Queue）
   - Order_ID
   - category（BLOCKER / WARNING）
-  - reason（例：PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備）
+  - reason（例：PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備 / 必須未入力）
   - detectedAt（検出日時）
-  - resolvedAt（解消日時：運用）
-
-### フォーム別の書き込み先（固定）
-
-#### 1) 現場完了フォーム（WORK 完了報告）
-- Order:
-  - workDoneAt ← `workDoneAt`
-  - workDoneComment ← `workDoneComment`
-  - orderStatus / STATUS ← 完了同期で更新（Phase-1: WORK 参照）
-  - lastSyncedAt ← 完了同期実行時刻
-- Parts:
-  - 未使用部材抽出（workDoneComment）→ 対象 PART_ID の STATUS を STOCK に戻す（LOCATION 整合必須）
-  - DELIVERED → USED 化（完了同期で確定）
-- Expense:
-  - USED（使用確定）になった BP の PRICE を根拠に Expense を確定（Phase-1: EXPENSE 参照）
-- Warnings/Blockers:
-  - 写真不足 → WARNING
-  - 抽出不備 → WARNING（在庫戻し対象がある場合は BLOCKER に昇格し得る）
-  - LOCATION 不整合 → BLOCKER
-  - BP の PRICE 未確定 → BLOCKER
-
-#### 2) UF06-ORDER（発注確定）
-- Parts:
-  - 採用行確定 → PART_ID / OD_ID を発行し STATUS=ORDERED（Order_ID 無しなら STOCK_ORDERED）
-  - BM は PRICE=0（経費対象外）
-- Warnings/Blockers:
-  - 発注確定意思が無い（採用行無し）→ BLOCKER（確定処理を停止）
-
-#### 3) UF06-DELIVER（納品確定）
-- Parts:
-  - STATUS=DELIVERED
-  - DELIVERED_AT を記録
-  - BP の PRICE を確定（未確定は BLOCKER）
-  - LOCATION（運用入力；STOCK対象で必須）
-- Warnings/Blockers:
-  - PRICE 未確定（BP）→ BLOCKER
-  - LOCATION 欠落（STOCK対象）→ WARNING（在庫戻し対象では BLOCKER に昇格し得る）
-
-#### 4) UF07-PRICE（価格入力）
-- Parts:
-  - BP の PRICE を確定（状態は原則維持）
-- Warnings/Blockers:
-  - PRICE 未入力 → BLOCKER
-  - 推測代入 → BLOCKER
-
-#### 5) EXPENSE-ADD（経費の手動追加：将来UI/運用）
-- Expense:
-  - Order_ID / PRICE / USED_DATE / 対象（摘要）を記録（許可する場合の最小セット）
-- Warnings/Blockers:
+  - detectedBy（検出契機：WORK完了 / UF06 / UF07 / 手動）
+  - details（原文/補足：例 完了コメント、写真不足の内訳 等）
+  - status（OPEN / RESOLVED）
+  - resolvedAt（解消日時）
+  - resolvedBy（解消者）
+  - resolutionNote（解消メモ）
   - Order_ID 無し経費 → BLOCKER（Phase-1 方針）
 ## ID Issuance & UI Responsibility（Phase-2）
 
@@ -2657,9 +2640,21 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - WARNING:
   - 同期は継続し、回収キューへ登録する（運用で回収）。
   - 次回以降の同期で自動解消はしない（人の解消を原則とする）。
+### どこへ記録するか（実装境界｜固定）
 
-### どこへ記録するか（実装境界）
-- 仕様上は「回収キュー（台帳）」として記録する。
+- 唯一の正（Authority）は Ledger（台帳）である。
+- Recovery Queue は Ledger に「回収キュー台帳」として 1 行で記録する（例：Sheets の Recovery_Queue シート）。
+- Todoist / ClickUp は “投影（通知・作業管理）” であり、Ledger の確定値を上書きしない（管理UI入力禁止の原則）。
+- 相互参照（固定）:
+  - Ledger 行に taskIdTodoist / taskIdClickUp / url 等の参照IDを保持する（作業はタスクで進めてもよいが、状態の唯一の正は Ledger）。
+- 冪等（固定）:
+  - 登録キー（例）rqKey = Hash(Order_ID + category + reason + detectedBy + detectedAt)
+  - 同一 rqKey の再登録は「新規行を増やさず」更新で吸収する（重複通知・重複タスク禁止）。
+- 解消（固定）:
+  - status を RESOLVED に更新し、resolvedAt / resolvedBy / resolutionNote を記録する。
+  - Todoist/ClickUp の完了は “投影の反映” として行ってよいが、Ledger を自動で RESOLVED にしてはならない（根拠付き更新のみ）。
+
+
 - 実装では、次のいずれか（または併用）でよい：
   - 台帳（Sheets 等）に 1 行として追記
   - タスク（Todoist 等）を起票し、台帳には参照IDを残す
