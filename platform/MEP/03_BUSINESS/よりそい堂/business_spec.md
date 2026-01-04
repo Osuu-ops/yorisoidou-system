@@ -611,4 +611,15 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - LOCATION不整合: 対象部材の LOCATION が整合し、STOCK 戻しが可能であること。
 - 写真不足: 必要写真が追補されたこと（不足の内訳は details に記録）。
 - 抽出不備: 完了コメントの形式が修正され、未使用部材の抽出が可能であること。
+## DoD（Phase-2）
+
+### 目的
+- Phase-1 を実装へ落とし込むための入力仕様（フォーム分割・バリデーション・台帳マッピング・ID責務・回収運用）を固定し、実装が一本道で進められる状態を完了とする。
+
+### 完了条件（確認可能）
+- UI/Form Capture Spec（Phase-2）が存在し、入力タイミングと最小入力項目が定義されている。
+- UI/Form Split & Validation（Phase-2）が存在し、BLOCKER/WARNING へのマッピングが固定されている。
+- Form → Ledger Mapping（Phase-2）が存在し、フォーム入力が Order/Parts/Expense/Warnings にどう記録されるかが固定されている。
+- ID Issuance & UI Responsibility（Phase-2）が存在し、PART_ID/OD_ID/AA/PA/MA/EXP_ID の発行責務とタイミングが固定されている。
+- Recovery Queue（Phase-2）が存在し、BLOCKER/WARNING の回収（登録→通知→解消→記録）が固定されている。
 
