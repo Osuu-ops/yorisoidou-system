@@ -516,6 +516,40 @@ REVIEW（Category=REVIEW）：
 - reviewType     : HEALTH_CHECK / INCONSISTENCY / MISSING_INFO / APPROVAL（必須）
 - requestSummary : 依頼の短文（必須）
 - memo           : 補足（任意）
+3.7.2.1 REVIEW.reviewType（列挙と起点｜固定）
+
+目的：
+・REVIEW（監督レビュー要求）の reviewType を「どの不足／矛盾で上がるか」まで業務として固定し、
+  UI/人の恣意で“なんとなくREVIEW”を作らない状態にする。
+・RequestStatus=OPEN の未処理判定（3.7.3）と一体で運用し、健康スコア（9.4 D）と整合させる。
+
+reviewType（列挙｜固定）：
+- HEALTH_CHECK     : 定期点検／総合ヘルスチェック（運用起点）
+- INCONSISTENCY    : 矛盾（整合異常の疑い）
+- MISSING_INFO     : 不足（情報欠落の疑い）
+- APPROVAL         : 承認が必要（監督判断の要求）
+
+起点（固定｜最小マッピング）：
+A) 11.1.2 違和感素材フラグ（signals）=TRUE の場合
+- reviewType = INCONSISTENCY を推奨（住所ゆらぎ／時系列異常／文章異常／部材整合異常）
+
+B) 11.1.1 写真不足フラグ=TRUE の場合
+- reviewType = MISSING_INFO を推奨（before/after不足）
+
+C) 8.4.1 管理警告ラベルのうち “申請で解決すべき監督事項” の場合
+- ALERT_REQUEST_PENDING_* は reviewType を新規作成しない（既に Request が存在する状態）
+- その他の不足（例：PRICE未確定、未納品が残る 等）を “監督判断が必要” として申請化する場合は
+  reviewType = MISSING_INFO を推奨（ただし詳細方針は別テーマで固定してよい）
+
+最小ルール（固定）：
+- REVIEW は Order_ID を対象（targetType=Order_ID / targetId=Order_ID）とすることを原則とする。
+- 作成された REVIEW は RequestStatus=OPEN とする（3.7.3）。
+- UI/人は reviewType を “推測” で付与しない。起点が曖昧な場合は HEALTH_CHECK ではなく
+  INCONSISTENCY または MISSING_INFO のいずれかに寄せ、ResolutionNote に根拠を書く（任意）。
+
+禁止事項（固定）：
+- UIや人が、signals の内容判定（鮮明/不鮮明等）で reviewType を決めない（将来テーマ）。
+- REVIEW を RESOLVED/CANCELLED にする場合は ResolutionMetadata（3.7.4）に従う。
 
 禁止事項（固定）：
 - payloadVersion を勝手に変えない（変更は diff で本節更新）
