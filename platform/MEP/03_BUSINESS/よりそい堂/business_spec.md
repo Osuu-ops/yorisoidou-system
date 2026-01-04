@@ -795,6 +795,69 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - 自動で辻褄合わせをしない。
   - Recovery Queue（OPEN）へ登録し、監督回収に寄せる（Integration Contract に従属）。
 
+### Runtime Audit Checklist（expected/unexpected｜固定・参照用）
+
+#### 目的（固定）
+- 実行後に「必ず起きるべき副作用（expected effect）」と「起きてはならない副作用（unexpected effect）」を、イベント別に一覧化し、監査の探し回りをゼロにする。
+- 本節は監査観点の固定であり、実装方法・ログ形式の詳細は別テーマで扱う。
+
+#### 監査の原則（固定）
+- expected effect が欠落している場合：Runtime NG（破綻）として扱い、Recovery Queue（OPEN）へ登録する。
+- unexpected effect が発生した場合：Runtime NG（破綻）として扱い、Recovery Queue（OPEN）へ登録する。
+- 自動で辻褄合わせをしない（Integration Contract に従属）。
+
+#### イベント別 expected effect（最小｜固定）
+1) UF01_SUBMIT（受注登録）
+- Order_YYYY に 1 行以上の追加（Order_ID が発行済みである）
+- CU_Master / UP_Master は「新規 or 再利用」のいずれかが成立している（参照整合が壊れていない）
+- logs/system 相当へ記録が残る（参照用）
+
+2) UF06_ORDER（発注確定）
+- Parts_Master に新規行追加（PART_ID / OD_ID / STATUS=ORDERED or STOCK_ORDERED）
+- BP の PRICE は未確定を許容（BM は PRICE=0 固定）
+- Order_ID 無し発注は STOCK_ORDERED として扱われる（Phase-1 EXCEPTIONS）
+
+3) UF06_DELIVER（納品確定）
+- Parts_Master の対象 PART_ID が STATUS=DELIVERED へ遷移
+- DELIVERED_AT が記録されている
+- BP の PRICE は最終的に確定値で埋まる（未確定は BLOCKER として回収される）
+
+4) UF07_PRICE（価格確定）
+- Parts_Master の対象 PART_ID に PRICE が確定値で記録される
+- STATUS は原則変更しない（価格確定のみ）
+
+5) UF08_SUBMIT（追加報告）
+- 追加報告の記録が残る（logs/extra または Request/相当台帳）
+- OV01 参照で追跡可能な形（Order_ID 接続）が成立している
+
+6) WORK_DONE（現場完了）
+- Order の完了根拠（workDoneAt / workDoneComment）と最終同期が記録される
+- DELIVERED 部材の USED 化が成立する（対象が USED へ遷移）
+- BP（USED）の PRICE を根拠に Expense が確定記録される（EXP_ID 発行）
+- 未使用部材が抽出され、在庫戻し（STOCK）と LOCATION 整合が成立する（不整合は BLOCKER 回収）
+
+7) RESYNC（更新／再同期）
+- Ledger の確定状態が UI（現場/管理）へ再投影される（参照整合が回復する）
+- 冪等：同一 RESYNC の再実行で台帳が増殖しない
+
+#### イベント別 unexpected effect（代表例｜固定）
+共通（全イベント）：
+- ID 再発番／再利用（Order_ID / PART_ID / EXP_ID 等の重複・改変）
+- 二重行増殖（同一 idempotencyKey で主要台帳が増える）
+- 異常日付（未来日／逆転）を確定値として保存
+- 本番とテストの混在（テストIDの本番混入）
+
+UF系（入力）：
+- 入力禁止経路（管理UI等）からの確定値書込みが発生する
+
+完了同期：
+- PRICE 推測代入で Expense を確定してしまう
+- LOCATION 欠落のまま STOCK 戻しが完了扱いになる
+
+#### NG 時の出力（固定）
+- NG は Recovery Queue（OPEN）へ登録する（reason / detectedBy / details / idempotencyKey）。
+- 必要に応じて Request（REVIEW）を併設して監督回収に寄せる（Request linkage に従属）。
+
 ## DoD（Phase-2）
 
 ### 目的
