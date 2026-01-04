@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 108710
+- included_total_bytes: 108906
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 113f1212ccc48525ac3c409bb34309ab8dcd9a4f6061375b16f06d67071caabf
-- bytes: 12731
+- sha256: 4103afd74b4f57e563ce1fb176c23660221ff444788114714f4150ddae2754c1
+- bytes: 12927
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -327,6 +327,10 @@ AIは本書に従ってのみ情報要求を行う。
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
 ﻿# STATE_CURRENT (MEP)
+
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
