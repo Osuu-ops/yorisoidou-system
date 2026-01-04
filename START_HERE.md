@@ -16,6 +16,9 @@
 - 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
 - CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
 
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
+
 ---
 
 ## 参照順（固定）
@@ -50,4 +53,5 @@
 - docs/MEP/GOLDEN_PATH.md
 
 - [OPS: Scope-IN Suggest 運用（Out-of-scope 自動提案PR）](docs/MEP/OPS_SCOPE_SUGGEST.md)
+
 

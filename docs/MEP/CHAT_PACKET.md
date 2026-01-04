@@ -27,6 +27,9 @@
 - 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
 - CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
 
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
+
 ---
 
 ## 参照順（固定）
@@ -250,7 +253,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-# STATE_CURRENT (MEP)
+﻿# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -267,6 +270,8 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## Current objective
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
 
 ## How to start a new conversation
 Tell the assistant:
@@ -327,7 +332,7 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ## PROCESS.md（実行テンプレ）  (docs/MEP/PROCESS.md)
 ```
-# PROCESS（手続き） v1.1
+﻿# PROCESS（手続き） v1.1
 
 ## 目的
 本書は、GitHub上で「迷わず同じ結果になる」最小手順をテンプレとして固定する。
@@ -335,8 +340,11 @@ MEP運用で迷い・暴走・汚染が起きる箇所を、構造（パス境�
 
 ---
 
-## 基本原則（必須）
 
+## Post-merge（必須）
+- MERGE後、docs/MEP/STATE_CURRENT.md に `YYYY-MM-DD: (PR #NNN) 要点` を 1〜3行だけ追記する（肥大化禁止）。
+- 追記対象：運用ルール・ゲート・境界、または BUSINESS の契約/責務分界/同期/冪等/競合回収。
+- 禁止：長文化、全文貼替、整形だけコミット、DOC_REGISTRYで GENERATED とされる生成物を手で直すこと。
 ## docs/MEP 生成物同期（必須）
 - docs/MEP/** を変更したPRは、先に **Chat Packet Update (Dispatch)** を実行して docs/MEP/CHAT_PACKET.md を最新化する。
 - Chat Packet Guard は Required check のため、**outdated のままではマージ不可**（＝このルールを守れば詰まらない）。
