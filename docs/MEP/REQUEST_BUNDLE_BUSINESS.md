@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 296249
+- included_total_bytes: 300774
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -92,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: e1a956dec0b66317f4e1d43ab9c3fc02cb94254bfc5b207d3d83539dfd3640c5
-- bytes: 18462
+- sha256: 335d6d976277f337070b9706830c0e8572bfdba615bd1156c49d14537f300133
+- bytes: 18611
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -393,6 +393,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
 - 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
@@ -2006,11 +2007,11 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: c3cefda68483241218784c21d0fccd8bbfa344f255626161d42a60edc3579468
-- bytes: 52368
+- sha256: 3f503d3c0be5b6b13ff524b013acb7dd514ab5f85b43ade67cd419c2056d6531
+- bytes: 52623
 
 ```text
-<!--
+﻿<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -2633,7 +2634,7 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - 再同期の結果、競合（Ledger と UI の不整合、重複イベント、素材不一致）が検出された場合は自動で辻褄合わせをしない。
   - Recovery Queue（OPEN）へ登録し、監督回収へ寄せる。
 - 冪等（固定）:
-  - resyncKey = Hash(Order_ID + target + reason + requestedAt)
+  - resyncKey = Hash(Order_ID + target + reason + requestedId)
   - 同一 resyncKey の再実行は「結果を増殖させない」（重複通知・重複タスク禁止）。
 - 出力（固定）:
   - projectedAt（投影時刻）
@@ -2647,6 +2648,10 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 実装（GAS/UI/タスク）はこの仕様に従って “登録→通知→解消→記録” を行う。
 
 ### 登録対象（固定）
+
+- CANCELLED : 取消（誤検知/重複/不要化により回収対象から外す。記録は残す）
+最小ルール（固定）:
+- CANCELLED にする場合は resolvedAt/resolvedBy/resolutionNote を記録してよい（根拠の明文化）。
 - category: BLOCKER / WARNING
 - reason: 例）PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備 / 必須未入力
 - Order_ID（原則必須）
@@ -3697,8 +3702,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 5ee4feb40a195abb1e800ba8d136c73f3a1201e27024bfe744bb761cf45c47cd
-- bytes: 1691
+- sha256: ab6c89d34ebef47da73bf71044822623ff76b8b9eef736a6c12c32f507b337ce
+- bytes: 5812
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -3726,6 +3731,60 @@ UIの禁止事項（固定）：
 - tools/mep_pwsh_guard.ps1
 - tools/mep_autopilot.ps1
 - tools/mep_integration_compiler/collect_changed_files.py
+- tools/mep_integration_compiler/runtime/__init__.py
+- tools/mep_integration_compiler/runtime/__pycache__/__init__.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/idempotency.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/recovery_queue.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/request_linkage.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/cli.py
+- tools/mep_integration_compiler/runtime/idempotency.py
+- tools/mep_integration_compiler/runtime/recovery_queue.py
+- tools/mep_integration_compiler/runtime/request_linkage.py
+- tools/mep_integration_compiler/runtime/README_B2_LEDGER.md
+- tools/mep_integration_compiler/runtime/__pycache__/ledger_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/ledger_recovery_queue.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/ledger_cli.py
+- tools/mep_integration_compiler/runtime/ledger_recovery_queue.py
+- tools/mep_integration_compiler/runtime/README_B3_REQUEST.md
+- tools/mep_integration_compiler/runtime/__pycache__/ledger_request.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/ledger_request_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/ledger_request.py
+- tools/mep_integration_compiler/runtime/ledger_request_cli.py
+- tools/mep_integration_compiler/runtime/tests/README_B4_E2E.md
+- tools/mep_integration_compiler/runtime/tests/b4_csv_e2e.py
+- tools/mep_integration_compiler/runtime/README_B5_LEDGER_ADAPTER.md
+- tools/mep_integration_compiler/runtime/__pycache__/ledger_adapter.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__init__.py
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/__init__.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/csv_adapter.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/csv_adapter.py
+- tools/mep_integration_compiler/runtime/ledger_adapter.py
+- tools/mep_integration_compiler/runtime/README_B6_SHEETS_ADAPTER.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_adapter_skeleton.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_adapter_skeleton.py
+- tools/mep_integration_compiler/runtime/tests/README_B7_ADAPTER_E2E.md
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b7_adapter_e2e.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b7_adapter_e2e.py
+- tools/mep_integration_compiler/runtime/README_B8_SHEETS_SCHEMA_CHECK.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_schema_check.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_schema_check_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_schema_check.py
+- tools/mep_integration_compiler/runtime/adapters/sheets_schema_check_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b8_schema_check.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b8_schema_check.py
+- tools/mep_integration_compiler/runtime/README_B9_SHEETS_READONLY_BOUNDARY.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_header_fetcher.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_header_fetcher.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b9_sheets_readonly_boundary.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b9_sheets_readonly_boundary.py
+- tools/mep_integration_compiler/runtime/README_B10_HTTP_HEADER_PROVIDER.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_header_provider.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_header_provider_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/http_header_provider.py
+- tools/mep_integration_compiler/runtime/adapters/http_header_provider_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b10_http_provider_parse.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b10_http_provider_parse.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
