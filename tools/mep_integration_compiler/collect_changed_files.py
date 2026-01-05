@@ -57,12 +57,15 @@ def run_git_diff_name_status_z(base: str, head: str) -> bytes:
 def parse_name_status_z(blob: bytes) -> List[Change]:
     """
     Format (NUL-delimited):
-      <status>\t<path>\0
-      R100\t<old>\0<new>\0
+      Typical:
+        <status>\t<path>\0
+        R100\t<old>\0<new>\0
+      But some git/env combos may output tab-less tokens under -z, e.g.:
+        R100\0<old>\0<new>\0
+        M\0<path>\0
     We'll normalize to Change(status, path=new_or_path).
     """
     parts = blob.split(b"\0")
-    # last is usually b""
     i = 0
     out: List[Change] = []
 
@@ -72,32 +75,62 @@ def parse_name_status_z(blob: bytes) -> List[Change]:
         if not token:
             continue
 
-        # token is like b"M\tpath" or b"R100\told"
         try:
             s = token.decode("utf-8", errors="surrogateescape")
         except Exception:
             s = token.decode("utf-8", errors="replace")
 
-        if "\t" not in s:
-            # unexpected; skip defensively
+        if "\t" in s:
+            # token is like b"M\tpath" or b"R100\told"
+            status_field, p1 = s.split("\t", 1)
+            status = status_field[:1]  # R100 -> R
+
+            if status in ("R", "C"):
+                # next NUL entry is new path
+                if i >= len(parts):
+                    break
+                newp_b = parts[i]
+                i += 1
+                try:
+                    newp = newp_b.decode("utf-8", errors="surrogateescape")
+                except Exception:
+                    newp = newp_b.decode("utf-8", errors="replace")
+                out.append(Change(status=status, path=newp))
+            else:
+                out.append(Change(status=status, path=p1))
             continue
 
-        status_field, p1 = s.split("\t", 1)
-        status = status_field[:1]  # R100 -> R
+        # Tab-less fallback under -z:
+        # - "R100" then <old>\0<new>\0
+        # - "M"   then <path>\0 (etc.)
+        status = s[:1]
+        if not status:
+            continue
 
         if status in ("R", "C"):
-            # next NUL entry is new path
-            if i >= len(parts):
+            # expect old and new paths as next two entries
+            if i + 1 >= len(parts):
                 break
-            newp_b = parts[i]
-            i += 1
+            _oldp_b = parts[i]       # ignored
+            newp_b = parts[i + 1]
+            i += 2
             try:
                 newp = newp_b.decode("utf-8", errors="surrogateescape")
             except Exception:
                 newp = newp_b.decode("utf-8", errors="replace")
             out.append(Change(status=status, path=newp))
-        else:
-            out.append(Change(status=status, path=p1))
+            continue
+
+        # expect next entry to be the path
+        if i >= len(parts):
+            break
+        p1_b = parts[i]
+        i += 1
+        try:
+            p1 = p1_b.decode("utf-8", errors="surrogateescape")
+        except Exception:
+            p1 = p1_b.decode("utf-8", errors="replace")
+        out.append(Change(status=status, path=p1))
 
     return out
 
