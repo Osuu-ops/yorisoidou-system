@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 119978
+- included_total_bytes: 121371
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -882,8 +882,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: f2cbc838b1d1c7b9eafa1655065c748d3e26a756692577b10cb42738a54becd8
-- bytes: 7106
+- sha256: 92688855769b79881cc06fbddc69065bdafdf423cd1013cbaee7d8d7d0690d9c
+- bytes: 8032
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1085,14 +1085,39 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ### 次の遷移（GO）
 - 業務系（実装・運用側）へ進む（Phase-1 を前提として進める）
+
+## CARD-07: Request Status Normalization (status/requestStatus)
+
+### When to use
+- Request sheet has mixed usage of `status` and legacy `requestStatus`, and list/read results look inconsistent.
+
+### Endpoint
+- Use the current B22 endpoint recorded in STATE_CURRENT.
+
+### Procedure (safe)
+1) DRY-RUN first:
+- POST `{ "action":"request.normalize_status_columns", "limit":200, "dryRun":true }`
+- Check `result.conflicts`:
+  - `conflicts == 0` => proceed to write
+  - `conflicts > 0`  => STOP (do not write). Resolve conflicts manually (row-by-row) then rerun.
+
+2) WRITE:
+- POST `{ "action":"request.normalize_status_columns", "limit":200, "dryRun":false }`
+- Confirm summary: `fixed` increased, `conflicts` stayed 0.
+
+### Conflict rule (fixed)
+- If both columns are set and different: the tool MUST NOT overwrite. It reports the row as conflict.
+
+### Notes
+- Repeat until `fixed == 0` and `conflicts == 0` for the scanned range.
 ```
 
 
 ---
 
 ### FILE: docs/MEP/RUNBOOK_SUMMARY.md
-- sha256: c78aacf6e55e619444c1e9a7a8890ae38172f8e87458764670b9104034d611ed
-- bytes: 289
+- sha256: 902e2028b51598274c51c2fe1f7af8616f88bf2f00f5aa8346fe7a5468841b8e
+- bytes: 352
 
 ```text
 # RUNBOOK_SUMMARY（復旧サマリ） v1.0
@@ -1104,17 +1129,18 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ## カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+- CARD-07: Request Status Normalization (status/requestStatus)
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 109daa4db77fa99cee0816b3dd48c8893baac9ebf256f0c505597d8d750f37ba
-- bytes: 3955
+- sha256: b3d63efa0ec9d4edaa94e5e8ffa2c3b02d9c5c56f109f5b4b0aa4b1c5cd3a4d0
+- bytes: 4274
 
 ```text
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -1130,6 +1156,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+- 2026-01-06: (NEXT) B24: TBD (define next theme)
 - 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (GAS) B22 verified: normalize_status_columns exists and runs (dryRun + write), then request.get returns effectiveStatus on https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (NEXT) B23: TBD (define next theme)
@@ -1163,8 +1191,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
-- bytes: 2107
+- sha256: 7b0a6f3420ea582591bd8359ff5f2cc968b4a53a6469f429c98080f1659c30f7
+- bytes: 2192
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1190,6 +1218,7 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
@@ -1211,6 +1240,7 @@ Tell the assistant:
 
 ## RUNBOOK カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+- CARD-07: Request Status Normalization (status/requestStatus)
 
 ---
 

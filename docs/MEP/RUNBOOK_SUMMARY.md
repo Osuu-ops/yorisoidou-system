@@ -7,4 +7,5 @@
 
 ## カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+- CARD-07: Request Status Normalization (status/requestStatus)
 

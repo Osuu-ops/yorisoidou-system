@@ -21,6 +21,7 @@
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
@@ -42,6 +43,7 @@
 
 ## RUNBOOK カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+- CARD-07: Request Status Normalization (status/requestStatus)
 
 ---
 
