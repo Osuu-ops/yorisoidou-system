@@ -1,11 +1,9 @@
-# MEP HANDOFF (NO-DRIFT) v2.2
-# - 引っ越しの唯一入口: このスクリプトを1回実行するだけ。
-# - 100/100 以外は CURRENT を出さない（汚染停止）。
-# - PowerShell の here-string を使わない（終端不一致で壊れたため）。
-#
-# Usage:
-#   .\tools\mep_handoff.ps1
-#   .\tools\mep_handoff.ps1 -WithIssue
+﻿# MEP HANDOFF (NO-DRIFT) v2.3
+# - Single entry for "引っ越し": run this once.
+# - Prints CURRENT only when HANDOFF_SCORE=100/100; otherwise prints reasons and stops.
+# - No here-strings. File is written/committed as UTF-8 with BOM.
+# - If running on Windows PowerShell 5.1, self-relaunch into pwsh when available (recommended).
+
 param(
   [switch]$WithIssue,
   [int]$IssueNumber = 0
@@ -16,6 +14,20 @@ $ProgressPreference="SilentlyContinue"
 $env:GH_PAGER="cat"
 [Console]::OutputEncoding=[System.Text.Encoding]::UTF8
 try { $global:PSNativeCommandUseErrorActionPreference = $false } catch {}
+
+# --- pwsh guard (avoid PS5.1 encoding/parser issues) ---
+try {
+  if ($PSVersionTable.PSVersion.Major -lt 7) {
+    $pwsh = (Get-Command pwsh -ErrorAction SilentlyContinue)
+    if ($pwsh) {
+      $args = @()
+      if ($WithIssue) { $args += "-WithIssue" }
+      if ($IssueNumber -gt 0) { $args += @("-IssueNumber", "$IssueNumber") }
+      & $pwsh.Source -NoLogo -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath @args
+      exit $LASTEXITCODE
+    }
+  }
+} catch {}
 
 function Need($cmd){ if(-not (Get-Command $cmd -ErrorAction SilentlyContinue)){ throw "Missing command: $cmd" } }
 Need git
@@ -69,9 +81,7 @@ function Missing-Headings([string]$file, [string[]]$headings){
   if(-not (Test-Path $file)){ return $headings }
   $txt = Get-Content -Raw -Encoding UTF8 $file
   $miss = @()
-  foreach($h in $headings){
-    if($txt -notlike ("*"+$h+"*")){ $miss += $h }
-  }
+  foreach($h in $headings){ if($txt -notlike ("*"+$h+"*")){ $miss += $h } }
   return $miss
 }
 
@@ -79,24 +89,19 @@ function StateCurrent-Evidence([string]$file){
   if(-not (Test-Path $file)){ return @{ state="NO_FILE"; lines=@() } }
   $hits = @(Select-String -Path $file -Pattern "B17|NEXT" -ErrorAction SilentlyContinue)
   if($hits.Count -gt 0){
-    $lines = @()
-    foreach($h in ($hits | Select-Object -First 10)){
-      $lines += ("L{0}: {1}" -f $h.LineNumber, $h.Line.TrimEnd())
-    }
-    return @{ state="FOUND"; lines=$lines }
+    $out = @()
+    foreach($h in ($hits | Select-Object -First 10)){ $out += ("L{0}: {1}" -f $h.LineNumber, $h.Line.TrimEnd()) }
+    return @{ state="FOUND"; lines=$out }
   }
   return @{ state="NOT_FOUND"; lines=@() }
 }
 
 function Upsert-IntakeIssue([string]$repo, [int]$issueNumber, [string]$body){
-  if($issueNumber -gt 0){
-    & gh issue edit $issueNumber --repo $repo --body $body | Out-Null
-    return $issueNumber
-  }
+  if($issueNumber -gt 0){ & gh issue edit $issueNumber --repo $repo --body $body | Out-Null; return $issueNumber }
   $tmp = New-TemporaryFile
   try {
-    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-    [System.IO.File]::WriteAllText($tmp.FullName, $body, $utf8NoBom)
+    $utf8Bom = New-Object System.Text.UTF8Encoding($true)
+    [System.IO.File]::WriteAllText($tmp.FullName, $body, $utf8Bom)
     $url = (& gh issue create --repo $repo --title "CHAT_PACKET_INTAKE" --body-file $tmp.FullName 2>$null | Out-String).Trim()
     if(-not $url){ throw "gh issue create failed." }
     $m = [regex]::Match($url, "/issues/(\d+)")
@@ -148,7 +153,6 @@ if($score -ne 100){
   throw "Not 100/100. Stop."
 }
 
-# CURRENT text (array join; no here-string)
 $currentLines = @(
   "【CURRENT｜引っ越し再開用】",
   "",
