@@ -14,6 +14,7 @@
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
 - 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
@@ -22,4 +23,5 @@
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
 - (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
+
 
