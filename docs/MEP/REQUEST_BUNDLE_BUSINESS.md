@@ -28,6 +28,7 @@
 - platform/MEP/03_BUSINESS/よりそい堂/99__ci_trigger_cleanup.md
 - platform/MEP/03_BUSINESS/よりそい堂/BUSINESS_PACKET.md
 - platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
+- platform/MEP/03_BUSINESS/よりそい堂/LEDGER_REFLECTION_DELETE_FREEZE_FIX_v1.0.md
 - platform/MEP/03_BUSINESS/よりそい堂/business_master.md
 - platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
 - platform/MEP/03_BUSINESS/よりそい堂/code/README.md
@@ -43,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 330073
+- included_total_bytes: 332123
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1094,8 +1095,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 3341d2e84644faa502fbe777d291153ce391c57a8f63159aaa08c059422a070f
-- bytes: 2453
+- sha256: 1ec574723ce62c6aa3cd4da94c08690869c664be0f3966c0a42dce6f9cc880ef
+- bytes: 2586
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1114,6 +1115,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (PR #562) master_spec: ledger reflection for delete/FREEZE/Request(FIX) (v1.0) — ledger columns/keys + minimal rules
 - 2026-01-06: (GAS) WRITE endpoint is B18 (B17-1 + READ ops: recovery_queue.get/list_unlinked, request.get/list_open): https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
 - 2026-01-06: (GAS) B18 verified: READ ops returned expected rows (rqKey/requestKey) on https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
 - 2026-01-06: (NEXT) B19: TBD (define next theme)
@@ -1697,6 +1699,52 @@ This directory is the canonical entry point for business-side code/assets for �
 - 変更は 1テーマ = 1PR
 - 巨大な全文置換・整形だけのコミットは禁止（差分最小）
 - 仕様本文を変える場合は必ず master_spec を編集
+```
+
+
+---
+
+### FILE: platform/MEP/03_BUSINESS/よりそい堂/LEDGER_REFLECTION_DELETE_FREEZE_FIX_v1.0.md
+- sha256: 154344298d6eef9d0b62528961cd4f97d35108c9fc96f227ab22316521271763
+- bytes: 1917
+
+```text
+# LEDGER_REFLECTION（削除モード / FREEZE / Request(FIX) の台帳反映） v1.0
+
+## 目的
+business_spec で確定した削除/FREEZE/FIXを、台帳（Request/Recovery_Queue）へ列/状態/ログ参照として反映し、運用と実装を一致させる。
+
+## 対象タブ（固定）
+- Request
+- Recovery_Queue
+
+## 共通原則（固定）
+- 物理削除しない（トゥームストーン）。行の再利用禁止。
+- status と tombstone は独立（tombstone=true で status を勝手に変えない）。
+- 冪等：同一イベント再送でも最終状態が収束する。
+- 監査：重要イベントは logRef（logs/system参照）を持てる。
+- PII は logs/system 側でマスク。台帳は最小の識別子のみ。
+
+## Request（列キー最小）
+- requestKey / status(OPEN|RESOLVED|CANCELLED) / openedAt / resolvedAt / cancelledAt
+- tombstone / deletedAt / deleteReason
+- freezeState(NONE|FROZEN) / frozenAt / releasedAt / reclaimedAt
+- fixState(NONE|FIX_OPEN|FIX_APPLIED) / fixKey / fixOfRequestKey / fixOpenedAt / fixAppliedAt
+- rqKey / logRef / lastEventName / lastIdempotencyKey / lastEventAt
+
+## Recovery_Queue（列キー最小）
+- rqKey / status(OPEN|RESOLVED|CANCELLED) / openedAt / resolvedAt / cancelledAt
+- tombstone / deletedAt / deleteReason
+- freezeState(NONE|FROZEN) / frozenAt / releasedAt / reclaimedAt
+- requestKey / fixState(NONE|FIX_OPEN|FIX_APPLIED) / fixKey
+- logRef / lastEventName / lastIdempotencyKey / lastEventAt
+
+## 反映ルール（最小）
+- tombstone=true は参照可。通常更新は原則拒否（例外：監査/回収/FIX）。
+- freezeState=FROZEN の間は OPEN を維持（見え方固定）。
+- RELEASE は releasedAt を付与し freezeState を NONE に戻す。
+- RECLAIM は reclaimedAt を付与し、以後は通常運用から除外。
+- fixState: NONE → FIX_OPEN → FIX_APPLIED（FIX は tombstone と両立し得る）。
 ```
 
 
