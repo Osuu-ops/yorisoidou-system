@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 118215
+- included_total_bytes: 118348
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1104,8 +1104,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 3341d2e84644faa502fbe777d291153ce391c57a8f63159aaa08c059422a070f
-- bytes: 2453
+- sha256: 1ec574723ce62c6aa3cd4da94c08690869c664be0f3966c0a42dce6f9cc880ef
+- bytes: 2586
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1124,6 +1124,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (PR #562) master_spec: ledger reflection for delete/FREEZE/Request(FIX) (v1.0) — ledger columns/keys + minimal rules
 - 2026-01-06: (GAS) WRITE endpoint is B18 (B17-1 + READ ops: recovery_queue.get/list_unlinked, request.get/list_open): https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
 - 2026-01-06: (GAS) B18 verified: READ ops returned expected rows (rqKey/requestKey) on https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
 - 2026-01-06: (NEXT) B19: TBD (define next theme)
