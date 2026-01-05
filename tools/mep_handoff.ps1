@@ -22,7 +22,7 @@ if(-not (Test-Path ".git")){ throw "Run at repo root (where .git exists)." }
 
 function Sync-MainHard {
   cmd /c "git rebase --abort 1>nul 2>nul" | Out-Null
-  cmd /c "git merge --abort 1>nul 2>nul" | Out-Null
+  cmd /c "git merge  --abort 1>nul 2>nul" | Out-Null
   cmd /c "git cherry-pick --abort 1>nul 2>nul" | Out-Null
   cmd /c "git fetch origin main 1>nul 2>nul" | Out-Null
   if ($LASTEXITCODE -ne 0) { throw "git fetch failed ($LASTEXITCODE)." }
@@ -30,9 +30,9 @@ function Sync-MainHard {
   if ($LASTEXITCODE -ne 0) { throw "git checkout main failed ($LASTEXITCODE)." }
   cmd /c "git reset --hard origin/main 1>nul 2>nul" | Out-Null
   if ($LASTEXITCODE -ne 0) { throw "git reset --hard origin/main failed ($LASTEXITCODE)." }
+  # Try clean, but do not fail here (OneDrive/locks/R/O are common)
   cmd /c "git clean -fd 1>nul 2>nul" | Out-Null
-  if ($LASTEXITCODE -ne 0) { throw "git clean -fd failed ($LASTEXITCODE)." }
-  if(git status --porcelain){ throw "main is not clean after reset/clean. Stop." }
+  if(git status --porcelain){ throw "Working tree is not clean after reset (git clean may have failed due to locks/R/O). Close OneDrive/editor locks and retry." }
 }
 
 function Get-Repo {
