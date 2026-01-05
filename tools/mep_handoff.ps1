@@ -1,15 +1,13 @@
-# MEP HANDOFF (NO-DRIFT) v1.1
+# MEP HANDOFF (NO-DRIFT) v1.2
 # - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
-# - optional: Intake Issue を upsert（Issue貼り付け起点の自動解析へ渡す）。
+# - 既定では Issue を作らない（権限/設定で失敗しやすいので）。必要なら -WithIssue を付ける。
 #
 # Usage:
 #   pwsh -File .\tools\mep_handoff.ps1
-# Options:
-#   -NoIssue     : Intake Issue を作らない（CURRENTだけ出す）
-#   -IssueNumber : 既存Issue番号を更新（0なら新規作成）
+#   pwsh -File .\tools\mep_handoff.ps1 -WithIssue
 param(
-  [switch]$NoIssue,
+  [switch]$WithIssue,
   [int]$IssueNumber = 0
 )
 
@@ -44,9 +42,7 @@ function Get-Repo {
 
 function Gql([string]$query, [hashtable]$vars){
   $args = @("api","graphql","-f",("query="+$query))
-  foreach($k in $vars.Keys){
-    $args += @("-f",("{0}={1}" -f $k,$vars[$k]))
-  }
+  foreach($k in $vars.Keys){ $args += @("-f",("{0}={1}" -f $k,$vars[$k])) }
   $raw = (& gh @args 2>$null | Out-String).Trim()
   if(-not $raw){ return $null }
   return ($raw | ConvertFrom-Json)
@@ -145,7 +141,7 @@ $badPrs = Check-RequiredPrsMerged $repo $requiredPrs
 
 $stateEv = StateCurrent-Evidence "docs/MEP/STATE_CURRENT.md"
 
-# score (repo-sideと同じ重み)
+# score (100点以外は止める)
 $score = 100
 if($open -eq $null){ $score -= 20 }
 elseif($open -gt 0){ $score -= 20 }
@@ -153,7 +149,6 @@ if($missing.Count -gt 0){ $score -= 30 }
 if($badPrs.Count -gt 0){ $score -= 30 }
 if($score -lt 0){ $score = 0 }
 
-# FAIL FAST: 100点以外は CURRENT を出さない
 if($score -ne 100){
   Write-Host ("HANDOFF_SCORE={0}/100" -f $score)
   if($open -eq $null){ Write-Host "- open PR(base main)=UNKNOWN" } else { Write-Host ("- open PR(base main)={0}" -f $open) }
@@ -167,7 +162,6 @@ if($score -ne 100){
   throw "Not 100/100. Stop."
 }
 
-# 100/100 CURRENT (ONLY)
 $current = @"
 【CURRENT｜引っ越し再開用】
 
@@ -179,7 +173,7 @@ Repo: $repo
 - 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）
 "@
 
-if(-not $NoIssue){
+if($WithIssue){
   $issueBody = @"
 $($current.Trim())
 
@@ -187,8 +181,12 @@ $($current.Trim())
 - (repo file) docs/MEP/CHAT_PACKET.md
 - (repo file) docs/MEP/STATE_CURRENT.md
 "@
-  $n = Upsert-IntakeIssue $repo $IssueNumber $issueBody
-  Write-Host ("(intake issue updated) https://github.com/{0}/issues/{1}" -f $repo, $n)
+  try {
+    $n = Upsert-IntakeIssue $repo $IssueNumber $issueBody
+    Write-Host ("(intake issue updated) https://github.com/{0}/issues/{1}" -f $repo, $n)
+  } catch {
+    Write-Error ("Issue upsert failed: {0}" -f $_.Exception.Message)
+  }
 }
 
 Write-Host $current
