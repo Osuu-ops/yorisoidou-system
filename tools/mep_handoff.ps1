@@ -1,9 +1,12 @@
-﻿# MEP HANDOFF (NO-DRIFT) v2.3
-# - Single entry for "引っ越し": run this once.
-# - Prints CURRENT only when HANDOFF_SCORE=100/100; otherwise prints reasons and stops.
-# - No here-strings. File is written/committed as UTF-8 with BOM.
-# - If running on Windows PowerShell 5.1, self-relaunch into pwsh when available (recommended).
-
+﻿# MEP HANDOFF (NO-DRIFT) v2.4
+# - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
+# - 100/100 以外は CURRENT を出さない（汚染停止）。
+# - 出力に HANDOFF_ID / CREATED_AT を含め、同時引継ぎでも識別できる。
+# - No here-strings. UTF-8 with BOM. PS5.1なら pwsh に自己移譲（推奨）。
+#
+# Usage:
+#   .\tools\mep_handoff.ps1
+#   .\tools\mep_handoff.ps1 -WithIssue
 param(
   [switch]$WithIssue,
   [int]$IssueNumber = 0
@@ -117,6 +120,7 @@ Sync-MainHard
 $repo = Get-Repo
 $head = (git rev-parse --short HEAD).Trim()
 $open = Get-OpenPrCount $repo
+$stateEv = StateCurrent-Evidence "docs/MEP/STATE_CURRENT.md"
 
 $biz = "platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
 $requiredHeadings = @(
@@ -127,11 +131,8 @@ $requiredHeadings = @(
   "### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）"
 )
 $missing = Missing-Headings $biz $requiredHeadings
-
 $requiredPrs = @(535,539,541,542,543,544)
 $badPrs = Check-RequiredPrsMerged $repo $requiredPrs
-
-$stateEv = StateCurrent-Evidence "docs/MEP/STATE_CURRENT.md"
 
 $score = 100
 if($open -eq $null){ $score -= 20 }
@@ -140,38 +141,49 @@ if($missing.Count -gt 0){ $score -= 30 }
 if($badPrs.Count -gt 0){ $score -= 30 }
 if($score -lt 0){ $score = 0 }
 
+# ID is always generated from observed facts (no guessing)
+$createdAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$idRand = ([Guid]::NewGuid().ToString("N").Substring(0,8))
+$handoffId = ("HOF:{0}-{1}-{2}" -f (Get-Date -Format "yyyyMMdd-HHmmss"), $head, $idRand)
+
 if($score -ne 100){
+  Write-Host ("HANDOFF_ID: {0}" -f $handoffId)
+  Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc)
   Write-Host ("HANDOFF_SCORE={0}/100" -f $score)
   if($open -eq $null){ Write-Host "- open PR(base main)=UNKNOWN" } else { Write-Host ("- open PR(base main)={0}" -f $open) }
   if($badPrs.Count -gt 0){ Write-Host ("- missing/invalid merged PRs: {0}" -f (($badPrs | Sort-Object) -join ",")) }
-  if($missing.Count -gt 0){
-    Write-Host "- missing headings (business_spec):"
-    foreach($h in $missing){ Write-Host ("  - {0}" -f $h) }
-  }
+  if($missing.Count -gt 0){ Write-Host "- missing headings (business_spec):"; foreach($h in $missing){ Write-Host ("  - {0}" -f $h) } }
   Write-Host ("- STATE_CURRENT(B17/NEXT)={0}" -f $stateEv.state)
   if($stateEv.lines.Count -gt 0){ foreach($l in $stateEv.lines){ Write-Host ("  {0}" -f $l) } }
   throw "Not 100/100. Stop."
 }
 
-$currentLines = @(
-  "【CURRENT｜引っ越し再開用】",
-  "",
-  ("Repo: {0}" -f $repo),
-  ("状態: main clean / open PR 0 / 最新HEAD={0}" -f $head),
-  "",
-  "完了（main反映済み）",
-  "- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）",
-  "- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）"
-)
-$current = ($currentLines -join "`n") + "`n"
+# ===== print copy/paste packet (ID + CURRENT) =====
+$out = New-Object System.Collections.Generic.List[string]
+$out.Add("HANDOFF_ID: " + $handoffId)
+$out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+$out.Add("REPO: " + $repo)
+$out.Add("HEAD: " + $head)
+$out.Add("OPEN_PR: 0")
+$out.Add("HANDOFF_SCORE=100/100")
+$out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+$out.Add("")
+$out.Add("【CURRENT｜引っ越し再開用】")
+$out.Add("")
+$out.Add("Repo: " + $repo)
+$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+$out.Add("")
+$out.Add("完了（main反映済み）")
+$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+
+$packet = ($out -join "`n") + "`n"
 
 if($WithIssue){
-  $issueLines = @()
-  $issueLines += $currentLines
+  $issueLines = @($out)
   $issueLines += ""
   $issueLines += "# CHAT_PACKET"
-  $issueLines += "- (repo file) docs/MEP/CHAT_PACKET.md"
-  $issueLines += "- (repo file) docs/MEP/STATE_CURRENT.md"
+  $issueLines += "- (repo file) docs/MEP/CHAT_PACKET_BUNDLE.md"
   $issueBody = ($issueLines -join "`n") + "`n"
   try {
     $n = Upsert-IntakeIssue $repo $IssueNumber $issueBody
@@ -181,4 +193,4 @@ if($WithIssue){
   }
 }
 
-Write-Host $current
+Write-Host $packet
