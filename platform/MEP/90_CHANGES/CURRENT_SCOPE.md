@@ -52,6 +52,9 @@
 - tools/mep_integration_compiler/runtime/adapters/__pycache__/csv_adapter.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/adapters/csv_adapter.py
 - tools/mep_integration_compiler/runtime/ledger_adapter.py
+- tools/mep_integration_compiler/runtime/README_B6_SHEETS_ADAPTER.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_adapter_skeleton.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_adapter_skeleton.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
