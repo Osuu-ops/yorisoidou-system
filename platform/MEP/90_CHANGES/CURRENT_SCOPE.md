@@ -70,6 +70,13 @@
 - tools/mep_integration_compiler/runtime/adapters/sheets_header_fetcher.py
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b9_sheets_readonly_boundary.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b9_sheets_readonly_boundary.py
+- tools/mep_integration_compiler/runtime/README_B10_HTTP_HEADER_PROVIDER.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_header_provider.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_header_provider_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/http_header_provider.py
+- tools/mep_integration_compiler/runtime/adapters/http_header_provider_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b10_http_provider_parse.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b10_http_provider_parse.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
