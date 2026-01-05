@@ -1,7 +1,7 @@
-# MEP HANDOFF (NO-DRIFT) v1.2
+# MEP HANDOFF (NO-DRIFT) v1.3
 # - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
-# - 既定では Issue を作らない（権限/設定で失敗しやすいので）。必要なら -WithIssue を付ける。
+# - 既定は「Issue作成なし」（権限差で失敗しやすいので）。必要なら -WithIssue。
 #
 # Usage:
 #   pwsh -File .\tools\mep_handoff.ps1
@@ -40,34 +40,31 @@ function Get-Repo {
   return $r
 }
 
-function Gql([string]$query, [hashtable]$vars){
-  $args = @("api","graphql","-f",("query="+$query))
-  foreach($k in $vars.Keys){ $args += @("-f",("{0}={1}" -f $k,$vars[$k])) }
-  $raw = (& gh @args 2>$null | Out-String).Trim()
-  if(-not $raw){ return $null }
-  return ($raw | ConvertFrom-Json)
-}
-
 function Get-OpenPrCount([string]$repo){
   $owner = $repo.Split("/")[0]
   $name  = $repo.Split("/")[1]
   $q = @"
-query(\$owner:String!, \$name:String!) {
-  repository(owner:\$owner, name:\$name) {
+query(`$owner:String!, `$name:String!) {
+  repository(owner:`$owner, name:`$name) {
     pullRequests(states:OPEN, baseRefName:"main", first:50) { nodes { number } }
   }
 }
 "@
-  $g = Gql $q @{ owner=$owner; name=$name }
-  if(-not $g){ return $null }
-  return @($g.data.repository.pullRequests.nodes).Count
+  $raw = (& gh api graphql -f query="$q" -f owner="$owner" -f name="$name" 2>$null | Out-String).Trim()
+  if(-not $raw){ return $null }
+  try {
+    $g = $raw | ConvertFrom-Json
+    return @($g.data.repository.pullRequests.nodes).Count
+  } catch {
+    return $null
+  }
 }
 
 function Check-RequiredPrsMerged([string]$repo, [int[]]$prs){
   $bad = @()
   foreach($n in $prs){
     try {
-      $p = (gh pr view $n --repo $repo --json number,state,baseRefName,mergedAt,url 2>$null | ConvertFrom-Json)
+      $p = (gh pr view $n --repo $repo --json "state,baseRefName,mergedAt,url" 2>$null | ConvertFrom-Json)
       $ok = ($p.state -eq "MERGED" -and $p.baseRefName -eq "main" -and $p.mergedAt)
       if(-not $ok){ $bad += $n }
     } catch {
@@ -120,7 +117,7 @@ function Upsert-IntakeIssue([string]$repo, [int]$issueNumber, [string]$body){
   }
 }
 
-# ===== run checks =====
+# ===== checks =====
 Sync-MainHard
 $repo = Get-Repo
 $head = (git rev-parse --short HEAD).Trim()
@@ -141,7 +138,6 @@ $badPrs = Check-RequiredPrsMerged $repo $requiredPrs
 
 $stateEv = StateCurrent-Evidence "docs/MEP/STATE_CURRENT.md"
 
-# score (100点以外は止める)
 $score = 100
 if($open -eq $null){ $score -= 20 }
 elseif($open -gt 0){ $score -= 20 }
