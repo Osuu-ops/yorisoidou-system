@@ -28,9 +28,10 @@ def main() -> None:
         p = Path(args.row_json_file)
         if not p.exists():
             raise SystemExit(f"--row-json-file not found: {args.row_json_file}")
-        row_src = p.read_text(encoding="utf-8").strip()
+        row_src = p.read_text(encoding="utf-8-sig").strip()
     if not row_src:
         ap.error("one of --row-json or --row-json-file is required")
+    row_src = row_src.lstrip("\ufeff")
     row = json.loads(row_src)
     if args.kind == "RECOVERY_QUEUE":
         out = wc.upsert_recovery_queue_row(spreadsheet_id=args.spreadsheet_id, row=row, dry_run=args.dry_run)
@@ -42,4 +43,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 
