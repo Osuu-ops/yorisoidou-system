@@ -43,6 +43,8 @@
 - tools/mep_integration_compiler/runtime/__pycache__/ledger_request_cli.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/ledger_request.py
 - tools/mep_integration_compiler/runtime/ledger_request_cli.py
+- tools/mep_integration_compiler/runtime/tests/README_B4_E2E.md
+- tools/mep_integration_compiler/runtime/tests/b4_csv_e2e.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
