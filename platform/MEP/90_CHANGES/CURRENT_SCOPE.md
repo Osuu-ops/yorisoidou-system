@@ -58,6 +58,13 @@
 - tools/mep_integration_compiler/runtime/tests/README_B7_ADAPTER_E2E.md
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b7_adapter_e2e.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b7_adapter_e2e.py
+- tools/mep_integration_compiler/runtime/README_B8_SHEETS_SCHEMA_CHECK.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_schema_check.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_schema_check_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_schema_check.py
+- tools/mep_integration_compiler/runtime/adapters/sheets_schema_check_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b8_schema_check.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b8_schema_check.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
