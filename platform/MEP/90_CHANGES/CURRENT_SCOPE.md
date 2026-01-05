@@ -22,6 +22,7 @@
 - tools/mep_chat_packet_min.ps1
 - tools/mep_pwsh_guard.ps1
 - tools/mep_autopilot.ps1
+- tools/mep_integration_compiler/collect_changed_files.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
