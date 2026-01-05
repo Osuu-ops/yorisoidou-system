@@ -73,4 +73,17 @@ __all__ += [
     "save_request_rows_csv",
     "dump_request_schema_json",
 ]
+from .ledger_adapter import (
+    LedgerAdapter,
+    LedgerError,
+    EvidenceRequired,
+    UpsertResult,
+)
+
+__all__ += [
+    "LedgerAdapter",
+    "LedgerError",
+    "EvidenceRequired",
+    "UpsertResult",
+]
 
