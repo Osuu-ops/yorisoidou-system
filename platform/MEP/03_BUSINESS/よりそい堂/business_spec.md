@@ -110,6 +110,47 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 
 <!-- WORK_SPEC_PHASE1 -->
 ## WORK（施工）— BUSINESS_SPEC（Phase-1）
+### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）
+
+#### 目的（固定）
+- VOID/CANCEL/RESTORE/REOPEN を、現場（Todoist）・管理（ClickUp）のタスク表示に安全に反映し、見落としと誤操作を防ぐ。
+- タスク名の既存契約（AA群／納品 分子/分母／末尾 `_ ` 自由文スロット保持）を破壊しない。
+
+#### 表示（タイトル）規約（固定）
+- タスク名は「先頭=AA群（または納品 分子/分母）」の規約を維持する（AAを先頭から外さない）。
+- 末尾 `_ `（アンダースコア＋半角スペース）の自由文スロットは必ず保持する（更新でも消さない）。
+- 表示タグは `_ ` の直前に付与する（AA群/納品表示を壊さない）:
+  - VOID:  `[VOID]`
+  - CANCEL: `[CANCEL]`
+  - 例）`AA01 AA03 [CANCEL] _ `
+  - 例）`納品 1/7 [VOID] _ `
+- RESTORE（復旧）時は、`[VOID]` / `[CANCEL]` を除去する（元の表示へ戻す）。
+- REOPEN（誤完了解除）は状態タグではなく「操作」であり、タイトルへ永続タグは付けない（コメントへ記録する）。
+
+#### タスク状態（完了/復旧）規約（固定）
+- VOID/CANCEL:
+  - 結果が FREEZE（凍結＝Recovery Queue: BLOCKER/OPEN）になった場合：
+    - タスクは自動完了しない（監督回収のためオープン維持）。
+    - コメントに `[STATE] VOID/CANCEL + FREEZE` と理由（最小）を記録する。
+  - FREEZE でない場合：
+    - タスクは完了（Close）してよい（Todoist/ClickUp の完了操作）。
+    - コメントに `[STATE] VOID/CANCEL` を記録する（監査用）。
+- RESTORE:
+  - 可能なら「完了済みタスクを復旧（Reopen/Uncomplete）」する。
+  - 復旧できない実装の場合は「新規タスクを作成し、旧タスクへリンク（参照ID/URL）」する（増殖は許容、監査リンク必須）。
+  - タイトルから `[VOID]` / `[CANCEL]` を除去する。
+- REOPEN（誤完了解除）:
+  - タスクは復旧（Reopen/Uncomplete）してよい（誤完了の訂正）。
+  - コメントに `[OP] REOPEN` と対象（Order_ID/#n）を記録する。
+  - VOID/CANCEL の状態を解除する操作ではない（混同禁止）。
+
+#### コメント記録（固定）
+- 状態/操作の記録はタスクコメントに最小で残す（監査用）:
+  - `[STATE] VOID` / `[STATE] CANCEL` / `[STATE] RESTORE`
+  - FREEZE の場合：`[STATE] VOID FREEZE` 等
+  - 操作ログ：`[OP] REOPEN`
+- [INFO] ブロックの上書き規約は維持する（`--- USER ---` 以下は触らない）。
+
 
 ### 目的
 - 施工（WORK）を「受注（Order_ID）に紐づく現場作業の実行・完了報告」として定義し、
