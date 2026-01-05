@@ -758,5 +758,11 @@ scope-guard enforcement test 20260103-002424
 ```
 
 ---
+---
+
+<!-- CHAT_PACKET_BUNDLE_POINTER -->
+## CHAT_PACKET_BUNDLE（追加）
+- 自己完結版: docs/MEP/CHAT_PACKET_BUNDLE.md（START_HERE / AI_BOOT / STATE_CURRENT を同梱）
+- 新チャットで参照できない環境でも、貼るだけで入口と現在地が確定する。
 ~~~
 
