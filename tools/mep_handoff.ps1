@@ -1,4 +1,4 @@
-﻿# MEP HANDOFF (NO-DRIFT) v2.4
+﻿﻿# MEP HANDOFF (NO-DRIFT) v2.4
 # - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
 # - 出力に HANDOFF_ID / CREATED_AT を含め、同時引継ぎでも識別できる。
@@ -15,6 +15,7 @@ param(
 $ErrorActionPreference="Stop"
 $ProgressPreference="SilentlyContinue"
 $env:GH_PAGER="cat"
+try { $PSNativeCommandUseErrorActionPreference = $false } catch {}
 [Console]::OutputEncoding=[System.Text.Encoding]::UTF8
 try { $global:PSNativeCommandUseErrorActionPreference = $false } catch {}
 
@@ -38,13 +39,18 @@ Need gh
 if(-not (Test-Path ".git")){ throw "Run at repo root (where .git exists)." }
 
 function Sync-MainHard {
-  try { git rebase --abort 2>$null | Out-Null } catch {}
-  try { git merge  --abort 2>$null | Out-Null } catch {}
-  try { git cherry-pick --abort 2>$null | Out-Null } catch {}
-  git fetch origin main | Out-Null
-  git checkout main | Out-Null
-  git reset --hard origin/main | Out-Null
-  git clean -fd | Out-Null
+  # Avoid PS7 NativeCommandError on git stderr by executing via cmd.exe and swallowing output.
+  cmd /c "git rebase --abort 1>nul 2>nul" | Out-Null
+  cmd /c "git merge --abort 1>nul 2>nul" | Out-Null
+  cmd /c "git cherry-pick --abort 1>nul 2>nul" | Out-Null
+  cmd /c "git fetch origin main 1>nul 2>nul" | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "git fetch failed ($LASTEXITCODE). Run: git fetch origin main" }
+  cmd /c "git checkout main 1>nul 2>nul" | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "git checkout main failed ($LASTEXITCODE)." }
+  cmd /c "git reset --hard origin/main 1>nul 2>nul" | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "git reset --hard origin/main failed ($LASTEXITCODE)." }
+  cmd /c "git clean -fd 1>nul 2>nul" | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "git clean -fd failed ($LASTEXITCODE)." }
   if(git status --porcelain){ throw "main is not clean after reset/clean. Stop." }
 }
 
