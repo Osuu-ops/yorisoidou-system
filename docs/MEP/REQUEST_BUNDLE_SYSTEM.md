@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 119264
+- included_total_bytes: 119391
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1104,11 +1104,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 685d2ffadc807fe2b35960c041ded04e96bcfc668aecf71b0593cffc283dfe02
-- bytes: 3524
+- sha256: 91e4ab9891ab9a1a05327349fa2b5cda8de457ae83297cb1a619e71370442b55
+- bytes: 3629
 
 ```text
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -1124,6 +1124,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (PR #576) master_spec: ledger reflection — add event→ledger mapping for delete/FREEZE/FIX
 - 2026-01-06: (GAS) WRITE endpoint is B21 (B20 + compat: status<->requestStatus sync + request.list_status): https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
 - 2026-01-06: (GAS) B21 verified: status and requestStatus kept in sync (OPEN/RESOLVED/CANCELLED); list_status works; resolve-after-cancel rejected on https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
 - 2026-01-06: (NEXT) B22: TBD (define next theme)
@@ -1154,8 +1155,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
-- bytes: 2107
+- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
+- bytes: 2129
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1181,6 +1182,7 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety

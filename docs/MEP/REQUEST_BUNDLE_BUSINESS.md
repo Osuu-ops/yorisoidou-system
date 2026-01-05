@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 333039
+- included_total_bytes: 337616
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1095,11 +1095,11 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 685d2ffadc807fe2b35960c041ded04e96bcfc668aecf71b0593cffc283dfe02
-- bytes: 3524
+- sha256: 91e4ab9891ab9a1a05327349fa2b5cda8de457ae83297cb1a619e71370442b55
+- bytes: 3629
 
 ```text
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -1115,6 +1115,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (PR #576) master_spec: ledger reflection — add event→ledger mapping for delete/FREEZE/FIX
 - 2026-01-06: (GAS) WRITE endpoint is B21 (B20 + compat: status<->requestStatus sync + request.list_status): https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
 - 2026-01-06: (GAS) B21 verified: status and requestStatus kept in sync (OPEN/RESOLVED/CANCELLED); list_status works; resolve-after-cancel rejected on https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
 - 2026-01-06: (NEXT) B22: TBD (define next theme)
@@ -1145,8 +1146,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 3187521f37da5680b73612b5d2acb52406d7292ed61740022da049fa05f0562c
-- bytes: 2107
+- sha256: d0d810b59a8cedd1eb05edc7926e47c07f950f89ab50710f5de2acce1bf17c1a
+- bytes: 2129
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1172,6 +1173,7 @@ Tell the assistant:
 ---
 
 ## STATE_CURRENT の主要見出し
+- STATE_CURRENT (MEP)
 - Doc status registry（重複防止）
 - CURRENT_SCOPE (canonical)
 - Guards / Safety
@@ -1710,8 +1712,8 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/LEDGER_REFLECTION_DELETE_FREEZE_FIX_v1.0.md
-- sha256: 154344298d6eef9d0b62528961cd4f97d35108c9fc96f227ab22316521271763
-- bytes: 1917
+- sha256: bf7003445d8f04dafad6212b8026bcb9aa35073b6cab98d204f4e6e1209fe96f
+- bytes: 6367
 
 ```text
 # LEDGER_REFLECTION（削除モード / FREEZE / Request(FIX) の台帳反映） v1.0
@@ -1750,6 +1752,163 @@ business_spec で確定した削除/FREEZE/FIXを、台帳（Request/Recovery_Qu
 - RELEASE は releasedAt を付与し freezeState を NONE に戻す。
 - RECLAIM は reclaimedAt を付与し、以後は通常運用から除外。
 - fixState: NONE → FIX_OPEN → FIX_APPLIED（FIX は tombstone と両立し得る）。
+---
+
+## イベント→台帳更新（写像）
+本節は、GAS WRITE endpoint で処理される各イベントが、Ledger（Request / Recovery_Queue）の **どの列を確定・更新するか**を最小で固定する。
+（関数名・入力形・拒否条件などの endpoint 契約は別テーマ。本節は「台帳反映」だけを扱う。）
+
+### 共通（全イベント）
+- 更新が発生した場合、原則として以下を更新する（監査補助）
+  - lastEventName
+  - lastIdempotencyKey
+  - lastEventAt
+- logRef は「重要イベント」で必須（下記で明示）。PIIは logs/system 側でマスク済みを前提。
+
+---
+
+### Request：イベント写像（最小）
+#### 1) OPEN（upsert_open_dedupe）
+- 対象条件：OPEN のみ（CANCELLED/RESOLVED は upsert で確定させない）
+- 更新：
+  - requestKey（確定）
+  - status=OPEN（確定）
+  - openedAt（初回のみ確定。再送では維持）
+  - rqKey（linkage が判明している場合のみ更新）
+- 監査：
+  - lastEvent* は更新
+  - logRef：任意（ただし “期待しないOPEN再送” 等の例外時は必須）
+
+#### 2) RESOLVE（resolve_request）
+- 更新：
+  - status=RESOLVED（確定）
+  - resolvedAt（必須。確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 3) CANCEL（cancel）
+- 更新：
+  - status=CANCELLED（確定）
+  - cancelledAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 4) tombstone（削除モード：DELETE）
+- 更新：
+  - tombstone=true（確定）
+  - deletedAt（確定）
+  - deleteReason（任意）
+  - status は変更しない（独立）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 5) tombstone解除（RESTORE）
+- 更新：
+  - tombstone=false（確定）
+  - deletedAt（既定は空へ戻す。監査要件により保持してもよい）
+  - deleteReason（既定は空へ戻す。監査要件により保持してもよい）
+  - status は変更しない（独立）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 6) FREEZE
+- 更新：
+  - freezeState=FROZEN（確定）
+  - frozenAt（確定）
+  - status は OPEN を維持（見え方固定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 7) RELEASE
+- 更新：
+  - freezeState=NONE（確定）
+  - releasedAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 8) RECLAIM（回収）
+- 更新：
+  - reclaimedAt（確定）
+  - （以後、通常運用から除外。status は本節では変更しない）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 9) FIX_OPEN（Request(FIX) 生成）
+- 更新：
+  - fixState=FIX_OPEN（確定）
+  - fixKey（確定）
+  - fixOfRequestKey（確定：対象 requestKey）
+  - fixOpenedAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 10) FIX_APPLIED（Request(FIX) 適用完了）
+- 更新：
+  - fixState=FIX_APPLIED（確定）
+  - fixAppliedAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+---
+
+### Recovery_Queue：イベント写像（最小）
+#### 1) OPEN（upsert）
+- 更新：
+  - rqKey（確定）
+  - status=OPEN（確定）
+  - openedAt（初回のみ確定。再送では維持）
+  - requestKey（linkage が判明している場合のみ更新）
+- 監査：
+  - lastEvent* 更新
+  - logRef：任意（例外時は必須）
+
+#### 2) RESOLVE
+- 更新：
+  - status=RESOLVED（確定）
+  - resolvedAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 3) CANCEL
+- 更新：
+  - status=CANCELLED（確定）
+  - cancelledAt（確定）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 4) tombstone（削除モード：DELETE）
+- 更新：
+  - tombstone=true（確定）
+  - deletedAt（確定）
+  - deleteReason（任意）
+  - status は変更しない（独立）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 5) tombstone解除（RESTORE）
+- 更新：
+  - tombstone=false（確定）
+  - deletedAt / deleteReason は既定では空へ戻す（監査要件により保持してもよい）
+  - status は変更しない（独立）
+- 監査：
+  - lastEvent* 更新
+  - logRef：必須
+
+#### 6) FREEZE / RELEASE / RECLAIM / FIX_OPEN / FIX_APPLIED
+- Request 側の同名イベントと同じ列更新規則を適用する（列名は Recovery_Queue 定義に従う）。
+- 監査：いずれも logRef 必須、lastEvent* 更新。
 ```
 
 
