@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 117969
+- included_total_bytes: 118215
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1104,8 +1104,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 4fbfb25bcba58f1462ed7165d9b3692dbb4e32340f59c483993c4257ffb5222e
-- bytes: 2207
+- sha256: 3341d2e84644faa502fbe777d291153ce391c57a8f63159aaa08c059422a070f
+- bytes: 2453
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1124,7 +1124,9 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
-- 2026-01-06: (GAS) WRITE endpoint is B17-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request + linkage): https://script.google.com/macros/s/AKfycby-aOn1hebuReOJBo57HxCFl9MBhSR8XaRtxLrLfkH6vlKqr3NtqTnSoPIHHWVIJ14ihA/exec
+- 2026-01-06: (GAS) WRITE endpoint is B18 (B17-1 + READ ops: recovery_queue.get/list_unlinked, request.get/list_open): https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
+- 2026-01-06: (GAS) B18 verified: READ ops returned expected rows (rqKey/requestKey) on https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
+- 2026-01-06: (NEXT) B19: TBD (define next theme)
 - 2026-01-06: (NEXT) B18: add READ ops for verification/troubleshooting (recovery_queue.get/list_unlinked, request.get/list_open)
 - 2026-01-06: (GAS) B17-1 verified: Request.upsert_open_dedupe links Recovery_Queue.requestRef when recoveryRqKey (==rqKey) is provided; policy A = overwrite forbidden (CONFLICT).
 - 2026-01-06: (GAS) B17-1 linkageStatus fixed: LINKED | NOT_FOUND_RECOVERY | CONFLICT | ERROR; dryRun=true => op=noop (no writes).
