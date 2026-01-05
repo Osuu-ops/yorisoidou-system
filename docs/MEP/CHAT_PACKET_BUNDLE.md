@@ -1,3 +1,230 @@
+# CHAT_PACKET_BUNDLE（自己完結）
+
+## 目的
+- 新チャットでファイル参照ができない前提でも、入口（START_HERE）と現在地（STATE_CURRENT）を必ず読めるようにする。
+- REQUESTを減らし、貼り忘れ／抜粋ミス＝汚染を防ぐ。
+
+## 使い方（固定）
+- 新チャット1通目は CURRENT（mep_handoff出力）を貼る。
+- 追加で入口／現在地ルールを確実に読ませたいときに、本ファイル（BUNDLE）を貼る。
+
+---
+
+## START_HERE.md（同梱）
+~~~
+# START_HERE（MEP入口） v1.1
+
+## 役割
+本書は新チャット開始の唯一の入口である。
+新チャット1通目は「目的（1行）」＋本書を貼って開始する。
+
+---
+
+## 最小手数の推奨（貼り付け）
+
+## 起動時ルール（新チャット1通目）
+
+- CHAT_PACKETのみ（指示なし）：作業開始しない。溜まっている引継ぎ（open PR / CONTINUE_TARGET 等）＋アイデア一覧（IDEA_INDEX / ACTIVE）を提示し、「どれを始めますか？」で選択させる。
+- CHAT_PACKET＋指示あり：指示に当てはまるリストを提示し、工程表を作成する（以後、ユーザーの自由文による採用宣言があるまでコードは出さない）。
+
+- 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
+- CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
+
+---
+
+## 参照順（固定）
+1. docs/MEP/STATE_CURRENT.md（現在地）
+2. docs/MEP/ARCHITECTURE.md（構造）
+3. docs/MEP/PROCESS.md（手続き）
+4. docs/MEP/GLOSSARY.md（用語）
+5. docs/MEP/GOLDEN_PATH.md（完走例）
+
+---
+
+## AIの要求ルール（必須）
+- 「全部貼れ」「大量ファイル貼れ」は禁止。
+- 追加が必要な場合のみ、最大3件まで、必ず次の形式で要求する。
+
+### REQUEST
+- file: <ファイルパス>
+- heading: <見出し名>
+- reason: <必要理由（1行）>
+
+---
+
+## Links
+- docs/MEP/CHAT_PACKET.md
+- docs/MEP/MEP_MANIFEST.yml
+- docs/MEP/INDEX.md
+- docs/MEP/AI_BOOT.md
+- docs/MEP/STATE_CURRENT.md
+- docs/MEP/ARCHITECTURE.md
+- docs/MEP/PROCESS.md
+- docs/MEP/GLOSSARY.md
+- docs/MEP/GOLDEN_PATH.md
+
+- [OPS: Scope-IN Suggest 運用（Out-of-scope 自動提案PR）](docs/MEP/OPS_SCOPE_SUGGEST.md)
+~~~
+
+---
+
+## AI_BOOT.md（同梱）
+~~~
+# AI_BOOT（AI挙動固定） v1.0
+
+## 目的
+本書は、新チャットでAIが迷わず進行するための「要求フォーマット」と「禁止事項」を固定する。
+AIは本書に従ってのみ情報要求を行う。
+
+---
+
+## 絶対禁止
+- 出力に「ネストしたコードブロック」や「複数のコードブロック混在」を作らない（本文中に ``` を入れ子にしない）。
+- Git/GitHub/PowerShell 操作は必ず **単一の ```powershell ブロック**で提示する（途中で別ブロックを挿入しない）。
+- 説明はコード内コメントに寄せ、ブロック外で手順を分割しない。
+- PowerShell の Here-String は **@' '@** を使用する（@" "@ は禁止）。
+- 「全部貼れ」「10ファイル貼れ」等の大量提示要求
+- ローカル操作を前提とした手順提示（GitHub内で完結させる）
+- 入口整備（docs/MEP）を超えるスコープ拡張（再設計・改善提案の無限化）
+
+---
+
+## AIの情報要求フォーマット（必須）
+不足情報がある場合、AIは必ず次の形式で要求する：
+
+### REQUEST
+- file: <ファイルパス>
+- heading: <見出し名（h2/h3等）>
+- reason: <その見出しが必要な理由（1行）>
+
+（複数必要な場合も最大3件まで。3件を超える要求は禁止。）
+
+---
+
+## 採否判断ゲート（コード生成の前に必須）
+
+
+## 意思決定ゲート（Decision Gate｜コード禁止）
+
+テーマが来たら、AIは必ず **次だけ** を返す（コード／コマンド／手順は禁止）：
+
+- 目的（何を解決するか）
+- 前提（制約／触って良い範囲／触らない範囲）
+- 選択肢（最大3案）
+- 評価（良い/悪い、リスク、コスト、DoD）
+- 推奨案（AIの結論）
+- 最終確認（採用/不採用/保留を選ばせる）
+
+## 実装ゲート（Adoption Trigger｜採用宣言が出るまでコード禁止）
+
+ユーザーが明示したときだけコード解禁：
+
+- 「採用して進めて」
+- 「この内容で採用」
+- 「実装に入って」
+
+この宣言が無い限り、AIは **コマンドも手順も出さない**。
+
+## 例外（人間が命令したときだけ）
+
+ユーザーが「今すぐそのコマンドを出して」等を明示した場合のみ、その瞬間だけコマンドを出す。
+それ以外は出さない。
+### 原則（正式採用）
+- テーマ提示だけでは、AIはコード/コマンド/手順を出さない（深掘り→採否判断が先）。
+- 人間が「採用/実装開始」を明示した場合のみ、実装フェーズへ進む。
+
+### 深掘りフェーズ（コード禁止）
+AIはまず以下を提示し、採用/不採用の判断材料を揃える：
+- 目的（何を解決するか）
+- 前提（制約・境界・触って良い/悪い）
+- 成功条件（DoD）
+- リスク（詰まりポイント）
+- 選択肢（最大3案）と評価（良い/悪いの理由）
+- AIの推奨案（名案）と、採用/不採用/保留の提案
+
+### 採用宣言（人間の最終判断）
+- ユーザーが「採用して」「この内容で採用」「実装に入って」等を明示したら実装へ進む。
+- 明示がない限り、AIはコードを出さない。
+
+### 実装フェーズ（採用後のみ）
+- 採用後は 1テーマ=1PR を守り、PowerShell等は単一ブロックで提示する。
+
+## 進行の優先順位（固定）
+1) docs/MEP/INDEX.md（入口）
+2) docs/MEP/STATE_CURRENT.md（現在地）
+3) docs/MEP/ARCHITECTURE.md（構造）
+4) docs/MEP/PROCESS.md（手続き）
+5) docs/MEP/GLOSSARY.md（用語）
+6) docs/MEP/GOLDEN_PATH.md（完走例）
+
+---
+
+## 不足情報の扱い（固定）
+- AIは推測で補完しない。必要なら REQUEST フォーマットで要求する。
+- ただし、要求は最大3件まで。足りない場合は「まずINDEX/STATE_CURRENTの更新PR」を提案して止める。
+
+---
+
+## 合格条件（AI側のDone判定）
+- INDEXから必要文書へ辿れる
+- 「唯一の正」「触って良い/悪い領域」「PR運用」が明文化されている
+- AIが REQUEST フォーマットで必要箇所だけ要求できる
+~~~
+
+---
+
+## STATE_CURRENT.md（同梱）
+~~~
+# STATE_CURRENT (MEP)
+
+## Doc status registry（重複防止）
+- docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
+- STABLE/GENERATED は原則触らない（目的明示の専用PRのみ）
+
+## CURRENT_SCOPE (canonical)
+- platform/MEP/03_BUSINESS/よりそい堂/**
+
+## Guards / Safety
+- Required checks は「PRで必ず表示されるチェック名」のみに限定する（schedule/dispatch専用チェック名を入れると永久BLOCKEDになり得る）。
+- Text Integrity Guard (PR): enabled
+- Halfwidth Kana Guard: enabled
+- UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
+
+## Current objective
+- 2026-01-06: (PR #576) master_spec: ledger reflection — add event→ledger mapping for delete/FREEZE/FIX
+- 2026-01-06: (GAS) WRITE endpoint is B21 (B20 + compat: status<->requestStatus sync + request.list_status): https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
+- 2026-01-06: (GAS) B21 verified: status and requestStatus kept in sync (OPEN/RESOLVED/CANCELLED); list_status works; resolve-after-cancel rejected on https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
+- 2026-01-06: (NEXT) B22: TBD (define next theme)
+- 2026-01-06: (GAS) B20 verified: cancel_request sets CANCELLED; resolve after cancel rejected (ok=false); Request.get reflects CANCELLED on https://script.google.com/macros/s/AKfycbwkdXO0x3SPLgvCSvn11NakOKDXCsROJCPZpDQKiyN1JGV0TwN1v-2Z7YyJd-EC4fNhwg/exec
+- 2026-01-06: (NEXT) B21: TBD (define next theme)
+- 2026-01-06: (GAS) B19 verified: default strict NOT_FOUND_RECOVERY (no Recovery create) + opt-in autoCreateRecovery created Recovery_Queue then LINKED on https://script.google.com/macros/s/AKfycbxTpul-Tdtce5V-MOTVofNumceEpEaQKD70fT66PL1mPo2YpTa0D6XmKehmoJwPj5HhJA/exec
+- 2026-01-06: (NEXT) B20: TBD (define next theme)
+- 2026-01-06: (PR #562) master_spec: ledger reflection for delete/FREEZE/Request(FIX) (v1.0) — ledger columns/keys + minimal rules
+- 2026-01-06: (GAS) B18 verified: READ ops returned expected rows (rqKey/requestKey) on https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
+- 2026-01-06: (NEXT) B19: TBD (define next theme)
+- 2026-01-06: (NEXT) B18: add READ ops for verification/troubleshooting (recovery_queue.get/list_unlinked, request.get/list_open)
+- 2026-01-06: (GAS) B17-1 verified: Request.upsert_open_dedupe links Recovery_Queue.requestRef when recoveryRqKey (==rqKey) is provided; policy A = overwrite forbidden (CONFLICT).
+- 2026-01-06: (GAS) B17-1 linkageStatus fixed: LINKED | NOT_FOUND_RECOVERY | CONFLICT | ERROR; dryRun=true => op=noop (no writes).
+- 2026-01-06: (GAS) Spreadsheet ID (Ledger): 1VWqQXs9HAvZQ7K9fKXa4M0BHrvvsZW8qZBJHqoCCE3I (Sheets: Recovery_Queue / Request)
+- 2026-01-06: (NEXT) B17: Recovery_Queue ↔ Request linkage (requestRef/recoveryRqKey) in write endpoint
+- 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
+- Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
+- 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
+- 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
+
+## How to start a new conversation
+Tell the assistant:
+- "Read docs/MEP/START_HERE.md and proceed."
+- (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
+~~~
+
+---
+
+## CHAT_PACKET.md（参考：同梱）
+~~~
 # CHAT_PACKET（新チャット貼り付け用） v1.1
 
 ## 使い方（最小）
@@ -531,10 +758,5 @@ scope-guard enforcement test 20260103-002424
 ```
 
 ---
----
-
-<!-- CHAT_PACKET_BUNDLE_POINTER -->
-## CHAT_PACKET_BUNDLE（追加）
-- 自己完結版: docs/MEP/CHAT_PACKET_BUNDLE.md（START_HERE / AI_BOOT / STATE_CURRENT を同梱）
-- 新チャットで参照できない環境でも、貼るだけで入口と現在地が確定する。
+~~~
 
