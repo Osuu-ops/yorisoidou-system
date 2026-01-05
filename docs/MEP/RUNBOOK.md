@@ -197,3 +197,28 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ### 次の遷移（GO）
 - 業務系（実装・運用側）へ進む（Phase-1 を前提として進める）
+
+## CARD-07: Request Status Normalization (status/requestStatus)
+
+### When to use
+- Request sheet has mixed usage of `status` and legacy `requestStatus`, and list/read results look inconsistent.
+
+### Endpoint
+- Use the current B22 endpoint recorded in STATE_CURRENT.
+
+### Procedure (safe)
+1) DRY-RUN first:
+- POST `{ "action":"request.normalize_status_columns", "limit":200, "dryRun":true }`
+- Check `result.conflicts`:
+  - `conflicts == 0` => proceed to write
+  - `conflicts > 0`  => STOP (do not write). Resolve conflicts manually (row-by-row) then rerun.
+
+2) WRITE:
+- POST `{ "action":"request.normalize_status_columns", "limit":200, "dryRun":false }`
+- Confirm summary: `fixed` increased, `conflicts` stayed 0.
+
+### Conflict rule (fixed)
+- If both columns are set and different: the tool MUST NOT overwrite. It reports the row as conflict.
+
+### Notes
+- Repeat until `fixed == 0` and `conflicts == 0` for the scanned range.
