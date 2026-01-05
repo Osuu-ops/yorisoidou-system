@@ -23,6 +23,16 @@
 - tools/mep_pwsh_guard.ps1
 - tools/mep_autopilot.ps1
 - tools/mep_integration_compiler/collect_changed_files.py
+- tools/mep_integration_compiler/runtime/__init__.py
+- tools/mep_integration_compiler/runtime/__pycache__/__init__.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/idempotency.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/recovery_queue.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/__pycache__/request_linkage.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/cli.py
+- tools/mep_integration_compiler/runtime/idempotency.py
+- tools/mep_integration_compiler/runtime/recovery_queue.py
+- tools/mep_integration_compiler/runtime/request_linkage.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
