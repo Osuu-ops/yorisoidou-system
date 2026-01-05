@@ -279,7 +279,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 
 ## STATE_CURRENT.md（現在地）  (docs/MEP/STATE_CURRENT.md)
 ```
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -295,10 +295,26 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
-- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
+- 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+- 2026-01-06: (NEXT) B24: TBD (define next theme)
+- 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+- 2026-01-06: (GAS) B22 verified: normalize_status_columns exists and runs (dryRun + write), then request.get returns effectiveStatus on https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+- 2026-01-06: (NEXT) B23: TBD (define next theme)
+- 2026-01-06: (PR #576) master_spec: ledger reflection — add event→ledger mapping for delete/FREEZE/FIX
+- 2026-01-06: (GAS) B21 verified: status and requestStatus kept in sync (OPEN/RESOLVED/CANCELLED); list_status works; resolve-after-cancel rejected on https://script.google.com/macros/s/AKfycbw2moBfgg13VaxGPNQDj-2vGzai5GZXHGpZP4bkNib3h12mVsldCCkwAfEvVAgbCs2-3Q/exec
+- 2026-01-06: (NEXT) B22: TBD (define next theme)
+- 2026-01-06: (GAS) B20 verified: cancel_request sets CANCELLED; resolve after cancel rejected (ok=false); Request.get reflects CANCELLED on https://script.google.com/macros/s/AKfycbwkdXO0x3SPLgvCSvn11NakOKDXCsROJCPZpDQKiyN1JGV0TwN1v-2Z7YyJd-EC4fNhwg/exec
+- 2026-01-06: (NEXT) B21: TBD (define next theme)
+- 2026-01-06: (GAS) B19 verified: default strict NOT_FOUND_RECOVERY (no Recovery create) + opt-in autoCreateRecovery created Recovery_Queue then LINKED on https://script.google.com/macros/s/AKfycbxTpul-Tdtce5V-MOTVofNumceEpEaQKD70fT66PL1mPo2YpTa0D6XmKehmoJwPj5HhJA/exec
+- 2026-01-06: (NEXT) B20: TBD (define next theme)
+- 2026-01-06: (PR #562) master_spec: ledger reflection for delete/FREEZE/Request(FIX) (v1.0) — ledger columns/keys + minimal rules
+- 2026-01-06: (GAS) B18 verified: READ ops returned expected rows (rqKey/requestKey) on https://script.google.com/macros/s/AKfycby-lrrbKhIJHMNV85bzwUAFhNuffbTxuBzLHGTtmIJM2vxy4XdI95cxUkbsCz_bw59uZw/exec
+- 2026-01-06: (NEXT) B19: TBD (define next theme)
+- 2026-01-06: (NEXT) B18: add READ ops for verification/troubleshooting (recovery_queue.get/list_unlinked, request.get/list_open)
+- 2026-01-06: (GAS) B17-1 verified: Request.upsert_open_dedupe links Recovery_Queue.requestRef when recoveryRqKey (==rqKey) is provided; policy A = overwrite forbidden (CONFLICT).
+- 2026-01-06: (GAS) B17-1 linkageStatus fixed: LINKED | NOT_FOUND_RECOVERY | CONFLICT | ERROR; dryRun=true => op=noop (no writes).
 - 2026-01-06: (GAS) Spreadsheet ID (Ledger): 1VWqQXs9HAvZQ7K9fKXa4M0BHrvvsZW8qZBJHqoCCE3I (Sheets: Recovery_Queue / Request)
 - 2026-01-06: (NEXT) B17: Recovery_Queue ↔ Request linkage (requestRef/recoveryRqKey) in write endpoint
-- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
 - 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
@@ -531,10 +547,3 @@ scope-guard enforcement test 20260103-002424
 ```
 
 ---
----
-
-<!-- CHAT_PACKET_BUNDLE_POINTER -->
-## CHAT_PACKET_BUNDLE（追加）
-- 自己完結版: docs/MEP/CHAT_PACKET_BUNDLE.md（START_HERE / AI_BOOT / STATE_CURRENT を同梱）
-- 新チャットで参照できない環境でも、貼るだけで入口と現在地が確定する。
-
