@@ -1010,6 +1010,113 @@ UF系（入力）：
 
 ## Comment Concierge & Task Presentation（Phase-2）
 
+## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）
+
+### 目的（固定）
+- 「欠番（VOID）」「削除（CANCEL/DELETE）」「復旧（RESTORE）」「誤完了解除（REOPEN/UNDELIVER）」を、監査可能かつ事故耐性の高い方式で固定する。
+- 物理削除（行削除／履歴消去）を禁止し、台帳（Ledger）に“事実”として残す（トゥームストーン）。
+- 在庫（PARTS）・経費（EXPENSE）・回収（Recovery Queue / Request）へ、冪等かつ安全に接続する（自動辻褄合わせ禁止）。
+
+### 用語と定義（固定）
+- 欠番（VOID）:
+  - Order_ID が発行されたが、業務として成立しなかった（誤作成／重複／即取消）。
+  - 原則：請求／領収／完了同期の対象にしない。
+- 削除（CANCEL/DELETE）:
+  - 成立していたが取り下げた（キャンセル）。
+  - 原則：以後の更新・同期を止める（ただし“存在した事実”は残す）。
+- 復旧（RESTORE）:
+  - VOID/CANCEL を取り消し、再び運用対象へ戻す。
+  - 原則：復旧に伴う不整合は自動で補正せず、Recovery Queue（OPEN）へ回収する。
+- 誤完了解除（REOPEN / UNDELIVER）:
+  - DELIVERED / WORK_DONE 等の誤り訂正（欠番/削除とは別物）。
+  - 原則：欠番/削除と混ぜない（会計・在庫・監査が破綻するため）。
+
+### 大原則（固定）
+- 物理削除は禁止（Order/Parts/Expense/Request/Recovery Queue の履歴を消さない）。
+- 自動で辻褄合わせをしない（Integration Contract の「競合・破綻の扱い」に従属）。
+- UI（現場/管理）・AI補助は確定値を作らない（Authority 原則に従属）。
+- すべての操作は冪等であること（IdempotencyKey で重複排除）。
+- 危険域（在庫・経費・請求に影響する領域）に触れる場合は「凍結→回収」を優先する。
+
+### 在庫（PARTS）に対する「解放」と「凍結」（固定）
+本節における解放/凍結は、「部材のSTATUSを恣意に変える」ことではない。
+STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない。
+
+#### 解放（RELEASE｜安全域のみ）
+- 対象：当該 Order に紐づく部材のうち、次を満たす“安全域”のみ。
+  - まだ業務確定（納品/使用/経費確定）へ影響していないと判定できるもの。
+- 効果：
+  - 当該 Order の拘束（予約/紐付け）を解除し、在庫運用へ戻す。
+  - 解除が「危険修正（FIX）」に該当する場合は自動で実行せず、凍結へ切り替える（後述）。
+
+#### 凍結（FREEZE｜危険域は回収へ）
+- 対象：当該 Order に次が1つでも存在する場合は凍結する。
+  - DELIVERED / USED 等、完了同期・経費・会計に影響する部材が存在する。
+  - 既に経費（Expense）が確定している。
+  - 既に書類（INVOICE/RECEIPT 等）の作成・発行・入金等、会計イベントが進行している（将来拡張を含む）。
+- 効果：
+  - 自動で取消・転用・巻戻しをしない。
+  - Recovery Queue（BLOCKER/OPEN）へ登録し、監督回収へ寄せる。
+  - 必要に応じて Request（REVIEW）を併設してよい（Request linkage に従属）。
+
+### Recovery Queue / Request linkage（固定）
+- VOID/CANCEL/RESTORE/REOPEN の操作は、次のいずれかに該当する場合、必ず Recovery Queue に登録する（冪等）:
+  - 凍結条件に該当（危険域が存在）。
+  - 解除/復旧に必要な前提（例：在庫拘束解除、整合確認）が満たせない。
+  - 競合（同一Orderに矛盾する操作が短時間に到達、素材不一致 等）を検出した。
+- 監督判断が必要な場合は Request=REVIEW を併設してよい。
+- いずれも自動で RESOLVED にしない（根拠と記録を伴う更新のみ）。
+
+### IdempotencyKey（固定）
+- 本節の操作イベントは必ず冪等であること。
+- eventType（固定語）:
+  - ORDER_VOID / ORDER_CANCEL / ORDER_RESTORE / ORDER_REOPEN
+- primaryId: Order_ID（#n で指定された対象）
+- eventAt: 確定時刻（受付確定時刻）
+- sourceId: 任意（外部イベントID等。取得できる場合のみ）
+- 同一 idempotencyKey の再到達は「同一イベントの再観測」として扱い、主要台帳の増殖は禁止（ログ追記は許容）。
+
+### コメント操作（削除モード）— 最小仕様（固定）
+本節は Comment Concierge の「確認→番号選択→実行」プロトコルに従属する。
+
+#### トリガ（固定）
+- `削除モード`（`#n 削除モード` により対象受注を指定可。未指定なら #0）
+- モード中は対象 Order（#n）を固定し、他Orderへ移れない（誤爆防止）。
+  - 他Orderへ移る場合は `キャンセル` で退出し、再度 `#m 削除モード` を開始する。
+
+#### モード中の許可コマンド（固定・最小）
+- `欠番`（= ORDER_VOID）
+- `削除`（= ORDER_CANCEL）
+- `復旧`（= ORDER_RESTORE）
+- `誤完了解除`（= ORDER_REOPEN）
+- `キャンセル`（何もせず退出）
+
+#### 実行手順（固定）
+1) 候補提示（番号付き・影響要約を含む）
+2) ユーザーが番号選択（複数可）
+3) 最終確認（要約）
+4) ユーザーが `実行` で確定
+
+#### 実行後の返答（固定・最小）
+- 操作名（VOID/CANCEL/RESTORE/REOPEN）
+- 対象（Order_ID/#n）
+- 在庫扱い（解放できた数／凍結理由）
+- Recovery Queue の発生有無（OPEN件数と理由）
+- 次の導線（確認/回収の参照先：実装で定義）
+
+### 監査（Runtime Audit Checklist への接続｜固定）
+- ORDER_VOID / ORDER_CANCEL / ORDER_RESTORE / ORDER_REOPEN は、監査対象イベントとして expected/unexpected を持つ。
+- unexpected effect（代表例）:
+  - 物理削除が発生する（履歴消去）
+  - 自動で辻褄合わせが発生する（危険域を勝手に巻戻す）
+  - 同一 idempotencyKey で主要台帳が増殖する
+- NG は Recovery Queue（OPEN）へ登録する（勝手に修正しない）。
+
+### 注意（固定）
+- VOID/CANCEL は「状態の確定」であり、会計・在庫・完了同期の“意味”を勝手に書き換えるものではない。
+- 危険域が存在する場合は、停止して回収へ寄せることが正しい（自動で整合させない）。
+
+
 ### 目的
 - コメント（コンシェルジュ）と HTML フォームの両方から、同じ受注（Order_ID）を安全に操作できる状態を固定する。
 - コメントは「入口・回収・誘導」を担当し、HTML は「編集・確定」を担当する（ただし欠番等は運用方針に従う）。
