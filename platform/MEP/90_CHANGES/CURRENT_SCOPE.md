@@ -65,6 +65,11 @@
 - tools/mep_integration_compiler/runtime/adapters/sheets_schema_check_cli.py
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b8_schema_check.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b8_schema_check.py
+- tools/mep_integration_compiler/runtime/README_B9_SHEETS_READONLY_BOUNDARY.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/sheets_header_fetcher.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/sheets_header_fetcher.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b9_sheets_readonly_boundary.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b9_sheets_readonly_boundary.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
