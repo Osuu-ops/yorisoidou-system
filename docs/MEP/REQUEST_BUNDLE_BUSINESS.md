@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 300774
+- included_total_bytes: 328133
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -92,8 +92,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 335d6d976277f337070b9706830c0e8572bfdba615bd1156c49d14537f300133
-- bytes: 18611
+- sha256: bd5d4aa0053909324cdca2b9902419d5b387e17ec919456fe379b3055fca839a
+- bytes: 19304
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -393,6 +393,10 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
+- 2026-01-06: (GAS) Spreadsheet ID (Ledger): 1VWqQXs9HAvZQ7K9fKXa4M0BHrvvsZW8qZBJHqoCCE3I (Sheets: Recovery_Queue / Request)
+- 2026-01-06: (NEXT) B17: Recovery_Queue ↔ Request linkage (requestRef/recoveryRqKey) in write endpoint
+- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
 - 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
@@ -1068,8 +1072,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: a2a9470759a8bd982195d2ffd361ecf1e2e56fb5ce439dabf91cd78cdafc0603
-- bytes: 1296
+- sha256: 7fb6984869947e3b658f0e891ccb67972cac442154d27193825107dde0cb0604
+- bytes: 1990
 
 ```text
 ﻿# STATE_CURRENT (MEP)
@@ -1088,6 +1092,10 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
+- 2026-01-06: (GAS) Spreadsheet ID (Ledger): 1VWqQXs9HAvZQ7K9fKXa4M0BHrvvsZW8qZBJHqoCCE3I (Sheets: Recovery_Queue / Request)
+- 2026-01-06: (NEXT) B17: Recovery_Queue ↔ Request linkage (requestRef/recoveryRqKey) in write endpoint
+- 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
 - 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
@@ -2007,11 +2015,11 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 3f503d3c0be5b6b13ff524b013acb7dd514ab5f85b43ade67cd419c2056d6531
-- bytes: 52623
+- sha256: 78840c47b77c5d3b1c4212cf156f134d109e77bfbd80ddd19a516fe26baa8501
+- bytes: 78011
 
 ```text
-﻿<!--
+<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -2123,6 +2131,47 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 
 <!-- WORK_SPEC_PHASE1 -->
 ## WORK（施工）— BUSINESS_SPEC（Phase-1）
+### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）
+
+#### 目的（固定）
+- VOID/CANCEL/RESTORE/REOPEN を、現場（Todoist）・管理（ClickUp）のタスク表示に安全に反映し、見落としと誤操作を防ぐ。
+- タスク名の既存契約（AA群／納品 分子/分母／末尾 `_ ` 自由文スロット保持）を破壊しない。
+
+#### 表示（タイトル）規約（固定）
+- タスク名は「先頭=AA群（または納品 分子/分母）」の規約を維持する（AAを先頭から外さない）。
+- 末尾 `_ `（アンダースコア＋半角スペース）の自由文スロットは必ず保持する（更新でも消さない）。
+- 表示タグは `_ ` の直前に付与する（AA群/納品表示を壊さない）:
+  - VOID:  `[VOID]`
+  - CANCEL: `[CANCEL]`
+  - 例）`AA01 AA03 [CANCEL] _ `
+  - 例）`納品 1/7 [VOID] _ `
+- RESTORE（復旧）時は、`[VOID]` / `[CANCEL]` を除去する（元の表示へ戻す）。
+- REOPEN（誤完了解除）は状態タグではなく「操作」であり、タイトルへ永続タグは付けない（コメントへ記録する）。
+
+#### タスク状態（完了/復旧）規約（固定）
+- VOID/CANCEL:
+  - 結果が FREEZE（凍結＝Recovery Queue: BLOCKER/OPEN）になった場合：
+    - タスクは自動完了しない（監督回収のためオープン維持）。
+    - コメントに `[STATE] VOID/CANCEL + FREEZE` と理由（最小）を記録する。
+  - FREEZE でない場合：
+    - タスクは完了（Close）してよい（Todoist/ClickUp の完了操作）。
+    - コメントに `[STATE] VOID/CANCEL` を記録する（監査用）。
+- RESTORE:
+  - 可能なら「完了済みタスクを復旧（Reopen/Uncomplete）」する。
+  - 復旧できない実装の場合は「新規タスクを作成し、旧タスクへリンク（参照ID/URL）」する（増殖は許容、監査リンク必須）。
+  - タイトルから `[VOID]` / `[CANCEL]` を除去する。
+- REOPEN（誤完了解除）:
+  - タスクは復旧（Reopen/Uncomplete）してよい（誤完了の訂正）。
+  - コメントに `[OP] REOPEN` と対象（Order_ID/#n）を記録する。
+  - VOID/CANCEL の状態を解除する操作ではない（混同禁止）。
+
+#### コメント記録（固定）
+- 状態/操作の記録はタスクコメントに最小で残す（監査用）:
+  - `[STATE] VOID` / `[STATE] CANCEL` / `[STATE] RESTORE`
+  - FREEZE の場合：`[STATE] VOID FREEZE` 等
+  - 操作ログ：`[OP] REOPEN`
+- [INFO] ブロックの上書き規約は維持する（`--- USER ---` 以下は触らない）。
+
 
 ### 目的
 - 施工（WORK）を「受注（Order_ID）に紐づく現場作業の実行・完了報告」として定義し、
@@ -3021,6 +3070,391 @@ UF系（入力）：
 - リトライのたびに台帳へ新規行を追加する（増殖）。
 - 管理UIからの入力で確定処理を代替する（入力禁止経路）。
 
+## Comment Concierge & Task Presentation（Phase-2）
+
+## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）
+
+### 目的（固定）
+- 「欠番（VOID）」「削除（CANCEL/DELETE）」「復旧（RESTORE）」「誤完了解除（REOPEN/UNDELIVER）」を、監査可能かつ事故耐性の高い方式で固定する。
+- 物理削除（行削除／履歴消去）を禁止し、台帳（Ledger）に“事実”として残す（トゥームストーン）。
+- 在庫（PARTS）・経費（EXPENSE）・回収（Recovery Queue / Request）へ、冪等かつ安全に接続する（自動辻褄合わせ禁止）。
+
+### 用語と定義（固定）
+- 欠番（VOID）:
+  - Order_ID が発行されたが、業務として成立しなかった（誤作成／重複／即取消）。
+  - 原則：請求／領収／完了同期の対象にしない。
+- 削除（CANCEL/DELETE）:
+  - 成立していたが取り下げた（キャンセル）。
+  - 原則：以後の更新・同期を止める（ただし“存在した事実”は残す）。
+- 復旧（RESTORE）:
+  - VOID/CANCEL を取り消し、再び運用対象へ戻す。
+  - 原則：復旧に伴う不整合は自動で補正せず、Recovery Queue（OPEN）へ回収する。
+- 誤完了解除（REOPEN / UNDELIVER）:
+  - DELIVERED / WORK_DONE 等の誤り訂正（欠番/削除とは別物）。
+  - 原則：欠番/削除と混ぜない（会計・在庫・監査が破綻するため）。
+
+### 大原則（固定）
+- 物理削除は禁止（Order/Parts/Expense/Request/Recovery Queue の履歴を消さない）。
+- 自動で辻褄合わせをしない（Integration Contract の「競合・破綻の扱い」に従属）。
+- UI（現場/管理）・AI補助は確定値を作らない（Authority 原則に従属）。
+- すべての操作は冪等であること（IdempotencyKey で重複排除）。
+- 危険域（在庫・経費・請求に影響する領域）に触れる場合は「凍結→回収」を優先する。
+
+### 在庫（PARTS）に対する「解放」と「凍結」（固定）
+本節における解放/凍結は、「部材のSTATUSを恣意に変える」ことではない。
+STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない。
+
+#### 解放（RELEASE｜安全域のみ）
+- 対象：当該 Order に紐づく部材のうち、次を満たす“安全域”のみ。
+  - まだ業務確定（納品/使用/経費確定）へ影響していないと判定できるもの。
+- 効果：
+  - 当該 Order の拘束（予約/紐付け）を解除し、在庫運用へ戻す。
+  - 解除が「危険修正（FIX）」に該当する場合は自動で実行せず、凍結へ切り替える（後述）。
+
+#### 凍結（FREEZE｜危険域は回収へ）
+- 対象：当該 Order に次が1つでも存在する場合は凍結する。
+  - DELIVERED / USED 等、完了同期・経費・会計に影響する部材が存在する。
+  - 既に経費（Expense）が確定している。
+  - 既に書類（INVOICE/RECEIPT 等）の作成・発行・入金等、会計イベントが進行している（将来拡張を含む）。
+- 効果：
+  - 自動で取消・転用・巻戻しをしない。
+  - Recovery Queue（BLOCKER/OPEN）へ登録し、監督回収へ寄せる。
+  - 必要に応じて Request（REVIEW）を併設してよい（Request linkage に従属）。
+
+### Recovery Queue / Request linkage（固定）
+- VOID/CANCEL/RESTORE/REOPEN の操作は、次のいずれかに該当する場合、必ず Recovery Queue に登録する（冪等）:
+  - 凍結条件に該当（危険域が存在）。
+  - 解除/復旧に必要な前提（例：在庫拘束解除、整合確認）が満たせない。
+  - 競合（同一Orderに矛盾する操作が短時間に到達、素材不一致 等）を検出した。
+- 監督判断が必要な場合は Request=REVIEW を併設してよい。
+- いずれも自動で RESOLVED にしない（根拠と記録を伴う更新のみ）。
+
+### IdempotencyKey（固定）
+- 本節の操作イベントは必ず冪等であること。
+- eventType（固定語）:
+  - ORDER_VOID / ORDER_CANCEL / ORDER_RESTORE / ORDER_REOPEN
+- primaryId: Order_ID（#n で指定された対象）
+- eventAt: 確定時刻（受付確定時刻）
+- sourceId: 任意（外部イベントID等。取得できる場合のみ）
+- 同一 idempotencyKey の再到達は「同一イベントの再観測」として扱い、主要台帳の増殖は禁止（ログ追記は許容）。
+
+### コメント操作（削除モード）— 最小仕様（固定）
+本節は Comment Concierge の「確認→番号選択→実行」プロトコルに従属する。
+
+#### トリガ（固定）
+- `削除モード`（`#n 削除モード` により対象受注を指定可。未指定なら #0）
+- モード中は対象 Order（#n）を固定し、他Orderへ移れない（誤爆防止）。
+  - 他Orderへ移る場合は `キャンセル` で退出し、再度 `#m 削除モード` を開始する。
+
+#### モード中の許可コマンド（固定・最小）
+- `欠番`（= ORDER_VOID）
+- `削除`（= ORDER_CANCEL）
+- `復旧`（= ORDER_RESTORE）
+- `誤完了解除`（= ORDER_REOPEN）
+- `キャンセル`（何もせず退出）
+
+#### 実行手順（固定）
+1) 候補提示（番号付き・影響要約を含む）
+2) ユーザーが番号選択（複数可）
+3) 最終確認（要約）
+4) ユーザーが `実行` で確定
+
+#### 実行後の返答（固定・最小）
+- 操作名（VOID/CANCEL/RESTORE/REOPEN）
+- 対象（Order_ID/#n）
+- 在庫扱い（解放できた数／凍結理由）
+- Recovery Queue の発生有無（OPEN件数と理由）
+- 次の導線（確認/回収の参照先：実装で定義）
+
+### 監査（Runtime Audit Checklist への接続｜固定）
+- ORDER_VOID / ORDER_CANCEL / ORDER_RESTORE / ORDER_REOPEN は、監査対象イベントとして expected/unexpected を持つ。
+- unexpected effect（代表例）:
+  - 物理削除が発生する（履歴消去）
+  - 自動で辻褄合わせが発生する（危険域を勝手に巻戻す）
+  - 同一 idempotencyKey で主要台帳が増殖する
+- NG は Recovery Queue（OPEN）へ登録する（勝手に修正しない）。
+
+### 注意（固定）
+- VOID/CANCEL は「状態の確定」であり、会計・在庫・完了同期の“意味”を勝手に書き換えるものではない。
+- 危険域が存在する場合は、停止して回収へ寄せることが正しい（自動で整合させない）。
+
+
+### 目的
+- コメント（コンシェルジュ）と HTML フォームの両方から、同じ受注（Order_ID）を安全に操作できる状態を固定する。
+- コメントは「入口・回収・誘導」を担当し、HTML は「編集・確定」を担当する（ただし欠番等は運用方針に従う）。
+- 事故防止のため、更新系は必ず “確認→番号選択→実行” の順で確定する。
+
+---
+
+### コメント（コンシェルジュ）操作ルール（固定）
+#### 更新系の確定手順（固定）
+- 更新系（発注/納品/金額入力/更新/解除/欠番 等）は、必ず次の順で進行する：
+  1) 候補提示（番号付き）
+  2) ユーザーが番号選択（複数可）
+  3) 最終確認（要約）
+  4) ユーザーが「実行」で確定
+- 「実行」以外では確定処理を行わない。
+
+#### 実行後の返答（固定）
+- 実行後は最小サマリのみ返す：
+  - 操作名 / 対象数 / 進捗（例：納品 1/3） / 残不備（BLOCKER/WARNING）＋次リンク
+- 不明点はユーザーが質問し、必要な分だけ追加説明する（自発的な長文化は禁止）。
+
+#### コマンド一覧（固定）
+- コメント1行目が「コマンド」のとき、利用可能コマンドの最小一覧を返す（例文は最小）。
+- `#n` 指定の例を 1 行だけ含める（迷子防止）。
+  - 例：`#1 完了報告書` / `#1 請求書`
+
+---
+
+### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）
+
+#### 目的（固定）
+- 「トリガー→モード固定→入力待ち→確定（実行）／中止（キャンセル）」を、誤爆しない形で固定する。
+- 長文（媒体コピペ／ぶつ切り入力）を安全に受け取り、確定処理は必ず人間の `実行` で行う。
+
+#### 基本原則（固定）
+- モード中は「対象（#n）」を固定し、他の対象へ自動で移動しない（誤爆防止）。
+- タイムアウトは設けない（自動キャンセルしない）。退出は `実行` または `キャンセル` のみ。
+- モード中に更新系の確定処理はしない（確定は `実行` のみ）。
+- モード中の入力は「素材」であり、確定値の決定は Orchestrator が行う（Authority 原則に従属）。
+
+#### モードの開始（固定）
+- 入口は「トリガー」から開始する。
+- `#n` 指定がある場合は対象=#n、無い場合は既定対象（例：#0）を用いる。
+- 開始時は次を返す（最小）:
+  - MODE名 / 対象（Order_ID/#n）
+  - 入力待ちの案内（終了= `実行` / `キャンセル`）
+
+#### モード中の許可入力（固定）
+- 許可（入力）:
+  - 自由文（ぶつ切り可）：素材として蓄積する。
+- 許可（参照のみ）:
+  - `コマンド`（最小一覧の再提示）
+  - `#n 状態`（対象の状態/進捗の参照。更新はしない）
+- 禁止（モード中）:
+  - 発注/納品/金額入力/削除/復旧などの「更新系」確定（混在防止）。
+  - 対象切替（#mへ移動）。必要なら `キャンセル` → 再トリガーで開始し直す。
+
+#### 確定（固定）
+- `実行` を受領した時だけ、蓄積した素材を用いて確定処理へ進む（confirm→select→実行の原則に従属）。
+- 実行後は最小サマリのみ返す（登録済み/未入力/次リンク）。過剰な説明は禁止。
+
+#### 中止（固定）
+- `キャンセル` を受領した場合、蓄積した素材は破棄して退出する（台帳/外部へ反映しない）。
+- キャンセルの事実はログ（logs/system 相当）に残してよい（実装に委譲）。
+
+### トリガー一覧（Phase-2｜固定）
+
+#### 目的（固定）
+- コメント1行目（またはモード中の入力）を「トリガー」として解釈し、誤爆と混線を防ぐ。
+- トリガーは分類（MODE / ONE-SHOT / REF）と衝突解決を持つ（自動で辻褄合わせしない）。
+
+#### 分類（固定）
+- MODE（モード化）:
+  - 対象（#n）を固定し、入力を溜め、`実行` / `キャンセル` でのみ退出・確定する。
+- ONE-SHOT（単発）:
+  - 単発で受付・応答する（ただし更新系は confirm→select→実行 の原則に従属）。
+- REF（参照）:
+  - 参照のみ。確定値を書き換えない（Authority原則）。
+
+#### トリガー一覧（固定・最小）
+- REF:
+  - `コマンド` : 利用可能コマンドの最小一覧を返す（例文は最小、#n例は1行のみ）。
+  - `#n 状態` : 対象（#n）の状態/進捗/回収（OPEN）要点を返す（更新しない）。
+- MODE:
+  - `削除モード` : Order Lifecycle Controls の削除モードへ入る（対象固定、退出=実行/キャンセル）。
+  - `完了報告書` : 完了報告書モードへ入る（対象固定、退出=実行/キャンセル）。
+  - `追加受注` : 追加受注モードへ入る（対象固定、退出=実行/キャンセル）。
+- MODE内コマンド（共通）:
+  - `実行` : モードで蓄積した素材を確定処理へ渡す（確定はこれのみ）。
+  - `キャンセル` : 蓄積素材を破棄して退出（外部/台帳へ反映しない）。
+  - `コマンド` / `#n 状態` : 参照のみ（更新しない）。
+
+#### 対象指定（#n）解決（固定）
+- `#n <トリガー>` の形で対象を指定できる（例：`#1 完了報告書`）。
+- `#n` が無い場合は既定対象（例：#0）を用いる（実装で #0 の解決は既存契約に従う）。
+- `#n` 解決は台帳（Order_YYYY の TaskId 列等）を唯一の正として行う（推測しない）。
+
+#### 衝突解決（固定）
+- 1) 既に MODE 中の場合：
+  - まず MODE内コマンド（`実行` / `キャンセル` / `コマンド` / `#n 状態`）を解釈する。
+  - それ以外の入力は「素材」として蓄積する（更新系は確定しない）。
+- 2) MODE 中でない場合：
+  - 先頭行が REF（`コマンド` / `#n 状態`）に一致 → REF を実行。
+  - 次に MODE トリガー（`削除モード` / `完了報告書` / `追加受注`）に一致 → MODE 開始。
+  - それ以外は通常入力として扱い、必要なら適切な MODE へ誘導する（自動確定は禁止）。
+
+#### 禁止（固定）
+- トリガー曖昧時に「勝手に更新系を確定」しない。
+- MODE 中に対象を自動で切替えない（誤爆防止）。
+- 管理UI（ClickUp）入力を確定値として取り込まない（Authority原則）。
+
+### 追加受注（同一タスク内で追加Order発行）（固定）
+#### コマンド（固定）
+- `追加受注 <自由文>`：同一タスク内で追加の Order_ID を発行する。
+
+#### 追加受注の既定（固定）
+- 既定は「同一顧客・同一物件」を引き継ぐ（CU/UP再利用）。
+- 追加受注には “子番号” を付与し、コメント内で参照できるようにする。
+
+#### 子番号参照（固定）
+- `#0`：親（元の受注）
+- `#1`：同一タスク内で作成した最初の追加受注
+- `#2`：2つ目の追加受注 …（以後同様）
+- 親タスク名は変更しない。
+
+#### 生成直後の返答（固定）
+- `追加受注 #1 を作成しました` を返し、`#1` 用の完了報告書テンプレを提示する。
+- その後の指示（短文）を必ず付ける：
+  - `次：#1 完了報告書 に本文を貼ってください（ぶつ切りOK）。登録状況を返します。`
+  - `売上金額が入ったら請求書DRAFT（INVOICE）を自動作成し、直リンクを返します。`
+
+#### 親子リンク（固定）
+- コメントに `LINK: #0 → #1` の 1 行を残す（追跡用）。
+- 台帳側も相互参照（HistoryNotes等）を残してよい（実装に委譲）。
+
+---
+
+### 完了報告書（コメント登録）（固定）
+#### トリガー（固定）
+- `完了報告書` をトリガーとする（`#n 完了報告書` により対象受注を指定可）。
+
+#### ひな形提示（固定）
+- `完了報告書` 受領時、既知情報を埋めたテンプレを提示する。
+- ユーザーは媒体コピペ（自由文）または手書き（短い行羅列）で追記してよい。
+
+#### ぶつ切り入力と登録状況（固定）
+- ぶつ切りで送られても取り込む。
+- 毎回、最小の登録状況を返す：
+  - 今回登録した項目 / 未入力の項目（不足）
+- 同一項目の上書きが発生した場合は「変更前→変更後」を短く提示する。
+
+#### 金額（固定）
+- 完了報告では「売上金額」のみを扱う（見積金額は扱わない）。
+- 売上金額を受領したら、INVOICE の DRAFT（Request=DOC）を自動作成してよい（docDraftId直開きリンクを返す）。
+- RECEIPT の DRAFT は自動作成しない（入金後に作る）。
+
+---
+
+### タスク表示（Todoist/ClickUp）契約（固定）
+#### タスク名（title）
+- 先頭は AA群（重複排除）を基本とする。
+- AA個数が 5 以上の場合は、AA列挙を捨てて `納品 分子/分母` 表示へ切替する。
+  - 分母：当該 Order_ID に紐づく「発注総数」（Parts_Masterで Order_ID を持つ PART_ID の総数）
+  - 分子：当該 Order_ID に紐づく「納品数」（STATUS=DELIVERED の数）
+- 末尾に自由文スロット `_ `（アンダースコア＋半角スペース）を必ず付与し、システム更新でも保持する。
+
+#### タスク名の更新タイミング（固定）
+- UF01 / UF06（発注・納品）/ 更新（再同期）/ WORK_DONE（完了報告）でイベント駆動更新する。
+
+#### タスク説明（description）
+- 次のフォーマットを採用する（メーカー不要）：
+
+  品番：○○＋○○＋○○
+  見積：
+  memo：○○
+
+  コメント
+  <品番>  <AA>
+  <品番>  <AA>
+  ...
+
+- 見積が未確定の場合は空欄（行は残してよい）。
+- 品番リスト（コメント以下）は「品番＋AA」のみ（メーカー/状態/価格/PART_IDは表示しない）。
+
+#### 重要情報の記録（コメント）— Todoist / ClickUp 共通（固定）
+- 住所/電話/希望日/備考など “吸い上げた重要情報” はコメントに記録する（マスクしない）。
+- Todoist/ClickUp の説明欄（または本文）に次のブロックを同一テンプレで持つ：
+  [INFO]
+  顧客名: ...
+  電話: ...
+  住所: ...
+  希望日: ... / ...
+  備考: ...
+
+  --- USER ---
+  （ここから下は自由メモ。システムは上書きしない）
+
+- システム更新で上書きするのは [INFO] ブロックのみ。`--- USER ---` 以降は触らない。
+- [INFO] 更新が失敗した場合は業務を止めず、Recovery Queue（WARNING/OPEN）へ登録して回収する。
+
+#### ID解決（固定）
+- 納品等の内部処理は PART_ID を用いるが、ユーザー提示は最小表示（品番＋AA）のみ。
+- コンシェルジュは Order_YYYY の `TodoistTaskId` / `ClickUpTaskId` 列で Order_ID を解決して処理する。
+
+### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）
+
+#### 目的（固定）
+- 欠番（VOID）/削除（CANCEL）を「実運用で事故らない」最終仕様として固定する。
+- “安全に自動解放できる領域” と “凍結して監督回収すべき領域” を明確化し、勝手な辻褄合わせを禁止する。
+- 危険修正（FIX）へ正しく接続し、復旧（RESTORE）・誤完了解除（REOPEN）を混同しない。
+
+#### 判定の原則（固定）
+- 判定は Orchestrator が行う（UI/人/AIが恣意に確定しない）。
+- 不確実（情報不足・参照不整合・競合）な場合は必ず FREEZE とし、Recovery Queue（BLOCKER/OPEN）へ回収する。
+- 物理削除は禁止（履歴保全）。VOID/CANCEL/RESTORE の事実を台帳に残す（トゥームストーン）。
+
+#### 解放（RELEASE）可能条件（固定）
+次の全てを満たす場合のみ、VOID/CANCEL に伴う「自動解放（安全域）」を許可する：
+- 当該 Order に紐づく PARTS が、完了同期・会計へ影響する状態を含まない：
+  - 禁止状態が 1つでもあれば FREEZE：ORDERED / DELIVERED / USED
+- 当該 Order に確定経費（EXPENSE）が存在しない（存在すれば FREEZE）。
+- 当該 Order に会計イベント（INVOICE/RECEIPT 等）の進行が存在しない（存在すれば FREEZE）。
+- #n 解決（Order_ID）が台帳で確定でき、参照整合が取れている（取れない場合は FREEZE）。
+
+補足（固定）：
+- SAFE の可否に迷う場合は FREEZE（自動で辻褄合わせしない）。
+
+#### FREEZE（凍結）条件（固定）
+次のいずれかに該当したら、VOID/CANCEL の処理は FREEZE とし、自動で取消・転用・巻戻しを行わない：
+- PARTS に ORDERED / DELIVERED / USED が存在する。
+- EXPENSE（確定経費）が存在する。
+- 会計（INVOICE/RECEIPT 等）の進行が存在する（将来拡張含む）。
+- 参照不整合（Order_ID 解決不可、TaskId紐付け不明、同一Orderに競合イベント等）。
+- 同一対象へ短時間に矛盾するライフサイクル操作が到達（VOID↔RESTORE など）した。
+
+#### FREEZE 時の回収（Recovery Queue / Request / FIX 連携｜固定）
+- FREEZE になった場合：
+  - Recovery Queue に BLOCKER/OPEN を必ず登録する（冪等）。
+  - details に最小で次を含める：
+    - 操作（VOID/CANCEL/RESTORE/REOPEN）
+    - FREEZE 理由（例：PARTS=DELIVEREDあり / EXPENSEあり / 会計進行あり / 参照不整合）
+    - 対象（Order_ID/#n）
+- FIX 連携（固定）：
+  - FREEZE の解消に「ID/紐付け/状態の危険修正」が必要な場合は、Request に FIX（または同等カテゴリ）を併設する。
+  - FIX は “申請” であり、自動確定しない（Authority原則）。
+  - FIX が OPEN の間は、Recovery Queue を勝手に RESOLVED にしない（台帳整合が条件）。
+
+#### 削除モード（コメント運用）での確定手順（固定）
+- 削除モードは MODE として動作し、対象（#n）を固定する（モード固定規約に従属）。
+- 進行（固定）：
+  1) `#n 削除モード`
+  2) 候補提示（影響要約を含む：SAFE/ FREEZE、在庫/経費/会計の検査結果）
+  3) ユーザーが操作選択（欠番/削除/復旧/誤完了解除）
+  4) 最終確認（要約）
+  5) `実行` で確定
+- 実行後の返答（固定・最小）：
+  - 操作名（VOID/CANCEL/RESTORE/REOPEN）
+  - 結果（SAFE=解放実施/ FREEZE=回収へ）
+  - Recovery Queue（OPEN件数・理由）
+  - 次導線（#n 状態 等）
+
+#### 復旧（RESTORE）の手順（固定）
+- RESTORE は VOID/CANCEL を取り消し、再び運用対象へ戻す。
+- 原則（固定）：
+  - タイトルの `[VOID]` / `[CANCEL]` を除去し、タスク状態は可能なら復旧（Reopen/Uncomplete）する（タスク投影規約に従属）。
+  - RESTORE により不整合が検出された場合は FREEZE し、Recovery Queue（BLOCKER/OPEN）へ回収する（自動補正しない）。
+  - RESTORE は “会計/在庫の巻戻し” を自動で行う操作ではない（必要なら FIX/REVIEW へ）。
+
+#### 誤完了解除（REOPEN）との切り分け（固定）
+- REOPEN は「誤って完了した状態を戻す」操作であり、VOID/CANCEL の解除ではない。
+- REOPEN は VOID/CANCEL と混同しない（混同時は FREEZE して回収する）。
+
+#### 監査（固定）
+- VOID/CANCEL/RESTORE/REOPEN は idempotencyKey を持ち、同一キーの再到達で台帳を増殖させない。
+- NG（想定外副作用）が出た場合は Recovery Queue（OPEN）へ登録し、勝手に修正しない。
+
 ## DoD（Phase-2）
 
 ### 目的
@@ -3702,8 +4136,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: ab6c89d34ebef47da73bf71044822623ff76b8b9eef736a6c12c32f507b337ce
-- bytes: 5812
+- sha256: e49fac4916c90902c7ae6e4bdc1218b7750d32ac577875af481c13776ba596da
+- bytes: 6396
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -3785,6 +4219,13 @@ UIの禁止事項（固定）：
 - tools/mep_integration_compiler/runtime/adapters/http_header_provider_cli.py
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b10_http_provider_parse.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b10_http_provider_parse.py
+- tools/mep_integration_compiler/runtime/README_B12_HTTP_WRITE_CLIENT.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_write_client.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_write_client_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/http_write_client.py
+- tools/mep_integration_compiler/runtime/adapters/http_write_client_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
