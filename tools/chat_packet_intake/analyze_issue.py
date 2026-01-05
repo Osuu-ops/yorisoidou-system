@@ -1,10 +1,10 @@
-﻿import json, os, re, hashlib, datetime, subprocess, sys, urllib.request, urllib.error
+﻿import json, os, re, hashlib, datetime, subprocess, sys, urllib.request
 
 EVENT_PATH = os.environ.get("GITHUB_EVENT_PATH", "")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 OUT_PATH = "tools/chat_packet_intake/analysis_body.md"
 
-# ---- config: repo-specific "100点" checks (keep minimal; no guessing) ----
+# ---- repo-specific "100点" checks (minimal; no guessing) ----
 REQUIRED_PRS = [535, 539, 541, 542, 543, 544]
 REQUIRED_HEADINGS = [
   "## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）",
@@ -15,6 +15,8 @@ REQUIRED_HEADINGS = [
 ]
 BUSINESS_SPEC_PATH = "platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
 STATE_CURRENT_PATH = "docs/MEP/STATE_CURRENT.md"
+
+MARKER = "<!-- CHAT_PACKET_INTAKE -->"
 
 def sh(cmd):
   try:
@@ -54,16 +56,40 @@ def gql(query, variables):
   with urllib.request.urlopen(req, timeout=20) as r:
     return json.loads(r.read().decode("utf-8"))
 
-def extract_current(body):
-  m = re.search(r"【CURRENT[^\n]*】.*?(?=\n{2,}#|\n{2,}##|\Z)", body, flags=re.DOTALL)
-  return m.group(0).strip() if m else ""
-
 def contains_trigger(body):
   keys = ["CHAT_PACKET", "START_HERE", "【CURRENT", "HANDOFF_SCORE", "STATE_CURRENT"]
   return any(k in body for k in keys)
 
+def extract_current_block(body):
+  m = re.search(r"【CURRENT[^\n]*】.*?(?=\n{2,}#|\n{2,}##|\Z)", body, flags=re.DOTALL)
+  return m.group(0).strip() if m else ""
+
+def parse_current_fields(current_block):
+  """
+  Extract only what we can parse deterministically.
+  Returns dict with optional keys: repo, open_pr, head
+  """
+  out = {}
+  if not current_block:
+    return out
+
+  # Repo: xxx/yyy or Repo: xxx-yyy (best-effort)
+  m_repo = re.search(r"(?m)^\s*Repo:\s*([^\s]+)\s*$", current_block)
+  if m_repo:
+    out["repo"] = m_repo.group(1).strip()
+
+  # 状態: ... open PR N ... HEAD=abcdef0
+  m_open = re.search(r"open\s*PR\s*(\d+)", current_block, flags=re.IGNORECASE)
+  if m_open:
+    out["open_pr"] = int(m_open.group(1))
+
+  m_head = re.search(r"(?:HEAD=|最新HEAD=)([0-9a-f]{7,40})", current_block, flags=re.IGNORECASE)
+  if m_head:
+    out["head"] = m_head.group(1).strip()
+
+  return out
+
 def check_open_pr_count(owner, repo):
-  # base=main open PR count (robust; GraphQL)
   try:
     q = """
     query($owner:String!, $name:String!) {
@@ -99,7 +125,7 @@ def check_required_prs_merged(owner, repo):
     results.append({"pr": n, "ok": ok, "state": state, "base": base, "url": url})
   return results
 
-def check_headings():
+def check_headings_missing():
   missing = []
   txt = read_text(BUSINESS_SPEC_PATH)
   if not txt:
@@ -109,13 +135,19 @@ def check_headings():
       missing.append(h)
   return missing
 
-def check_state_current_b17():
+def state_current_b17_lines():
   txt = read_text(STATE_CURRENT_PATH)
   if not txt:
-    return "NO_FILE"
-  return "FOUND" if re.search(r"\bB17\b|NEXT", txt) else "NOT_FOUND"
+    return ("NO_FILE", [])
+  lines = txt.splitlines()
+  hits = []
+  for i, line in enumerate(lines, start=1):
+    if re.search(r"\bB17\b|NEXT", line):
+      hits.append((i, line))
+  return ("FOUND" if hits else "NOT_FOUND", hits)
 
-def score(open_pr_count, missing_headings, pr_status):
+def compute_score(open_pr_count, missing_headings, pr_status, drift_errors):
+  # Base score
   s = 100
   if open_pr_count is None:
     s -= 20
@@ -128,9 +160,45 @@ def score(open_pr_count, missing_headings, pr_status):
   if any((not x.get("ok")) for x in pr_status):
     s -= 30
 
+  # NO-DRIFT: any contradiction between pasted CURRENT and observed facts => score forced to 0
+  if drift_errors:
+    s = 0
+
   if s < 0:
     s = 0
   return s
+
+def detect_drift(pasted_fields, observed_repo, observed_head, observed_open_pr, issue_body):
+  """
+  Strict drift policy:
+  - If the issue includes a CURRENT block and we can parse repo/head/open_pr from it,
+    then they MUST match observed facts. Any mismatch => DRIFT.
+  - Also, if the issue body asserts NEXT/B17 but STATE_CURRENT doesn't contain it, drift.
+    (We cannot prove intent, so we treat inconsistency as drift to prevent contamination.)
+  """
+  errs = []
+  if not pasted_fields:
+    return errs
+
+  # repo comparison: accept both "owner/name" and "Repo: Osuu-ops/yorisoidou-system" style
+  p_repo = pasted_fields.get("repo")
+  if p_repo:
+    # Normalize: allow "Osuu-ops/yorisoidou-system" == observed_repo
+    if p_repo.strip() != observed_repo.strip():
+      errs.append(f"Repo mismatch: pasted={p_repo} observed={observed_repo}")
+
+  p_head = pasted_fields.get("head")
+  if p_head:
+    # compare prefix-wise (short SHA ok)
+    if not observed_head.lower().startswith(p_head.lower()) and not p_head.lower().startswith(observed_head.lower()):
+      errs.append(f"HEAD mismatch: pasted={p_head} observed={observed_head}")
+
+  p_open = pasted_fields.get("open_pr")
+  if p_open is not None and observed_open_pr is not None:
+    if int(p_open) != int(observed_open_pr):
+      errs.append(f"open PR mismatch: pasted={p_open} observed={observed_open_pr}")
+
+  return errs
 
 def main():
   if not EVENT_PATH or not os.path.exists(EVENT_PATH):
@@ -157,26 +225,36 @@ def main():
 
   now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%SZ")
   body_hash = hashlib.sha256(body.encode("utf-8")).hexdigest()[:12]
-  head = sh(["git", "rev-parse", "--short", "HEAD"]) or "UNKNOWN"
 
-  open_pr_count = check_open_pr_count(owner_login, repo_name)
+  observed_head = sh(["git", "rev-parse", "--short", "HEAD"]) or "UNKNOWN"
+  observed_open_pr = check_open_pr_count(owner_login, repo_name)
   pr_status = check_required_prs_merged(owner_login, repo_name)
-  missing = check_headings()
-  b17 = check_state_current_b17()
-  sc = score(open_pr_count, missing, pr_status)
+  missing = check_headings_missing()
+  b17_state, b17_hits = state_current_b17_lines()
 
-  current = extract_current(body)
+  current_block = extract_current_block(body)
+  pasted_fields = parse_current_fields(current_block)
+
+  drift_errors = detect_drift(pasted_fields, full, observed_head, observed_open_pr, body)
+
+  sc = compute_score(observed_open_pr, missing, pr_status, drift_errors)
 
   lines = []
-  lines.append("<!-- CHAT_PACKET_INTAKE -->")
-  lines.append("### Chat Packet Intake (with HANDOFF_SCORE)")
+  lines.append(MARKER)
+  lines.append("### Chat Packet Intake (NO-DRIFT)")
   lines.append(f"- issue: #{num} ({html_url})")
   lines.append(f"- repo: `{full}`")
-  lines.append(f"- observed: `HEAD={head}` / open PR(base=main)={open_pr_count if open_pr_count is not None else 'UNKNOWN'}")
-  lines.append(f"- STATE_CURRENT(B17/NEXT): **{b17}**")
+  lines.append(f"- observed: `HEAD={observed_head}` / open PR(base=main)={observed_open_pr if observed_open_pr is not None else 'UNKNOWN'}")
+  lines.append(f"- STATE_CURRENT(B17/NEXT): **{b17_state}**")
   lines.append(f"- bodyHash: `{body_hash}`")
   lines.append(f"- updatedAt(UTC): `{now}`")
   lines.append("")
+
+  if drift_errors:
+    lines.append("## DRIFT_DETECTED")
+    for e in drift_errors:
+      lines.append(f"- {e}")
+    lines.append("")
 
   lines.append(f"## HANDOFF_SCORE={sc}/100")
   lines.append("")
@@ -192,35 +270,43 @@ def main():
       lines.append(f"- {h}")
     lines.append("")
 
+  lines.append("### STATE_CURRENT evidence (B17/NEXT)")
+  if b17_state == "FOUND":
+    for (i, line) in b17_hits[:10]:
+      lines.append(f"- L{i}: {line}")
+  else:
+    lines.append(f"- {b17_state}")
+  lines.append("")
+
   lines.append("### Detected CURRENT (best-effort)")
-  if current:
+  if current_block:
     lines.append("```")
-    lines.append(current)
+    lines.append(current_block)
     lines.append("```")
   else:
     lines.append("- (No CURRENT block detected in issue body)")
   lines.append("")
 
-  # 100点 only: emit a safe “copy/paste CURRENT” block derived from observed facts (no guessing)
   lines.append("### CURRENT (copy/paste, 100/100 only)")
   if sc == 100:
+    # IMPORTANT: generated ONLY from observed facts (never from pasted text)
     lines.append("```")
     lines.append("【CURRENT｜引っ越し再開用】")
     lines.append("")
     lines.append(f"Repo: {full}")
-    lines.append(f"状態: main clean / open PR 0 / 最新HEAD={head}")
+    lines.append(f"状態: main clean / open PR 0 / 最新HEAD={observed_head}")
     lines.append("")
     lines.append("完了（main反映済み）")
     lines.append("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
     lines.append("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
     lines.append("```")
   else:
-    lines.append("- (Not 100/100: CURRENT の自動生成は停止。上の不足を解消してから再貼り付けしてください。)")
+    lines.append("- (Not 100/100: CURRENT の自動生成は停止。上の不足または DRIFT を解消してから再貼り付けしてください。)")
   lines.append("")
 
   lines.append("### Next action (safe default)")
   lines.append("- Proceed with **master_spec side**: implement ledger reflection for delete-mode/FREEZE/Request(FIX) (1 theme = 1 PR).")
-  lines.append("- If you intend to start **B17/NEXT** work, cite the exact STATE_CURRENT line(s) in the issue body to avoid contamination.")
+  lines.append("- If DRIFT_DETECTED, fix the issue body (or remove stale CURRENT) and re-edit the issue; do not proceed on ungrounded claims.")
   lines.append("")
 
   write_text(OUT_PATH, "\n".join(lines) + "\n")
