@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 PHASE-1 (ADD ONLY): This file is a new container. Do NOT change canonical meaning yet.
 CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
@@ -621,7 +621,7 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
   - 再同期の結果、競合（Ledger と UI の不整合、重複イベント、素材不一致）が検出された場合は自動で辻褄合わせをしない。
   - Recovery Queue（OPEN）へ登録し、監督回収へ寄せる。
 - 冪等（固定）:
-  - resyncKey = Hash(Order_ID + target + reason + requestedAt)
+  - resyncKey = Hash(Order_ID + target + reason + requestedId)
   - 同一 resyncKey の再実行は「結果を増殖させない」（重複通知・重複タスク禁止）。
 - 出力（固定）:
   - projectedAt（投影時刻）
@@ -635,6 +635,10 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 実装（GAS/UI/タスク）はこの仕様に従って “登録→通知→解消→記録” を行う。
 
 ### 登録対象（固定）
+
+- CANCELLED : 取消（誤検知/重複/不要化により回収対象から外す。記録は残す）
+最小ルール（固定）:
+- CANCELLED にする場合は resolvedAt/resolvedBy/resolutionNote を記録してよい（根拠の明文化）。
 - category: BLOCKER / WARNING
 - reason: 例）PRICE未確定 / LOCATION不整合 / 写真不足 / 抽出不備 / 必須未入力
 - Order_ID（原則必須）
@@ -1016,3 +1020,4 @@ UF系（入力）：
 - ID Issuance & UI Responsibility（Phase-2）が存在し、PART_ID/OD_ID/AA/PA/MA/EXP_ID の発行責務とタイミングが固定されている。
 - Recovery Queue（Phase-2）が存在し、BLOCKER/WARNING の回収（登録→通知→解消→記録）が固定されている。
 - Integration Contract（Phase-2）が存在し、統合の責務分界・同期範囲・切替・冪等・競合時の回収が固定されている。
+
