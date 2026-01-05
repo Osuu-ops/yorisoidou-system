@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 114633
+- included_total_bytes: 114783
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1077,8 +1077,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 8ed44193444601bcdae13ecdd04c325ea12fc7bac1e917594289d041d4391115
-- bytes: 1146
+- sha256: a2a9470759a8bd982195d2ffd361ecf1e2e56fb5ce439dabf91cd78cdafc0603
+- bytes: 1296
 
 ```text
 ﻿# STATE_CURRENT (MEP)
@@ -1097,6 +1097,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
 - 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
