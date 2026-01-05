@@ -1,7 +1,8 @@
-# MEP HANDOFF (NO-DRIFT) v1.3
+# MEP HANDOFF (NO-DRIFT) v2.1 (parse-safe)
 # - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
-# - 既定は「Issue作成なし」（権限差で失敗しやすいので）。必要なら -WithIssue。
+# - GraphQL を使わない（ここが壊れやすかったため）。open PR は gh pr list で取得する。
+# - 既定は Issue 作成なし（権限差で失敗しやすいので）。必要なら -WithIssue。
 #
 # Usage:
 #   pwsh -File .\tools\mep_handoff.ps1
@@ -41,20 +42,11 @@ function Get-Repo {
 }
 
 function Get-OpenPrCount([string]$repo){
-  $owner = $repo.Split("/")[0]
-  $name  = $repo.Split("/")[1]
-  $q = @"
-query(`$owner:String!, `$name:String!) {
-  repository(owner:`$owner, name:`$name) {
-    pullRequests(states:OPEN, baseRefName:"main", first:50) { nodes { number } }
-  }
-}
-"@
-  $raw = (& gh api graphql -f query="$q" -f owner="$owner" -f name="$name" 2>$null | Out-String).Trim()
-  if(-not $raw){ return $null }
   try {
-    $g = $raw | ConvertFrom-Json
-    return @($g.data.repository.pullRequests.nodes).Count
+    $raw = (& gh pr list --repo $repo --state open --base main --limit 200 --json "number" 2>$null | Out-String).Trim()
+    if(-not $raw){ return 0 }
+    $arr = @($raw | ConvertFrom-Json)
+    return $arr.Count
   } catch {
     return $null
   }
@@ -86,15 +78,14 @@ function Missing-Headings([string]$file, [string[]]$headings){
 
 function StateCurrent-Evidence([string]$file){
   if(-not (Test-Path $file)){ return @{ state="NO_FILE"; lines=@() } }
-  $lines = Get-Content -Encoding UTF8 $file
-  $hits = New-Object System.Collections.Generic.List[object]
-  for($i=0; $i -lt $lines.Count; $i++){
-    $line = $lines[$i]
-    if($line -match "\bB17\b" -or $line -match "NEXT"){
-      $hits.Add(("L{0}: {1}" -f ($i+1), $line))
+  $hits = @(Select-String -Path $file -Pattern "B17|NEXT" -ErrorAction SilentlyContinue)
+  if($hits.Count -gt 0){
+    $lines = @()
+    foreach($h in ($hits | Select-Object -First 10)){
+      $lines += ("L{0}: {1}" -f $h.LineNumber, $h.Line.TrimEnd())
     }
+    return @{ state="FOUND"; lines=$lines }
   }
-  if($hits.Count -gt 0){ return @{ state="FOUND"; lines=@($hits | Select-Object -First 10) } }
   return @{ state="NOT_FOUND"; lines=@() }
 }
 
@@ -117,7 +108,7 @@ function Upsert-IntakeIssue([string]$repo, [int]$issueNumber, [string]$body){
   }
 }
 
-# ===== checks =====
+# ===== run checks =====
 Sync-MainHard
 $repo = Get-Repo
 $head = (git rev-parse --short HEAD).Trim()
