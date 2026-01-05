@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 337616
+- included_total_bytes: 337899
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -93,8 +93,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 55f9cd72e7db48521e248dbd744d4a3092144496569925606912ff7959af9901
-- bytes: 20715
+- sha256: 99328e60b5ed32b322d6addbd8e9e3cd4a2c225b82995f3959a65cfedadbc10c
+- bytes: 20998
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -630,6 +630,12 @@ scope-guard enforcement test 20260103-002424
 ```
 
 ---
+---
+
+<!-- CHAT_PACKET_BUNDLE_POINTER -->
+## CHAT_PACKET_BUNDLE（追加）
+- 自己完結版: docs/MEP/CHAT_PACKET_BUNDLE.md（START_HERE / AI_BOOT / STATE_CURRENT を同梱）
+- 新チャットで参照できない環境でも、貼るだけで入口と現在地が確定する。
 ```
 
 
