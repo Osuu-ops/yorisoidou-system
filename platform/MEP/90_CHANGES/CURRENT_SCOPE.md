@@ -77,6 +77,13 @@
 - tools/mep_integration_compiler/runtime/adapters/http_header_provider_cli.py
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b10_http_provider_parse.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b10_http_provider_parse.py
+- tools/mep_integration_compiler/runtime/README_B12_HTTP_WRITE_CLIENT.md
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_write_client.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/__pycache__/http_write_client_cli.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/adapters/http_write_client.py
+- tools/mep_integration_compiler/runtime/adapters/http_write_client_cli.py
+- tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
+- tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
