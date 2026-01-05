@@ -1362,6 +1362,78 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 納品等の内部処理は PART_ID を用いるが、ユーザー提示は最小表示（品番＋AA）のみ。
 - コンシェルジュは Order_YYYY の `TodoistTaskId` / `ClickUpTaskId` 列で Order_ID を解決して処理する。
 
+### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）
+
+#### 目的（固定）
+- 欠番（VOID）/削除（CANCEL）を「実運用で事故らない」最終仕様として固定する。
+- “安全に自動解放できる領域” と “凍結して監督回収すべき領域” を明確化し、勝手な辻褄合わせを禁止する。
+- 危険修正（FIX）へ正しく接続し、復旧（RESTORE）・誤完了解除（REOPEN）を混同しない。
+
+#### 判定の原則（固定）
+- 判定は Orchestrator が行う（UI/人/AIが恣意に確定しない）。
+- 不確実（情報不足・参照不整合・競合）な場合は必ず FREEZE とし、Recovery Queue（BLOCKER/OPEN）へ回収する。
+- 物理削除は禁止（履歴保全）。VOID/CANCEL/RESTORE の事実を台帳に残す（トゥームストーン）。
+
+#### 解放（RELEASE）可能条件（固定）
+次の全てを満たす場合のみ、VOID/CANCEL に伴う「自動解放（安全域）」を許可する：
+- 当該 Order に紐づく PARTS が、完了同期・会計へ影響する状態を含まない：
+  - 禁止状態が 1つでもあれば FREEZE：ORDERED / DELIVERED / USED
+- 当該 Order に確定経費（EXPENSE）が存在しない（存在すれば FREEZE）。
+- 当該 Order に会計イベント（INVOICE/RECEIPT 等）の進行が存在しない（存在すれば FREEZE）。
+- #n 解決（Order_ID）が台帳で確定でき、参照整合が取れている（取れない場合は FREEZE）。
+
+補足（固定）：
+- SAFE の可否に迷う場合は FREEZE（自動で辻褄合わせしない）。
+
+#### FREEZE（凍結）条件（固定）
+次のいずれかに該当したら、VOID/CANCEL の処理は FREEZE とし、自動で取消・転用・巻戻しを行わない：
+- PARTS に ORDERED / DELIVERED / USED が存在する。
+- EXPENSE（確定経費）が存在する。
+- 会計（INVOICE/RECEIPT 等）の進行が存在する（将来拡張含む）。
+- 参照不整合（Order_ID 解決不可、TaskId紐付け不明、同一Orderに競合イベント等）。
+- 同一対象へ短時間に矛盾するライフサイクル操作が到達（VOID↔RESTORE など）した。
+
+#### FREEZE 時の回収（Recovery Queue / Request / FIX 連携｜固定）
+- FREEZE になった場合：
+  - Recovery Queue に BLOCKER/OPEN を必ず登録する（冪等）。
+  - details に最小で次を含める：
+    - 操作（VOID/CANCEL/RESTORE/REOPEN）
+    - FREEZE 理由（例：PARTS=DELIVEREDあり / EXPENSEあり / 会計進行あり / 参照不整合）
+    - 対象（Order_ID/#n）
+- FIX 連携（固定）：
+  - FREEZE の解消に「ID/紐付け/状態の危険修正」が必要な場合は、Request に FIX（または同等カテゴリ）を併設する。
+  - FIX は “申請” であり、自動確定しない（Authority原則）。
+  - FIX が OPEN の間は、Recovery Queue を勝手に RESOLVED にしない（台帳整合が条件）。
+
+#### 削除モード（コメント運用）での確定手順（固定）
+- 削除モードは MODE として動作し、対象（#n）を固定する（モード固定規約に従属）。
+- 進行（固定）：
+  1) `#n 削除モード`
+  2) 候補提示（影響要約を含む：SAFE/ FREEZE、在庫/経費/会計の検査結果）
+  3) ユーザーが操作選択（欠番/削除/復旧/誤完了解除）
+  4) 最終確認（要約）
+  5) `実行` で確定
+- 実行後の返答（固定・最小）：
+  - 操作名（VOID/CANCEL/RESTORE/REOPEN）
+  - 結果（SAFE=解放実施/ FREEZE=回収へ）
+  - Recovery Queue（OPEN件数・理由）
+  - 次導線（#n 状態 等）
+
+#### 復旧（RESTORE）の手順（固定）
+- RESTORE は VOID/CANCEL を取り消し、再び運用対象へ戻す。
+- 原則（固定）：
+  - タイトルの `[VOID]` / `[CANCEL]` を除去し、タスク状態は可能なら復旧（Reopen/Uncomplete）する（タスク投影規約に従属）。
+  - RESTORE により不整合が検出された場合は FREEZE し、Recovery Queue（BLOCKER/OPEN）へ回収する（自動補正しない）。
+  - RESTORE は “会計/在庫の巻戻し” を自動で行う操作ではない（必要なら FIX/REVIEW へ）。
+
+#### 誤完了解除（REOPEN）との切り分け（固定）
+- REOPEN は「誤って完了した状態を戻す」操作であり、VOID/CANCEL の解除ではない。
+- REOPEN は VOID/CANCEL と混同しない（混同時は FREEZE して回収する）。
+
+#### 監査（固定）
+- VOID/CANCEL/RESTORE/REOPEN は idempotencyKey を持ち、同一キーの再到達で台帳を増殖させない。
+- NG（想定外副作用）が出た場合は Recovery Queue（OPEN）へ登録し、勝手に修正しない。
+
 ## DoD（Phase-2）
 
 ### 目的
