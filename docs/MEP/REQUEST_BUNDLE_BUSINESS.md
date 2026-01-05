@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 286127
+- included_total_bytes: 296041
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2005,8 +2005,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 05f920476a46aeb35a084e4d09f6824b6989102d04bcfb8ee12cb21f0fd64788
-- bytes: 42454
+- sha256: c3cefda68483241218784c21d0fccd8bbfa344f255626161d42a60edc3579468
+- bytes: 52368
 
 ```text
 <!--
@@ -2614,6 +2614,31 @@ ROLE: BUSINESS_SPEC (workflow / rules / decisions / exceptions)
 - 重要イベント（UF/完了/再同期/競合/回収）は logs/system（または同等の台帳ログ）に必ず記録する。
 - 記録は監督の根拠であり、UI/人が確定値を作るために使用しない（判断権の原則）。
 
+### 再同期（Reconcile / Resync）責務（固定）
+
+- 定義（固定）:
+  - 再同期とは「Ledger（台帳）の確定状態を UI に再投影して整合を回復する」ことである。
+  - UI の値で Ledger を上書きする用途に使用しない（UI→Ledger は素材入力のみ）。
+- トリガ（固定）:
+  - 手動（管理の指示）
+  - BLOCKER 解消後（回収完了）
+  - 定期（任意：運用で採用する場合のみ。実装PRで固定）
+- 入力（最小セット｜固定）:
+  - Order_ID
+  - target（Order / Parts / Expense / Recovery Queue）
+  - reason（なぜ再同期するか）
+  - requestedAt（要求時刻）
+- 競合（固定）:
+  - 再同期の結果、競合（Ledger と UI の不整合、重複イベント、素材不一致）が検出された場合は自動で辻褄合わせをしない。
+  - Recovery Queue（OPEN）へ登録し、監督回収へ寄せる。
+- 冪等（固定）:
+  - resyncKey = Hash(Order_ID + target + reason + requestedAt)
+  - 同一 resyncKey の再実行は「結果を増殖させない」（重複通知・重複タスク禁止）。
+- 出力（固定）:
+  - projectedAt（投影時刻）
+  - diffSummary（投影差分の要約）
+  - ledgerHead（投影に使った Ledger の基準（例：hash/timestamp））
+
 ## Recovery Queue（Phase-2）
 
 ### 目的
@@ -2837,6 +2862,158 @@ UF系（入力）：
 #### NG 時の出力（固定）
 - NG は Recovery Queue（OPEN）へ登録する（reason / detectedBy / details / idempotencyKey）。
 - 必要に応じて Request（REVIEW）を併設して監督回収に寄せる（Request linkage に従属）。
+
+### RuntimeSelfTest（テスト走行｜固定）
+
+#### 目的（固定）
+- Runtime監査（expected/unexpected）が実運用で機能することを、**本番データに触れず**に検証する。
+- 汚染（本番とテスト混在）を絶対に起こさない形で、UF/完了同期/回収の最短ループを通す。
+
+#### 実行タイミング（固定）
+- 次のいずれかに該当する変更を main へ入れる前に、必ず 1 回実行する：
+  - UF01/UF06/UF07/UF08/FIX/DOC/完了同期/更新（再同期）に関わる変更
+  - Idempotency / Recovery Queue / Request linkage / Runtime Audit Checklist に関わる変更
+  - 外部連携（Todoist/ClickUp/AI補助）の経路に関わる変更
+- 入口整備や文言のみ（意味変更なし）の変更では必須としない（任意）。
+
+#### テストデータ規約（固定）
+- テスト走行は **テストID（0番）**を用い、本番と混在させない。
+- テストデータは集計/閲覧/検索の対象外とする（本番汚染防止）。
+- 既存のテストID規約（master_spec）に従属する。
+
+#### テストシナリオ（最小｜固定）
+1) UF01_SUBMIT：テスト受注を 1 件登録（Order_ID 発行）
+2) UF06_ORDER：テスト部材を発注として登録（PART_ID/OD_ID、STATUS=ORDERED）
+3) UF06_DELIVER：納品確定（STATUS=DELIVERED、DELIVERED_AT 記録）
+4) UF07_PRICE：BPのPRICE確定（推測代入禁止）
+5) UF08_SUBMIT：追加報告を 1 件記録（Order_ID 接続）
+6) FIX_SUBMIT：修正申請を 1 件記録（危険修正は確定しない）
+7) DOC_SUBMIT：書類申請を 1 件記録
+8) WORK_DONE：完了同期を実行し、USED/EXP/在庫戻し（必要なら未使用部材コメント）まで通す
+
+#### 合格条件（固定）
+- Runtime Audit Checklist の expected effect がイベント別に満たされる。
+- unexpected effect が発生しない（特に：ID再発番、二重行増殖、本番混入）。
+- NG の場合は自動で辻褄合わせをせず、Recovery Queue（OPEN）へ登録される（回収導線が成立する）。
+
+### Rollback（連続NG時の安定復旧｜固定）
+
+#### 目的（固定）
+- 連続する Runtime NG（破綻）により運用が停滞した場合に、**最短で安定状態へ戻す**ための公式手順を固定する。
+- 原因推測ではなく「観測→回収→復旧」を優先し、汚染の拡大を防ぐ。
+
+#### 発動条件（固定）
+- 同一テーマ（同一変更）に起因する Runtime NG が連続して発生し、回収（Recovery Queue）で解消できない状態が続く場合。
+
+#### 取扱い（固定）
+- 自動で辻褄合わせをしない。
+- 最後に安定していた確定状態（Sで確定している状態）へ戻し、運用を再開する。
+- rollback が発生した場合は、必ず logs/system 相当へ記録し、Recovery Queue（OPEN）へ「rollback発生」を登録する（監督回収）。
+
+#### 注意（固定）
+- rollback は「失敗の隠蔽」ではなく、汚染拡大を止めるための安全装置である。
+- rollback 後は、原因の是正を別テーマ（別PR）で行い、再度 RuntimeSelfTest を通す。
+
+### Self-Diff（矛盾検知｜警告のみ｜固定）
+
+#### 目的（固定）
+- AI/文書更新の過程で「直前の確定内容」と矛盾する可能性を検知した場合に、破綻前に止める。
+- 仕様の勝手な書換えを防ぎ、差分（diff）方式を守る。
+
+#### ルール（固定）
+- 矛盾の可能性を検知した場合、AIは「警告」を出して停止してよい（勝手に修正しない）。
+- 解決は必ず B（人間判断）→ diff → 反映（1テーマ=1PR）の順で行う。
+- Self-Diff は判断ではなく、矛盾候補の提示に限定する。
+
+### S→Apps Script 同期（全文貼替のみ｜固定）
+
+#### 目的（固定）
+- 実装反映における部分編集・手修正による破綻を防ぎ、監査と再現性を担保する。
+
+#### ルール（固定）
+- Apps Script 側への反映は「確定済み成果物（S）を全文貼替」する方式のみ許可する。
+- 部分編集・差分編集・行単位の追加削除は原則禁止とする（事故防止）。
+- 反映の前後で RuntimeSelfTest を通し、expected/unexpected の監査を成立させる。
+
+### 更新（再同期）対象範囲（固定）
+
+#### 目的（固定）
+- 「更新（再同期）」の意味を一意にし、復旧と整合回復を最短化する。
+- 冪等であり、何度実行しても台帳が増殖しないことを前提とする。
+
+#### 最小対象（固定）
+- Ledger（台帳）側の整合回復：
+  - Order/Parts/EX/Expense/Request/Recovery Queue の参照整合
+  - alertLabels / 健康スコアの再計算（冪等）
+- UI投影の再構築（Ledger → UI）：
+  - 現場UI（Todoist）への参照情報再投影（必要ならタスク名/要点）
+  - 管理UI（ClickUp）への監督情報再投影（STATUS/警告/OPEN回収）
+- 競合が検出された場合：
+  - 自動で辻褄合わせをせず、Recovery Queue（OPEN）へ登録する。
+
+#### 禁止（固定）
+- UI側の値で Ledger の確定値を上書きする用途に「更新」を使わない。
+
+### logs/system 保存仕様（Drive JSON + Sheet Index｜固定）
+
+#### 目的（固定）
+- 監査・追跡・原因調査のために、イベントログを長期に保持しつつ、確定申告/集計を阻害しない。
+
+#### 保存方式（固定）
+- 詳細ログ：Drive に JSON として保存する（イベント単位または日次単位等。実装で選ぶ）。
+- 集計用インデックス：Sheet に最小列で保持する（確定申告・月次集計はここを参照できること）。
+
+#### インデックス最小列（固定）
+- date（YYYY-MM-DD）
+- eventType
+- Order_ID（該当する場合）
+- PART_ID（該当する場合）
+- severity（INFO/WARNING/BLOCKER）
+- idempotencyKey
+- driveFileId（またはURL参照）
+- memo（任意：短文）
+
+#### PII マスキング（必須｜固定）
+- 電話・住所等のPIIは、logs/system（詳細ログ/インデックス）に保存する前にマスキングする（漏えい防止）。
+- マスキングの有無で情報価値が落ちる場合は、Ledgerの正式列に保持し、ログには複製しない（判断権の原則）。
+
+#### ローテーション（固定）
+- 容量・ファイル数の増加に備え、日次/月次でアーカイブ・圧縮等のローテーションを行ってよい（実装テーマで確定）。
+
+### 縮退運用（enabled=false｜固定）
+
+#### 目的（固定）
+- 外部連携が利用できない場合でも業務を停止させず、確定処理を破綻させない。
+
+#### 基本原則（固定）
+- 外部連携が無効の間は「入力禁止経路」から確定値を作らない。
+- 代替導線は Ledger（台帳）側に寄せ、UI投影は停止してよい。
+
+#### 代表ケース（固定）
+- Todoist（現場UI）が無効：
+  - 現場完了（WORK_DONE）の入力は Ledger 側の完了入力（フォーム/運用）へ縮退する。
+  - idempotencyKey と Recovery Queue を維持し、二重確定を防ぐ。
+- ClickUp（管理UI）が無効：
+  - 警告・回収は Recovery Queue（OPEN）を唯一の回収箱として運用し、監督は Ledger/OV01 側で行う。
+- AI補助が無効：
+  - 素材抽出・違和感候補は停止し、業務ロジックの確定のみで進める。
+- 住所API等が無効：
+  - 既存の確定ルールに従い、曖昧さは REVIEW 回収へ寄せる。
+
+### Webhook 再送・重複（リトライ/レート制限）契約（固定）
+
+#### 目的（固定）
+- 再送・重複・一時失敗が起きても、台帳が増殖せず、確定が二重化しないことを保証する。
+
+#### 契約（固定）
+- 受信イベントは必ず idempotencyKey で重複排除する（IdempotencyKey 節に従属）。
+- 再送は許容するが、同一 idempotencyKey は “同一イベントの再観測” として扱い、主要台帳の増殖は禁止。
+- rate limit / 一時障害時は、リトライを行ってよい（実装方式は別）。最終的に失敗した場合：
+  - logs/system に記録し、Recovery Queue（OPEN）へ登録する（監督回収）。
+
+#### 禁止（固定）
+- リトライのたびに台帳へ新規行を追加する（増殖）。
+- 管理UIからの入力で確定処理を代替する（入力禁止経路）。
 
 ## DoD（Phase-2）
 
