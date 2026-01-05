@@ -43,7 +43,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 296041
+- included_total_bytes: 296249
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1067,8 +1067,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 8ed44193444601bcdae13ecdd04c325ea12fc7bac1e917594289d041d4391115
-- bytes: 1146
+- sha256: a2a9470759a8bd982195d2ffd361ecf1e2e56fb5ce439dabf91cd78cdafc0603
+- bytes: 1296
 
 ```text
 ﻿# STATE_CURRENT (MEP)
@@ -1087,6 +1087,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-05: (PR #509) tools/mep_integration_compiler/collect_changed_files.py: accept tab-less git diff -z output (rename/copy parsing robustness)
 - Build and refine Yorisoidou BUSINESS master_spec and UI spec under the above scope.
 - 2026-01-05: (PR #479) Decision-first（採用/不採用→採用後のみ実装）を正式採用
 - 2026-01-05: (PR #483) Phase-2 Integration Contract（Todoist×ClickUp×Ledger）を business_spec に追加
@@ -3696,8 +3697,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 580b8ed66f057794a19640ddcdfcf4ffdaf34782ff80200d084fd3affc3847e5
-- bytes: 1633
+- sha256: 5ee4feb40a195abb1e800ba8d136c73f3a1201e27024bfe744bb761cf45c47cd
+- bytes: 1691
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -3724,6 +3725,7 @@ UIの禁止事項（固定）：
 - tools/mep_chat_packet_min.ps1
 - tools/mep_pwsh_guard.ps1
 - tools/mep_autopilot.ps1
+- tools/mep_integration_compiler/collect_changed_files.py
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
