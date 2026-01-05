@@ -1,4 +1,4 @@
-﻿# STATE_CURRENT (MEP)
+# STATE_CURRENT (MEP)
 
 ## Doc status registry（重複防止）
 - docs/MEP/DOC_REGISTRY.md を最初に確認する (ACTIVE/STABLE/GENERATED)
@@ -14,6 +14,8 @@
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (GAS) B17-1 verified: Request.upsert_open_dedupe links Recovery_Queue.requestRef when recoveryRqKey (==rqKey) is provided; policy A = overwrite forbidden (CONFLICT).
+- 2026-01-06: (GAS) B17-1 linkageStatus fixed: LINKED | NOT_FOUND_RECOVERY | CONFLICT | ERROR; dryRun=true => op=noop (no writes).
 - 2026-01-06: (GAS) WRITE endpoint is B16-1 (Recovery_Queue upsert + Request upsert_open_dedupe + resolve_request): https://script.google.com/macros/s/AKfycbzZtrlz9MIMPNn7RQoO-SIUrtJvtOBPLACFxuzCIYhcQbzkQ7xYN79AukEV9eIyB3KCfQ/exec
 - 2026-01-06: (GAS) Spreadsheet ID (Ledger): 1VWqQXs9HAvZQ7K9fKXa4M0BHrvvsZW8qZBJHqoCCE3I (Sheets: Recovery_Queue / Request)
 - 2026-01-06: (NEXT) B17: Recovery_Queue ↔ Request linkage (requestRef/recoveryRqKey) in write endpoint
