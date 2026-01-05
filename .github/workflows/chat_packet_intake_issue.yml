@@ -1,0 +1,70 @@
+﻿name: Chat Packet Intake (Issue)
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Analyze issue body -> analysis_body.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python tools/chat_packet_intake/analyze_issue.py
+
+      - name: Upsert comment (idempotent)
+        if: ${{ hashFiles('tools/chat_packet_intake/analysis_body.md') != '' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'tools/chat_packet_intake/analysis_body.md';
+            if (!fs.existsSync(path)) {
+              core.info('analysis_body.md not found. Skip.');
+              return;
+            }
+            const body = fs.readFileSync(path, 'utf8').trim();
+            if (!body) {
+              core.info('analysis_body.md empty. Skip.');
+              return;
+            }
+
+            const marker = '<!-- CHAT_PACKET_INTAKE -->';
+            const issue_number = context.payload.issue.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100
+            });
+
+            const mine = comments.find(c => (c.user && c.user.type === 'Bot') && (c.body || '').includes(marker));
+
+            if (mine) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: mine.id,
+                body
+              });
+              core.info(`Updated intake comment: ${mine.html_url}`);
+            } else {
+              const created = await github.rest.issues.createComment({
+                owner, repo, issue_number,
+                body
+              });
+              core.info(`Created intake comment: ${created.data.html_url}`);
+            }
