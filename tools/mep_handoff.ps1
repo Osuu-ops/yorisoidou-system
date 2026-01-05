@@ -1,12 +1,11 @@
-# MEP HANDOFF (NO-DRIFT) v2.1 (parse-safe)
-# - "引っ越し" の唯一入口: このスクリプトを1回実行するだけ。
+# MEP HANDOFF (NO-DRIFT) v2.2
+# - 引っ越しの唯一入口: このスクリプトを1回実行するだけ。
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
-# - GraphQL を使わない（ここが壊れやすかったため）。open PR は gh pr list で取得する。
-# - 既定は Issue 作成なし（権限差で失敗しやすいので）。必要なら -WithIssue。
+# - PowerShell の here-string を使わない（終端不一致で壊れたため）。
 #
 # Usage:
-#   pwsh -File .\tools\mep_handoff.ps1
-#   pwsh -File .\tools\mep_handoff.ps1 -WithIssue
+#   .\tools\mep_handoff.ps1
+#   .\tools\mep_handoff.ps1 -WithIssue
 param(
   [switch]$WithIssue,
   [int]$IssueNumber = 0
@@ -149,25 +148,27 @@ if($score -ne 100){
   throw "Not 100/100. Stop."
 }
 
-$current = @"
-【CURRENT｜引っ越し再開用】
-
-Repo: $repo
-状態: main clean / open PR 0 / 最新HEAD=$head
-
-完了（main反映済み）
-- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）
-- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）
-"@
+# CURRENT text (array join; no here-string)
+$currentLines = @(
+  "【CURRENT｜引っ越し再開用】",
+  "",
+  ("Repo: {0}" -f $repo),
+  ("状態: main clean / open PR 0 / 最新HEAD={0}" -f $head),
+  "",
+  "完了（main反映済み）",
+  "- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）",
+  "- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）"
+)
+$current = ($currentLines -join "`n") + "`n"
 
 if($WithIssue){
-  $issueBody = @"
-$($current.Trim())
-
-# CHAT_PACKET
-- (repo file) docs/MEP/CHAT_PACKET.md
-- (repo file) docs/MEP/STATE_CURRENT.md
-"@
+  $issueLines = @()
+  $issueLines += $currentLines
+  $issueLines += ""
+  $issueLines += "# CHAT_PACKET"
+  $issueLines += "- (repo file) docs/MEP/CHAT_PACKET.md"
+  $issueLines += "- (repo file) docs/MEP/STATE_CURRENT.md"
+  $issueBody = ($issueLines -join "`n") + "`n"
   try {
     $n = Upsert-IntakeIssue $repo $IssueNumber $issueBody
     Write-Host ("(intake issue updated) https://github.com/{0}/issues/{1}" -f $repo, $n)
