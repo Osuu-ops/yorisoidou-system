@@ -85,7 +85,6 @@
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 - tools/chat_packet_intake/analyze_issue.py
-- tools/mep_handoff.ps1.bak.20260107-013624
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
