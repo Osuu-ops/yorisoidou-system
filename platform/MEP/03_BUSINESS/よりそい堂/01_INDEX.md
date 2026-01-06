@@ -10,6 +10,8 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
+<<<<<<< HEAD
+=======
 
 ## 唯一の正（実体）
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
@@ -30,3 +32,4 @@ Rule:
 - Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
 - Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
 
+>>>>>>> origin/main
