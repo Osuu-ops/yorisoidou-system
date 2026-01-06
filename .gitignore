@@ -1,0 +1,6 @@
+﻿# Auto-generated .gitignore (keeps node_modules ignored but allows injected helper)
+node_modules/
+dist/
+
+# Allow injected GAS helper
+!gas/clasp_webapp/**
