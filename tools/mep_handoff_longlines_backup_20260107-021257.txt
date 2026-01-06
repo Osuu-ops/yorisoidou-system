@@ -1,0 +1,211 @@
+Backup of original problematic lines - 20260107-021257
+--- Range lines 3..3 ---
+     3: # - 100/100 以外は CURRENT を出さない（汚染停止）。
+--- Range lines 5..5 ---
+     5: # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
+--- Range lines 7..7 ---
+     7: # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
+--- Range lines 189..189 ---
+   189: # - 100/100 以外は CURRENT を出さない（汚染停止）。
+--- Range lines 191..191 ---
+   191: # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
+--- Range lines 193..193 ---
+   193: # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
+--- Range lines 429..429 ---
+   429: $biz="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
+--- Range lines 431..431 ---
+   431: $requiredHeadings=@("## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）","### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）","### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）","### トリガー一覧（Phase-2｜固定）","### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）")
+--- Range lines 447..447 ---
+   447: $out.Add("HANDOFF_ID: " + $handoffId)
+--- Range lines 449..449 ---
+   449: $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+--- Range lines 451..451 ---
+   451: $out.Add("REPO: " + $repo)
+--- Range lines 453..453 ---
+   453: $out.Add("HEAD: " + $head)
+--- Range lines 455..455 ---
+   455: $out.Add("OPEN_PR: 0")
+--- Range lines 457..457 ---
+   457: $out.Add("HANDOFF_SCORE=100/100")
+--- Range lines 459..459 ---
+   459: $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+--- Range lines 461..461 ---
+   461: $out.Add("")
+--- Range lines 463..463 ---
+   463: $out.Add("【CURRENT｜引っ越し再開用】")
+--- Range lines 465..465 ---
+   465: $out.Add("")
+--- Range lines 467..467 ---
+   467: $out.Add("Repo: " + $repo)
+--- Range lines 469..469 ---
+   469: $out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+--- Range lines 471..471 ---
+   471: $out.Add("")
+--- Range lines 473..473 ---
+   473: $out.Add("完了（main反映済み）")
+--- Range lines 475..475 ---
+   475: $out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+--- Range lines 477..477 ---
+   477: $out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+--- Range lines 487..487 ---
+   487: # - 100/100 以外は CURRENT を出さない（汚染停止）。
+--- Range lines 489..489 ---
+   489: # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
+--- Range lines 491..491 ---
+   491: # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
+--- Range lines 727..727 ---
+   727: $biz="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
+--- Range lines 729..729 ---
+   729: $requiredHeadings=@("## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）","### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）","### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）","### トリガー一覧（Phase-2｜固定）","### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）")
+--- Range lines 745..745 ---
+   745: $out.Add("HANDOFF_ID: " + $handoffId)
+--- Range lines 747..747 ---
+   747: $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+--- Range lines 749..749 ---
+   749: $out.Add("REPO: " + $repo)
+--- Range lines 751..751 ---
+   751: $out.Add("HEAD: " + $head)
+--- Range lines 753..753 ---
+   753: $out.Add("OPEN_PR: 0")
+--- Range lines 755..755 ---
+   755: $out.Add("HANDOFF_SCORE=100/100")
+--- Range lines 757..757 ---
+   757: $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+--- Range lines 759..759 ---
+   759: $out.Add("")
+--- Range lines 761..761 ---
+   761: $out.Add("【CURRENT｜引っ越し再開用】")
+--- Range lines 763..763 ---
+   763: $out.Add("")
+--- Range lines 765..765 ---
+   765: $out.Add("Repo: " + $repo)
+--- Range lines 767..767 ---
+   767: $out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+--- Range lines 769..769 ---
+   769: $out.Add("")
+--- Range lines 771..771 ---
+   771: $out.Add("完了（main反映済み）")
+--- Range lines 773..773 ---
+   773: $out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+--- Range lines 775..775 ---
+   775: $out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+--- Range lines 783..783 ---
+   783: # - 100/100 以外は CURRENT を出さない（汚染停止）。
+--- Range lines 785..785 ---
+   785: # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
+--- Range lines 787..787 ---
+   787: # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
+--- Range lines 1023..1023 ---
+  1023: $biz="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
+--- Range lines 1025..1025 ---
+  1025: $requiredHeadings=@("## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）","### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）","### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）","### トリガー一覧（Phase-2｜固定）","### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）")
+--- Range lines 1041..1041 ---
+  1041: $out.Add("HANDOFF_ID: " + $handoffId)
+--- Range lines 1043..1043 ---
+  1043: $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+--- Range lines 1045..1045 ---
+  1045: $out.Add("REPO: " + $repo)
+--- Range lines 1047..1047 ---
+  1047: $out.Add("HEAD: " + $head)
+--- Range lines 1049..1049 ---
+  1049: $out.Add("OPEN_PR: 0")
+--- Range lines 1051..1051 ---
+  1051: $out.Add("HANDOFF_SCORE=100/100")
+--- Range lines 1053..1053 ---
+  1053: $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+--- Range lines 1055..1055 ---
+  1055: $out.Add("")
+--- Range lines 1057..1057 ---
+  1057: $out.Add("【CURRENT｜引っ越し再開用】")
+--- Range lines 1059..1059 ---
+  1059: $out.Add("")
+--- Range lines 1061..1061 ---
+  1061: $out.Add("Repo: " + $repo)
+--- Range lines 1063..1063 ---
+  1063: $out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+--- Range lines 1065..1065 ---
+  1065: $out.Add("")
+--- Range lines 1067..1067 ---
+  1067: $out.Add("完了（main反映済み）")
+--- Range lines 1069..1069 ---
+  1069: $out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+--- Range lines 1071..1071 ---
+  1071: $out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+--- Range lines 1079..1079 ---
+  1079: # - 100/100 以外は CURRENT を出さない（汚染停止）。
+--- Range lines 1081..1081 ---
+  1081: # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
+--- Range lines 1083..1083 ---
+  1083: # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
+--- Range lines 1319..1319 ---
+  1319: $biz="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
+--- Range lines 1321..1321 ---
+  1321: $requiredHeadings=@("## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）","### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）","### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）","### トリガー一覧（Phase-2｜固定）","### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）")
+--- Range lines 1337..1337 ---
+  1337: $out.Add("HANDOFF_ID: " + $handoffId)
+--- Range lines 1339..1339 ---
+  1339: $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+--- Range lines 1341..1341 ---
+  1341: $out.Add("REPO: " + $repo)
+--- Range lines 1343..1343 ---
+  1343: $out.Add("HEAD: " + $head)
+--- Range lines 1345..1345 ---
+  1345: $out.Add("OPEN_PR: 0")
+--- Range lines 1347..1347 ---
+  1347: $out.Add("HANDOFF_SCORE=100/100")
+--- Range lines 1349..1349 ---
+  1349: $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+--- Range lines 1351..1351 ---
+  1351: $out.Add("")
+--- Range lines 1353..1353 ---
+  1353: $out.Add("【CURRENT｜引っ越し再開用】")
+--- Range lines 1355..1355 ---
+  1355: $out.Add("")
+--- Range lines 1357..1357 ---
+  1357: $out.Add("Repo: " + $repo)
+--- Range lines 1359..1359 ---
+  1359: $out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+--- Range lines 1361..1361 ---
+  1361: $out.Add("")
+--- Range lines 1363..1363 ---
+  1363: $out.Add("完了（main反映済み）")
+--- Range lines 1365..1365 ---
+  1365: $out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+--- Range lines 1367..1367 ---
+  1367: $out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+--- Range lines 1429..1429 ---
+  1429: $biz="platform/MEP/03_BUSINESS/よりそい堂/business_spec.md"
+--- Range lines 1431..1431 ---
+  1431: $requiredHeadings=@("## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）","### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）","### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）","### トリガー一覧（Phase-2｜固定）","### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）")
+--- Range lines 1447..1447 ---
+  1447: $out.Add("HANDOFF_ID: " + $handoffId)
+--- Range lines 1449..1449 ---
+  1449: $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
+--- Range lines 1451..1451 ---
+  1451: $out.Add("REPO: " + $repo)
+--- Range lines 1453..1453 ---
+  1453: $out.Add("HEAD: " + $head)
+--- Range lines 1455..1455 ---
+  1455: $out.Add("OPEN_PR: 0")
+--- Range lines 1457..1457 ---
+  1457: $out.Add("HANDOFF_SCORE=100/100")
+--- Range lines 1459..1459 ---
+  1459: $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
+--- Range lines 1461..1461 ---
+  1461: $out.Add("")
+--- Range lines 1463..1463 ---
+  1463: $out.Add("【CURRENT｜引っ越し再開用】")
+--- Range lines 1465..1465 ---
+  1465: $out.Add("")
+--- Range lines 1467..1467 ---
+  1467: $out.Add("Repo: " + $repo)
+--- Range lines 1469..1469 ---
+  1469: $out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
+--- Range lines 1471..1471 ---
+  1471: $out.Add("")
+--- Range lines 1473..1473 ---
+  1473: $out.Add("完了（main反映済み）")
+--- Range lines 1475..1475 ---
+  1475: $out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
+--- Range lines 1477..1477 ---
+  1477: $out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")

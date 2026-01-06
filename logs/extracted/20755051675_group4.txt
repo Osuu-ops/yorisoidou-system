@@ -1,0 +1,23 @@
+﻿--- 20755051675.log : 4 lines 369..390 ---
+   369: suggest	Skip fork PRs	2026-01-06T16:38:22.7809722Z [36;1mset -euo pipefail[0m
+   370: suggest	Skip fork PRs	2026-01-06T16:38:22.7810490Z [36;1mif [ "Osuu-ops/yorisoidou-system" != "Osuu-ops/yorisoidou-system" ]; then[0m
+   371: suggest	Skip fork PRs	2026-01-06T16:38:22.7811433Z [36;1m  echo "Fork PR -> cannot push suggestion branch. Skip."[0m
+   372: suggest	Skip fork PRs	2026-01-06T16:38:22.7812112Z [36;1m  exit 0[0m
+   373: suggest	Skip fork PRs	2026-01-06T16:38:22.7812533Z [36;1mfi[0m
+   374: suggest	Skip fork PRs	2026-01-06T16:38:22.7851096Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   375: suggest	Skip fork PRs	2026-01-06T16:38:22.7852269Z env:
+   376: suggest	Skip fork PRs	2026-01-06T16:38:22.7853863Z   GH_TOKEN: ***
+   377: suggest	Skip fork PRs	2026-01-06T16:38:22.7854691Z   SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+   378: suggest	Skip fork PRs	2026-01-06T16:38:22.7856086Z ##[endgroup]
+   379: suggest	Detect out-of-scope files and open suggestion PR	・ｿ2026-01-06T16:38:22.8057063Z ##[group]Run set -euo pipefail
+   380: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8058574Z [36;1mset -euo pipefail[0m
+   381: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8059234Z [36;1mgit config user.name  "github-actions"[0m
+   382: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8060044Z [36;1mgit config user.email "github-actions@users.noreply.github.com"[0m
+   383: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8060879Z [36;1mgit config --global core.quotepath false[0m
+   384: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8061470Z [36;1m[0m
+   385: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8061907Z [36;1mrepo="Osuu-ops/yorisoidou-system"[0m
+   386: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8062469Z [36;1mpr="619"[0m
+   387: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8062978Z [36;1mbase="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+   388: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8063680Z [36;1mhead="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+   389: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8064277Z [36;1m[0m
+   390: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8064688Z [36;1mexport BASE_SHA="$base"[0m

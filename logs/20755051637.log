@@ -1,0 +1,917 @@
+﻿semantic-audit	Set up job	・ｿ2026-01-06T16:38:23.1031614Z Current runner version: '2.330.0'
+semantic-audit	Set up job	2026-01-06T16:38:23.1060384Z ##[group]Runner Image Provisioner
+semantic-audit	Set up job	2026-01-06T16:38:23.1061293Z Hosted Compute Agent
+semantic-audit	Set up job	2026-01-06T16:38:23.1061826Z Version: 20251211.462
+semantic-audit	Set up job	2026-01-06T16:38:23.1062437Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+semantic-audit	Set up job	2026-01-06T16:38:23.1063349Z Build Date: 2025-12-11T16:28:49Z
+semantic-audit	Set up job	2026-01-06T16:38:23.1064163Z Worker ID: {95b6b54c-1246-4be7-abbb-db255d58c57e}
+semantic-audit	Set up job	2026-01-06T16:38:23.1064836Z ##[endgroup]
+semantic-audit	Set up job	2026-01-06T16:38:23.1065340Z ##[group]Operating System
+semantic-audit	Set up job	2026-01-06T16:38:23.1065972Z Ubuntu
+semantic-audit	Set up job	2026-01-06T16:38:23.1066401Z 24.04.3
+semantic-audit	Set up job	2026-01-06T16:38:23.1066830Z LTS
+semantic-audit	Set up job	2026-01-06T16:38:23.1067299Z ##[endgroup]
+semantic-audit	Set up job	2026-01-06T16:38:23.1067807Z ##[group]Runner Image
+semantic-audit	Set up job	2026-01-06T16:38:23.1068291Z Image: ubuntu-24.04
+semantic-audit	Set up job	2026-01-06T16:38:23.1068851Z Version: 20251215.174.1
+semantic-audit	Set up job	2026-01-06T16:38:23.1069825Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+semantic-audit	Set up job	2026-01-06T16:38:23.1071192Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+semantic-audit	Set up job	2026-01-06T16:38:23.1072412Z ##[endgroup]
+semantic-audit	Set up job	2026-01-06T16:38:23.1073618Z ##[group]GITHUB_TOKEN Permissions
+semantic-audit	Set up job	2026-01-06T16:38:23.1075791Z Contents: read
+semantic-audit	Set up job	2026-01-06T16:38:23.1076320Z Metadata: read
+semantic-audit	Set up job	2026-01-06T16:38:23.1076888Z ##[endgroup]
+semantic-audit	Set up job	2026-01-06T16:38:23.1079065Z Secret source: Actions
+semantic-audit	Set up job	2026-01-06T16:38:23.1079924Z Prepare workflow directory
+semantic-audit	Set up job	2026-01-06T16:38:23.1407616Z Prepare all required actions
+semantic-audit	Set up job	2026-01-06T16:38:23.1447806Z Getting action download info
+semantic-audit	Set up job	2026-01-06T16:38:23.6010721Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+semantic-audit	Set up job	2026-01-06T16:38:23.7205948Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+semantic-audit	Set up job	2026-01-06T16:38:23.9037497Z Complete job name: semantic-audit
+semantic-audit	Run actions/checkout@v4	・ｿ2026-01-06T16:38:23.9777758Z ##[group]Run actions/checkout@v4
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9778607Z with:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9778978Z   fetch-depth: 0
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9779410Z   repository: Osuu-ops/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9780169Z   token: ***
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9780536Z   ssh-strict: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9780910Z   ssh-user: git
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9781293Z   persist-credentials: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9781731Z   clean: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9782125Z   sparse-checkout-cone-mode: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9782599Z   fetch-tags: false
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9782975Z   show-progress: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9783648Z   lfs: false
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9784010Z   submodules: false
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9784402Z   set-safe-directory: true
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:23.9785089Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.0952458Z Syncing repository: Osuu-ops/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.0954638Z ##[group]Getting Git version info
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.0955468Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.0956729Z [command]/usr/bin/git version
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1089465Z git version 2.52.0
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1117023Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1132932Z Temporarily overriding HOME='/home/runner/work/_temp/b8977842-7f2a-4764-9709-fbdedd6cb196' before making global git config changes
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1134911Z Adding repository directory to the temporary git global config as a safe directory
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1138732Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1182479Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1186499Z ##[group]Initializing the repository
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1190679Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1312237Z hint: Using 'master' as the name for the initial branch. This default branch name
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1313682Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1314783Z hint: to use in all of your new repositories, which will suppress this warning,
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1315864Z hint: call:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1316282Z hint:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1317351Z hint: 	git config --global init.defaultBranch <name>
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1318315Z hint:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1318952Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1320002Z hint: 'development'. The just-created branch can be renamed via this command:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1320830Z hint:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1321263Z hint: 	git branch -m <name>
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1321772Z hint:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1322378Z hint: Disable this message with "git config set advice.defaultBranchName false"
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1323908Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1329736Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1368653Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1369844Z ##[group]Disabling automatic garbage collection
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1374008Z [command]/usr/bin/git config --local gc.auto 0
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1405062Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1406253Z ##[group]Setting up auth
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1412802Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1445143Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1866449Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.1902236Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2151876Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2187235Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2417515Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2451436Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2452217Z ##[group]Fetching the repository
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.2460729Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +310328a488c6ffabdcf52ef89a8ffd3f2fba0d72:refs/remotes/pull/619/merge
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9663563Z From https://github.com/Osuu-ops/yorisoidou-system
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9667759Z  * [new branch]      Osuu-ops-patch-1                         -> origin/Osuu-ops-patch-1
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9670011Z  * [new branch]      Osuu-ops-patch-2                         -> origin/Osuu-ops-patch-2
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9672302Z  * [new branch]      Osuu-ops-patch-3                         -> origin/Osuu-ops-patch-3
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9674834Z  * [new branch]      Osuu-ops-patch-4                         -> origin/Osuu-ops-patch-4
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9677012Z  * [new branch]      Osuu-ops-patch-6                         -> origin/Osuu-ops-patch-6
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9679221Z  * [new branch]      Osuu-ops-patch-7                         -> origin/Osuu-ops-patch-7
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9681516Z  * [new branch]      auto/chat-packet-update-20260102-194002  -> origin/auto/chat-packet-update-20260102-194002
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9684737Z  * [new branch]      auto/chat-packet-update-20260102-194620  -> origin/auto/chat-packet-update-20260102-194620
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9687636Z  * [new branch]      auto/chat-packet-update-20664550110      -> origin/auto/chat-packet-update-20664550110
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9690851Z  * [new branch]      auto/chat-packet-update-20673842256      -> origin/auto/chat-packet-update-20673842256
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9695002Z  * [new branch]      auto/mep-runbook-recreate-20260103-215009 -> origin/auto/mep-runbook-recreate-20260103-215009
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9699591Z  * [new branch]      auto/scope-suggest-pr437-20260104-144119 -> origin/auto/scope-suggest-pr437-20260104-144119
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9704296Z  * [new branch]      auto/scope-suggest-pr442-20260104-150150 -> origin/auto/scope-suggest-pr442-20260104-150150
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9708808Z  * [new branch]      auto/scope-suggest-pr600-20260106-120913 -> origin/auto/scope-suggest-pr600-20260106-120913
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9713744Z  * [new branch]      auto/scope-suggest-pr608-20260106-144603 -> origin/auto/scope-suggest-pr608-20260106-144603
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9717263Z  * [new branch]      auto/scope-suggest-pr619-20260106-163823 -> origin/auto/scope-suggest-pr619-20260106-163823
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9721156Z  * [new branch]      auto/state-summary-update-20673443497    -> origin/auto/state-summary-update-20673443497
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9726213Z  * [new branch]      auto/state-summary-update-20673601402    -> origin/auto/state-summary-update-20673601402
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9730717Z  * [new branch]      auto/state-summary-update-20673657443    -> origin/auto/state-summary-update-20673657443
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9734201Z  * [new branch]      auto/state-summary-update-20673803469    -> origin/auto/state-summary-update-20673803469
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9737247Z  * [new branch]      auto/state-summary-update-20673841629    -> origin/auto/state-summary-update-20673841629
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9740249Z  * [new branch]      auto/state-summary-update-20674125460    -> origin/auto/state-summary-update-20674125460
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9743365Z  * [new branch]      auto/state-summary-update-20674278435    -> origin/auto/state-summary-update-20674278435
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9746316Z  * [new branch]      auto/state-summary-update-20674377844    -> origin/auto/state-summary-update-20674377844
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9749225Z  * [new branch]      auto/state-summary-update-20675301442    -> origin/auto/state-summary-update-20675301442
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9752632Z  * [new branch]      auto/state-summary-update-20676143268    -> origin/auto/state-summary-update-20676143268
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9755866Z  * [new branch]      auto/state-summary-update-20676904723    -> origin/auto/state-summary-update-20676904723
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9758885Z  * [new branch]      auto/state-summary-update-20676951197    -> origin/auto/state-summary-update-20676951197
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9762071Z  * [new branch]      auto/state-summary-update-20677228804    -> origin/auto/state-summary-update-20677228804
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9765230Z  * [new branch]      auto/state-summary-update-20677271426    -> origin/auto/state-summary-update-20677271426
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9768249Z  * [new branch]      auto/state-summary-update-20677406180    -> origin/auto/state-summary-update-20677406180
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9771587Z  * [new branch]      auto/state-summary-update-20677500269    -> origin/auto/state-summary-update-20677500269
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9774953Z  * [new branch]      auto/state-summary-update-20677531366    -> origin/auto/state-summary-update-20677531366
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9778034Z  * [new branch]      auto/state-summary-update-20677543550    -> origin/auto/state-summary-update-20677543550
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9781111Z  * [new branch]      auto/state-summary-update-20677607523    -> origin/auto/state-summary-update-20677607523
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9784291Z  * [new branch]      auto/state-summary-update-20677643544    -> origin/auto/state-summary-update-20677643544
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9787360Z  * [new branch]      auto/state-summary-update-20677664781    -> origin/auto/state-summary-update-20677664781
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9790409Z  * [new branch]      auto/state-summary-update-20677680092    -> origin/auto/state-summary-update-20677680092
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9793564Z  * [new branch]      auto/state-summary-update-20677714008    -> origin/auto/state-summary-update-20677714008
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9796606Z  * [new branch]      auto/state-summary-update-20677745896    -> origin/auto/state-summary-update-20677745896
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9799633Z  * [new branch]      auto/state-summary-update-20677827799    -> origin/auto/state-summary-update-20677827799
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9802808Z  * [new branch]      auto/state-summary-update-20677922547    -> origin/auto/state-summary-update-20677922547
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9805912Z  * [new branch]      auto/state-summary-update-20678050847    -> origin/auto/state-summary-update-20678050847
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9808866Z  * [new branch]      auto/state-summary-update-20678379501    -> origin/auto/state-summary-update-20678379501
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9811824Z  * [new branch]      auto/state-summary-update-20680946276    -> origin/auto/state-summary-update-20680946276
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9814918Z  * [new branch]      auto/state-summary-update-20681017358    -> origin/auto/state-summary-update-20681017358
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9817924Z  * [new branch]      auto/state-summary-update-20681125698    -> origin/auto/state-summary-update-20681125698
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9820961Z  * [new branch]      auto/state-summary-update-20681494908    -> origin/auto/state-summary-update-20681494908
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9824017Z  * [new branch]      auto/state-summary-update-20682038436    -> origin/auto/state-summary-update-20682038436
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9826936Z  * [new branch]      auto/state-summary-update-20682621101    -> origin/auto/state-summary-update-20682621101
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9829835Z  * [new branch]      auto/state-summary-update-20687505124    -> origin/auto/state-summary-update-20687505124
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9832645Z  * [new branch]      auto/state-summary-update-20688990392    -> origin/auto/state-summary-update-20688990392
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9835562Z  * [new branch]      auto/state-summary-update-20689046631    -> origin/auto/state-summary-update-20689046631
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9838364Z  * [new branch]      auto/state-summary-update-20689130389    -> origin/auto/state-summary-update-20689130389
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9841331Z  * [new branch]      auto/state-summary-update-20689170351    -> origin/auto/state-summary-update-20689170351
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9844236Z  * [new branch]      auto/state-summary-update-20689192050    -> origin/auto/state-summary-update-20689192050
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9847022Z  * [new branch]      auto/state-summary-update-20689263659    -> origin/auto/state-summary-update-20689263659
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9849804Z  * [new branch]      auto/state-summary-update-20690994605    -> origin/auto/state-summary-update-20690994605
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9852588Z  * [new branch]      auto/state-summary-update-20691229671    -> origin/auto/state-summary-update-20691229671
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9855559Z  * [new branch]      auto/state-summary-update-20691303978    -> origin/auto/state-summary-update-20691303978
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9858359Z  * [new branch]      auto/state-summary-update-20691341185    -> origin/auto/state-summary-update-20691341185
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9861107Z  * [new branch]      auto/state-summary-update-20691503744    -> origin/auto/state-summary-update-20691503744
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9863957Z  * [new branch]      auto/state-summary-update-20691619174    -> origin/auto/state-summary-update-20691619174
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9866727Z  * [new branch]      auto/state-summary-update-20691862557    -> origin/auto/state-summary-update-20691862557
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9869491Z  * [new branch]      auto/state-summary-update-20692262188    -> origin/auto/state-summary-update-20692262188
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9872286Z  * [new branch]      auto/state-summary-update-20692444987    -> origin/auto/state-summary-update-20692444987
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9875150Z  * [new branch]      auto/state-summary-update-20692471454    -> origin/auto/state-summary-update-20692471454
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9877911Z  * [new branch]      auto/state-summary-update-20692585217    -> origin/auto/state-summary-update-20692585217
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9880664Z  * [new branch]      auto/state-summary-update-20692840917    -> origin/auto/state-summary-update-20692840917
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9883538Z  * [new branch]      auto/state-summary-update-20692841981    -> origin/auto/state-summary-update-20692841981
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9886502Z  * [new branch]      auto/state-summary-update-20693006255    -> origin/auto/state-summary-update-20693006255
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9889281Z  * [new branch]      auto/state-summary-update-20693073974    -> origin/auto/state-summary-update-20693073974
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9892050Z  * [new branch]      auto/state-summary-update-20693150786    -> origin/auto/state-summary-update-20693150786
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9895041Z  * [new branch]      auto/state-summary-update-20693176208    -> origin/auto/state-summary-update-20693176208
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9897842Z  * [new branch]      auto/state-summary-update-20693254817    -> origin/auto/state-summary-update-20693254817
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9900623Z  * [new branch]      auto/state-summary-update-20693738890    -> origin/auto/state-summary-update-20693738890
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9903531Z  * [new branch]      auto/state-summary-update-20693785172    -> origin/auto/state-summary-update-20693785172
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9906316Z  * [new branch]      auto/state-summary-update-20693900802    -> origin/auto/state-summary-update-20693900802
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9909110Z  * [new branch]      auto/state-summary-update-20737629765    -> origin/auto/state-summary-update-20737629765
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9911870Z  * [new branch]      auto/state-summary-update-20751914155    -> origin/auto/state-summary-update-20751914155
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9914502Z  * [new branch]      backup/crash-20260107-011333             -> origin/backup/crash-20260107-011333
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9916822Z  * [new branch]      backup/crash-20260107-013037             -> origin/backup/crash-20260107-013037
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9919634Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9922757Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9926078Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9929064Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9932091Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9935248Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9938204Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9941201Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9944496Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9947668Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9950583Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9953570Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9956450Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9959245Z  * [new branch]      biz/parts-business-spec-20260104-051453  -> origin/biz/parts-business-spec-20260104-051453
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9962164Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9965222Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9968590Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9972140Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9975217Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9978268Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9981231Z  * [new branch]      biz/reviewtype-mapping-20260104-203306   -> origin/biz/reviewtype-mapping-20260104-203306
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9983896Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428  -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9986506Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9989148Z  * [new branch]      biz/work-business-spec-20260104-050739   -> origin/biz/work-business-spec-20260104-050739
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9991623Z  * [new branch]      biz/work-normalize-20260105-004002       -> origin/biz/work-normalize-20260105-004002
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9994319Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:24.9997143Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0000081Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0003270Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0006505Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0009590Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0012968Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0016796Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0020295Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0023483Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059  -> origin/chore/mep-gate-dispatch-20260103-063059
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0026610Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0029932Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0032736Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0035327Z  * [new branch]      ci/chat-packet-schedule-20260103         -> origin/ci/chat-packet-schedule-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0037755Z  * [new branch]      ci/fix-chat-packet-schedule-20260103     -> origin/ci/fix-chat-packet-schedule-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0040531Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0043951Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0047463Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0052545Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0055924Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0059614Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0063380Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0066243Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0069951Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0072834Z  * [new branch]      docs/idea-cleanup-20260104-214212        -> origin/docs/idea-cleanup-20260104-214212
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0075496Z  * [new branch]      docs/idea-index-add-bom-20260104-215056  -> origin/docs/idea-index-add-bom-20260104-215056
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0078204Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0081030Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0084055Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0086953Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0089727Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303  -> origin/docs/mep-add-idea-vault-20260103-205303
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0092611Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0095671Z  * [new branch]      docs/mep-add-playbook-20260103-151247    -> origin/docs/mep-add-playbook-20260103-151247
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0098250Z  * [new branch]      docs/mep-add-runbook-20260103-150840     -> origin/docs/mep-add-runbook-20260103-150840
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0100944Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0103995Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0107380Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0111039Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0114551Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0117461Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0120104Z  * [new branch]      docs/mep-guidance-align-20260104-153937  -> origin/docs/mep-guidance-align-20260104-153937
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0122877Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0125988Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0128648Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0131044Z  * [new branch]      docs/mep-idea-flow-20260103-212432       -> origin/docs/mep-idea-flow-20260103-212432
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0133859Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0137196Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0139972Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0142687Z  * [new branch]      docs/mep-lease-continue-20260103-220947  -> origin/docs/mep-lease-continue-20260103-220947
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0145923Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0149431Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0152728Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0155607Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905    -> origin/docs/mep-repair-1-2-3-20260103-153905
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0158315Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0161334Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0164310Z  * [new branch]      docs/ops-chat-packet-followup-20260103   -> origin/docs/ops-chat-packet-followup-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0166540Z  * [new branch]      docs/ops-rules-20260103                  -> origin/docs/ops-rules-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0168705Z  * [new branch]      docs/ops-scope-suggest-20260103-150621   -> origin/docs/ops-scope-suggest-20260103-150621
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0171548Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0174826Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0178010Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0180789Z  * [new branch]      docs/runbook-autoappend/20260106-231639  -> origin/docs/runbook-autoappend/20260106-231639
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0183529Z  * [new branch]      docs/runbook-autoappend/20260106-232943  -> origin/docs/runbook-autoappend/20260106-232943
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0186035Z  * [new branch]      docs/runbook-autoappend/20260106-233315  -> origin/docs/runbook-autoappend/20260106-233315
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0188532Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0191112Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0194247Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0197168Z  * [new branch]      docs/state-current-v12-20260103-153345   -> origin/docs/state-current-v12-20260103-153345
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0199608Z  * [new branch]      docs/test-chat-packet-schedule-20260103  -> origin/docs/test-chat-packet-schedule-20260103
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0202171Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0205021Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0208082Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0211240Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0214505Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0217309Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0220062Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0222875Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0226124Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0229102Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0231600Z  * [new branch]      feat/chat-packet-self-heal               -> origin/feat/chat-packet-self-heal
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0233866Z  * [new branch]      feat/chat-packet-self-heal-rerun         -> origin/feat/chat-packet-self-heal-rerun
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0236078Z  * [new branch]      feat/mep-gate-pr-20260103-061907         -> origin/feat/mep-gate-pr-20260103-061907
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0238127Z  * [new branch]      feat/scope-guard-phase1                  -> origin/feat/scope-guard-phase1
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0240208Z  * [new branch]      feat/scope-suggest-20260103-072132       -> origin/feat/scope-suggest-20260103-072132
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0242288Z  * [new branch]      feat/self-heal-auto-prs                  -> origin/feat/self-heal-auto-prs
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0244570Z  * [new branch]      fix/add-debug-artifact-20260106-222859   -> origin/fix/add-debug-artifact-20260106-222859
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0247470Z  * [new branch]      fix/business-master-spec-mojibake-20260104-020827 -> origin/fix/business-master-spec-mojibake-20260104-020827
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0250188Z  * [new branch]      fix/mep-gate-register-20260103-063318    -> origin/fix/mep-gate-register-20260103-063318
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0252508Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0255275Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0257988Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0260376Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0262804Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0265698Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0268385Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0271044Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0273159Z  * [new branch]      main                                     -> origin/main
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0275263Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0278240Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0281418Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0284782Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0287801Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0290136Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0292461Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0295423Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0297821Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0299873Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0303269Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0306645Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0308934Z  * [new branch]      test/seed-mep-gate-20260103-062802       -> origin/test/seed-mep-gate-20260103-062802
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0311563Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0314408Z  * [new branch]      tools/idea-capture-20260104-211626       -> origin/tools/idea-capture-20260104-211626
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0316744Z  * [new branch]      tools/mep-fix-param-top-20260103-215224  -> origin/tools/mep-fix-param-top-20260103-215224
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0319306Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0322004Z  * [new branch]      tools/mep-idea-receipt-20260103-214537   -> origin/tools/mep-idea-receipt-20260103-214537
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0324983Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0327786Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0330254Z  * [new branch]      ui/alert-label-display-20260104-194620   -> origin/ui/alert-label-display-20260104-194620
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0332586Z  * [new branch]      ui/expense-ui-master-20260104-052304     -> origin/ui/expense-ui-master-20260104-052304
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0335060Z  * [new branch]      ui/expense-ui-spec-20260104-052334       -> origin/ui/expense-ui-spec-20260104-052334
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0337440Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0340034Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0342436Z  * [new branch]      ui/order-ui-master-20260104-050304       -> origin/ui/order-ui-master-20260104-050304
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0344968Z  * [new branch]      ui/order-ui-spec-20260104-050613         -> origin/ui/order-ui-spec-20260104-050613
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0347166Z  * [new branch]      ui/parts-ui-master-20260104-051901       -> origin/ui/parts-ui-master-20260104-051901
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0349352Z  * [new branch]      ui/parts-ui-spec-20260104-052140         -> origin/ui/parts-ui-spec-20260104-052140
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0351696Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0354193Z  * [new branch]      ui/work-ui-master-20260104-051037        -> origin/ui/work-ui-master-20260104-051037
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0356343Z  * [new branch]      ui/work-ui-master-20260104-051204        -> origin/ui/work-ui-master-20260104-051204
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0358468Z  * [new branch]      ui/work-ui-spec-20260104-051311          -> origin/ui/work-ui-spec-20260104-051311
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0360716Z  * [new branch]      wip/auto-save-20260106-232022            -> origin/wip/auto-save-20260106-232022
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0362922Z  * [new branch]      work/chat-packet-human-20260103-162222   -> origin/work/chat-packet-human-20260103-162222
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0365707Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0368070Z  * [new branch]      work/idea-capture-20260103-215353        -> origin/work/idea-capture-20260103-215353
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0370363Z  * [new branch]      work/idea-capture-20260103-220645        -> origin/work/idea-capture-20260103-220645
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0372561Z  * [new branch]      work/idea-capture-20260104-184000        -> origin/work/idea-capture-20260104-184000
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0375042Z  * [new branch]      work/idea-finalize-20260103-220329       -> origin/work/idea-finalize-20260103-220329
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0377250Z  * [new branch]      work/idea-receipt-20260103-220025        -> origin/work/idea-receipt-20260103-220025
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0379425Z  * [new branch]      work/mep-doc-link-20260103-152129        -> origin/work/mep-doc-link-20260103-152129
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0381548Z  * [new tag]         backup/recovery-f0e7624_20260107011639   -> backup/recovery-f0e7624_20260107011639
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0383595Z  * [new ref]         310328a488c6ffabdcf52ef89a8ffd3f2fba0d72 -> pull/619/merge
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0386948Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0388279Z ##[group]Determining the checkout info
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0389765Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0390619Z [command]/usr/bin/git sparse-checkout disable
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0393174Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0396104Z ##[group]Checking out the ref
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0397633Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/619/merge
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0408466Z Note: switching to 'refs/remotes/pull/619/merge'.
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0409528Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0410242Z You are in 'detached HEAD' state. You can look around, make experimental
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0411905Z changes and commit them, and you can discard any commits you make in this
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0413838Z state without impacting any branches by switching back to a branch.
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0414808Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0415448Z If you want to create a new branch to retain commits you create, you may
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0416955Z do so (now or later) by using -c with the switch command. Example:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0417820Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0418217Z   git switch -c <new-branch-name>
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0418832Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0419200Z Or undo this operation with:
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0419767Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0420102Z   git switch -
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0420534Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0421265Z Turn off this advice by setting config variable advice.detachedHead to false
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0422716Z 
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0424503Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0427943Z ##[endgroup]
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0462460Z [command]/usr/bin/git log -1 --format=%H
+semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0484521Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+semantic-audit	Run actions/setup-python@v5	・ｿ2026-01-06T16:38:25.0792068Z ##[group]Run actions/setup-python@v5
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0793294Z with:
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0794035Z   python-version: 3.11
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0794881Z   check-latest: false
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0795950Z   token: ***
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0796722Z   update-environment: true
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0797637Z   allow-prereleases: false
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0798518Z   freethreaded: false
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.0799326Z ##[endgroup]
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.2509010Z ##[group]Installed versions
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.2710477Z Successfully set up CPython (3.11.14)
+semantic-audit	Run actions/setup-python@v5	2026-01-06T16:38:25.2712980Z ##[endgroup]
+semantic-audit	Configure git (no quoted paths)	・ｿ2026-01-06T16:38:25.2850006Z ##[group]Run git config --global core.quotepath false
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2851431Z [36;1mgit config --global core.quotepath false[0m
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2906017Z shell: /usr/bin/bash -e {0}
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2906886Z env:
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2907733Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2909076Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2910391Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2911566Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2912764Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2914141Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2915174Z ##[endgroup]
+semantic-audit	Collect CORE changed files	・ｿ2026-01-06T16:38:25.3099373Z ##[group]Run set -euo pipefail
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3100316Z [36;1mset -euo pipefail[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3101300Z [36;1mBASE_SHA="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3102469Z [36;1mHEAD_SHA="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3104187Z [36;1mgit diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_all.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3105606Z [36;1msed -i 's/^"//; s/"$//' core_all.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3106883Z [36;1mcat core_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > core_inputs.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3108695Z [36;1mgit diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_am.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3110218Z [36;1msed -i 's/^"//; s/"$//' core_am.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3111497Z [36;1mcat core_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | sort > core_nontext.txt || true[0m
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3147960Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3149028Z env:
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3149856Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3151144Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3152430Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3153756Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3154924Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3156094Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3157087Z ##[endgroup]
+semantic-audit	Binary guard (CORE)	・ｿ2026-01-06T16:38:25.3394078Z ##[group]Run set -euo pipefail
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3395027Z [36;1mset -euo pipefail[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3395873Z [36;1mif [ -s core_nontext.txt ]; then[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3397337Z [36;1m  python tools/mep_integration_compiler/binary_guard.py core_nontext.txt .mep/allowlists/core.sha256[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3398757Z [36;1melse[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3399464Z [36;1m  echo "CORE binary: SKIP"[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3400280Z [36;1mfi[0m
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3434458Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3435510Z env:
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3436318Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3437600Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3438864Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3440022Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3441197Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3442404Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3443629Z ##[endgroup]
+semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3505106Z CORE binary: SKIP
+semantic-audit	Semantic audit (CORE)	・ｿ2026-01-06T16:38:25.3557227Z ##[group]Run set -euo pipefail
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3558137Z [36;1mset -euo pipefail[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3558984Z [36;1mif [ -s core_inputs.txt ]; then[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3560253Z [36;1m  python tools/mep_integration_compiler/semantic_audit_core.py core_inputs.txt[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3561475Z [36;1melse[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3562347Z [36;1m  echo "CORE audit: SKIP"[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3563287Z [36;1mfi[0m
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3594448Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3595464Z env:
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3596276Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3597552Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3598814Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3599966Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3601135Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3602340Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3603488Z ##[endgroup]
+semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3665568Z CORE audit: SKIP
+semantic-audit	Post Run actions/setup-python@v5	・ｿ2026-01-06T16:38:25.3773531Z Post job cleanup.
+semantic-audit	Post Run actions/checkout@v4	・ｿ2026-01-06T16:38:25.5546236Z Post job cleanup.
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6534194Z [command]/usr/bin/git version
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6571815Z git version 2.52.0
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6618302Z Copying '/home/runner/.gitconfig' to '/home/runner/work/_temp/6729a976-72f8-443a-adeb-34db7e36c6a5/.gitconfig'
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6628908Z Temporarily overriding HOME='/home/runner/work/_temp/6729a976-72f8-443a-adeb-34db7e36c6a5' before making global git config changes
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6631222Z Adding repository directory to the temporary git global config as a safe directory
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6636234Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6675305Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6711997Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6955622Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6982507Z http.https://github.com/.extraheader
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.6997201Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.7029444Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.7262179Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+semantic-audit	Post Run actions/checkout@v4	2026-01-06T16:38:25.7295539Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+semantic-audit	Complete job	・ｿ2026-01-06T16:38:25.7639976Z Cleaning up orphan processes
+semantic-audit-business	Set up job	・ｿ2026-01-06T16:38:21.6435135Z Current runner version: '2.330.0'
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6466722Z ##[group]Runner Image Provisioner
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6468097Z Hosted Compute Agent
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6468885Z Version: 20251211.462
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6469938Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6471021Z Build Date: 2025-12-11T16:28:49Z
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6472064Z Worker ID: {2545422f-9b00-48c2-9831-fb2bdc15b041}
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6473147Z ##[endgroup]
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6474016Z ##[group]Operating System
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6474850Z Ubuntu
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6475625Z 24.04.3
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6476363Z LTS
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6477318Z ##[endgroup]
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6478209Z ##[group]Runner Image
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6478986Z Image: ubuntu-24.04
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6479791Z Version: 20251215.174.1
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6481529Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6483886Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6485820Z ##[endgroup]
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6487569Z ##[group]GITHUB_TOKEN Permissions
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6489985Z Contents: read
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6490786Z Metadata: read
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6491528Z ##[endgroup]
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6494325Z Secret source: Actions
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6495335Z Prepare workflow directory
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6938843Z Prepare all required actions
+semantic-audit-business	Set up job	2026-01-06T16:38:21.6992785Z Getting action download info
+semantic-audit-business	Set up job	2026-01-06T16:38:21.9775569Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+semantic-audit-business	Set up job	2026-01-06T16:38:22.0893486Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+semantic-audit-business	Set up job	2026-01-06T16:38:22.2751450Z Complete job name: semantic-audit-business
+semantic-audit-business	Run actions/checkout@v4	・ｿ2026-01-06T16:38:22.3428444Z ##[group]Run actions/checkout@v4
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3429278Z with:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3429661Z   fetch-depth: 0
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3430106Z   repository: Osuu-ops/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3430797Z   token: ***
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3431176Z   ssh-strict: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3431569Z   ssh-user: git
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3431960Z   persist-credentials: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3432402Z   clean: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3432795Z   sparse-checkout-cone-mode: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3433270Z   fetch-tags: false
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3433664Z   show-progress: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3434066Z   lfs: false
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3434425Z   submodules: false
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3434887Z   set-safe-directory: true
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.3435519Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4502895Z Syncing repository: Osuu-ops/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4504618Z ##[group]Getting Git version info
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4505415Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4506506Z [command]/usr/bin/git version
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4598332Z git version 2.52.0
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4623861Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4637878Z Temporarily overriding HOME='/home/runner/work/_temp/22484280-c909-4ff7-9ec6-190cbd0dbd7d' before making global git config changes
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4639264Z Adding repository directory to the temporary git global config as a safe directory
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4642899Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4680765Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4684220Z ##[group]Initializing the repository
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4688344Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4810373Z hint: Using 'master' as the name for the initial branch. This default branch name
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4811602Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4812517Z hint: to use in all of your new repositories, which will suppress this warning,
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4813459Z hint: call:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4813821Z hint:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4814456Z hint: 	git config --global init.defaultBranch <name>
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4815370Z hint:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4816008Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4817018Z hint: 'development'. The just-created branch can be renamed via this command:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4817714Z hint:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4818106Z hint: 	git branch -m <name>
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4818542Z hint:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4819117Z hint: Disable this message with "git config set advice.defaultBranchName false"
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4820429Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4826207Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4858569Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4859279Z ##[group]Disabling automatic garbage collection
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4862905Z [command]/usr/bin/git config --local gc.auto 0
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4889872Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4890523Z ##[group]Setting up auth
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4896972Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.4925886Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5274121Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5302134Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5520784Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5551355Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5771037Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5803577Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5804816Z ##[group]Fetching the repository
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.5814015Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +310328a488c6ffabdcf52ef89a8ffd3f2fba0d72:refs/remotes/pull/619/merge
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9529724Z From https://github.com/Osuu-ops/yorisoidou-system
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9531279Z  * [new branch]      Osuu-ops-patch-1                         -> origin/Osuu-ops-patch-1
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9532895Z  * [new branch]      Osuu-ops-patch-2                         -> origin/Osuu-ops-patch-2
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9534472Z  * [new branch]      Osuu-ops-patch-3                         -> origin/Osuu-ops-patch-3
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9536187Z  * [new branch]      Osuu-ops-patch-4                         -> origin/Osuu-ops-patch-4
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9538017Z  * [new branch]      Osuu-ops-patch-6                         -> origin/Osuu-ops-patch-6
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9539621Z  * [new branch]      Osuu-ops-patch-7                         -> origin/Osuu-ops-patch-7
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9541576Z  * [new branch]      auto/chat-packet-update-20260102-194002  -> origin/auto/chat-packet-update-20260102-194002
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9543850Z  * [new branch]      auto/chat-packet-update-20260102-194620  -> origin/auto/chat-packet-update-20260102-194620
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9546065Z  * [new branch]      auto/chat-packet-update-20664550110      -> origin/auto/chat-packet-update-20664550110
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9548427Z  * [new branch]      auto/chat-packet-update-20673842256      -> origin/auto/chat-packet-update-20673842256
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9550688Z  * [new branch]      auto/mep-runbook-recreate-20260103-215009 -> origin/auto/mep-runbook-recreate-20260103-215009
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9553335Z  * [new branch]      auto/scope-suggest-pr437-20260104-144119 -> origin/auto/scope-suggest-pr437-20260104-144119
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9555598Z  * [new branch]      auto/scope-suggest-pr442-20260104-150150 -> origin/auto/scope-suggest-pr442-20260104-150150
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9558070Z  * [new branch]      auto/scope-suggest-pr600-20260106-120913 -> origin/auto/scope-suggest-pr600-20260106-120913
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9560417Z  * [new branch]      auto/scope-suggest-pr608-20260106-144603 -> origin/auto/scope-suggest-pr608-20260106-144603
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9562649Z  * [new branch]      auto/state-summary-update-20673443497    -> origin/auto/state-summary-update-20673443497
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9564850Z  * [new branch]      auto/state-summary-update-20673601402    -> origin/auto/state-summary-update-20673601402
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9567273Z  * [new branch]      auto/state-summary-update-20673657443    -> origin/auto/state-summary-update-20673657443
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9569516Z  * [new branch]      auto/state-summary-update-20673803469    -> origin/auto/state-summary-update-20673803469
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9571728Z  * [new branch]      auto/state-summary-update-20673841629    -> origin/auto/state-summary-update-20673841629
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9573918Z  * [new branch]      auto/state-summary-update-20674125460    -> origin/auto/state-summary-update-20674125460
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9576105Z  * [new branch]      auto/state-summary-update-20674278435    -> origin/auto/state-summary-update-20674278435
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9577675Z  * [new branch]      auto/state-summary-update-20674377844    -> origin/auto/state-summary-update-20674377844
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9578859Z  * [new branch]      auto/state-summary-update-20675301442    -> origin/auto/state-summary-update-20675301442
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9580042Z  * [new branch]      auto/state-summary-update-20676143268    -> origin/auto/state-summary-update-20676143268
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9581465Z  * [new branch]      auto/state-summary-update-20676904723    -> origin/auto/state-summary-update-20676904723
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9582639Z  * [new branch]      auto/state-summary-update-20676951197    -> origin/auto/state-summary-update-20676951197
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9583809Z  * [new branch]      auto/state-summary-update-20677228804    -> origin/auto/state-summary-update-20677228804
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9585104Z  * [new branch]      auto/state-summary-update-20677271426    -> origin/auto/state-summary-update-20677271426
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9586270Z  * [new branch]      auto/state-summary-update-20677406180    -> origin/auto/state-summary-update-20677406180
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9587635Z  * [new branch]      auto/state-summary-update-20677500269    -> origin/auto/state-summary-update-20677500269
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9588811Z  * [new branch]      auto/state-summary-update-20677531366    -> origin/auto/state-summary-update-20677531366
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9589979Z  * [new branch]      auto/state-summary-update-20677543550    -> origin/auto/state-summary-update-20677543550
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9591133Z  * [new branch]      auto/state-summary-update-20677607523    -> origin/auto/state-summary-update-20677607523
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9592282Z  * [new branch]      auto/state-summary-update-20677643544    -> origin/auto/state-summary-update-20677643544
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9593431Z  * [new branch]      auto/state-summary-update-20677664781    -> origin/auto/state-summary-update-20677664781
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9594594Z  * [new branch]      auto/state-summary-update-20677680092    -> origin/auto/state-summary-update-20677680092
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9595745Z  * [new branch]      auto/state-summary-update-20677714008    -> origin/auto/state-summary-update-20677714008
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9597067Z  * [new branch]      auto/state-summary-update-20677745896    -> origin/auto/state-summary-update-20677745896
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9598230Z  * [new branch]      auto/state-summary-update-20677827799    -> origin/auto/state-summary-update-20677827799
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9599379Z  * [new branch]      auto/state-summary-update-20677922547    -> origin/auto/state-summary-update-20677922547
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9600698Z  * [new branch]      auto/state-summary-update-20678050847    -> origin/auto/state-summary-update-20678050847
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9601851Z  * [new branch]      auto/state-summary-update-20678379501    -> origin/auto/state-summary-update-20678379501
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9603013Z  * [new branch]      auto/state-summary-update-20680946276    -> origin/auto/state-summary-update-20680946276
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9604167Z  * [new branch]      auto/state-summary-update-20681017358    -> origin/auto/state-summary-update-20681017358
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9605330Z  * [new branch]      auto/state-summary-update-20681125698    -> origin/auto/state-summary-update-20681125698
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9606501Z  * [new branch]      auto/state-summary-update-20681494908    -> origin/auto/state-summary-update-20681494908
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9607851Z  * [new branch]      auto/state-summary-update-20682038436    -> origin/auto/state-summary-update-20682038436
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9609024Z  * [new branch]      auto/state-summary-update-20682621101    -> origin/auto/state-summary-update-20682621101
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9610179Z  * [new branch]      auto/state-summary-update-20687505124    -> origin/auto/state-summary-update-20687505124
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9611330Z  * [new branch]      auto/state-summary-update-20688990392    -> origin/auto/state-summary-update-20688990392
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9612481Z  * [new branch]      auto/state-summary-update-20689046631    -> origin/auto/state-summary-update-20689046631
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9613621Z  * [new branch]      auto/state-summary-update-20689130389    -> origin/auto/state-summary-update-20689130389
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9614780Z  * [new branch]      auto/state-summary-update-20689170351    -> origin/auto/state-summary-update-20689170351
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9616071Z  * [new branch]      auto/state-summary-update-20689192050    -> origin/auto/state-summary-update-20689192050
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9617431Z  * [new branch]      auto/state-summary-update-20689263659    -> origin/auto/state-summary-update-20689263659
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9618608Z  * [new branch]      auto/state-summary-update-20690994605    -> origin/auto/state-summary-update-20690994605
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9619771Z  * [new branch]      auto/state-summary-update-20691229671    -> origin/auto/state-summary-update-20691229671
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9620976Z  * [new branch]      auto/state-summary-update-20691303978    -> origin/auto/state-summary-update-20691303978
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9622129Z  * [new branch]      auto/state-summary-update-20691341185    -> origin/auto/state-summary-update-20691341185
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9623276Z  * [new branch]      auto/state-summary-update-20691503744    -> origin/auto/state-summary-update-20691503744
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9624416Z  * [new branch]      auto/state-summary-update-20691619174    -> origin/auto/state-summary-update-20691619174
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9625576Z  * [new branch]      auto/state-summary-update-20691862557    -> origin/auto/state-summary-update-20691862557
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9626722Z  * [new branch]      auto/state-summary-update-20692262188    -> origin/auto/state-summary-update-20692262188
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9628064Z  * [new branch]      auto/state-summary-update-20692444987    -> origin/auto/state-summary-update-20692444987
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9629216Z  * [new branch]      auto/state-summary-update-20692471454    -> origin/auto/state-summary-update-20692471454
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9630363Z  * [new branch]      auto/state-summary-update-20692585217    -> origin/auto/state-summary-update-20692585217
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9631509Z  * [new branch]      auto/state-summary-update-20692840917    -> origin/auto/state-summary-update-20692840917
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9632644Z  * [new branch]      auto/state-summary-update-20692841981    -> origin/auto/state-summary-update-20692841981
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9633802Z  * [new branch]      auto/state-summary-update-20693006255    -> origin/auto/state-summary-update-20693006255
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9635100Z  * [new branch]      auto/state-summary-update-20693073974    -> origin/auto/state-summary-update-20693073974
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9636251Z  * [new branch]      auto/state-summary-update-20693150786    -> origin/auto/state-summary-update-20693150786
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9637595Z  * [new branch]      auto/state-summary-update-20693176208    -> origin/auto/state-summary-update-20693176208
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9638749Z  * [new branch]      auto/state-summary-update-20693254817    -> origin/auto/state-summary-update-20693254817
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9639914Z  * [new branch]      auto/state-summary-update-20693738890    -> origin/auto/state-summary-update-20693738890
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9641091Z  * [new branch]      auto/state-summary-update-20693785172    -> origin/auto/state-summary-update-20693785172
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9642254Z  * [new branch]      auto/state-summary-update-20693900802    -> origin/auto/state-summary-update-20693900802
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9643405Z  * [new branch]      auto/state-summary-update-20737629765    -> origin/auto/state-summary-update-20737629765
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9644542Z  * [new branch]      auto/state-summary-update-20751914155    -> origin/auto/state-summary-update-20751914155
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9645628Z  * [new branch]      backup/crash-20260107-011333             -> origin/backup/crash-20260107-011333
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9646622Z  * [new branch]      backup/crash-20260107-013037             -> origin/backup/crash-20260107-013037
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9647984Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9649332Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9650595Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9652034Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9653338Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9654605Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9655878Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9657354Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9658758Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9660153Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9661414Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9662649Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9663863Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9665073Z  * [new branch]      biz/parts-business-spec-20260104-051453  -> origin/biz/parts-business-spec-20260104-051453
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9666338Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9667816Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9669319Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9670965Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9672223Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9673559Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9674859Z  * [new branch]      biz/reviewtype-mapping-20260104-203306   -> origin/biz/reviewtype-mapping-20260104-203306
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9676024Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428  -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9677383Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9678577Z  * [new branch]      biz/work-business-spec-20260104-050739   -> origin/biz/work-business-spec-20260104-050739
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9679706Z  * [new branch]      biz/work-normalize-20260105-004002       -> origin/biz/work-normalize-20260105-004002
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9680891Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9682150Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9683484Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9684862Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9686239Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9688040Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9689562Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9691206Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9692747Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9694086Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059  -> origin/chore/mep-gate-dispatch-20260103-063059
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9695504Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9697204Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9698518Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9699670Z  * [new branch]      ci/chat-packet-schedule-20260103         -> origin/ci/chat-packet-schedule-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9700785Z  * [new branch]      ci/fix-chat-packet-schedule-20260103     -> origin/ci/fix-chat-packet-schedule-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9702061Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9703636Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9705132Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9706588Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9708303Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9709587Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9710823Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9712098Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9713522Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9714828Z  * [new branch]      docs/idea-cleanup-20260104-214212        -> origin/docs/idea-cleanup-20260104-214212
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9715954Z  * [new branch]      docs/idea-index-add-bom-20260104-215056  -> origin/docs/idea-index-add-bom-20260104-215056
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9717498Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9718840Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9720113Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9721431Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9722714Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303  -> origin/docs/mep-add-idea-vault-20260103-205303
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9723980Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9725390Z  * [new branch]      docs/mep-add-playbook-20260103-151247    -> origin/docs/mep-add-playbook-20260103-151247
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9726529Z  * [new branch]      docs/mep-add-runbook-20260103-150840     -> origin/docs/mep-add-runbook-20260103-150840
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9727859Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9729183Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9730526Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9732005Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9733518Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9734843Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9736090Z  * [new branch]      docs/mep-guidance-align-20260104-153937  -> origin/docs/mep-guidance-align-20260104-153937
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9737510Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9738864Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9740112Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9741257Z  * [new branch]      docs/mep-idea-flow-20260103-212432       -> origin/docs/mep-idea-flow-20260103-212432
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9742474Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9743762Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9745107Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9746318Z  * [new branch]      docs/mep-lease-continue-20260103-220947  -> origin/docs/mep-lease-continue-20260103-220947
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9747825Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9749396Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9750934Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9752240Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905    -> origin/docs/mep-repair-1-2-3-20260103-153905
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9753517Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9754977Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9756280Z  * [new branch]      docs/ops-chat-packet-followup-20260103   -> origin/docs/ops-chat-packet-followup-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9757440Z  * [new branch]      docs/ops-rules-20260103                  -> origin/docs/ops-rules-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9758488Z  * [new branch]      docs/ops-scope-suggest-20260103-150621   -> origin/docs/ops-scope-suggest-20260103-150621
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9759790Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9761424Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9762841Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9764163Z  * [new branch]      docs/runbook-autoappend/20260106-231639  -> origin/docs/runbook-autoappend/20260106-231639
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9765340Z  * [new branch]      docs/runbook-autoappend/20260106-232943  -> origin/docs/runbook-autoappend/20260106-232943
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9766515Z  * [new branch]      docs/runbook-autoappend/20260106-233315  -> origin/docs/runbook-autoappend/20260106-233315
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9767813Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9769029Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9770461Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9771854Z  * [new branch]      docs/state-current-v12-20260103-153345   -> origin/docs/state-current-v12-20260103-153345
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9773034Z  * [new branch]      docs/test-chat-packet-schedule-20260103  -> origin/docs/test-chat-packet-schedule-20260103
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9774256Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9775557Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9777153Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9778671Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9780094Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9781554Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9782880Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9784237Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9785624Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9787183Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9788390Z  * [new branch]      feat/chat-packet-self-heal               -> origin/feat/chat-packet-self-heal
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9789424Z  * [new branch]      feat/chat-packet-self-heal-rerun         -> origin/feat/chat-packet-self-heal-rerun
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9790478Z  * [new branch]      feat/mep-gate-pr-20260103-061907         -> origin/feat/mep-gate-pr-20260103-061907
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9791477Z  * [new branch]      feat/scope-guard-phase1                  -> origin/feat/scope-guard-phase1
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9792504Z  * [new branch]      feat/scope-suggest-20260103-072132       -> origin/feat/scope-suggest-20260103-072132
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9793525Z  * [new branch]      feat/self-heal-auto-prs                  -> origin/feat/self-heal-auto-prs
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9794581Z  * [new branch]      fix/add-debug-artifact-20260106-222859   -> origin/fix/add-debug-artifact-20260106-222859
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9795911Z  * [new branch]      fix/business-master-spec-mojibake-20260104-020827 -> origin/fix/business-master-spec-mojibake-20260104-020827
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9797490Z  * [new branch]      fix/mep-gate-register-20260103-063318    -> origin/fix/mep-gate-register-20260103-063318
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9798627Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9799909Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9801222Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9802386Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9803554Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9804804Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9806092Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9807459Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9808432Z  * [new branch]      main                                     -> origin/main
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9809444Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9810871Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9812397Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9813941Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9815302Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9816577Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9817860Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9819186Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9820370Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9821392Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9822949Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9824515Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9825658Z  * [new branch]      test/seed-mep-gate-20260103-062802       -> origin/test/seed-mep-gate-20260103-062802
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9827049Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9828342Z  * [new branch]      tools/idea-capture-20260104-211626       -> origin/tools/idea-capture-20260104-211626
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9829468Z  * [new branch]      tools/mep-fix-param-top-20260103-215224  -> origin/tools/mep-fix-param-top-20260103-215224
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9830693Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9831906Z  * [new branch]      tools/mep-idea-receipt-20260103-214537   -> origin/tools/mep-idea-receipt-20260103-214537
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9833350Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9834702Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9835956Z  * [new branch]      ui/alert-label-display-20260104-194620   -> origin/ui/alert-label-display-20260104-194620
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9837223Z  * [new branch]      ui/expense-ui-master-20260104-052304     -> origin/ui/expense-ui-master-20260104-052304
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9838334Z  * [new branch]      ui/expense-ui-spec-20260104-052334       -> origin/ui/expense-ui-spec-20260104-052334
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9839496Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9840742Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9841917Z  * [new branch]      ui/order-ui-master-20260104-050304       -> origin/ui/order-ui-master-20260104-050304
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9842981Z  * [new branch]      ui/order-ui-spec-20260104-050613         -> origin/ui/order-ui-spec-20260104-050613
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9844035Z  * [new branch]      ui/parts-ui-master-20260104-051901       -> origin/ui/parts-ui-master-20260104-051901
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9845096Z  * [new branch]      ui/parts-ui-spec-20260104-052140         -> origin/ui/parts-ui-spec-20260104-052140
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9846223Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9847458Z  * [new branch]      ui/work-ui-master-20260104-051037        -> origin/ui/work-ui-master-20260104-051037
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9848499Z  * [new branch]      ui/work-ui-master-20260104-051204        -> origin/ui/work-ui-master-20260104-051204
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9849527Z  * [new branch]      ui/work-ui-spec-20260104-051311          -> origin/ui/work-ui-spec-20260104-051311
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9850541Z  * [new branch]      wip/auto-save-20260106-232022            -> origin/wip/auto-save-20260106-232022
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9851763Z  * [new branch]      work/chat-packet-human-20260103-162222   -> origin/work/chat-packet-human-20260103-162222
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9852947Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9854068Z  * [new branch]      work/idea-capture-20260103-215353        -> origin/work/idea-capture-20260103-215353
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9855121Z  * [new branch]      work/idea-capture-20260103-220645        -> origin/work/idea-capture-20260103-220645
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9856170Z  * [new branch]      work/idea-capture-20260104-184000        -> origin/work/idea-capture-20260104-184000
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9857357Z  * [new branch]      work/idea-finalize-20260103-220329       -> origin/work/idea-finalize-20260103-220329
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9858446Z  * [new branch]      work/idea-receipt-20260103-220025        -> origin/work/idea-receipt-20260103-220025
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9859486Z  * [new branch]      work/mep-doc-link-20260103-152129        -> origin/work/mep-doc-link-20260103-152129
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9860566Z  * [new tag]         backup/recovery-f0e7624_20260107011639   -> backup/recovery-f0e7624_20260107011639
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9861541Z  * [new ref]         310328a488c6ffabdcf52ef89a8ffd3f2fba0d72 -> pull/619/merge
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9894584Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9895632Z ##[group]Determining the checkout info
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9896584Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9902436Z [command]/usr/bin/git sparse-checkout disable
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9944742Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9971288Z ##[group]Checking out the ref
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:22.9975691Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/619/merge
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0243454Z Note: switching to 'refs/remotes/pull/619/merge'.
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0244499Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0245073Z You are in 'detached HEAD' state. You can look around, make experimental
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0246439Z changes and commit them, and you can discard any commits you make in this
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0248029Z state without impacting any branches by switching back to a branch.
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0248821Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0249331Z If you want to create a new branch to retain commits you create, you may
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0250527Z do so (now or later) by using -c with the switch command. Example:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0251235Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0251543Z   git switch -c <new-branch-name>
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0252044Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0252323Z Or undo this operation with:
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0252787Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0253040Z   git switch -
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0253381Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0253968Z Turn off this advice by setting config variable advice.detachedHead to false
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0254827Z 
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0255979Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0355580Z ##[endgroup]
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0432302Z [command]/usr/bin/git log -1 --format=%H
+semantic-audit-business	Run actions/checkout@v4	2026-01-06T16:38:23.0433810Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+semantic-audit-business	Run actions/setup-python@v5	・ｿ2026-01-06T16:38:23.0608237Z ##[group]Run actions/setup-python@v5
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0608852Z with:
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0609239Z   python-version: 3.11
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0609705Z   check-latest: false
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0610319Z   token: ***
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0610736Z   update-environment: true
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0611221Z   allow-prereleases: false
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0611680Z   freethreaded: false
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.0612106Z ##[endgroup]
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.2276343Z ##[group]Installed versions
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.2395847Z Successfully set up CPython (3.11.14)
+semantic-audit-business	Run actions/setup-python@v5	2026-01-06T16:38:23.2398039Z ##[endgroup]
+semantic-audit-business	Configure git (no quoted paths)	・ｿ2026-01-06T16:38:23.2524444Z ##[group]Run git config --global core.quotepath false
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2525298Z [36;1mgit config --global core.quotepath false[0m
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2578880Z shell: /usr/bin/bash -e {0}
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2579657Z env:
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2580173Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2581033Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2581901Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2582645Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2583389Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2584142Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit-business	Configure git (no quoted paths)	2026-01-06T16:38:23.2584786Z ##[endgroup]
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	・ｿ2026-01-06T16:38:23.2747493Z ##[group]Run set -euo pipefail
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2748169Z [36;1mset -euo pipefail[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2748774Z [36;1mBASE_SHA="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2749546Z [36;1mHEAD_SHA="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2750573Z [36;1mgit diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_all.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2751529Z [36;1msed -i 's/^"//; s/"$//' biz_all.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2752350Z [36;1mcat biz_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > biz_inputs.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2753265Z [36;1mcat biz_all.txt | grep -F '/master_spec' >> biz_inputs.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2754059Z [36;1msort -u biz_inputs.txt -o biz_inputs.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2755122Z [36;1mgit diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_am.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2756147Z [36;1msed -i 's/^"//; s/"$//' biz_am.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2757306Z [36;1mcat biz_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | grep -Fv '/master_spec' | sort > biz_nontext.txt || true[0m
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2792776Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2793440Z env:
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2793957Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2794795Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2795624Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2796415Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2797418Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2798192Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2798835Z ##[endgroup]
+semantic-audit-business	Binary guard (BUSINESS)	・ｿ2026-01-06T16:38:23.3059876Z ##[group]Run set -euo pipefail
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3060527Z [36;1mset -euo pipefail[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3061043Z [36;1mif [ -s biz_nontext.txt ]; then[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3062037Z [36;1m  python tools/mep_integration_compiler/binary_guard.py biz_nontext.txt .mep/allowlists/business.sha256[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3062995Z [36;1melse[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3063416Z [36;1m  echo "BUSINESS binary: SKIP"[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3063926Z [36;1mfi[0m
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3098625Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3099277Z env:
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3099763Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3100598Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3101433Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3102167Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3102905Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3103702Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3104335Z ##[endgroup]
+semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3164340Z BUSINESS binary: SKIP
+semantic-audit-business	Semantic audit (BUSINESS)	・ｿ2026-01-06T16:38:23.3207442Z ##[group]Run set -euo pipefail
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3208065Z [36;1mset -euo pipefail[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3208570Z [36;1mif [ -s biz_inputs.txt ]; then[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3209405Z [36;1m  python tools/mep_integration_compiler/semantic_audit_business.py biz_inputs.txt[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3210422Z [36;1melse[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3210853Z [36;1m  echo "BUSINESS audit: SKIP"[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3211368Z [36;1mfi[0m
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3243283Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3243941Z env:
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3244422Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3245260Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3246084Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3247073Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3247857Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3248646Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3249272Z ##[endgroup]
+semantic-audit-business	Semantic audit (BUSINESS)	2026-01-06T16:38:23.3309188Z BUSINESS audit: SKIP
+semantic-audit-business	Post Run actions/setup-python@v5	・ｿ2026-01-06T16:38:23.3397989Z Post job cleanup.
+semantic-audit-business	Post Run actions/checkout@v4	・ｿ2026-01-06T16:38:23.5097755Z Post job cleanup.
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6046312Z [command]/usr/bin/git version
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6093663Z git version 2.52.0
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6134798Z Copying '/home/runner/.gitconfig' to '/home/runner/work/_temp/cd780aa9-5983-442a-9b65-b027312a1a03/.gitconfig'
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6145989Z Temporarily overriding HOME='/home/runner/work/_temp/cd780aa9-5983-442a-9b65-b027312a1a03' before making global git config changes
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6149035Z Adding repository directory to the temporary git global config as a safe directory
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6153303Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6192136Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6228869Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6492752Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6501066Z http.https://github.com/.extraheader
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6519841Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6557508Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6824682Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+semantic-audit-business	Post Run actions/checkout@v4	2026-01-06T16:38:23.6857450Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+semantic-audit-business	Complete job	・ｿ2026-01-06T16:38:23.7233467Z Cleaning up orphan processes

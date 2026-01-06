@@ -1,0 +1,22 @@
+﻿--- 20755051684.log : 5 lines 316..336 ---
+   316: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8381954Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+   317: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8383487Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+   318: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8384977Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+   319: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8386294Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+   320: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8387779Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+   321: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8389166Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+   322: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8390579Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+   323: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8391978Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+   324: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8393066Z  * [new branch]      main                                     -> origin/main
+   325: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8394199Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+   326: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8395773Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+   327: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8397535Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+   328: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8399239Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+   329: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8400776Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+   330: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8402047Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+   331: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8403331Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+   332: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8404800Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+   333: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8406107Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+   334: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8407361Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+   335: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8409070Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+   336: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8410835Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347

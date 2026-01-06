@@ -1,0 +1,23 @@
+﻿--- 20755051684.log : 6 lines 387..408 ---
+   387: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8902251Z Or undo this operation with:
+   388: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8902977Z 
+   389: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8903284Z   git switch -
+   390: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8903753Z 
+   391: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8904479Z Turn off this advice by setting config variable advice.detachedHead to false
+   392: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8905548Z 
+   393: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8906615Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+   394: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8910007Z ##[endgroup]
+   395: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8911819Z [command]/usr/bin/git log -1 --format=%H
+   396: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8912824Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+   397: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	・ｿ2026-01-06T16:38:22.9057306Z ##[group]Run set -euo pipefail
+   398: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9057998Z [36;1mset -euo pipefail[0m
+   399: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9058476Z [36;1m[0m
+   400: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9058865Z [36;1mecho "Base: ${BASE_SHA}"[0m
+   401: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9059508Z [36;1mecho "Head: ${HEAD_SHA}"[0m
+   402: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9059989Z [36;1m[0m
+   403: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9060367Z [36;1mpython3 - <<'PY'[0m
+   404: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9060869Z [36;1mimport os, subprocess, fnmatch, sys[0m
+   405: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9061407Z [36;1m[0m
+   406: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9061807Z [36;1mbase = os.environ["BASE_SHA"][0m
+   407: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9062344Z [36;1mhead = os.environ["HEAD_SHA"][0m
+   408: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9063006Z [36;1mmax_lines = int(os.environ.get("MAX_CHANGED_LINES", "200"))[0m

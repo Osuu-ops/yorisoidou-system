@@ -1,0 +1,22 @@
+﻿--- 20755051637.log : 1 lines 285..305 ---
+   285: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0252508Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+   286: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0255275Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+   287: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0257988Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+   288: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0260376Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+   289: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0262804Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+   290: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0265698Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+   291: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0268385Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+   292: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0271044Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+   293: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0273159Z  * [new branch]      main                                     -> origin/main
+   294: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0275263Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+   295: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0278240Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+   296: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0281418Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+   297: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0284782Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+   298: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0287801Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+   299: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0290136Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+   300: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0292461Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+   301: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0295423Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+   302: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0297821Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+   303: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0299873Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+   304: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0303269Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+   305: semantic-audit	Run actions/checkout@v4	2026-01-06T16:38:25.0306645Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347

@@ -1,4 +1,4 @@
-# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
+﻿# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
 # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
 # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。
@@ -220,7 +220,7 @@ $bad=@(); foreach($n in $requiredPrs){ try { $p=(gh pr view $n --repo $repo --js
 $score=100; if($openCount -gt 0){ $score-=20 }; if($missing.Count -gt 0){ $score-=30 }; if($bad.Count -gt 0){ $score-=30 }; if($score -lt 0){ $score=0 }
 if($score -ne 100){ Write-Host ("HANDOFF_ID: {0}" -f $handoffId); Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc); Write-Host ("HANDOFF_SCORE={0}/100" -f $score); Write-Host ("- open PR(base main)={0}" -f $openCount); if($openCount -gt 0){ foreach($x in $open){ $a=""; try{$a=$x.author.login}catch{}; Write-Host ("  - #{0} {1} ({2}) {3}" -f $x.number,$x.title,$a,$x.url) } }; throw "Not 100/100. Stop." }
 $head=(git rev-parse --short HEAD).Trim()
-$out=New-Object System.Collections.Generic.List[string]
+$out = New-Object System.Collections.Generic.List[string]
 $out.Add("HANDOFF_ID: " + $handoffId)
 $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
 $out.Add("REPO: " + $repo)
@@ -229,14 +229,9 @@ $out.Add("OPEN_PR: 0")
 $out.Add("HANDOFF_SCORE=100/100")
 $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
 $out.Add("")
-$out.Add("【CURRENT｜引っ越し再開用】")
-$out.Add("")
-$out.Add("Repo: " + $repo)
-$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
-$out.Add("")
-$out.Add("完了（main反映済み）")
-$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
-$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+$out.Add("[OMITTED LONG LINES - REPAIR MODE]")
+$out.Add("State: main clean / open PR 0 / HEAD=" + $head)
+$out.Add("NOTE: original long lines omitted; will reinsert after encoding fix.")
 $packet = ($out -join "`n") + "`n"
 Write-Host $packet
 _tmp = $x.number
@@ -369,7 +364,7 @@ $bad=@(); foreach($n in $requiredPrs){ try { $p=(gh pr view $n --repo $repo --js
 $score=100; if($openCount -gt 0){ $score-=20 }; if($missing.Count -gt 0){ $score-=30 }; if($bad.Count -gt 0){ $score-=30 }; if($score -lt 0){ $score=0 }
 if($score -ne 100){ Write-Host ("HANDOFF_ID: {0}" -f $handoffId); Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc); Write-Host ("HANDOFF_SCORE={0}/100" -f $score); Write-Host ("- open PR(base main)={0}" -f $openCount); if($openCount -gt 0){ foreach($x in $open){ $a=""; try{$a=$x.author.login}catch{}; Write-Host ("  - #{0} {1} ({2}) {3}" -f $x.number,$x.title,$a,$x.url) } }; throw "Not 100/100. Stop." }
 $head=(git rev-parse --short HEAD).Trim()
-$out=New-Object System.Collections.Generic.List[string]
+$out = New-Object System.Collections.Generic.List[string]
 $out.Add("HANDOFF_ID: " + $handoffId)
 $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
 $out.Add("REPO: " + $repo)
@@ -378,14 +373,9 @@ $out.Add("OPEN_PR: 0")
 $out.Add("HANDOFF_SCORE=100/100")
 $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
 $out.Add("")
-$out.Add("【CURRENT｜引っ越し再開用】")
-$out.Add("")
-$out.Add("Repo: " + $repo)
-$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
-$out.Add("")
-$out.Add("完了（main反映済み）")
-$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
-$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+$out.Add("[OMITTED LONG LINES - REPAIR MODE]")
+$out.Add("State: main clean / open PR 0 / HEAD=" + $head)
+$out.Add("NOTE: original long lines omitted; will reinsert after encoding fix.")
 $packet = ($out -join "`n") + "`n"
 Write-Host $packet
 _tmp -is [System.Array]) { $n = [int]# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
@@ -517,7 +507,7 @@ $bad=@(); foreach($n in $requiredPrs){ try { $p=(gh pr view $n --repo $repo --js
 $score=100; if($openCount -gt 0){ $score-=20 }; if($missing.Count -gt 0){ $score-=30 }; if($bad.Count -gt 0){ $score-=30 }; if($score -lt 0){ $score=0 }
 if($score -ne 100){ Write-Host ("HANDOFF_ID: {0}" -f $handoffId); Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc); Write-Host ("HANDOFF_SCORE={0}/100" -f $score); Write-Host ("- open PR(base main)={0}" -f $openCount); if($openCount -gt 0){ foreach($x in $open){ $a=""; try{$a=$x.author.login}catch{}; Write-Host ("  - #{0} {1} ({2}) {3}" -f $x.number,$x.title,$a,$x.url) } }; throw "Not 100/100. Stop." }
 $head=(git rev-parse --short HEAD).Trim()
-$out=New-Object System.Collections.Generic.List[string]
+$out = New-Object System.Collections.Generic.List[string]
 $out.Add("HANDOFF_ID: " + $handoffId)
 $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
 $out.Add("REPO: " + $repo)
@@ -526,14 +516,9 @@ $out.Add("OPEN_PR: 0")
 $out.Add("HANDOFF_SCORE=100/100")
 $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
 $out.Add("")
-$out.Add("【CURRENT｜引っ越し再開用】")
-$out.Add("")
-$out.Add("Repo: " + $repo)
-$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
-$out.Add("")
-$out.Add("完了（main反映済み）")
-$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
-$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+$out.Add("[OMITTED LONG LINES - REPAIR MODE]")
+$out.Add("State: main clean / open PR 0 / HEAD=" + $head)
+$out.Add("NOTE: original long lines omitted; will reinsert after encoding fix.")
 $packet = ($out -join "`n") + "`n"
 Write-Host $packet
 _tmp[0] } else { $n = [int]# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
@@ -665,7 +650,7 @@ $bad=@(); foreach($n in $requiredPrs){ try { $p=(gh pr view $n --repo $repo --js
 $score=100; if($openCount -gt 0){ $score-=20 }; if($missing.Count -gt 0){ $score-=30 }; if($bad.Count -gt 0){ $score-=30 }; if($score -lt 0){ $score=0 }
 if($score -ne 100){ Write-Host ("HANDOFF_ID: {0}" -f $handoffId); Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc); Write-Host ("HANDOFF_SCORE={0}/100" -f $score); Write-Host ("- open PR(base main)={0}" -f $openCount); if($openCount -gt 0){ foreach($x in $open){ $a=""; try{$a=$x.author.login}catch{}; Write-Host ("  - #{0} {1} ({2}) {3}" -f $x.number,$x.title,$a,$x.url) } }; throw "Not 100/100. Stop." }
 $head=(git rev-parse --short HEAD).Trim()
-$out=New-Object System.Collections.Generic.List[string]
+$out = New-Object System.Collections.Generic.List[string]
 $out.Add("HANDOFF_ID: " + $handoffId)
 $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
 $out.Add("REPO: " + $repo)
@@ -674,14 +659,9 @@ $out.Add("OPEN_PR: 0")
 $out.Add("HANDOFF_SCORE=100/100")
 $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
 $out.Add("")
-$out.Add("【CURRENT｜引っ越し再開用】")
-$out.Add("")
-$out.Add("Repo: " + $repo)
-$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
-$out.Add("")
-$out.Add("完了（main反映済み）")
-$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
-$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+$out.Add("[OMITTED LONG LINES - REPAIR MODE]")
+$out.Add("State: main clean / open PR 0 / HEAD=" + $head)
+$out.Add("NOTE: original long lines omitted; will reinsert after encoding fix.")
 $packet = ($out -join "`n") + "`n"
 Write-Host $packet
 _tmp }
@@ -720,7 +700,7 @@ $bad=@(); foreach($n in $requiredPrs){ try { $p=(gh pr view $n --repo $repo --js
 $score=100; if($openCount -gt 0){ $score-=20 }; if($missing.Count -gt 0){ $score-=30 }; if($bad.Count -gt 0){ $score-=30 }; if($score -lt 0){ $score=0 }
 if($score -ne 100){ Write-Host ("HANDOFF_ID: {0}" -f $handoffId); Write-Host ("CREATED_AT_UTC: {0}" -f $createdAtUtc); Write-Host ("HANDOFF_SCORE={0}/100" -f $score); Write-Host ("- open PR(base main)={0}" -f $openCount); if($openCount -gt 0){ foreach($x in $open){ $a=""; try{$a=$x.author.login}catch{}; Write-Host ("  - #{0} {1} ({2}) {3}" -f $x.number,$x.title,$a,$x.url) } }; throw "Not 100/100. Stop." }
 $head=(git rev-parse --short HEAD).Trim()
-$out=New-Object System.Collections.Generic.List[string]
+$out = New-Object System.Collections.Generic.List[string]
 $out.Add("HANDOFF_ID: " + $handoffId)
 $out.Add("CREATED_AT_UTC: " + $createdAtUtc)
 $out.Add("REPO: " + $repo)
@@ -729,14 +709,9 @@ $out.Add("OPEN_PR: 0")
 $out.Add("HANDOFF_SCORE=100/100")
 $out.Add("BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md")
 $out.Add("")
-$out.Add("【CURRENT｜引っ越し再開用】")
-$out.Add("")
-$out.Add("Repo: " + $repo)
-$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)
-$out.Add("")
-$out.Add("完了（main反映済み）")
-$out.Add("- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）")
-$out.Add("- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）")
+$out.Add("[OMITTED LONG LINES - REPAIR MODE]")
+$out.Add("State: main clean / open PR 0 / HEAD=" + $head)
+$out.Add("NOTE: original long lines omitted; will reinsert after encoding fix.")
 $packet = ($out -join "`n") + "`n"
 Write-Host $packet
 

@@ -1,0 +1,22 @@
+﻿--- 20755051675.log : 5 lines 401..421 ---
+   401: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8071007Z [36;1m    *) is_docs_only=0 ;;[0m
+   402: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8071506Z [36;1m  esac[0m
+   403: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8072225Z [36;1mdone < <(git -c core.quotepath=false diff --name-only "$base..$head" | sed '/^$/d')[0m
+   404: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8073035Z [36;1m[0m
+   405: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8073463Z [36;1mif [ "$is_docs_only" -eq 1 ]; then[0m
+   406: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8074138Z [36;1m  echo "docs-only allowlist -> no suggestion needed."[0m
+   407: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8074787Z [36;1m  exit 0[0m
+   408: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8075194Z [36;1mfi[0m
+   409: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8075600Z [36;1m[0m
+   410: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8076032Z [36;1mif [ ! -f "$SCOPE_FILE" ]; then[0m
+   411: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8076678Z [36;1m  echo "::error::SCOPE_FILE not found: $SCOPE_FILE"[0m
+   412: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8077527Z [36;1m  exit 1[0m
+   413: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8077951Z [36;1mfi[0m
+   414: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8078345Z [36;1m[0m
+   415: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8078830Z [36;1mpython3 - <<'PY' > /tmp/scope_suggest.json[0m
+   416: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8079535Z [36;1mimport os, re, subprocess, sys, fnmatch, json[0m
+   417: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8080203Z [36;1mscope_file = os.environ["SCOPE_FILE"][0m
+   418: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8080831Z [36;1mrepo = os.environ.get("REPO_FULL")[0m
+   419: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8081446Z [36;1mpr = os.environ.get("PR_NUMBER","")[0m
+   420: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8082042Z [36;1mbase = os.environ["BASE_SHA"][0m
+   421: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8082605Z [36;1mhead = os.environ["HEAD_SHA"][0m

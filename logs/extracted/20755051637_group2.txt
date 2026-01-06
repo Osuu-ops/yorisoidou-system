@@ -1,0 +1,23 @@
+﻿--- 20755051637.log : 2 lines 379..400 ---
+   379: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2851431Z [36;1mgit config --global core.quotepath false[0m
+   380: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2906017Z shell: /usr/bin/bash -e {0}
+   381: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2906886Z env:
+   382: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2907733Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   383: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2909076Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   384: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2910391Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   385: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2911566Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   386: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2912764Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   387: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2914141Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   388: semantic-audit	Configure git (no quoted paths)	2026-01-06T16:38:25.2915174Z ##[endgroup]
+   389: semantic-audit	Collect CORE changed files	・ｿ2026-01-06T16:38:25.3099373Z ##[group]Run set -euo pipefail
+   390: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3100316Z [36;1mset -euo pipefail[0m
+   391: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3101300Z [36;1mBASE_SHA="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+   392: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3102469Z [36;1mHEAD_SHA="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+   393: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3104187Z [36;1mgit diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_all.txt || true[0m
+   394: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3105606Z [36;1msed -i 's/^"//; s/"$//' core_all.txt || true[0m
+   395: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3106883Z [36;1mcat core_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > core_inputs.txt || true[0m
+   396: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3108695Z [36;1mgit diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/01_CORE | sort > core_am.txt || true[0m
+   397: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3110218Z [36;1msed -i 's/^"//; s/"$//' core_am.txt || true[0m
+   398: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3111497Z [36;1mcat core_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | sort > core_nontext.txt || true[0m
+   399: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3147960Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   400: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3149028Z env:

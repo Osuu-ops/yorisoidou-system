@@ -1,0 +1,422 @@
+﻿[
+    {
+        "line":  3,
+        "text":  "# - 100/100 以外は CURRENT を出さない（汚染停止）。"
+    },
+    {
+        "line":  5,
+        "text":  "# - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。"
+    },
+    {
+        "line":  7,
+        "text":  "# - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。"
+    },
+    {
+        "line":  189,
+        "text":  "# - 100/100 以外は CURRENT を出さない（汚染停止）。"
+    },
+    {
+        "line":  191,
+        "text":  "# - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。"
+    },
+    {
+        "line":  193,
+        "text":  "# - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。"
+    },
+    {
+        "line":  429,
+        "text":  "$biz=\"platform/MEP/03_BUSINESS/よりそい堂/business_spec.md\""
+    },
+    {
+        "line":  431,
+        "text":  "$requiredHeadings=@(\"## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）\",\"### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）\",\"### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）\",\"### トリガー一覧（Phase-2｜固定）\",\"### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）\")"
+    },
+    {
+        "line":  447,
+        "text":  "$out.Add(\"HANDOFF_ID: \" + $handoffId)"
+    },
+    {
+        "line":  449,
+        "text":  "$out.Add(\"CREATED_AT_UTC: \" + $createdAtUtc)"
+    },
+    {
+        "line":  451,
+        "text":  "$out.Add(\"REPO: \" + $repo)"
+    },
+    {
+        "line":  453,
+        "text":  "$out.Add(\"HEAD: \" + $head)"
+    },
+    {
+        "line":  455,
+        "text":  "$out.Add(\"OPEN_PR: 0\")"
+    },
+    {
+        "line":  457,
+        "text":  "$out.Add(\"HANDOFF_SCORE=100/100\")"
+    },
+    {
+        "line":  459,
+        "text":  "$out.Add(\"BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md\")"
+    },
+    {
+        "line":  461,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  463,
+        "text":  "$out.Add(\"【CURRENT｜引っ越し再開用】\")"
+    },
+    {
+        "line":  465,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  467,
+        "text":  "$out.Add(\"Repo: \" + $repo)"
+    },
+    {
+        "line":  469,
+        "text":  "$out.Add(\"状態: main clean / open PR 0 / 最新HEAD=\" + $head)"
+    },
+    {
+        "line":  471,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  473,
+        "text":  "$out.Add(\"完了（main反映済み）\")"
+    },
+    {
+        "line":  475,
+        "text":  "$out.Add(\"- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）\")"
+    },
+    {
+        "line":  477,
+        "text":  "$out.Add(\"- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）\")"
+    },
+    {
+        "line":  487,
+        "text":  "# - 100/100 以外は CURRENT を出さない（汚染停止）。"
+    },
+    {
+        "line":  489,
+        "text":  "# - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。"
+    },
+    {
+        "line":  491,
+        "text":  "# - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。"
+    },
+    {
+        "line":  727,
+        "text":  "$biz=\"platform/MEP/03_BUSINESS/よりそい堂/business_spec.md\""
+    },
+    {
+        "line":  729,
+        "text":  "$requiredHeadings=@(\"## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）\",\"### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）\",\"### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）\",\"### トリガー一覧（Phase-2｜固定）\",\"### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）\")"
+    },
+    {
+        "line":  745,
+        "text":  "$out.Add(\"HANDOFF_ID: \" + $handoffId)"
+    },
+    {
+        "line":  747,
+        "text":  "$out.Add(\"CREATED_AT_UTC: \" + $createdAtUtc)"
+    },
+    {
+        "line":  749,
+        "text":  "$out.Add(\"REPO: \" + $repo)"
+    },
+    {
+        "line":  751,
+        "text":  "$out.Add(\"HEAD: \" + $head)"
+    },
+    {
+        "line":  753,
+        "text":  "$out.Add(\"OPEN_PR: 0\")"
+    },
+    {
+        "line":  755,
+        "text":  "$out.Add(\"HANDOFF_SCORE=100/100\")"
+    },
+    {
+        "line":  757,
+        "text":  "$out.Add(\"BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md\")"
+    },
+    {
+        "line":  759,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  761,
+        "text":  "$out.Add(\"【CURRENT｜引っ越し再開用】\")"
+    },
+    {
+        "line":  763,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  765,
+        "text":  "$out.Add(\"Repo: \" + $repo)"
+    },
+    {
+        "line":  767,
+        "text":  "$out.Add(\"状態: main clean / open PR 0 / 最新HEAD=\" + $head)"
+    },
+    {
+        "line":  769,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  771,
+        "text":  "$out.Add(\"完了（main反映済み）\")"
+    },
+    {
+        "line":  773,
+        "text":  "$out.Add(\"- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）\")"
+    },
+    {
+        "line":  775,
+        "text":  "$out.Add(\"- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）\")"
+    },
+    {
+        "line":  783,
+        "text":  "# - 100/100 以外は CURRENT を出さない（汚染停止）。"
+    },
+    {
+        "line":  785,
+        "text":  "# - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。"
+    },
+    {
+        "line":  787,
+        "text":  "# - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。"
+    },
+    {
+        "line":  1023,
+        "text":  "$biz=\"platform/MEP/03_BUSINESS/よりそい堂/business_spec.md\""
+    },
+    {
+        "line":  1025,
+        "text":  "$requiredHeadings=@(\"## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）\",\"### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）\",\"### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）\",\"### トリガー一覧（Phase-2｜固定）\",\"### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）\")"
+    },
+    {
+        "line":  1041,
+        "text":  "$out.Add(\"HANDOFF_ID: \" + $handoffId)"
+    },
+    {
+        "line":  1043,
+        "text":  "$out.Add(\"CREATED_AT_UTC: \" + $createdAtUtc)"
+    },
+    {
+        "line":  1045,
+        "text":  "$out.Add(\"REPO: \" + $repo)"
+    },
+    {
+        "line":  1047,
+        "text":  "$out.Add(\"HEAD: \" + $head)"
+    },
+    {
+        "line":  1049,
+        "text":  "$out.Add(\"OPEN_PR: 0\")"
+    },
+    {
+        "line":  1051,
+        "text":  "$out.Add(\"HANDOFF_SCORE=100/100\")"
+    },
+    {
+        "line":  1053,
+        "text":  "$out.Add(\"BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md\")"
+    },
+    {
+        "line":  1055,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1057,
+        "text":  "$out.Add(\"【CURRENT｜引っ越し再開用】\")"
+    },
+    {
+        "line":  1059,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1061,
+        "text":  "$out.Add(\"Repo: \" + $repo)"
+    },
+    {
+        "line":  1063,
+        "text":  "$out.Add(\"状態: main clean / open PR 0 / 最新HEAD=\" + $head)"
+    },
+    {
+        "line":  1065,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1067,
+        "text":  "$out.Add(\"完了（main反映済み）\")"
+    },
+    {
+        "line":  1069,
+        "text":  "$out.Add(\"- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）\")"
+    },
+    {
+        "line":  1071,
+        "text":  "$out.Add(\"- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）\")"
+    },
+    {
+        "line":  1079,
+        "text":  "# - 100/100 以外は CURRENT を出さない（汚染停止）。"
+    },
+    {
+        "line":  1081,
+        "text":  "# - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。"
+    },
+    {
+        "line":  1083,
+        "text":  "# - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。"
+    },
+    {
+        "line":  1319,
+        "text":  "$biz=\"platform/MEP/03_BUSINESS/よりそい堂/business_spec.md\""
+    },
+    {
+        "line":  1321,
+        "text":  "$requiredHeadings=@(\"## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）\",\"### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）\",\"### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）\",\"### トリガー一覧（Phase-2｜固定）\",\"### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）\")"
+    },
+    {
+        "line":  1337,
+        "text":  "$out.Add(\"HANDOFF_ID: \" + $handoffId)"
+    },
+    {
+        "line":  1339,
+        "text":  "$out.Add(\"CREATED_AT_UTC: \" + $createdAtUtc)"
+    },
+    {
+        "line":  1341,
+        "text":  "$out.Add(\"REPO: \" + $repo)"
+    },
+    {
+        "line":  1343,
+        "text":  "$out.Add(\"HEAD: \" + $head)"
+    },
+    {
+        "line":  1345,
+        "text":  "$out.Add(\"OPEN_PR: 0\")"
+    },
+    {
+        "line":  1347,
+        "text":  "$out.Add(\"HANDOFF_SCORE=100/100\")"
+    },
+    {
+        "line":  1349,
+        "text":  "$out.Add(\"BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md\")"
+    },
+    {
+        "line":  1351,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1353,
+        "text":  "$out.Add(\"【CURRENT｜引っ越し再開用】\")"
+    },
+    {
+        "line":  1355,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1357,
+        "text":  "$out.Add(\"Repo: \" + $repo)"
+    },
+    {
+        "line":  1359,
+        "text":  "$out.Add(\"状態: main clean / open PR 0 / 最新HEAD=\" + $head)"
+    },
+    {
+        "line":  1361,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1363,
+        "text":  "$out.Add(\"完了（main反映済み）\")"
+    },
+    {
+        "line":  1365,
+        "text":  "$out.Add(\"- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）\")"
+    },
+    {
+        "line":  1367,
+        "text":  "$out.Add(\"- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）\")"
+    },
+    {
+        "line":  1429,
+        "text":  "$biz=\"platform/MEP/03_BUSINESS/よりそい堂/business_spec.md\""
+    },
+    {
+        "line":  1431,
+        "text":  "$requiredHeadings=@(\"## Order Lifecycle Controls（Phase-2）— 欠番/削除/復旧/誤完了解除（トゥームストーン方式）\",\"### タスク投影（Todoist/ClickUp）— ライフサイクル表示と完了/復旧（固定）\",\"### コメントモード（モード固定）— 入力待ち・実行・キャンセル（Phase-2｜固定）\",\"### トリガー一覧（Phase-2｜固定）\",\"### 欠番/削除モード（最終仕様）— FIX連携・解放/凍結境界・復旧（Phase-2｜固定）\")"
+    },
+    {
+        "line":  1447,
+        "text":  "$out.Add(\"HANDOFF_ID: \" + $handoffId)"
+    },
+    {
+        "line":  1449,
+        "text":  "$out.Add(\"CREATED_AT_UTC: \" + $createdAtUtc)"
+    },
+    {
+        "line":  1451,
+        "text":  "$out.Add(\"REPO: \" + $repo)"
+    },
+    {
+        "line":  1453,
+        "text":  "$out.Add(\"HEAD: \" + $head)"
+    },
+    {
+        "line":  1455,
+        "text":  "$out.Add(\"OPEN_PR: 0\")"
+    },
+    {
+        "line":  1457,
+        "text":  "$out.Add(\"HANDOFF_SCORE=100/100\")"
+    },
+    {
+        "line":  1459,
+        "text":  "$out.Add(\"BUNDLE: docs/MEP/CHAT_PACKET_BUNDLE.md\")"
+    },
+    {
+        "line":  1461,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1463,
+        "text":  "$out.Add(\"【CURRENT｜引っ越し再開用】\")"
+    },
+    {
+        "line":  1465,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1467,
+        "text":  "$out.Add(\"Repo: \" + $repo)"
+    },
+    {
+        "line":  1469,
+        "text":  "$out.Add(\"状態: main clean / open PR 0 / 最新HEAD=\" + $head)"
+    },
+    {
+        "line":  1471,
+        "text":  "$out.Add(\"\")"
+    },
+    {
+        "line":  1473,
+        "text":  "$out.Add(\"完了（main反映済み）\")"
+    },
+    {
+        "line":  1475,
+        "text":  "$out.Add(\"- Comment Concierge / 欠番・削除・トリガー・モード運用は business_spec 側で仕様確定済み（PR #535/#539/#541/#542/#543/#544 が main=MERGED）\")"
+    },
+    {
+        "line":  1477,
+        "text":  "$out.Add(\"- 次の作業（推奨）：実装計画へ移行（削除モード/FREEZE/Request(FIX) の「台帳反映（列/ステータス/ログ）」を master_spec 側へ落とす：1テーマ=1PR）\")"
+    }
+]

@@ -1,0 +1,22 @@
+﻿--- 20755051675.log : 7 lines 525..545 ---
+   525: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8149668Z [36;1m[0m
+   526: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8150129Z [36;1m# Comment original PR with link + list[0m
+   527: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8150789Z [36;1mpython3 - <<'PY' > /tmp/out_list.txt[0m
+   528: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8151363Z [36;1mimport json[0m
+   529: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8152003Z [36;1md=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))[0m
+   530: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8152729Z [36;1mout=d["out"][0m
+   531: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8153235Z [36;1mprint("\n".join(f"- {x}" for x in out))[0m
+   532: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8153812Z [36;1mPY[0m
+   533: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8154204Z [36;1m[0m
+   534: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8155370Z [36;1mgh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'[0m
+   535: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8187670Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   536: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8188361Z env:
+   537: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8189365Z   GH_TOKEN: ***
+   538: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8189908Z   SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+   539: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8190539Z ##[endgroup]
+   540: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4104407Z From https://github.com/Osuu-ops/yorisoidou-system
+   541: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4106144Z  * branch            main       -> FETCH_HEAD
+   542: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4316127Z Previous HEAD position was 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+   543: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4324341Z Switched to a new branch 'auto/scope-suggest-pr619-20260106-163823'
+   544: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4327169Z branch 'auto/scope-suggest-pr619-20260106-163823' set up to track 'origin/main'.
+   545: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4678081Z [auto/scope-suggest-pr619-20260106-163823 6a07ea4] chore(scope): suggest Scope-IN for PR #619

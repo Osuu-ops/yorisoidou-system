@@ -1,0 +1,448 @@
+﻿Business Packet Guard (PR)	Set up job	・ｿ2026-01-06T16:38:21.7316818Z Current runner version: '2.330.0'
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7349055Z ##[group]Runner Image Provisioner
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7350279Z Hosted Compute Agent
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7351317Z Version: 20251211.462
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7352649Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7353852Z Build Date: 2025-12-11T16:28:49Z
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7355089Z Worker ID: {a29a44a0-aaee-4f12-9618-992a3affc94f}
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7356297Z ##[endgroup]
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7357138Z ##[group]Operating System
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7358171Z Ubuntu
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7358971Z 24.04.3
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7359814Z LTS
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7360492Z ##[endgroup]
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7361437Z ##[group]Runner Image
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7362518Z Image: ubuntu-24.04
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7363414Z Version: 20251215.174.1
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7365369Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7367802Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7369751Z ##[endgroup]
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7371420Z ##[group]GITHUB_TOKEN Permissions
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7374417Z Contents: read
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7375406Z Metadata: read
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7376382Z ##[endgroup]
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7379116Z Secret source: Actions
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7380106Z Prepare workflow directory
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7819293Z Prepare all required actions
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:21.7872253Z Getting action download info
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:22.0970244Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:22.2074392Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+Business Packet Guard (PR)	Set up job	2026-01-06T16:38:22.3877320Z Complete job name: Business Packet Guard (PR)
+Business Packet Guard (PR)	Checkout (full history)	・ｿ2026-01-06T16:38:22.4556628Z ##[group]Run actions/checkout@v4
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4557461Z with:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4557848Z   fetch-depth: 0
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4558283Z   repository: Osuu-ops/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4558982Z   token: ***
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4559365Z   ssh-strict: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4559757Z   ssh-user: git
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4560154Z   persist-credentials: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4560598Z   clean: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4560993Z   sparse-checkout-cone-mode: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4561469Z   fetch-tags: false
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4562167Z   show-progress: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4562648Z   lfs: false
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4563019Z   submodules: false
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4563429Z   set-safe-directory: true
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4564149Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5637823Z Syncing repository: Osuu-ops/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5639621Z ##[group]Getting Git version info
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5640453Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5641576Z [command]/usr/bin/git version
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5710366Z git version 2.52.0
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5736625Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5752072Z Temporarily overriding HOME='/home/runner/work/_temp/aaf66f24-5072-472b-b617-30f0ba873b86' before making global git config changes
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5754479Z Adding repository directory to the temporary git global config as a safe directory
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5758462Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5795321Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5798948Z ##[group]Initializing the repository
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5803896Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5882534Z hint: Using 'master' as the name for the initial branch. This default branch name
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5883870Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5884882Z hint: to use in all of your new repositories, which will suppress this warning,
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5886378Z hint: call:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5886778Z hint:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5887710Z hint: 	git config --global init.defaultBranch <name>
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5888752Z hint:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5889750Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5891371Z hint: 'development'. The just-created branch can be renamed via this command:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5892945Z hint:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5893647Z hint: 	git branch -m <name>
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5894400Z hint:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5895390Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5897323Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5900355Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5931760Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5933233Z ##[group]Disabling automatic garbage collection
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5936826Z [command]/usr/bin/git config --local gc.auto 0
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5965153Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5966361Z ##[group]Setting up auth
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.5972556Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6003099Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6300814Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6331467Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6547858Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6576344Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6791188Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6823751Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6825039Z ##[group]Fetching the repository
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.6835893Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +310328a488c6ffabdcf52ef89a8ffd3f2fba0d72:refs/remotes/pull/619/merge
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0605532Z From https://github.com/Osuu-ops/yorisoidou-system
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0608006Z  * [new branch]      Osuu-ops-patch-1                         -> origin/Osuu-ops-patch-1
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0612158Z  * [new branch]      Osuu-ops-patch-2                         -> origin/Osuu-ops-patch-2
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0614222Z  * [new branch]      Osuu-ops-patch-3                         -> origin/Osuu-ops-patch-3
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0616535Z  * [new branch]      Osuu-ops-patch-4                         -> origin/Osuu-ops-patch-4
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0618769Z  * [new branch]      Osuu-ops-patch-6                         -> origin/Osuu-ops-patch-6
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0620919Z  * [new branch]      Osuu-ops-patch-7                         -> origin/Osuu-ops-patch-7
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0625595Z  * [new branch]      auto/chat-packet-update-20260102-194002  -> origin/auto/chat-packet-update-20260102-194002
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0627968Z  * [new branch]      auto/chat-packet-update-20260102-194620  -> origin/auto/chat-packet-update-20260102-194620
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0630217Z  * [new branch]      auto/chat-packet-update-20664550110      -> origin/auto/chat-packet-update-20664550110
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0632666Z  * [new branch]      auto/chat-packet-update-20673842256      -> origin/auto/chat-packet-update-20673842256
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0635455Z  * [new branch]      auto/mep-runbook-recreate-20260103-215009 -> origin/auto/mep-runbook-recreate-20260103-215009
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0638566Z  * [new branch]      auto/scope-suggest-pr437-20260104-144119 -> origin/auto/scope-suggest-pr437-20260104-144119
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0641300Z  * [new branch]      auto/scope-suggest-pr442-20260104-150150 -> origin/auto/scope-suggest-pr442-20260104-150150
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0644308Z  * [new branch]      auto/scope-suggest-pr600-20260106-120913 -> origin/auto/scope-suggest-pr600-20260106-120913
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0647119Z  * [new branch]      auto/scope-suggest-pr608-20260106-144603 -> origin/auto/scope-suggest-pr608-20260106-144603
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0649741Z  * [new branch]      auto/state-summary-update-20673443497    -> origin/auto/state-summary-update-20673443497
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0652480Z  * [new branch]      auto/state-summary-update-20673601402    -> origin/auto/state-summary-update-20673601402
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0655074Z  * [new branch]      auto/state-summary-update-20673657443    -> origin/auto/state-summary-update-20673657443
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0657661Z  * [new branch]      auto/state-summary-update-20673803469    -> origin/auto/state-summary-update-20673803469
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0660223Z  * [new branch]      auto/state-summary-update-20673841629    -> origin/auto/state-summary-update-20673841629
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0662976Z  * [new branch]      auto/state-summary-update-20674125460    -> origin/auto/state-summary-update-20674125460
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0665591Z  * [new branch]      auto/state-summary-update-20674278435    -> origin/auto/state-summary-update-20674278435
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0668146Z  * [new branch]      auto/state-summary-update-20674377844    -> origin/auto/state-summary-update-20674377844
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0670688Z  * [new branch]      auto/state-summary-update-20675301442    -> origin/auto/state-summary-update-20675301442
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0673396Z  * [new branch]      auto/state-summary-update-20676143268    -> origin/auto/state-summary-update-20676143268
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0676134Z  * [new branch]      auto/state-summary-update-20676904723    -> origin/auto/state-summary-update-20676904723
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0678597Z  * [new branch]      auto/state-summary-update-20676951197    -> origin/auto/state-summary-update-20676951197
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0681018Z  * [new branch]      auto/state-summary-update-20677228804    -> origin/auto/state-summary-update-20677228804
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0683750Z  * [new branch]      auto/state-summary-update-20677271426    -> origin/auto/state-summary-update-20677271426
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0686283Z  * [new branch]      auto/state-summary-update-20677406180    -> origin/auto/state-summary-update-20677406180
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0688728Z  * [new branch]      auto/state-summary-update-20677500269    -> origin/auto/state-summary-update-20677500269
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0691157Z  * [new branch]      auto/state-summary-update-20677531366    -> origin/auto/state-summary-update-20677531366
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0693792Z  * [new branch]      auto/state-summary-update-20677543550    -> origin/auto/state-summary-update-20677543550
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0696257Z  * [new branch]      auto/state-summary-update-20677607523    -> origin/auto/state-summary-update-20677607523
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0698700Z  * [new branch]      auto/state-summary-update-20677643544    -> origin/auto/state-summary-update-20677643544
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0701128Z  * [new branch]      auto/state-summary-update-20677664781    -> origin/auto/state-summary-update-20677664781
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0703772Z  * [new branch]      auto/state-summary-update-20677680092    -> origin/auto/state-summary-update-20677680092
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0706221Z  * [new branch]      auto/state-summary-update-20677714008    -> origin/auto/state-summary-update-20677714008
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0708685Z  * [new branch]      auto/state-summary-update-20677745896    -> origin/auto/state-summary-update-20677745896
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0711147Z  * [new branch]      auto/state-summary-update-20677827799    -> origin/auto/state-summary-update-20677827799
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0713798Z  * [new branch]      auto/state-summary-update-20677922547    -> origin/auto/state-summary-update-20677922547
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0716476Z  * [new branch]      auto/state-summary-update-20678050847    -> origin/auto/state-summary-update-20678050847
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0718925Z  * [new branch]      auto/state-summary-update-20678379501    -> origin/auto/state-summary-update-20678379501
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0721546Z  * [new branch]      auto/state-summary-update-20680946276    -> origin/auto/state-summary-update-20680946276
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0728076Z  * [new branch]      auto/state-summary-update-20681017358    -> origin/auto/state-summary-update-20681017358
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0730689Z  * [new branch]      auto/state-summary-update-20681125698    -> origin/auto/state-summary-update-20681125698
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0733488Z  * [new branch]      auto/state-summary-update-20681494908    -> origin/auto/state-summary-update-20681494908
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0736053Z  * [new branch]      auto/state-summary-update-20682038436    -> origin/auto/state-summary-update-20682038436
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0738615Z  * [new branch]      auto/state-summary-update-20682621101    -> origin/auto/state-summary-update-20682621101
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0741132Z  * [new branch]      auto/state-summary-update-20687505124    -> origin/auto/state-summary-update-20687505124
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0743991Z  * [new branch]      auto/state-summary-update-20688990392    -> origin/auto/state-summary-update-20688990392
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0746688Z  * [new branch]      auto/state-summary-update-20689046631    -> origin/auto/state-summary-update-20689046631
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0749463Z  * [new branch]      auto/state-summary-update-20689130389    -> origin/auto/state-summary-update-20689130389
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0752590Z  * [new branch]      auto/state-summary-update-20689170351    -> origin/auto/state-summary-update-20689170351
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0755670Z  * [new branch]      auto/state-summary-update-20689192050    -> origin/auto/state-summary-update-20689192050
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0758544Z  * [new branch]      auto/state-summary-update-20689263659    -> origin/auto/state-summary-update-20689263659
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0761361Z  * [new branch]      auto/state-summary-update-20690994605    -> origin/auto/state-summary-update-20690994605
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0764391Z  * [new branch]      auto/state-summary-update-20691229671    -> origin/auto/state-summary-update-20691229671
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0767223Z  * [new branch]      auto/state-summary-update-20691303978    -> origin/auto/state-summary-update-20691303978
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0770063Z  * [new branch]      auto/state-summary-update-20691341185    -> origin/auto/state-summary-update-20691341185
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0773056Z  * [new branch]      auto/state-summary-update-20691503744    -> origin/auto/state-summary-update-20691503744
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0775881Z  * [new branch]      auto/state-summary-update-20691619174    -> origin/auto/state-summary-update-20691619174
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0778787Z  * [new branch]      auto/state-summary-update-20691862557    -> origin/auto/state-summary-update-20691862557
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0782006Z  * [new branch]      auto/state-summary-update-20692262188    -> origin/auto/state-summary-update-20692262188
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0785037Z  * [new branch]      auto/state-summary-update-20692444987    -> origin/auto/state-summary-update-20692444987
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0787972Z  * [new branch]      auto/state-summary-update-20692471454    -> origin/auto/state-summary-update-20692471454
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0790848Z  * [new branch]      auto/state-summary-update-20692585217    -> origin/auto/state-summary-update-20692585217
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0793928Z  * [new branch]      auto/state-summary-update-20692840917    -> origin/auto/state-summary-update-20692840917
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0796809Z  * [new branch]      auto/state-summary-update-20692841981    -> origin/auto/state-summary-update-20692841981
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0799698Z  * [new branch]      auto/state-summary-update-20693006255    -> origin/auto/state-summary-update-20693006255
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0802931Z  * [new branch]      auto/state-summary-update-20693073974    -> origin/auto/state-summary-update-20693073974
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0806078Z  * [new branch]      auto/state-summary-update-20693150786    -> origin/auto/state-summary-update-20693150786
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0809122Z  * [new branch]      auto/state-summary-update-20693176208    -> origin/auto/state-summary-update-20693176208
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0812461Z  * [new branch]      auto/state-summary-update-20693254817    -> origin/auto/state-summary-update-20693254817
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0815539Z  * [new branch]      auto/state-summary-update-20693738890    -> origin/auto/state-summary-update-20693738890
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0818855Z  * [new branch]      auto/state-summary-update-20693785172    -> origin/auto/state-summary-update-20693785172
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0822739Z  * [new branch]      auto/state-summary-update-20693900802    -> origin/auto/state-summary-update-20693900802
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0826447Z  * [new branch]      auto/state-summary-update-20737629765    -> origin/auto/state-summary-update-20737629765
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0830143Z  * [new branch]      auto/state-summary-update-20751914155    -> origin/auto/state-summary-update-20751914155
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0833684Z  * [new branch]      backup/crash-20260107-011333             -> origin/backup/crash-20260107-011333
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0836667Z  * [new branch]      backup/crash-20260107-013037             -> origin/backup/crash-20260107-013037
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0840527Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0845296Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0849718Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0854557Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0859133Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0863647Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0868118Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0872965Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0877830Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0882749Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0887038Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0891208Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0895567Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0899583Z  * [new branch]      biz/parts-business-spec-20260104-051453  -> origin/biz/parts-business-spec-20260104-051453
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0904026Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0908454Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0913789Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0919077Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0923420Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0927898Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0932414Z  * [new branch]      biz/reviewtype-mapping-20260104-203306   -> origin/biz/reviewtype-mapping-20260104-203306
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0936069Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428  -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0939771Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0943848Z  * [new branch]      biz/work-business-spec-20260104-050739   -> origin/biz/work-business-spec-20260104-050739
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0947420Z  * [new branch]      biz/work-normalize-20260105-004002       -> origin/biz/work-normalize-20260105-004002
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0951177Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0954890Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0957894Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0960966Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0964137Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0967246Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0970455Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0973973Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0977013Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0979575Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059  -> origin/chore/mep-gate-dispatch-20260103-063059
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0982500Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0985401Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0987790Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0989832Z  * [new branch]      ci/chat-packet-schedule-20260103         -> origin/ci/chat-packet-schedule-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0991938Z  * [new branch]      ci/fix-chat-packet-schedule-20260103     -> origin/ci/fix-chat-packet-schedule-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0994291Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0997024Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.0999836Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1002658Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1005370Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1007716Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1009982Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1012512Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1015370Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1017851Z  * [new branch]      docs/idea-cleanup-20260104-214212        -> origin/docs/idea-cleanup-20260104-214212
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1019902Z  * [new branch]      docs/idea-index-add-bom-20260104-215056  -> origin/docs/idea-index-add-bom-20260104-215056
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1022440Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1024907Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1027271Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1029747Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1032352Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303  -> origin/docs/mep-add-idea-vault-20260103-205303
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1034708Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1037157Z  * [new branch]      docs/mep-add-playbook-20260103-151247    -> origin/docs/mep-add-playbook-20260103-151247
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1039219Z  * [new branch]      docs/mep-add-runbook-20260103-150840     -> origin/docs/mep-add-runbook-20260103-150840
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1041352Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1043944Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1046434Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1050132Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1054141Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1056805Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1059444Z  * [new branch]      docs/mep-guidance-align-20260104-153937  -> origin/docs/mep-guidance-align-20260104-153937
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1062547Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1065141Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1067886Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1069973Z  * [new branch]      docs/mep-idea-flow-20260103-212432       -> origin/docs/mep-idea-flow-20260103-212432
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1072420Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1074877Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1077278Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1079480Z  * [new branch]      docs/mep-lease-continue-20260103-220947  -> origin/docs/mep-lease-continue-20260103-220947
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1082180Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1085151Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1088031Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1090412Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905    -> origin/docs/mep-repair-1-2-3-20260103-153905
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1092965Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1095674Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1098203Z  * [new branch]      docs/ops-chat-packet-followup-20260103   -> origin/docs/ops-chat-packet-followup-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1100156Z  * [new branch]      docs/ops-rules-20260103                  -> origin/docs/ops-rules-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1102259Z  * [new branch]      docs/ops-scope-suggest-20260103-150621   -> origin/docs/ops-scope-suggest-20260103-150621
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1104922Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1107935Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1110850Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1113435Z  * [new branch]      docs/runbook-autoappend/20260106-231639  -> origin/docs/runbook-autoappend/20260106-231639
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1115483Z  * [new branch]      docs/runbook-autoappend/20260106-232943  -> origin/docs/runbook-autoappend/20260106-232943
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1117511Z  * [new branch]      docs/runbook-autoappend/20260106-233315  -> origin/docs/runbook-autoappend/20260106-233315
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1119577Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1121718Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1124549Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1127052Z  * [new branch]      docs/state-current-v12-20260103-153345   -> origin/docs/state-current-v12-20260103-153345
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1129101Z  * [new branch]      docs/test-chat-packet-schedule-20260103  -> origin/docs/test-chat-packet-schedule-20260103
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1131382Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1134502Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1137460Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1140615Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1143498Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1146051Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1148394Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1150787Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1153501Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1156038Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1158113Z  * [new branch]      feat/chat-packet-self-heal               -> origin/feat/chat-packet-self-heal
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1159897Z  * [new branch]      feat/chat-packet-self-heal-rerun         -> origin/feat/chat-packet-self-heal-rerun
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1161704Z  * [new branch]      feat/mep-gate-pr-20260103-061907         -> origin/feat/mep-gate-pr-20260103-061907
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1163595Z  * [new branch]      feat/scope-guard-phase1                  -> origin/feat/scope-guard-phase1
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1165307Z  * [new branch]      feat/scope-suggest-20260103-072132       -> origin/feat/scope-suggest-20260103-072132
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1166986Z  * [new branch]      feat/self-heal-auto-prs                  -> origin/feat/self-heal-auto-prs
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1168752Z  * [new branch]      fix/add-debug-artifact-20260106-222859   -> origin/fix/add-debug-artifact-20260106-222859
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1171064Z  * [new branch]      fix/business-master-spec-mojibake-20260104-020827 -> origin/fix/business-master-spec-mojibake-20260104-020827
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1173630Z  * [new branch]      fix/mep-gate-register-20260103-063318    -> origin/fix/mep-gate-register-20260103-063318
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1175561Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1177793Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1180104Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1182395Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1184449Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1186596Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1188827Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1191014Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1192711Z  * [new branch]      main                                     -> origin/main
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1194421Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1196945Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1199653Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1202475Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1204855Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1206986Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1208907Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1211236Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1213310Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1214974Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1217705Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1220469Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1222633Z  * [new branch]      test/seed-mep-gate-20260103-062802       -> origin/test/seed-mep-gate-20260103-062802
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1224863Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1227050Z  * [new branch]      tools/idea-capture-20260104-211626       -> origin/tools/idea-capture-20260104-211626
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1228934Z  * [new branch]      tools/mep-fix-param-top-20260103-215224  -> origin/tools/mep-fix-param-top-20260103-215224
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1230995Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1233254Z  * [new branch]      tools/mep-idea-receipt-20260103-214537   -> origin/tools/mep-idea-receipt-20260103-214537
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1235681Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1237999Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1240053Z  * [new branch]      ui/alert-label-display-20260104-194620   -> origin/ui/alert-label-display-20260104-194620
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1242068Z  * [new branch]      ui/expense-ui-master-20260104-052304     -> origin/ui/expense-ui-master-20260104-052304
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1243900Z  * [new branch]      ui/expense-ui-spec-20260104-052334       -> origin/ui/expense-ui-spec-20260104-052334
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1245844Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1247970Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1249933Z  * [new branch]      ui/order-ui-master-20260104-050304       -> origin/ui/order-ui-master-20260104-050304
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1251665Z  * [new branch]      ui/order-ui-spec-20260104-050613         -> origin/ui/order-ui-spec-20260104-050613
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1253506Z  * [new branch]      ui/parts-ui-master-20260104-051901       -> origin/ui/parts-ui-master-20260104-051901
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1255244Z  * [new branch]      ui/parts-ui-spec-20260104-052140         -> origin/ui/parts-ui-spec-20260104-052140
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1257147Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1259058Z  * [new branch]      ui/work-ui-master-20260104-051037        -> origin/ui/work-ui-master-20260104-051037
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1260772Z  * [new branch]      ui/work-ui-master-20260104-051204        -> origin/ui/work-ui-master-20260104-051204
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1262766Z  * [new branch]      ui/work-ui-spec-20260104-051311          -> origin/ui/work-ui-spec-20260104-051311
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1264456Z  * [new branch]      wip/auto-save-20260106-232022            -> origin/wip/auto-save-20260106-232022
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1266402Z  * [new branch]      work/chat-packet-human-20260103-162222   -> origin/work/chat-packet-human-20260103-162222
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1268388Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1270270Z  * [new branch]      work/idea-capture-20260103-215353        -> origin/work/idea-capture-20260103-215353
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1272243Z  * [new branch]      work/idea-capture-20260103-220645        -> origin/work/idea-capture-20260103-220645
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1274021Z  * [new branch]      work/idea-capture-20260104-184000        -> origin/work/idea-capture-20260104-184000
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1275768Z  * [new branch]      work/idea-finalize-20260103-220329       -> origin/work/idea-finalize-20260103-220329
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1277524Z  * [new branch]      work/idea-receipt-20260103-220025        -> origin/work/idea-receipt-20260103-220025
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1279243Z  * [new branch]      work/mep-doc-link-20260103-152129        -> origin/work/mep-doc-link-20260103-152129
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1280921Z  * [new tag]         backup/recovery-f0e7624_20260107011639   -> backup/recovery-f0e7624_20260107011639
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1282474Z  * [new ref]         310328a488c6ffabdcf52ef89a8ffd3f2fba0d72 -> pull/619/merge
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1284826Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1285650Z ##[group]Determining the checkout info
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1286619Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1287150Z [command]/usr/bin/git sparse-checkout disable
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1288861Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1290867Z ##[group]Checking out the ref
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1291951Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/619/merge
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1406527Z Note: switching to 'refs/remotes/pull/619/merge'.
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1407777Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1408283Z You are in 'detached HEAD' state. You can look around, make experimental
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1409580Z changes and commit them, and you can discard any commits you make in this
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1410850Z state without impacting any branches by switching back to a branch.
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1411614Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1412228Z If you want to create a new branch to retain commits you create, you may
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1413376Z do so (now or later) by using -c with the switch command. Example:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1414056Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1414331Z   git switch -c <new-branch-name>
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1414777Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1414983Z Or undo this operation with:
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1415381Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1415557Z   git switch -
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1415826Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1416355Z Turn off this advice by setting config variable advice.detachedHead to false
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1417187Z 
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1418122Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1421918Z ##[endgroup]
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1455527Z [command]/usr/bin/git log -1 --format=%H
+Business Packet Guard (PR)	Checkout (full history)	2026-01-06T16:38:23.1477886Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+Business Packet Guard (PR)	Set up Python	・ｿ2026-01-06T16:38:23.1815398Z ##[group]Run actions/setup-python@v5
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1816106Z with:
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1816520Z   python-version: 3.11
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1817053Z   check-latest: false
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1817776Z   token: ***
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1818230Z   update-environment: true
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1818811Z   allow-prereleases: false
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1819359Z   freethreaded: false
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.1819846Z ##[endgroup]
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.3474640Z ##[group]Installed versions
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.3574238Z Successfully set up CPython (3.11.14)
+Business Packet Guard (PR)	Set up Python	2026-01-06T16:38:23.3576634Z ##[endgroup]
+Business Packet Guard (PR)	Install deps	・ｿ2026-01-06T16:38:23.3708773Z ##[group]Run python -m pip install --upgrade pip
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3709739Z [36;1mpython -m pip install --upgrade pip[0m
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3710501Z [36;1mpip install pyyaml[0m
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3869805Z shell: /usr/bin/bash -e {0}
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3870407Z env:
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3871026Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3872459Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3873643Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3874657Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3875674Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3876715Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3877548Z ##[endgroup]
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:25.3243383Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages (25.3)
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0227381Z Collecting pyyaml
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0877972Z   Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0986323Z Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.1816457Z    笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤 806.6/806.6 kB 12.2 MB/s  0:00:00
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.1976380Z Installing collected packages: pyyaml
+Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.2515750Z Successfully installed pyyaml-6.0.3
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	・ｿ2026-01-06T16:38:26.2959128Z ##[group]Run set -euo pipefail
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959492Z [36;1mset -euo pipefail[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959706Z [36;1m[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959983Z [36;1m# pull_request 莉･螟厄ｼ・orkflow_dispatch遲会ｼ峨・蝣ｴ蜷医・蜈ｨ讀懈渊[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2960347Z [36;1mif [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2960706Z [36;1m  echo "No BASE/HEAD; run full validation."[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2961119Z [36;1mif [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2961588Z [36;1m  echo "Business Packet Guard: validator missing; skip (success)"[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962210Z [36;1m  exit 0[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962384Z [36;1mfi[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962687Z [36;1mpython3 platform/infra/tools/packets/validate_business_packet.py[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2963036Z [36;1m  exit 0[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2963217Z [36;1mfi[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2963384Z [36;1m[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2963623Z [36;1m# 螟画峩縺碁未菫ゅ↑縺・ｴ蜷医・繧ｹ繧ｭ繝・・・・equired蛹悶＠縺ｦ繧ょｸｸ縺ｫCheck縺悟・繧九ｈ縺・↓縲∵・蜉溘〒邨ゆｺ・ｼ・[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2964046Z [36;1mchanged="$(git diff --name-only "${BASE_SHA}..${HEAD_SHA}" || true)"[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2964676Z [36;1mif ! echo "$changed" | grep -E '^(platform/MEP/|platform/infra/tools/packets/|\.github/workflows/business_packet_)' >/dev/null; then[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965280Z [36;1m  echo "Business Packet Guard: skipped (no relevant changes)"[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965587Z [36;1m  exit 0[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965766Z [36;1mfi[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966058Z [36;1mif [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966518Z [36;1m  echo "Business Packet Guard: validator missing; skip (success)"[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966846Z [36;1m  exit 0[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2967048Z [36;1mfi[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2967324Z [36;1mpython3 platform/infra/tools/packets/validate_business_packet.py[0m
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3003828Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004189Z env:
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004437Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004850Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005265Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005611Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005964Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3006316Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3006640Z   BASE_SHA: 30d214e188f964d46ca82aaa75c4e315f57a262e
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3007153Z   HEAD_SHA: 3e6c27245b1461aa5de5dc674c3856f6bd788895
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3007407Z ##[endgroup]
+Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3100978Z Business Packet Guard: skipped (no relevant changes)
+Business Packet Guard (PR)	Post Set up Python	・ｿ2026-01-06T16:38:26.3173740Z Post job cleanup.
+Business Packet Guard (PR)	Post Checkout (full history)	・ｿ2026-01-06T16:38:26.4786598Z Post job cleanup.
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5716973Z [command]/usr/bin/git version
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5758502Z git version 2.52.0
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5801100Z Temporarily overriding HOME='/home/runner/work/_temp/ccead747-70bc-4072-a69b-f66420f65c13' before making global git config changes
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5802790Z Adding repository directory to the temporary git global config as a safe directory
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5807625Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5841405Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.5873206Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6100286Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6120416Z http.https://github.com/.extraheader
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6133766Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6163669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6380331Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Business Packet Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:26.6410174Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Business Packet Guard (PR)	Complete job	・ｿ2026-01-06T16:38:26.6742288Z Cleaning up orphan processes

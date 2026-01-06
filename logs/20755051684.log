@@ -1,0 +1,537 @@
+﻿Text Integrity Guard (PR)	Set up job	・ｿ2026-01-06T16:38:21.6638248Z Current runner version: '2.330.0'
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6672450Z ##[group]Runner Image Provisioner
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6673725Z Hosted Compute Agent
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6674485Z Version: 20251211.462
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6675379Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6676546Z Build Date: 2025-12-11T16:28:49Z
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6677699Z Worker ID: {5791b9d6-f231-4024-9e1d-2d3e1e237ae0}
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6678737Z ##[endgroup]
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6679601Z ##[group]Operating System
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6680451Z Ubuntu
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6681105Z 24.04.3
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6681910Z LTS
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6682543Z ##[endgroup]
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6683321Z ##[group]Runner Image
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6684300Z Image: ubuntu-24.04
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6685019Z Version: 20251215.174.1
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6686619Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6689099Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6690914Z ##[endgroup]
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6692375Z ##[group]GITHUB_TOKEN Permissions
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6694894Z Contents: read
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6695713Z Metadata: read
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6696410Z ##[endgroup]
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6700005Z Secret source: Actions
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6701007Z Prepare workflow directory
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.7160899Z Prepare all required actions
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.7215635Z Getting action download info
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.9131536Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:22.0883753Z Complete job name: Text Integrity Guard (PR)
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	・ｿ2026-01-06T16:38:22.1478015Z ##[group]Run set -euo pipefail
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1478654Z [36;1mset -euo pipefail[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479121Z [36;1mMAX=50[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479525Z [36;1mpython3 - <<'PY'[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479963Z [36;1mimport os, sys, re[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1480482Z [36;1mmax_n = int(os.environ.get('MAX','50'))[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1481004Z [36;1mpaths = [[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1481494Z [36;1m  'platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec',[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482154Z [36;1m  'platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec',[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482700Z [36;1m][0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483220Z [36;1mpat = re.compile(r'[\\uFF61-\\uFF9F]')  # halfwidth-kana range[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483832Z [36;1mbad = [][0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1484242Z [36;1mfor p in paths:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1484690Z [36;1m  if not os.path.exists(p):[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1485180Z [36;1m    continue[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1485611Z [36;1m  b = open(p,'rb').read()[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486069Z [36;1m  try:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486504Z [36;1m    s = b.decode('utf-8')[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487130Z [36;1m  except UnicodeDecodeError:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487664Z [36;1m    print(f'::error::{p}: not valid UTF-8')[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488201Z [36;1m    sys.exit(1)[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488655Z [36;1m  n = len(pat.findall(s))[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489122Z [36;1m  if n > max_n:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489544Z [36;1m    bad.append((p,n))[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489988Z [36;1mif bad:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1490382Z [36;1m  for p,n in bad:[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491067Z [36;1m    print(f'::error::{p}: halfwidth-kana count={n} exceeds MAX={max_n} (likely mojibake)')[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491773Z [36;1m  sys.exit(1)[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492306Z [36;1mprint('Halfwidth Kana Guard: OK')[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492800Z [36;1mPY[0m
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1534618Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1535528Z ##[endgroup]
+Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1847512Z Halfwidth Kana Guard: OK
+Text Integrity Guard (PR)	Checkout (full history)	・ｿ2026-01-06T16:38:22.2057783Z ##[group]Run actions/checkout@v4
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2058335Z with:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2058695Z   fetch-depth: 0
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2059126Z   repository: Osuu-ops/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2060015Z   token: ***
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2060394Z   ssh-strict: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2060779Z   ssh-user: git
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2061168Z   persist-credentials: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2061607Z   clean: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2061992Z   sparse-checkout-cone-mode: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2062455Z   fetch-tags: false
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2062836Z   show-progress: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2063235Z   lfs: false
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2063587Z   submodules: false
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2063982Z   set-safe-directory: true
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2064405Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3104054Z Syncing repository: Osuu-ops/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3105749Z ##[group]Getting Git version info
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3106499Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3107916Z [command]/usr/bin/git version
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3183608Z git version 2.52.0
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3208456Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3222104Z Temporarily overriding HOME='/home/runner/work/_temp/f21cb714-8fee-4551-9b18-97977a823dfc' before making global git config changes
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3227142Z Adding repository directory to the temporary git global config as a safe directory
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3228310Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3266043Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3269609Z ##[group]Initializing the repository
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3273414Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3370867Z hint: Using 'master' as the name for the initial branch. This default branch name
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3372360Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3373725Z hint: to use in all of your new repositories, which will suppress this warning,
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3374782Z hint: call:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3375348Z hint:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3376062Z hint: 	git config --global init.defaultBranch <name>
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3377157Z hint:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3377807Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3378695Z hint: 'development'. The just-created branch can be renamed via this command:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3379389Z hint:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3379798Z hint: 	git branch -m <name>
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3380240Z hint:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3380827Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3382366Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3387159Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3422046Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3422828Z ##[group]Disabling automatic garbage collection
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3426146Z [command]/usr/bin/git config --local gc.auto 0
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3455684Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3456355Z ##[group]Setting up auth
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3462319Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3492904Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3834984Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.3865028Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4099690Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4130796Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4363577Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4397337Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4398154Z ##[group]Fetching the repository
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.4406399Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +310328a488c6ffabdcf52ef89a8ffd3f2fba0d72:refs/remotes/pull/619/merge
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8079201Z From https://github.com/Osuu-ops/yorisoidou-system
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8080685Z  * [new branch]      Osuu-ops-patch-1                         -> origin/Osuu-ops-patch-1
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8082283Z  * [new branch]      Osuu-ops-patch-2                         -> origin/Osuu-ops-patch-2
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8083796Z  * [new branch]      Osuu-ops-patch-3                         -> origin/Osuu-ops-patch-3
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8085353Z  * [new branch]      Osuu-ops-patch-4                         -> origin/Osuu-ops-patch-4
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8087015Z  * [new branch]      Osuu-ops-patch-6                         -> origin/Osuu-ops-patch-6
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8088570Z  * [new branch]      Osuu-ops-patch-7                         -> origin/Osuu-ops-patch-7
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8090453Z  * [new branch]      auto/chat-packet-update-20260102-194002  -> origin/auto/chat-packet-update-20260102-194002
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8092617Z  * [new branch]      auto/chat-packet-update-20260102-194620  -> origin/auto/chat-packet-update-20260102-194620
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8094707Z  * [new branch]      auto/chat-packet-update-20664550110      -> origin/auto/chat-packet-update-20664550110
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8096838Z  * [new branch]      auto/chat-packet-update-20673842256      -> origin/auto/chat-packet-update-20673842256
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8098998Z  * [new branch]      auto/mep-runbook-recreate-20260103-215009 -> origin/auto/mep-runbook-recreate-20260103-215009
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8101230Z  * [new branch]      auto/scope-suggest-pr437-20260104-144119 -> origin/auto/scope-suggest-pr437-20260104-144119
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8103443Z  * [new branch]      auto/scope-suggest-pr442-20260104-150150 -> origin/auto/scope-suggest-pr442-20260104-150150
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8105609Z  * [new branch]      auto/scope-suggest-pr600-20260106-120913 -> origin/auto/scope-suggest-pr600-20260106-120913
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8107750Z  * [new branch]      auto/scope-suggest-pr608-20260106-144603 -> origin/auto/scope-suggest-pr608-20260106-144603
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8110014Z  * [new branch]      auto/state-summary-update-20673443497    -> origin/auto/state-summary-update-20673443497
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8112327Z  * [new branch]      auto/state-summary-update-20673601402    -> origin/auto/state-summary-update-20673601402
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8114639Z  * [new branch]      auto/state-summary-update-20673657443    -> origin/auto/state-summary-update-20673657443
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8117096Z  * [new branch]      auto/state-summary-update-20673803469    -> origin/auto/state-summary-update-20673803469
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8119494Z  * [new branch]      auto/state-summary-update-20673841629    -> origin/auto/state-summary-update-20673841629
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8121786Z  * [new branch]      auto/state-summary-update-20674125460    -> origin/auto/state-summary-update-20674125460
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8124074Z  * [new branch]      auto/state-summary-update-20674278435    -> origin/auto/state-summary-update-20674278435
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8126002Z  * [new branch]      auto/state-summary-update-20674377844    -> origin/auto/state-summary-update-20674377844
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8127554Z  * [new branch]      auto/state-summary-update-20675301442    -> origin/auto/state-summary-update-20675301442
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8128836Z  * [new branch]      auto/state-summary-update-20676143268    -> origin/auto/state-summary-update-20676143268
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8130989Z  * [new branch]      auto/state-summary-update-20676904723    -> origin/auto/state-summary-update-20676904723
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8133204Z  * [new branch]      auto/state-summary-update-20676951197    -> origin/auto/state-summary-update-20676951197
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8135285Z  * [new branch]      auto/state-summary-update-20677228804    -> origin/auto/state-summary-update-20677228804
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8137224Z  * [new branch]      auto/state-summary-update-20677271426    -> origin/auto/state-summary-update-20677271426
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8138506Z  * [new branch]      auto/state-summary-update-20677406180    -> origin/auto/state-summary-update-20677406180
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8139764Z  * [new branch]      auto/state-summary-update-20677500269    -> origin/auto/state-summary-update-20677500269
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8141031Z  * [new branch]      auto/state-summary-update-20677531366    -> origin/auto/state-summary-update-20677531366
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8142287Z  * [new branch]      auto/state-summary-update-20677543550    -> origin/auto/state-summary-update-20677543550
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8143522Z  * [new branch]      auto/state-summary-update-20677607523    -> origin/auto/state-summary-update-20677607523
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8144901Z  * [new branch]      auto/state-summary-update-20677643544    -> origin/auto/state-summary-update-20677643544
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8146150Z  * [new branch]      auto/state-summary-update-20677664781    -> origin/auto/state-summary-update-20677664781
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8147597Z  * [new branch]      auto/state-summary-update-20677680092    -> origin/auto/state-summary-update-20677680092
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8148841Z  * [new branch]      auto/state-summary-update-20677714008    -> origin/auto/state-summary-update-20677714008
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8150092Z  * [new branch]      auto/state-summary-update-20677745896    -> origin/auto/state-summary-update-20677745896
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8151387Z  * [new branch]      auto/state-summary-update-20677827799    -> origin/auto/state-summary-update-20677827799
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8152666Z  * [new branch]      auto/state-summary-update-20677922547    -> origin/auto/state-summary-update-20677922547
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8153929Z  * [new branch]      auto/state-summary-update-20678050847    -> origin/auto/state-summary-update-20678050847
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8155219Z  * [new branch]      auto/state-summary-update-20678379501    -> origin/auto/state-summary-update-20678379501
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8156484Z  * [new branch]      auto/state-summary-update-20680946276    -> origin/auto/state-summary-update-20680946276
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8157932Z  * [new branch]      auto/state-summary-update-20681017358    -> origin/auto/state-summary-update-20681017358
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8159202Z  * [new branch]      auto/state-summary-update-20681125698    -> origin/auto/state-summary-update-20681125698
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8160448Z  * [new branch]      auto/state-summary-update-20681494908    -> origin/auto/state-summary-update-20681494908
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8161704Z  * [new branch]      auto/state-summary-update-20682038436    -> origin/auto/state-summary-update-20682038436
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8162959Z  * [new branch]      auto/state-summary-update-20682621101    -> origin/auto/state-summary-update-20682621101
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8164198Z  * [new branch]      auto/state-summary-update-20687505124    -> origin/auto/state-summary-update-20687505124
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8165451Z  * [new branch]      auto/state-summary-update-20688990392    -> origin/auto/state-summary-update-20688990392
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8166819Z  * [new branch]      auto/state-summary-update-20689046631    -> origin/auto/state-summary-update-20689046631
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8168110Z  * [new branch]      auto/state-summary-update-20689130389    -> origin/auto/state-summary-update-20689130389
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8169344Z  * [new branch]      auto/state-summary-update-20689170351    -> origin/auto/state-summary-update-20689170351
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8170778Z  * [new branch]      auto/state-summary-update-20689192050    -> origin/auto/state-summary-update-20689192050
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8172140Z  * [new branch]      auto/state-summary-update-20689263659    -> origin/auto/state-summary-update-20689263659
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8173751Z  * [new branch]      auto/state-summary-update-20690994605    -> origin/auto/state-summary-update-20690994605
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8174979Z  * [new branch]      auto/state-summary-update-20691229671    -> origin/auto/state-summary-update-20691229671
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8176221Z  * [new branch]      auto/state-summary-update-20691303978    -> origin/auto/state-summary-update-20691303978
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8177623Z  * [new branch]      auto/state-summary-update-20691341185    -> origin/auto/state-summary-update-20691341185
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8178869Z  * [new branch]      auto/state-summary-update-20691503744    -> origin/auto/state-summary-update-20691503744
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8180106Z  * [new branch]      auto/state-summary-update-20691619174    -> origin/auto/state-summary-update-20691619174
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8181342Z  * [new branch]      auto/state-summary-update-20691862557    -> origin/auto/state-summary-update-20691862557
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8182594Z  * [new branch]      auto/state-summary-update-20692262188    -> origin/auto/state-summary-update-20692262188
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8183843Z  * [new branch]      auto/state-summary-update-20692444987    -> origin/auto/state-summary-update-20692444987
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8185068Z  * [new branch]      auto/state-summary-update-20692471454    -> origin/auto/state-summary-update-20692471454
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8186289Z  * [new branch]      auto/state-summary-update-20692585217    -> origin/auto/state-summary-update-20692585217
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8187683Z  * [new branch]      auto/state-summary-update-20692840917    -> origin/auto/state-summary-update-20692840917
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8188915Z  * [new branch]      auto/state-summary-update-20692841981    -> origin/auto/state-summary-update-20692841981
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8190154Z  * [new branch]      auto/state-summary-update-20693006255    -> origin/auto/state-summary-update-20693006255
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8191470Z  * [new branch]      auto/state-summary-update-20693073974    -> origin/auto/state-summary-update-20693073974
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8192731Z  * [new branch]      auto/state-summary-update-20693150786    -> origin/auto/state-summary-update-20693150786
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8193971Z  * [new branch]      auto/state-summary-update-20693176208    -> origin/auto/state-summary-update-20693176208
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8195206Z  * [new branch]      auto/state-summary-update-20693254817    -> origin/auto/state-summary-update-20693254817
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8196474Z  * [new branch]      auto/state-summary-update-20693738890    -> origin/auto/state-summary-update-20693738890
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8197893Z  * [new branch]      auto/state-summary-update-20693785172    -> origin/auto/state-summary-update-20693785172
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8199444Z  * [new branch]      auto/state-summary-update-20693900802    -> origin/auto/state-summary-update-20693900802
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8201541Z  * [new branch]      auto/state-summary-update-20737629765    -> origin/auto/state-summary-update-20737629765
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8203947Z  * [new branch]      auto/state-summary-update-20751914155    -> origin/auto/state-summary-update-20751914155
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8205903Z  * [new branch]      backup/crash-20260107-011333             -> origin/backup/crash-20260107-011333
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8207930Z  * [new branch]      backup/crash-20260107-013037             -> origin/backup/crash-20260107-013037
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8210074Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8212483Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8214888Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8217060Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8218783Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8220209Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8221638Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8223071Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8224610Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8226106Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8227668Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8229023Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8230391Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8231731Z  * [new branch]      biz/parts-business-spec-20260104-051453  -> origin/biz/parts-business-spec-20260104-051453
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8233131Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8234635Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8236252Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8238013Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8239425Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8240908Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8242372Z  * [new branch]      biz/reviewtype-mapping-20260104-203306   -> origin/biz/reviewtype-mapping-20260104-203306
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8243652Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428  -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8244929Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8246234Z  * [new branch]      biz/work-business-spec-20260104-050739   -> origin/biz/work-business-spec-20260104-050739
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8247646Z  * [new branch]      biz/work-normalize-20260105-004002       -> origin/biz/work-normalize-20260105-004002
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8248967Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8250382Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8251838Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8253358Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8254871Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8256576Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8258401Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8260357Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8262081Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8263577Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059  -> origin/chore/mep-gate-dispatch-20260103-063059
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8265130Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8266914Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8268362Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8269636Z  * [new branch]      ci/chat-packet-schedule-20260103         -> origin/ci/chat-packet-schedule-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8270873Z  * [new branch]      ci/fix-chat-packet-schedule-20260103     -> origin/ci/fix-chat-packet-schedule-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8272288Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8273888Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8275540Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8277245Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8278754Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8280141Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8281529Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8282927Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8284484Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8285944Z  * [new branch]      docs/idea-cleanup-20260104-214212        -> origin/docs/idea-cleanup-20260104-214212
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8287286Z  * [new branch]      docs/idea-index-add-bom-20260104-215056  -> origin/docs/idea-index-add-bom-20260104-215056
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8288652Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8290116Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8291502Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8292951Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8294361Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303  -> origin/docs/mep-add-idea-vault-20260103-205303
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8295737Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8297399Z  * [new branch]      docs/mep-add-playbook-20260103-151247    -> origin/docs/mep-add-playbook-20260103-151247
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8298634Z  * [new branch]      docs/mep-add-runbook-20260103-150840     -> origin/docs/mep-add-runbook-20260103-150840
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8300042Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8301495Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8302964Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8304588Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8306249Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8307839Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8309216Z  * [new branch]      docs/mep-guidance-align-20260104-153937  -> origin/docs/mep-guidance-align-20260104-153937
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8310628Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8312126Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8313495Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8314756Z  * [new branch]      docs/mep-idea-flow-20260103-212432       -> origin/docs/mep-idea-flow-20260103-212432
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8316110Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8317640Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8318993Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8320321Z  * [new branch]      docs/mep-lease-continue-20260103-220947  -> origin/docs/mep-lease-continue-20260103-220947
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8321826Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8323578Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8325278Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8326850Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905    -> origin/docs/mep-repair-1-2-3-20260103-153905
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8328267Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8329853Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8331291Z  * [new branch]      docs/ops-chat-packet-followup-20260103   -> origin/docs/ops-chat-packet-followup-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8332459Z  * [new branch]      docs/ops-rules-20260103                  -> origin/docs/ops-rules-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8333615Z  * [new branch]      docs/ops-scope-suggest-20260103-150621   -> origin/docs/ops-scope-suggest-20260103-150621
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8335056Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8336882Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8338468Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8340046Z  * [new branch]      docs/runbook-autoappend/20260106-231639  -> origin/docs/runbook-autoappend/20260106-231639
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8341331Z  * [new branch]      docs/runbook-autoappend/20260106-232943  -> origin/docs/runbook-autoappend/20260106-232943
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8342617Z  * [new branch]      docs/runbook-autoappend/20260106-233315  -> origin/docs/runbook-autoappend/20260106-233315
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8343924Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8345289Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8347019Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8348530Z  * [new branch]      docs/state-current-v12-20260103-153345   -> origin/docs/state-current-v12-20260103-153345
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8349843Z  * [new branch]      docs/test-chat-packet-schedule-20260103  -> origin/docs/test-chat-packet-schedule-20260103
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8351173Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8352617Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8354240Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8355878Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8357528Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8358986Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8360417Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8362684Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8365243Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8368168Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8370501Z  * [new branch]      feat/chat-packet-self-heal               -> origin/feat/chat-packet-self-heal
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8371695Z  * [new branch]      feat/chat-packet-self-heal-rerun         -> origin/feat/chat-packet-self-heal-rerun
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8372890Z  * [new branch]      feat/mep-gate-pr-20260103-061907         -> origin/feat/mep-gate-pr-20260103-061907
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8374017Z  * [new branch]      feat/scope-guard-phase1                  -> origin/feat/scope-guard-phase1
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8375153Z  * [new branch]      feat/scope-suggest-20260103-072132       -> origin/feat/scope-suggest-20260103-072132
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8376275Z  * [new branch]      feat/self-heal-auto-prs                  -> origin/feat/self-heal-auto-prs
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8377560Z  * [new branch]      fix/add-debug-artifact-20260106-222859   -> origin/fix/add-debug-artifact-20260106-222859
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8379047Z  * [new branch]      fix/business-master-spec-mojibake-20260104-020827 -> origin/fix/business-master-spec-mojibake-20260104-020827
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8380712Z  * [new branch]      fix/mep-gate-register-20260103-063318    -> origin/fix/mep-gate-register-20260103-063318
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8381954Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8383487Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8384977Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8386294Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8387779Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8389166Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8390579Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8391978Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8393066Z  * [new branch]      main                                     -> origin/main
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8394199Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8395773Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8397535Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8399239Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8400776Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8402047Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8403331Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8404800Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8406107Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8407361Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8409070Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8410835Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8412080Z  * [new branch]      test/seed-mep-gate-20260103-062802       -> origin/test/seed-mep-gate-20260103-062802
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8413499Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8414913Z  * [new branch]      tools/idea-capture-20260104-211626       -> origin/tools/idea-capture-20260104-211626
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8416158Z  * [new branch]      tools/mep-fix-param-top-20260103-215224  -> origin/tools/mep-fix-param-top-20260103-215224
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8417787Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8419150Z  * [new branch]      tools/mep-idea-receipt-20260103-214537   -> origin/tools/mep-idea-receipt-20260103-214537
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8420806Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8422464Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8423958Z  * [new branch]      ui/alert-label-display-20260104-194620   -> origin/ui/alert-label-display-20260104-194620
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8425227Z  * [new branch]      ui/expense-ui-master-20260104-052304     -> origin/ui/expense-ui-master-20260104-052304
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8426481Z  * [new branch]      ui/expense-ui-spec-20260104-052334       -> origin/ui/expense-ui-spec-20260104-052334
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8428028Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8429451Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8430762Z  * [new branch]      ui/order-ui-master-20260104-050304       -> origin/ui/order-ui-master-20260104-050304
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8431923Z  * [new branch]      ui/order-ui-spec-20260104-050613         -> origin/ui/order-ui-spec-20260104-050613
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8433094Z  * [new branch]      ui/parts-ui-master-20260104-051901       -> origin/ui/parts-ui-master-20260104-051901
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8434257Z  * [new branch]      ui/parts-ui-spec-20260104-052140         -> origin/ui/parts-ui-spec-20260104-052140
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8435510Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8436874Z  * [new branch]      ui/work-ui-master-20260104-051037        -> origin/ui/work-ui-master-20260104-051037
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8438042Z  * [new branch]      ui/work-ui-master-20260104-051204        -> origin/ui/work-ui-master-20260104-051204
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8439190Z  * [new branch]      ui/work-ui-spec-20260104-051311          -> origin/ui/work-ui-spec-20260104-051311
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8440306Z  * [new branch]      wip/auto-save-20260106-232022            -> origin/wip/auto-save-20260106-232022
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8441521Z  * [new branch]      work/chat-packet-human-20260103-162222   -> origin/work/chat-packet-human-20260103-162222
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8442824Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8444098Z  * [new branch]      work/idea-capture-20260103-215353        -> origin/work/idea-capture-20260103-215353
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8445277Z  * [new branch]      work/idea-capture-20260103-220645        -> origin/work/idea-capture-20260103-220645
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8446439Z  * [new branch]      work/idea-capture-20260104-184000        -> origin/work/idea-capture-20260104-184000
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8447761Z  * [new branch]      work/idea-finalize-20260103-220329       -> origin/work/idea-finalize-20260103-220329
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8449319Z  * [new branch]      work/idea-receipt-20260103-220025        -> origin/work/idea-receipt-20260103-220025
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8451301Z  * [new branch]      work/mep-doc-link-20260103-152129        -> origin/work/mep-doc-link-20260103-152129
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8453244Z  * [new tag]         backup/recovery-f0e7624_20260107011639   -> backup/recovery-f0e7624_20260107011639
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8454337Z  * [new ref]         310328a488c6ffabdcf52ef89a8ffd3f2fba0d72 -> pull/619/merge
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8462804Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8463928Z ##[group]Determining the checkout info
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8464743Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8470695Z [command]/usr/bin/git sparse-checkout disable
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8512089Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8539222Z ##[group]Checking out the ref
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8542233Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/619/merge
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8820908Z Note: switching to 'refs/remotes/pull/619/merge'.
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8822066Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8822668Z You are in 'detached HEAD' state. You can look around, make experimental
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8824152Z changes and commit them, and you can discard any commits you make in this
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8825839Z state without impacting any branches by switching back to a branch.
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8827001Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8827573Z If you want to create a new branch to retain commits you create, you may
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8828913Z do so (now or later) by using -c with the switch command. Example:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8829739Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8830057Z   git switch -c <new-branch-name>
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8830619Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8902251Z Or undo this operation with:
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8902977Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8903284Z   git switch -
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8903753Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8904479Z Turn off this advice by setting config variable advice.detachedHead to false
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8905548Z 
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8906615Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8910007Z ##[endgroup]
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8911819Z [command]/usr/bin/git log -1 --format=%H
+Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.8912824Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	・ｿ2026-01-06T16:38:22.9057306Z ##[group]Run set -euo pipefail
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9057998Z [36;1mset -euo pipefail[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9058476Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9058865Z [36;1mecho "Base: ${BASE_SHA}"[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9059508Z [36;1mecho "Head: ${HEAD_SHA}"[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9059989Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9060367Z [36;1mpython3 - <<'PY'[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9060869Z [36;1mimport os, subprocess, fnmatch, sys[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9061407Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9061807Z [36;1mbase = os.environ["BASE_SHA"][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9062344Z [36;1mhead = os.environ["HEAD_SHA"][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9063006Z [36;1mmax_lines = int(os.environ.get("MAX_CHANGED_LINES", "200"))[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9063680Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9064069Z [36;1mglobs = [][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9064689Z [36;1mfor line in os.environ.get("SENSITIVE_GLOBS", "").splitlines():[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9065410Z [36;1m  line = line.strip()[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9065945Z [36;1m  if line and not line.startswith("#"):[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9066568Z [36;1m    globs.append(line)[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9067166Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9067551Z [36;1mdef sh(cmd: str) -> str:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9068264Z [36;1m  return subprocess.check_output(cmd, shell=True, text=True).strip()[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9068984Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9069406Z [36;1mdef is_sensitive(path: str) -> bool:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9069962Z [36;1m  for g in globs:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9070623Z [36;1m    if fnmatch.fnmatch(path, g) or path.endswith("/" + g) or path == g:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9071336Z [36;1m      return True[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9071804Z [36;1m  return False[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9072253Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9072622Z [36;1mif not globs:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9073241Z [36;1m  print("::warning::SENSITIVE_GLOBS is empty; nothing to check.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9073938Z [36;1m  sys.exit(0)[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9074373Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9074879Z [36;1mraw = sh(f"git diff --name-status {base}..{head} || true")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9075641Z [36;1mlines = [ln for ln in raw.splitlines() if ln.strip()][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9076258Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9076626Z [36;1mchanges = [][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9077371Z [36;1mfor ln in lines:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9077857Z [36;1m  parts = ln.split("\t")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9078383Z [36;1m  st = parts[0].strip()[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9078939Z [36;1m  if st.startswith("R") and len(parts) >= 3:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9079664Z [36;1m    changes.append((st, parts[2].strip(), parts[1].strip()))[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9080339Z [36;1m  elif len(parts) >= 2:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9080926Z [36;1m    changes.append((st, parts[1].strip(), None))[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9081525Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9082273Z [36;1msensitive_changes = [(st, p, old) for (st, p, old) in changes if is_sensitive(p) or (old and is_sensitive(old))][0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9083371Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9083774Z [36;1mif not sensitive_changes:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9084357Z [36;1m  print("No sensitive files changed. (OK)")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9084939Z [36;1m  sys.exit(0)[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9085372Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9085791Z [36;1mprint("Sensitive files changed:")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9086375Z [36;1mfor st, p, old in sensitive_changes:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9087165Z [36;1m  if old:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9087614Z [36;1m    print(f" - {st} {old} -> {p}")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9088150Z [36;1m  else:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9088565Z [36;1m    print(f" - {st} {p}")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9089055Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9089423Z [36;1merrors = 0[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9089839Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9090269Z [36;1mfor st, p, old in sensitive_changes:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9090850Z [36;1m  if st == "D":[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9091487Z [36;1m    print(f"::error file={p}::Sensitive file deletion is not allowed.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9092388Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9092916Z [36;1m  if st.startswith("R") or st.startswith("C"):[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9093535Z [36;1m    target = p if p else (old or "")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9094331Z [36;1m    print(f"::error file={target}::Rename/Copy for sensitive files is not allowed.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095097Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095531Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095965Z [36;1mfor st, p, old in sensitive_changes:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9096656Z [36;1m  if st == "D" or st.startswith("R") or st.startswith("C"):[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9097425Z [36;1m    continue[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9097846Z [36;1m  try:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9098275Z [36;1m    data = open(p, "rb").read()[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9098826Z [36;1m  except FileNotFoundError:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9099517Z [36;1m    print(f"::error file={p}::Sensitive file missing in workspace.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9100211Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9100656Z [36;1m    continue[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9101076Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9101456Z [36;1m  if b"\r\n" in data:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9102108Z [36;1m    print(f"::error file={p}::CRLF detected (\\r\\n). Must be LF only.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9102806Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9103248Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9103610Z [36;1m  try:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9104067Z [36;1m    data.decode("utf-8", errors="strict")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9104678Z [36;1m  except UnicodeDecodeError as e:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9105337Z [36;1m    print(f"::error file={p}::Invalid UTF-8 detected: {e}")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9105992Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9106420Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9106975Z [36;1m  if len(data) > 0 and not data.endswith(b"\n"):[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9107781Z [36;1m    print(f"::error file={p}::Missing final newline (file must end with \\n).")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9108534Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9108994Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9109428Z [36;1mfor st, p, old in sensitive_changes:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9110096Z [36;1m  if st == "D" or st.startswith("R") or st.startswith("C"):[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9110724Z [36;1m    continue[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9111347Z [36;1m  out = sh(f"git diff --numstat {base}..{head} -- {p} || true")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9111998Z [36;1m  if not out:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9112449Z [36;1m    continue[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9112895Z [36;1m  parts = out.split()[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9113544Z [36;1m  if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9114313Z [36;1m    add = int(parts[0]); dele = int(parts[1])[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9114899Z [36;1m    total = add + dele[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9115410Z [36;1m    if total > max_lines:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9116449Z [36;1m      print(f"::error file={p}::Huge diff detected: {total} lines changed (add {add} + del {dele}) > {max_lines}.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9117614Z [36;1m      errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9118077Z [36;1m  else:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9118937Z [36;1m    print(f"::error file={p}::Unexpected diff stat (possibly binary/rename). Not allowed for sensitive files: {out}")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9119921Z [36;1m    errors += 1[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9120359Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9120742Z [36;1mif errors:[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9121236Z [36;1m  print(f"FAILED: {errors} issue(s) found.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9121826Z [36;1m  sys.exit(1)[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9122262Z [36;1m[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9122720Z [36;1mprint("OK: Text Integrity Guard passed.")[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9123295Z [36;1mPY[0m
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9160508Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9161172Z env:
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9161633Z   BASE_SHA: 30d214e188f964d46ca82aaa75c4e315f57a262e
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9162294Z   HEAD_SHA: 3e6c27245b1461aa5de5dc674c3856f6bd788895
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9163060Z   MAX_CHANGED_LINES: 200
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9163683Z   SENSITIVE_GLOBS: platform/MEP/03_BUSINESS/tictactoe/master_spec
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9164380Z ##[endgroup]
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9221840Z Base: 30d214e188f964d46ca82aaa75c4e315f57a262e
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9222547Z Head: 3e6c27245b1461aa5de5dc674c3856f6bd788895
+Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9484030Z No sensitive files changed. (OK)
+Text Integrity Guard (PR)	Post Checkout (full history)	・ｿ2026-01-06T16:38:22.9632148Z Post job cleanup.
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0573155Z [command]/usr/bin/git version
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0609880Z git version 2.52.0
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0657694Z Temporarily overriding HOME='/home/runner/work/_temp/fe2b8280-cbd0-47d0-87fd-3b5f1e13216a' before making global git config changes
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0659977Z Adding repository directory to the temporary git global config as a safe directory
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0662650Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0697918Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0730308Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0969766Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.0992943Z http.https://github.com/.extraheader
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.1004988Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.1037658Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.1273157Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Text Integrity Guard (PR)	Post Checkout (full history)	2026-01-06T16:38:23.1310083Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Text Integrity Guard (PR)	Complete job	・ｿ2026-01-06T16:38:23.1681942Z Cleaning up orphan processes

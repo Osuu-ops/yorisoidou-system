@@ -1,0 +1,1 @@
+﻿$out.Add("状態: main clean / open PR 0 / 最新HEAD=" + $head)

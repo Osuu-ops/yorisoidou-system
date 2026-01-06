@@ -1,0 +1,23 @@
+﻿--- 20755051684.log : 1 lines 20..41 ---
+    20: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6692375Z ##[group]GITHUB_TOKEN Permissions
+    21: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6694894Z Contents: read
+    22: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6695713Z Metadata: read
+    23: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6696410Z ##[endgroup]
+    24: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6700005Z Secret source: Actions
+    25: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.6701007Z Prepare workflow directory
+    26: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.7160899Z Prepare all required actions
+    27: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.7215635Z Getting action download info
+    28: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:21.9131536Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+    29: Text Integrity Guard (PR)	Set up job	2026-01-06T16:38:22.0883753Z Complete job name: Text Integrity Guard (PR)
+    30: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	・ｿ2026-01-06T16:38:22.1478015Z ##[group]Run set -euo pipefail
+    31: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1478654Z [36;1mset -euo pipefail[0m
+    32: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479121Z [36;1mMAX=50[0m
+    33: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479525Z [36;1mpython3 - <<'PY'[0m
+    34: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1479963Z [36;1mimport os, sys, re[0m
+    35: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1480482Z [36;1mmax_n = int(os.environ.get('MAX','50'))[0m
+    36: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1481004Z [36;1mpaths = [[0m
+    37: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1481494Z [36;1m  'platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec',[0m
+    38: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482154Z [36;1m  'platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec',[0m
+    39: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482700Z [36;1m][0m
+    40: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483220Z [36;1mpat = re.compile(r'[\\uFF61-\\uFF9F]')  # halfwidth-kana range[0m
+    41: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483832Z [36;1mbad = [][0m

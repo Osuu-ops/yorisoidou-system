@@ -1,0 +1,570 @@
+﻿suggest	Set up job	・ｿ2026-01-06T16:38:21.5761396Z Current runner version: '2.330.0'
+suggest	Set up job	2026-01-06T16:38:21.5796334Z ##[group]Runner Image Provisioner
+suggest	Set up job	2026-01-06T16:38:21.5797782Z Hosted Compute Agent
+suggest	Set up job	2026-01-06T16:38:21.5798694Z Version: 20251211.462
+suggest	Set up job	2026-01-06T16:38:21.5799790Z Commit: 6cbad8c2bb55d58165063d031ccabf57e2d2db61
+suggest	Set up job	2026-01-06T16:38:21.5801085Z Build Date: 2025-12-11T16:28:49Z
+suggest	Set up job	2026-01-06T16:38:21.5802201Z Worker ID: {6235c812-37e0-4fd7-802d-f9cf64b58484}
+suggest	Set up job	2026-01-06T16:38:21.5803557Z ##[endgroup]
+suggest	Set up job	2026-01-06T16:38:21.5804422Z ##[group]Operating System
+suggest	Set up job	2026-01-06T16:38:21.5805284Z Ubuntu
+suggest	Set up job	2026-01-06T16:38:21.5806146Z 24.04.3
+suggest	Set up job	2026-01-06T16:38:21.5807072Z LTS
+suggest	Set up job	2026-01-06T16:38:21.5807893Z ##[endgroup]
+suggest	Set up job	2026-01-06T16:38:21.5808953Z ##[group]Runner Image
+suggest	Set up job	2026-01-06T16:38:21.5809898Z Image: ubuntu-24.04
+suggest	Set up job	2026-01-06T16:38:21.5810958Z Version: 20251215.174.1
+suggest	Set up job	2026-01-06T16:38:21.5812854Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251215.174/images/ubuntu/Ubuntu2404-Readme.md
+suggest	Set up job	2026-01-06T16:38:21.5815317Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251215.174
+suggest	Set up job	2026-01-06T16:38:21.5817703Z ##[endgroup]
+suggest	Set up job	2026-01-06T16:38:21.5819680Z ##[group]GITHUB_TOKEN Permissions
+suggest	Set up job	2026-01-06T16:38:21.5822547Z Contents: write
+suggest	Set up job	2026-01-06T16:38:21.5823766Z Metadata: read
+suggest	Set up job	2026-01-06T16:38:21.5824840Z PullRequests: write
+suggest	Set up job	2026-01-06T16:38:21.5825770Z ##[endgroup]
+suggest	Set up job	2026-01-06T16:38:21.5829235Z Secret source: Actions
+suggest	Set up job	2026-01-06T16:38:21.5830352Z Prepare workflow directory
+suggest	Set up job	2026-01-06T16:38:21.6581318Z Prepare all required actions
+suggest	Set up job	2026-01-06T16:38:21.6638535Z Getting action download info
+suggest	Set up job	2026-01-06T16:38:21.8621530Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+suggest	Set up job	2026-01-06T16:38:22.0252311Z Complete job name: suggest
+suggest	Checkout (full history, PAT)	・ｿ2026-01-06T16:38:22.0887352Z ##[group]Run actions/checkout@v4
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0888446Z with:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0888875Z   fetch-depth: 0
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0889912Z   token: ***
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0890387Z   repository: Osuu-ops/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0890949Z   ssh-strict: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0891512Z   ssh-user: git
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0892158Z   persist-credentials: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0892719Z   clean: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0893139Z   sparse-checkout-cone-mode: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0893629Z   fetch-tags: false
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0894063Z   show-progress: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0894496Z   lfs: false
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0894871Z   submodules: false
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0895290Z   set-safe-directory: true
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0896079Z env:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0897264Z   GH_TOKEN: ***
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0897789Z   SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.0898369Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2024846Z Syncing repository: Osuu-ops/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2027145Z ##[group]Getting Git version info
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2028414Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2030312Z [command]/usr/bin/git version
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2092036Z git version 2.52.0
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2118524Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2133788Z Temporarily overriding HOME='/home/runner/work/_temp/33c69293-0de8-4163-b717-4a67e6a9bcb2' before making global git config changes
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2136231Z Adding repository directory to the temporary git global config as a safe directory
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2140448Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2177747Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2181502Z ##[group]Initializing the repository
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2186319Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2274819Z hint: Using 'master' as the name for the initial branch. This default branch name
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2276288Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2277832Z hint: to use in all of your new repositories, which will suppress this warning,
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2279197Z hint: call:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2279669Z hint:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2280526Z hint: 	git config --global init.defaultBranch <name>
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2281600Z hint:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2282612Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2284267Z hint: 'development'. The just-created branch can be renamed via this command:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2285625Z hint:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2286313Z hint: 	git branch -m <name>
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2287322Z hint:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2288348Z hint: Disable this message with "git config set advice.defaultBranchName false"
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2290349Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2293498Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2325429Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2326658Z ##[group]Disabling automatic garbage collection
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2330559Z [command]/usr/bin/git config --local gc.auto 0
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2358389Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2359628Z ##[group]Setting up auth
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2365753Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2396287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2711227Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2741191Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2961068Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.2991962Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.3210765Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.3244462Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.3245738Z ##[group]Fetching the repository
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.3255075Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +310328a488c6ffabdcf52ef89a8ffd3f2fba0d72:refs/remotes/pull/619/merge
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6773083Z From https://github.com/Osuu-ops/yorisoidou-system
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6776535Z  * [new branch]      Osuu-ops-patch-1                         -> origin/Osuu-ops-patch-1
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6778751Z  * [new branch]      Osuu-ops-patch-2                         -> origin/Osuu-ops-patch-2
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6780738Z  * [new branch]      Osuu-ops-patch-3                         -> origin/Osuu-ops-patch-3
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6782709Z  * [new branch]      Osuu-ops-patch-4                         -> origin/Osuu-ops-patch-4
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6784652Z  * [new branch]      Osuu-ops-patch-6                         -> origin/Osuu-ops-patch-6
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6786577Z  * [new branch]      Osuu-ops-patch-7                         -> origin/Osuu-ops-patch-7
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6789135Z  * [new branch]      auto/chat-packet-update-20260102-194002  -> origin/auto/chat-packet-update-20260102-194002
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6791899Z  * [new branch]      auto/chat-packet-update-20260102-194620  -> origin/auto/chat-packet-update-20260102-194620
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6794648Z  * [new branch]      auto/chat-packet-update-20664550110      -> origin/auto/chat-packet-update-20664550110
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6797379Z  * [new branch]      auto/chat-packet-update-20673842256      -> origin/auto/chat-packet-update-20673842256
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6800143Z  * [new branch]      auto/mep-runbook-recreate-20260103-215009 -> origin/auto/mep-runbook-recreate-20260103-215009
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6803215Z  * [new branch]      auto/scope-suggest-pr437-20260104-144119 -> origin/auto/scope-suggest-pr437-20260104-144119
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6805930Z  * [new branch]      auto/scope-suggest-pr442-20260104-150150 -> origin/auto/scope-suggest-pr442-20260104-150150
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6808826Z  * [new branch]      auto/scope-suggest-pr600-20260106-120913 -> origin/auto/scope-suggest-pr600-20260106-120913
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6811497Z  * [new branch]      auto/scope-suggest-pr608-20260106-144603 -> origin/auto/scope-suggest-pr608-20260106-144603
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6814173Z  * [new branch]      auto/state-summary-update-20673443497    -> origin/auto/state-summary-update-20673443497
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6817072Z  * [new branch]      auto/state-summary-update-20673601402    -> origin/auto/state-summary-update-20673601402
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6819805Z  * [new branch]      auto/state-summary-update-20673657443    -> origin/auto/state-summary-update-20673657443
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6822310Z  * [new branch]      auto/state-summary-update-20673803469    -> origin/auto/state-summary-update-20673803469
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6824848Z  * [new branch]      auto/state-summary-update-20673841629    -> origin/auto/state-summary-update-20673841629
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6828109Z  * [new branch]      auto/state-summary-update-20674125460    -> origin/auto/state-summary-update-20674125460
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6830673Z  * [new branch]      auto/state-summary-update-20674278435    -> origin/auto/state-summary-update-20674278435
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6833315Z  * [new branch]      auto/state-summary-update-20674377844    -> origin/auto/state-summary-update-20674377844
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6835907Z  * [new branch]      auto/state-summary-update-20675301442    -> origin/auto/state-summary-update-20675301442
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6839092Z  * [new branch]      auto/state-summary-update-20676143268    -> origin/auto/state-summary-update-20676143268
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6840729Z  * [new branch]      auto/state-summary-update-20676904723    -> origin/auto/state-summary-update-20676904723
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6842045Z  * [new branch]      auto/state-summary-update-20676951197    -> origin/auto/state-summary-update-20676951197
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6843347Z  * [new branch]      auto/state-summary-update-20677228804    -> origin/auto/state-summary-update-20677228804
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6844721Z  * [new branch]      auto/state-summary-update-20677271426    -> origin/auto/state-summary-update-20677271426
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6846061Z  * [new branch]      auto/state-summary-update-20677406180    -> origin/auto/state-summary-update-20677406180
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6847697Z  * [new branch]      auto/state-summary-update-20677500269    -> origin/auto/state-summary-update-20677500269
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6849034Z  * [new branch]      auto/state-summary-update-20677531366    -> origin/auto/state-summary-update-20677531366
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6850325Z  * [new branch]      auto/state-summary-update-20677543550    -> origin/auto/state-summary-update-20677543550
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6851672Z  * [new branch]      auto/state-summary-update-20677607523    -> origin/auto/state-summary-update-20677607523
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6852972Z  * [new branch]      auto/state-summary-update-20677643544    -> origin/auto/state-summary-update-20677643544
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6854276Z  * [new branch]      auto/state-summary-update-20677664781    -> origin/auto/state-summary-update-20677664781
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6855565Z  * [new branch]      auto/state-summary-update-20677680092    -> origin/auto/state-summary-update-20677680092
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6857067Z  * [new branch]      auto/state-summary-update-20677714008    -> origin/auto/state-summary-update-20677714008
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6858445Z  * [new branch]      auto/state-summary-update-20677745896    -> origin/auto/state-summary-update-20677745896
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6859741Z  * [new branch]      auto/state-summary-update-20677827799    -> origin/auto/state-summary-update-20677827799
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6861231Z  * [new branch]      auto/state-summary-update-20677922547    -> origin/auto/state-summary-update-20677922547
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6862526Z  * [new branch]      auto/state-summary-update-20678050847    -> origin/auto/state-summary-update-20678050847
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6864041Z  * [new branch]      auto/state-summary-update-20678379501    -> origin/auto/state-summary-update-20678379501
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6865885Z  * [new branch]      auto/state-summary-update-20680946276    -> origin/auto/state-summary-update-20680946276
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6867525Z  * [new branch]      auto/state-summary-update-20681017358    -> origin/auto/state-summary-update-20681017358
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6868840Z  * [new branch]      auto/state-summary-update-20681125698    -> origin/auto/state-summary-update-20681125698
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6870149Z  * [new branch]      auto/state-summary-update-20681494908    -> origin/auto/state-summary-update-20681494908
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6871442Z  * [new branch]      auto/state-summary-update-20682038436    -> origin/auto/state-summary-update-20682038436
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6872732Z  * [new branch]      auto/state-summary-update-20682621101    -> origin/auto/state-summary-update-20682621101
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6874026Z  * [new branch]      auto/state-summary-update-20687505124    -> origin/auto/state-summary-update-20687505124
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6875313Z  * [new branch]      auto/state-summary-update-20688990392    -> origin/auto/state-summary-update-20688990392
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6876608Z  * [new branch]      auto/state-summary-update-20689046631    -> origin/auto/state-summary-update-20689046631
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6878014Z  * [new branch]      auto/state-summary-update-20689130389    -> origin/auto/state-summary-update-20689130389
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6879528Z  * [new branch]      auto/state-summary-update-20689170351    -> origin/auto/state-summary-update-20689170351
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6880823Z  * [new branch]      auto/state-summary-update-20689192050    -> origin/auto/state-summary-update-20689192050
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6882136Z  * [new branch]      auto/state-summary-update-20689263659    -> origin/auto/state-summary-update-20689263659
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6883428Z  * [new branch]      auto/state-summary-update-20690994605    -> origin/auto/state-summary-update-20690994605
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6884720Z  * [new branch]      auto/state-summary-update-20691229671    -> origin/auto/state-summary-update-20691229671
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6886027Z  * [new branch]      auto/state-summary-update-20691303978    -> origin/auto/state-summary-update-20691303978
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6887592Z  * [new branch]      auto/state-summary-update-20691341185    -> origin/auto/state-summary-update-20691341185
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6888928Z  * [new branch]      auto/state-summary-update-20691503744    -> origin/auto/state-summary-update-20691503744
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6890283Z  * [new branch]      auto/state-summary-update-20691619174    -> origin/auto/state-summary-update-20691619174
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6891588Z  * [new branch]      auto/state-summary-update-20691862557    -> origin/auto/state-summary-update-20691862557
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6892874Z  * [new branch]      auto/state-summary-update-20692262188    -> origin/auto/state-summary-update-20692262188
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6894176Z  * [new branch]      auto/state-summary-update-20692444987    -> origin/auto/state-summary-update-20692444987
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6895469Z  * [new branch]      auto/state-summary-update-20692471454    -> origin/auto/state-summary-update-20692471454
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6896948Z  * [new branch]      auto/state-summary-update-20692585217    -> origin/auto/state-summary-update-20692585217
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6898334Z  * [new branch]      auto/state-summary-update-20692840917    -> origin/auto/state-summary-update-20692840917
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6899645Z  * [new branch]      auto/state-summary-update-20692841981    -> origin/auto/state-summary-update-20692841981
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6900971Z  * [new branch]      auto/state-summary-update-20693006255    -> origin/auto/state-summary-update-20693006255
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6902432Z  * [new branch]      auto/state-summary-update-20693073974    -> origin/auto/state-summary-update-20693073974
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6903885Z  * [new branch]      auto/state-summary-update-20693150786    -> origin/auto/state-summary-update-20693150786
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6905222Z  * [new branch]      auto/state-summary-update-20693176208    -> origin/auto/state-summary-update-20693176208
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6906835Z  * [new branch]      auto/state-summary-update-20693254817    -> origin/auto/state-summary-update-20693254817
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6908173Z  * [new branch]      auto/state-summary-update-20693738890    -> origin/auto/state-summary-update-20693738890
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6909492Z  * [new branch]      auto/state-summary-update-20693785172    -> origin/auto/state-summary-update-20693785172
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6910797Z  * [new branch]      auto/state-summary-update-20693900802    -> origin/auto/state-summary-update-20693900802
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6912094Z  * [new branch]      auto/state-summary-update-20737629765    -> origin/auto/state-summary-update-20737629765
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6913378Z  * [new branch]      auto/state-summary-update-20751914155    -> origin/auto/state-summary-update-20751914155
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6914586Z  * [new branch]      backup/crash-20260107-011333             -> origin/backup/crash-20260107-011333
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6915713Z  * [new branch]      backup/crash-20260107-013037             -> origin/backup/crash-20260107-013037
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6917140Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6918636Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6920592Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6922102Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6923545Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6924973Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6926409Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6928139Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6929711Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6931246Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6932671Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6934053Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6935468Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6937034Z  * [new branch]      biz/parts-business-spec-20260104-051453  -> origin/biz/parts-business-spec-20260104-051453
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6938513Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6940024Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6941700Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6943522Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6944944Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6946466Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6948086Z  * [new branch]      biz/reviewtype-mapping-20260104-203306   -> origin/biz/reviewtype-mapping-20260104-203306
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6949398Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428  -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6950727Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6952069Z  * [new branch]      biz/work-business-spec-20260104-050739   -> origin/biz/work-business-spec-20260104-050739
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6953359Z  * [new branch]      biz/work-normalize-20260105-004002       -> origin/biz/work-normalize-20260105-004002
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6954681Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6956123Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6957777Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6959347Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6961049Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6962621Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6964346Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6966184Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6968199Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6969743Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059  -> origin/chore/mep-gate-dispatch-20260103-063059
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6971335Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6973048Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6974504Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6975799Z  * [new branch]      ci/chat-packet-schedule-20260103         -> origin/ci/chat-packet-schedule-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6977278Z  * [new branch]      ci/fix-chat-packet-schedule-20260103     -> origin/ci/fix-chat-packet-schedule-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6978765Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6980394Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6982066Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6983711Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6985451Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6987005Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6988425Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6989855Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6991474Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6992963Z  * [new branch]      docs/idea-cleanup-20260104-214212        -> origin/docs/idea-cleanup-20260104-214212
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6994231Z  * [new branch]      docs/idea-index-add-bom-20260104-215056  -> origin/docs/idea-index-add-bom-20260104-215056
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6995638Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6997216Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.6998654Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7000140Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7001584Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303  -> origin/docs/mep-add-idea-vault-20260103-205303
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7003150Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7004582Z  * [new branch]      docs/mep-add-playbook-20260103-151247    -> origin/docs/mep-add-playbook-20260103-151247
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7005855Z  * [new branch]      docs/mep-add-runbook-20260103-150840     -> origin/docs/mep-add-runbook-20260103-150840
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7007397Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7008919Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7010455Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7012114Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7013814Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7015316Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7016717Z  * [new branch]      docs/mep-guidance-align-20260104-153937  -> origin/docs/mep-guidance-align-20260104-153937
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7018555Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7020103Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7021519Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7022816Z  * [new branch]      docs/mep-idea-flow-20260103-212432       -> origin/docs/mep-idea-flow-20260103-212432
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7024219Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7025876Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7027412Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7028795Z  * [new branch]      docs/mep-lease-continue-20260103-220947  -> origin/docs/mep-lease-continue-20260103-220947
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7030357Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7032128Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7033868Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7035339Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905    -> origin/docs/mep-repair-1-2-3-20260103-153905
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7036900Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7038543Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7040013Z  * [new branch]      docs/ops-chat-packet-followup-20260103   -> origin/docs/ops-chat-packet-followup-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7041217Z  * [new branch]      docs/ops-rules-20260103                  -> origin/docs/ops-rules-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7042394Z  * [new branch]      docs/ops-scope-suggest-20260103-150621   -> origin/docs/ops-scope-suggest-20260103-150621
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7044002Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7045589Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7047323Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7048818Z  * [new branch]      docs/runbook-autoappend/20260106-231639  -> origin/docs/runbook-autoappend/20260106-231639
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7050153Z  * [new branch]      docs/runbook-autoappend/20260106-232943  -> origin/docs/runbook-autoappend/20260106-232943
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7051487Z  * [new branch]      docs/runbook-autoappend/20260106-233315  -> origin/docs/runbook-autoappend/20260106-233315
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7052848Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7054227Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7055828Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7057669Z  * [new branch]      docs/state-current-v12-20260103-153345   -> origin/docs/state-current-v12-20260103-153345
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7059022Z  * [new branch]      docs/test-chat-packet-schedule-20260103  -> origin/docs/test-chat-packet-schedule-20260103
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7060419Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7061904Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7063548Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7065226Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7066923Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7068594Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7070082Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7071596Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7073155Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7074750Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7076099Z  * [new branch]      feat/chat-packet-self-heal               -> origin/feat/chat-packet-self-heal
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7077403Z  * [new branch]      feat/chat-packet-self-heal-rerun         -> origin/feat/chat-packet-self-heal-rerun
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7078606Z  * [new branch]      feat/mep-gate-pr-20260103-061907         -> origin/feat/mep-gate-pr-20260103-061907
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7079735Z  * [new branch]      feat/scope-guard-phase1                  -> origin/feat/scope-guard-phase1
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7080925Z  * [new branch]      feat/scope-suggest-20260103-072132       -> origin/feat/scope-suggest-20260103-072132
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7082113Z  * [new branch]      feat/self-heal-auto-prs                  -> origin/feat/self-heal-auto-prs
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7083315Z  * [new branch]      fix/add-debug-artifact-20260106-222859   -> origin/fix/add-debug-artifact-20260106-222859
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7084960Z  * [new branch]      fix/business-master-spec-mojibake-20260104-020827 -> origin/fix/business-master-spec-mojibake-20260104-020827
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7086433Z  * [new branch]      fix/mep-gate-register-20260103-063318    -> origin/fix/mep-gate-register-20260103-063318
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7087827Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7089273Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7090792Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7092220Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7093598Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7095041Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7096518Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7098278Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7099396Z  * [new branch]      main                                     -> origin/main
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7100546Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7102151Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7103902Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7105644Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7107383Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7108937Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7110241Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7111733Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7113052Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7114229Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7115997Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7117944Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7119222Z  * [new branch]      test/seed-mep-gate-20260103-062802       -> origin/test/seed-mep-gate-20260103-062802
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7120686Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7122138Z  * [new branch]      tools/idea-capture-20260104-211626       -> origin/tools/idea-capture-20260104-211626
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7123419Z  * [new branch]      tools/mep-fix-param-top-20260103-215224  -> origin/tools/mep-fix-param-top-20260103-215224
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7124804Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7126327Z  * [new branch]      tools/mep-idea-receipt-20260103-214537   -> origin/tools/mep-idea-receipt-20260103-214537
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7127916Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7129441Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7130806Z  * [new branch]      ui/alert-label-display-20260104-194620   -> origin/ui/alert-label-display-20260104-194620
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7132087Z  * [new branch]      ui/expense-ui-master-20260104-052304     -> origin/ui/expense-ui-master-20260104-052304
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7133326Z  * [new branch]      ui/expense-ui-spec-20260104-052334       -> origin/ui/expense-ui-spec-20260104-052334
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7134634Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7136053Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7137688Z  * [new branch]      ui/order-ui-master-20260104-050304       -> origin/ui/order-ui-master-20260104-050304
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7138933Z  * [new branch]      ui/order-ui-spec-20260104-050613         -> origin/ui/order-ui-spec-20260104-050613
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7140137Z  * [new branch]      ui/parts-ui-master-20260104-051901       -> origin/ui/parts-ui-master-20260104-051901
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7141344Z  * [new branch]      ui/parts-ui-spec-20260104-052140         -> origin/ui/parts-ui-spec-20260104-052140
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7142617Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7143903Z  * [new branch]      ui/work-ui-master-20260104-051037        -> origin/ui/work-ui-master-20260104-051037
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7145085Z  * [new branch]      ui/work-ui-master-20260104-051204        -> origin/ui/work-ui-master-20260104-051204
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7146267Z  * [new branch]      ui/work-ui-spec-20260104-051311          -> origin/ui/work-ui-spec-20260104-051311
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7147572Z  * [new branch]      wip/auto-save-20260106-232022            -> origin/wip/auto-save-20260106-232022
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7148967Z  * [new branch]      work/chat-packet-human-20260103-162222   -> origin/work/chat-packet-human-20260103-162222
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7150308Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7151599Z  * [new branch]      work/idea-capture-20260103-215353        -> origin/work/idea-capture-20260103-215353
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7152809Z  * [new branch]      work/idea-capture-20260103-220645        -> origin/work/idea-capture-20260103-220645
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7154015Z  * [new branch]      work/idea-capture-20260104-184000        -> origin/work/idea-capture-20260104-184000
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7155239Z  * [new branch]      work/idea-finalize-20260103-220329       -> origin/work/idea-finalize-20260103-220329
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7156459Z  * [new branch]      work/idea-receipt-20260103-220025        -> origin/work/idea-receipt-20260103-220025
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7157916Z  * [new branch]      work/mep-doc-link-20260103-152129        -> origin/work/mep-doc-link-20260103-152129
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7159113Z  * [new tag]         backup/recovery-f0e7624_20260107011639   -> backup/recovery-f0e7624_20260107011639
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7160161Z  * [new ref]         310328a488c6ffabdcf52ef89a8ffd3f2fba0d72 -> pull/619/merge
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7187455Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7188275Z ##[group]Determining the checkout info
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7189760Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7194173Z [command]/usr/bin/git sparse-checkout disable
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7234356Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7261126Z ##[group]Checking out the ref
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7265155Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/619/merge
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7528406Z Note: switching to 'refs/remotes/pull/619/merge'.
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7529491Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7530045Z You are in 'detached HEAD' state. You can look around, make experimental
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7531323Z changes and commit them, and you can discard any commits you make in this
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7532363Z state without impacting any branches by switching back to a branch.
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7532972Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7533350Z If you want to create a new branch to retain commits you create, you may
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7534285Z do so (now or later) by using -c with the switch command. Example:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7534833Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7535061Z   git switch -c <new-branch-name>
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7535456Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7535666Z Or undo this operation with:
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7536039Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7536228Z   git switch -
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7536515Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7537198Z Turn off this advice by setting config variable advice.detachedHead to false
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7538115Z 
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7539451Z HEAD is now at 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7544914Z ##[endgroup]
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7581083Z [command]/usr/bin/git log -1 --format=%H
+suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7603182Z 310328a488c6ffabdcf52ef89a8ffd3f2fba0d72
+suggest	Skip fork PRs	・ｿ2026-01-06T16:38:22.7809016Z ##[group]Run set -euo pipefail
+suggest	Skip fork PRs	2026-01-06T16:38:22.7809722Z [36;1mset -euo pipefail[0m
+suggest	Skip fork PRs	2026-01-06T16:38:22.7810490Z [36;1mif [ "Osuu-ops/yorisoidou-system" != "Osuu-ops/yorisoidou-system" ]; then[0m
+suggest	Skip fork PRs	2026-01-06T16:38:22.7811433Z [36;1m  echo "Fork PR -> cannot push suggestion branch. Skip."[0m
+suggest	Skip fork PRs	2026-01-06T16:38:22.7812112Z [36;1m  exit 0[0m
+suggest	Skip fork PRs	2026-01-06T16:38:22.7812533Z [36;1mfi[0m
+suggest	Skip fork PRs	2026-01-06T16:38:22.7851096Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+suggest	Skip fork PRs	2026-01-06T16:38:22.7852269Z env:
+suggest	Skip fork PRs	2026-01-06T16:38:22.7853863Z   GH_TOKEN: ***
+suggest	Skip fork PRs	2026-01-06T16:38:22.7854691Z   SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+suggest	Skip fork PRs	2026-01-06T16:38:22.7856086Z ##[endgroup]
+suggest	Detect out-of-scope files and open suggestion PR	・ｿ2026-01-06T16:38:22.8057063Z ##[group]Run set -euo pipefail
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8058574Z [36;1mset -euo pipefail[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8059234Z [36;1mgit config user.name  "github-actions"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8060044Z [36;1mgit config user.email "github-actions@users.noreply.github.com"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8060879Z [36;1mgit config --global core.quotepath false[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8061470Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8061907Z [36;1mrepo="Osuu-ops/yorisoidou-system"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8062469Z [36;1mpr="619"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8062978Z [36;1mbase="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8063680Z [36;1mhead="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8064277Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8064688Z [36;1mexport BASE_SHA="$base"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8065210Z [36;1mexport HEAD_SHA="$head"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8065736Z [36;1mexport PR_NUMBER="$pr"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8066262Z [36;1mexport REPO_FULL="$repo"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8066951Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8067632Z [36;1m# Fast-path allowlist (same as Scope Guard Phase1 docs safe-path)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8068376Z [36;1mis_docs_only=1[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8068858Z [36;1mwhile IFS= read -r f; do[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8069389Z [36;1m  [ -z "$f" ] && continue[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8069935Z [36;1m  case "$f" in[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8070438Z [36;1m    docs/MEP/*|START_HERE.md) ;;[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8071007Z [36;1m    *) is_docs_only=0 ;;[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8071506Z [36;1m  esac[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8072225Z [36;1mdone < <(git -c core.quotepath=false diff --name-only "$base..$head" | sed '/^$/d')[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8073035Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8073463Z [36;1mif [ "$is_docs_only" -eq 1 ]; then[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8074138Z [36;1m  echo "docs-only allowlist -> no suggestion needed."[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8074787Z [36;1m  exit 0[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8075194Z [36;1mfi[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8075600Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8076032Z [36;1mif [ ! -f "$SCOPE_FILE" ]; then[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8076678Z [36;1m  echo "::error::SCOPE_FILE not found: $SCOPE_FILE"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8077527Z [36;1m  exit 1[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8077951Z [36;1mfi[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8078345Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8078830Z [36;1mpython3 - <<'PY' > /tmp/scope_suggest.json[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8079535Z [36;1mimport os, re, subprocess, sys, fnmatch, json[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8080203Z [36;1mscope_file = os.environ["SCOPE_FILE"][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8080831Z [36;1mrepo = os.environ.get("REPO_FULL")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8081446Z [36;1mpr = os.environ.get("PR_NUMBER","")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8082042Z [36;1mbase = os.environ["BASE_SHA"][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8082605Z [36;1mhead = os.environ["HEAD_SHA"][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8083133Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8083551Z [36;1mdef sh(cmd: str) -> str:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8084289Z [36;1m  return subprocess.check_output(cmd, shell=True, text=True).strip()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8085049Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8085695Z [36;1mraw = sh(f"git -c core.quotepath=false diff --name-only {base}..{head} || true")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8086649Z [36;1mchanged = [ln.strip() for ln in raw.splitlines() if ln.strip()][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8087742Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8088278Z [36;1mtext = open(scope_file, "r", encoding="utf-8").read()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8089103Z [36;1mm = re.search(r"^##\s*螟画峩蟇ｾ雎｡・・cope-IN・噂s*$", text, flags=re.M)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8089783Z [36;1mif not m:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8090408Z [36;1m  print("::error::Scope-IN section not found in CURRENT_SCOPE.md")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8091136Z [36;1m  sys.exit(1)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8091584Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8092005Z [36;1mtail = text[m.end():][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8092592Z [36;1mstop = re.search(r"^##\s+", tail, flags=re.M)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8093291Z [36;1mblock = tail[: stop.start()] if stop else tail[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8094145Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8094663Z [36;1mallow = [][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8095134Z [36;1mfor ln in block.splitlines():[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8095702Z [36;1m  ln = ln.strip()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8096204Z [36;1m  if ln.startswith("- "):[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8096970Z [36;1m    allow.append(ln[2:].strip())[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8097546Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8097985Z [36;1mdef allowed(path: str) -> bool:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8098553Z [36;1m  for pat in allow:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8099096Z [36;1m    if fnmatch.fnmatch(path, pat):[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8099685Z [36;1m      return True[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8100165Z [36;1m  return False[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8100648Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8101131Z [36;1mout = [p for p in changed if not allowed(p)][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8101964Z [36;1m# Also exclude docs safe allowlist here (handled by Scope Guard already)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8102954Z [36;1mout = [p for p in out if not (p.startswith("docs/MEP/") or p=="START_HERE.md")][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8103728Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8104351Z [36;1mprint(json.dumps({"changed": changed, "out": out}, ensure_ascii=False))[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8105107Z [36;1mPY[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8105519Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8106443Z [36;1mout_count=$(python3 -c 'import json; d=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8")); print(len(d["out"]))')[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8107712Z [36;1mif [ "$out_count" -eq 0 ]; then[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8108407Z [36;1m  echo "No out-of-scope files -> no suggestion needed."[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8109101Z [36;1m  exit 0[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8109533Z [36;1mfi[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8109955Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8110497Z [36;1m# Avoid spamming: if a suggestion PR already exists, skip[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8111234Z [36;1mprefix="auto/scope-suggest-pr${pr}-"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8112376Z [36;1mexisting=$(gh pr list --repo "$repo" --state open --json headRefName --jq "[.[] | select(.headRefName | startswith(\"$prefix\"))] | length")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8113495Z [36;1mif [ "$existing" != "0" ]; then[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8114118Z [36;1m  echo "Suggestion PR already open. Skip."[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8114712Z [36;1m  exit 0[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8115132Z [36;1mfi[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8115530Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8116120Z [36;1m# Create suggestion branch from main and update CURRENT_SCOPE.md[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8117058Z [36;1mts=$(date +%Y%m%d-%H%M%S)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8117680Z [36;1mbranch="auto/scope-suggest-pr${pr}-${ts}"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8118274Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8118687Z [36;1mgit fetch origin main[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8119254Z [36;1mgit checkout -B "$branch" origin/main[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8119819Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8120271Z [36;1mpython3 - <<'PY' > /tmp/out_list.txt[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8120857Z [36;1mimport json, re[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8121355Z [36;1mfrom pathlib import Path[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8121873Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8122386Z [36;1mp = Path("platform/MEP/90_CHANGES/CURRENT_SCOPE.md")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8123088Z [36;1mtxt = p.read_text(encoding="utf-8")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8123679Z [36;1mlines = txt.splitlines()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8124193Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8124621Z [36;1mhead = "## 螟画峩蟇ｾ雎｡・・cope-IN・・[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8125286Z [36;1midx = [i for i,l in enumerate(lines) if l.strip()==head][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8125955Z [36;1mif len(idx)!=1:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8126639Z [36;1m  raise SystemExit(f"Expected 1 heading '{head}', found {len(idx)}")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8127590Z [36;1ms = idx[0]+1[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8128057Z [36;1me = len(lines)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8128561Z [36;1mfor i in range(s, len(lines)):[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8129146Z [36;1m  if lines[i].startswith("## "):[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8129709Z [36;1m    e=i; break[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8130162Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8130631Z [36;1m# Collect existing bullets (preserve order)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8131514Z [36;1mseen=set()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8131968Z [36;1mbullets=[][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8132423Z [36;1mfor l in lines[s:e]:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8132932Z [36;1m  if l.startswith("- "):[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8133465Z [36;1m    item=l[2:].strip()[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8134014Z [36;1m    if item and item not in seen:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8134628Z [36;1m      seen.add(item); bullets.append(item)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8135214Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8135833Z [36;1md=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8136648Z [36;1madd=[x for x in d["out"] if x and x not in seen][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8137470Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8137940Z [36;1m# Add exact paths only (safe, non-broad)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8138533Z [36;1mfor x in add:[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8139012Z [36;1m  bullets.append(x)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8139502Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8139952Z [36;1mnew_block=[f"- {b}" for b in bullets][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8140613Z [36;1mnew_lines = lines[:s] + new_block + lines[e:][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8141377Z [36;1mp.write_text("\n".join(new_lines) + "\n", encoding="utf-8")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8142071Z [36;1mPY[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8142469Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8142875Z [36;1mgit add "$SCOPE_FILE"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8143537Z [36;1mgit commit -m "chore(scope): suggest Scope-IN for PR #$pr"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8144263Z [36;1mgit push -u origin "$branch"[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8144797Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8145211Z [36;1m# Open PR (no auto-merge)[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8146583Z [36;1mbody=$'This PR is an auto-generated **suggestion** to update CURRENT_SCOPE Scope-IN.\n\n- Target PR: #'"$pr"$'\n- Adds exact file paths (safe, non-broad).\n\nPlease review and merge if acceptable.\n'[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8148636Z [36;1murl=$(gh pr create --repo "$repo" --base main --head "$branch" --title "chore(scope): suggest Scope-IN for PR #$pr" --body "$body")[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8149668Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8150129Z [36;1m# Comment original PR with link + list[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8150789Z [36;1mpython3 - <<'PY' > /tmp/out_list.txt[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8151363Z [36;1mimport json[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8152003Z [36;1md=json.load(open("/tmp/scope_suggest.json","r",encoding="utf-8"))[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8152729Z [36;1mout=d["out"][0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8153235Z [36;1mprint("\n".join(f"- {x}" for x in out))[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8153812Z [36;1mPY[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8154204Z [36;1m[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8155370Z [36;1mgh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'[0m
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8187670Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8188361Z env:
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8189365Z   GH_TOKEN: ***
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8189908Z   SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8190539Z ##[endgroup]
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4104407Z From https://github.com/Osuu-ops/yorisoidou-system
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4106144Z  * branch            main       -> FETCH_HEAD
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4316127Z Previous HEAD position was 310328a Merge 3e6c27245b1461aa5de5dc674c3856f6bd788895 into 30d214e188f964d46ca82aaa75c4e315f57a262e
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4324341Z Switched to a new branch 'auto/scope-suggest-pr619-20260106-163823'
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4327169Z branch 'auto/scope-suggest-pr619-20260106-163823' set up to track 'origin/main'.
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4678081Z [auto/scope-suggest-pr619-20260106-163823 6a07ea4] chore(scope): suggest Scope-IN for PR #619
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.4679834Z  1 file changed, 1 insertion(+)
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9717906Z remote: 
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9722642Z remote: Create a pull request for 'auto/scope-suggest-pr619-20260106-163823' on GitHub by visiting:        
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9728556Z remote:      https://github.com/Osuu-ops/yorisoidou-system/pull/new/auto/scope-suggest-pr619-20260106-163823        
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9732409Z remote: 
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9733818Z To https://github.com/Osuu-ops/yorisoidou-system
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9737297Z  * [new branch]      auto/scope-suggest-pr619-20260106-163823 -> auto/scope-suggest-pr619-20260106-163823
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:23.9781717Z branch 'auto/scope-suggest-pr619-20260106-163823' set up to track 'origin/auto/scope-suggest-pr619-20260106-163823'.
+suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:26.8015388Z https://github.com/Osuu-ops/yorisoidou-system/pull/619#issuecomment-3715413548
+suggest	Post Checkout (full history, PAT)	・ｿ2026-01-06T16:38:26.8128744Z Post job cleanup.
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9062417Z [command]/usr/bin/git version
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9098203Z git version 2.52.0
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9140784Z Copying '/home/runner/.gitconfig' to '/home/runner/work/_temp/c0f57c5c-5476-40c6-8e2b-11c22c7ea7bd/.gitconfig'
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9150684Z Temporarily overriding HOME='/home/runner/work/_temp/c0f57c5c-5476-40c6-8e2b-11c22c7ea7bd' before making global git config changes
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9151784Z Adding repository directory to the temporary git global config as a safe directory
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9155738Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9188664Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9219855Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9445428Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9466206Z http.https://github.com/.extraheader
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9479126Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9509023Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9725668Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+suggest	Post Checkout (full history, PAT)	2026-01-06T16:38:26.9755206Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+suggest	Complete job	・ｿ2026-01-06T16:38:27.0097966Z Cleaning up orphan processes

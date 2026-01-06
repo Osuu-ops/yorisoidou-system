@@ -1,4 +1,4 @@
-# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
+﻿# MEP HANDOFF (NO-DRIFT) v3.3 (self-heal docs PRs; no here-strings; no GraphQL)
 # - 100/100 以外は CURRENT を出さない（汚染停止）。
 # - open PR が残っている場合、docs/MEP/** と START_HERE.md のみ変更するPRに限り自動収束（checks待ち + rerun failure + merge）。
 # - docs/MEP 以外の変更を含む open PR があれば即停止（人間判断）。

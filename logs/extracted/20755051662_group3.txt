@@ -1,0 +1,22 @@
+﻿--- 20755051662.log : 3 lines 411..431 ---
+   411: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2964046Z [36;1mchanged="$(git diff --name-only "${BASE_SHA}..${HEAD_SHA}" || true)"[0m
+   412: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2964676Z [36;1mif ! echo "$changed" | grep -E '^(platform/MEP/|platform/infra/tools/packets/|\.github/workflows/business_packet_)' >/dev/null; then[0m
+   413: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965280Z [36;1m  echo "Business Packet Guard: skipped (no relevant changes)"[0m
+   414: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965587Z [36;1m  exit 0[0m
+   415: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2965766Z [36;1mfi[0m
+   416: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966058Z [36;1mif [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then[0m
+   417: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966518Z [36;1m  echo "Business Packet Guard: validator missing; skip (success)"[0m
+   418: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2966846Z [36;1m  exit 0[0m
+   419: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2967048Z [36;1mfi[0m
+   420: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2967324Z [36;1mpython3 platform/infra/tools/packets/validate_business_packet.py[0m
+   421: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3003828Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   422: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004189Z env:
+   423: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004437Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   424: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3004850Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   425: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005265Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   426: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005611Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   427: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3005964Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   428: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3006316Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   429: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3006640Z   BASE_SHA: 30d214e188f964d46ca82aaa75c4e315f57a262e
+   430: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3007153Z   HEAD_SHA: 3e6c27245b1461aa5de5dc674c3856f6bd788895
+   431: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.3007407Z ##[endgroup]

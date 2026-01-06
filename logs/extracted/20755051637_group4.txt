@@ -1,0 +1,23 @@
+﻿--- 20755051637.log : 4 lines 398..419 ---
+   398: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3111497Z [36;1mcat core_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | sort > core_nontext.txt || true[0m
+   399: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3147960Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   400: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3149028Z env:
+   401: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3149856Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   402: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3151144Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   403: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3152430Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   404: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3153756Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   405: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3154924Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   406: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3156094Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   407: semantic-audit	Collect CORE changed files	2026-01-06T16:38:25.3157087Z ##[endgroup]
+   408: semantic-audit	Binary guard (CORE)	・ｿ2026-01-06T16:38:25.3394078Z ##[group]Run set -euo pipefail
+   409: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3395027Z [36;1mset -euo pipefail[0m
+   410: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3395873Z [36;1mif [ -s core_nontext.txt ]; then[0m
+   411: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3397337Z [36;1m  python tools/mep_integration_compiler/binary_guard.py core_nontext.txt .mep/allowlists/core.sha256[0m
+   412: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3398757Z [36;1melse[0m
+   413: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3399464Z [36;1m  echo "CORE binary: SKIP"[0m
+   414: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3400280Z [36;1mfi[0m
+   415: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3434458Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   416: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3435510Z env:
+   417: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3436318Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   418: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3437600Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   419: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3438864Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64

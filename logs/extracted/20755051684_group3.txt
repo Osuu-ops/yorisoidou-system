@@ -1,0 +1,22 @@
+﻿--- 20755051684.log : 3 lines 46..66 ---
+    46: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486069Z [36;1m  try:[0m
+    47: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486504Z [36;1m    s = b.decode('utf-8')[0m
+    48: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487130Z [36;1m  except UnicodeDecodeError:[0m
+    49: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487664Z [36;1m    print(f'::error::{p}: not valid UTF-8')[0m
+    50: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488201Z [36;1m    sys.exit(1)[0m
+    51: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488655Z [36;1m  n = len(pat.findall(s))[0m
+    52: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489122Z [36;1m  if n > max_n:[0m
+    53: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489544Z [36;1m    bad.append((p,n))[0m
+    54: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489988Z [36;1mif bad:[0m
+    55: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1490382Z [36;1m  for p,n in bad:[0m
+    56: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491067Z [36;1m    print(f'::error::{p}: halfwidth-kana count={n} exceeds MAX={max_n} (likely mojibake)')[0m
+    57: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491773Z [36;1m  sys.exit(1)[0m
+    58: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492306Z [36;1mprint('Halfwidth Kana Guard: OK')[0m
+    59: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492800Z [36;1mPY[0m
+    60: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1534618Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+    61: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1535528Z ##[endgroup]
+    62: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1847512Z Halfwidth Kana Guard: OK
+    63: Text Integrity Guard (PR)	Checkout (full history)	・ｿ2026-01-06T16:38:22.2057783Z ##[group]Run actions/checkout@v4
+    64: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2058335Z with:
+    65: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2058695Z   fetch-depth: 0
+    66: Text Integrity Guard (PR)	Checkout (full history)	2026-01-06T16:38:22.2059126Z   repository: Osuu-ops/yorisoidou-system

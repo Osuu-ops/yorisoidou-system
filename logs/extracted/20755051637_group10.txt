@@ -1,0 +1,22 @@
+﻿--- 20755051637.log : 10 lines 848..868 ---
+   848: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2748774Z [36;1mBASE_SHA="30d214e188f964d46ca82aaa75c4e315f57a262e"[0m
+   849: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2749546Z [36;1mHEAD_SHA="3e6c27245b1461aa5de5dc674c3856f6bd788895"[0m
+   850: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2750573Z [36;1mgit diff --name-only "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_all.txt || true[0m
+   851: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2751529Z [36;1msed -i 's/^"//; s/"$//' biz_all.txt || true[0m
+   852: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2752350Z [36;1mcat biz_all.txt | grep -Ei '\.(md|txt|yaml|yml|json)$' | sort > biz_inputs.txt || true[0m
+   853: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2753265Z [36;1mcat biz_all.txt | grep -F '/master_spec' >> biz_inputs.txt || true[0m
+   854: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2754059Z [36;1msort -u biz_inputs.txt -o biz_inputs.txt || true[0m
+   855: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2755122Z [36;1mgit diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- platform/MEP/03_BUSINESS | sort > biz_am.txt || true[0m
+   856: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2756147Z [36;1msed -i 's/^"//; s/"$//' biz_am.txt || true[0m
+   857: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2757306Z [36;1mcat biz_am.txt | grep -Evi '\.(md|txt|yaml|yml|json)$' | grep -Fv '/master_spec' | sort > biz_nontext.txt || true[0m
+   858: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2792776Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   859: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2793440Z env:
+   860: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2793957Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   861: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2794795Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   862: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2795624Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   863: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2796415Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   864: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2797418Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   865: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2798192Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   866: semantic-audit-business	Collect BUSINESS changed files (include master_spec without extension)	2026-01-06T16:38:23.2798835Z ##[endgroup]
+   867: semantic-audit-business	Binary guard (BUSINESS)	・ｿ2026-01-06T16:38:23.3059876Z ##[group]Run set -euo pipefail
+   868: semantic-audit-business	Binary guard (BUSINESS)	2026-01-06T16:38:23.3060527Z [36;1mset -euo pipefail[0m

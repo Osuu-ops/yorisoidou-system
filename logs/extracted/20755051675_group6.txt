@@ -1,0 +1,22 @@
+﻿--- 20755051675.log : 6 lines 422..442 ---
+   422: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8083133Z [36;1m[0m
+   423: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8083551Z [36;1mdef sh(cmd: str) -> str:[0m
+   424: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8084289Z [36;1m  return subprocess.check_output(cmd, shell=True, text=True).strip()[0m
+   425: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8085049Z [36;1m[0m
+   426: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8085695Z [36;1mraw = sh(f"git -c core.quotepath=false diff --name-only {base}..{head} || true")[0m
+   427: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8086649Z [36;1mchanged = [ln.strip() for ln in raw.splitlines() if ln.strip()][0m
+   428: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8087742Z [36;1m[0m
+   429: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8088278Z [36;1mtext = open(scope_file, "r", encoding="utf-8").read()[0m
+   430: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8089103Z [36;1mm = re.search(r"^##\s*螟画峩蟇ｾ雎｡・・cope-IN・噂s*$", text, flags=re.M)[0m
+   431: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8089783Z [36;1mif not m:[0m
+   432: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8090408Z [36;1m  print("::error::Scope-IN section not found in CURRENT_SCOPE.md")[0m
+   433: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8091136Z [36;1m  sys.exit(1)[0m
+   434: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8091584Z [36;1m[0m
+   435: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8092005Z [36;1mtail = text[m.end():][0m
+   436: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8092592Z [36;1mstop = re.search(r"^##\s+", tail, flags=re.M)[0m
+   437: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8093291Z [36;1mblock = tail[: stop.start()] if stop else tail[0m
+   438: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8094145Z [36;1m[0m
+   439: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8094663Z [36;1mallow = [][0m
+   440: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8095134Z [36;1mfor ln in block.splitlines():[0m
+   441: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8095702Z [36;1m  ln = ln.strip()[0m
+   442: suggest	Detect out-of-scope files and open suggestion PR	2026-01-06T16:38:22.8096204Z [36;1m  if ln.startswith("- "):[0m

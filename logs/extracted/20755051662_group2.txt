@@ -1,0 +1,23 @@
+﻿--- 20755051662.log : 2 lines 386..407 ---
+   386: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3875674Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   387: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3876715Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   388: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:23.3877548Z ##[endgroup]
+   389: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:25.3243383Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages (25.3)
+   390: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0227381Z Collecting pyyaml
+   391: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0877972Z   Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+   392: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.0986323Z Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
+   393: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.1816457Z    笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤笏≫煤 806.6/806.6 kB 12.2 MB/s  0:00:00
+   394: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.1976380Z Installing collected packages: pyyaml
+   395: Business Packet Guard (PR)	Install deps	2026-01-06T16:38:26.2515750Z Successfully installed pyyaml-6.0.3
+   396: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	・ｿ2026-01-06T16:38:26.2959128Z ##[group]Run set -euo pipefail
+   397: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959492Z [36;1mset -euo pipefail[0m
+   398: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959706Z [36;1m[0m
+   399: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2959983Z [36;1m# pull_request 莉･螟厄ｼ・orkflow_dispatch遲会ｼ峨・蝣ｴ蜷医・蜈ｨ讀懈渊[0m
+   400: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2960347Z [36;1mif [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then[0m
+   401: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2960706Z [36;1m  echo "No BASE/HEAD; run full validation."[0m
+   402: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2961119Z [36;1mif [ ! -f "platform/infra/tools/packets/validate_business_packet.py" ]; then[0m
+   403: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2961588Z [36;1m  echo "Business Packet Guard: validator missing; skip (success)"[0m
+   404: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962210Z [36;1m  exit 0[0m
+   405: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962384Z [36;1mfi[0m
+   406: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2962687Z [36;1mpython3 platform/infra/tools/packets/validate_business_packet.py[0m
+   407: Business Packet Guard (PR)	Validate BUSINESS_PACKET and generated packets	2026-01-06T16:38:26.2963036Z [36;1m  exit 0[0m

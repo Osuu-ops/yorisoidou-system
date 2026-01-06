@@ -1,0 +1,23 @@
+﻿--- 20755051684.log : 2 lines 38..59 ---
+    38: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482154Z [36;1m  'platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec',[0m
+    39: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1482700Z [36;1m][0m
+    40: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483220Z [36;1mpat = re.compile(r'[\\uFF61-\\uFF9F]')  # halfwidth-kana range[0m
+    41: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1483832Z [36;1mbad = [][0m
+    42: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1484242Z [36;1mfor p in paths:[0m
+    43: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1484690Z [36;1m  if not os.path.exists(p):[0m
+    44: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1485180Z [36;1m    continue[0m
+    45: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1485611Z [36;1m  b = open(p,'rb').read()[0m
+    46: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486069Z [36;1m  try:[0m
+    47: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1486504Z [36;1m    s = b.decode('utf-8')[0m
+    48: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487130Z [36;1m  except UnicodeDecodeError:[0m
+    49: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1487664Z [36;1m    print(f'::error::{p}: not valid UTF-8')[0m
+    50: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488201Z [36;1m    sys.exit(1)[0m
+    51: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1488655Z [36;1m  n = len(pat.findall(s))[0m
+    52: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489122Z [36;1m  if n > max_n:[0m
+    53: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489544Z [36;1m    bad.append((p,n))[0m
+    54: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1489988Z [36;1mif bad:[0m
+    55: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1490382Z [36;1m  for p,n in bad:[0m
+    56: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491067Z [36;1m    print(f'::error::{p}: halfwidth-kana count={n} exceeds MAX={max_n} (likely mojibake)')[0m
+    57: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1491773Z [36;1m  sys.exit(1)[0m
+    58: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492306Z [36;1mprint('Halfwidth Kana Guard: OK')[0m
+    59: Text Integrity Guard (PR)	Halfwidth Kana Guard (mojibake tripwire)	2026-01-06T16:38:22.1492800Z [36;1mPY[0m

@@ -1,0 +1,24 @@
+﻿--- 20755051684.log : 10 lines 460..482 ---
+   460: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9092916Z [36;1m  if st.startswith("R") or st.startswith("C"):[0m
+   461: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9093535Z [36;1m    target = p if p else (old or "")[0m
+   462: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9094331Z [36;1m    print(f"::error file={target}::Rename/Copy for sensitive files is not allowed.")[0m
+   463: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095097Z [36;1m    errors += 1[0m
+   464: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095531Z [36;1m[0m
+   465: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9095965Z [36;1mfor st, p, old in sensitive_changes:[0m
+   466: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9096656Z [36;1m  if st == "D" or st.startswith("R") or st.startswith("C"):[0m
+   467: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9097425Z [36;1m    continue[0m
+   468: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9097846Z [36;1m  try:[0m
+   469: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9098275Z [36;1m    data = open(p, "rb").read()[0m
+   470: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9098826Z [36;1m  except FileNotFoundError:[0m
+   471: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9099517Z [36;1m    print(f"::error file={p}::Sensitive file missing in workspace.")[0m
+   472: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9100211Z [36;1m    errors += 1[0m
+   473: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9100656Z [36;1m    continue[0m
+   474: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9101076Z [36;1m[0m
+   475: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9101456Z [36;1m  if b"\r\n" in data:[0m
+   476: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9102108Z [36;1m    print(f"::error file={p}::CRLF detected (\\r\\n). Must be LF only.")[0m
+   477: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9102806Z [36;1m    errors += 1[0m
+   478: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9103248Z [36;1m[0m
+   479: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9103610Z [36;1m  try:[0m
+   480: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9104067Z [36;1m    data.decode("utf-8", errors="strict")[0m
+   481: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9104678Z [36;1m  except UnicodeDecodeError as e:[0m
+   482: Text Integrity Guard (PR)	Tripwire (CRLF / UTF-8 / final newline / huge diff / delete guard)	2026-01-06T16:38:22.9105337Z [36;1m    print(f"::error file={p}::Invalid UTF-8 detected: {e}")[0m

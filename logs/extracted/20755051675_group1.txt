@@ -1,0 +1,22 @@
+﻿--- 20755051675.log : 1 lines 287..307 ---
+   287: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7087827Z  * [new branch]      fix/mep-gate-restore-20260103-063607     -> origin/fix/mep-gate-restore-20260103-063607
+   288: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7089273Z  * [new branch]      fix/phase2-http-write-cli-rowfile-20260105-233452 -> origin/fix/phase2-http-write-cli-rowfile-20260105-233452
+   289: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7090792Z  * [new branch]      fix/restore-master-spec-20260104-021512  -> origin/fix/restore-master-spec-20260104-021512
+   290: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7092220Z  * [new branch]      fix/scope-suggest-env-20260103-135312    -> origin/fix/scope-suggest-env-20260103-135312
+   291: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7093598Z  * [new branch]      fix/scope-suggest-export-20260103-135906 -> origin/fix/scope-suggest-export-20260103-135906
+   292: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7095041Z  * [new branch]      fix/scope-suggest-gitident-20260103-141328 -> origin/fix/scope-suggest-gitident-20260103-141328
+   293: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7096518Z  * [new branch]      fix/scope-suggest-gitident2-20260103-141957 -> origin/fix/scope-suggest-gitident2-20260103-141957
+   294: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7098278Z  * [new branch]      fix/scope-suggest-heredoc-20260103-073503 -> origin/fix/scope-suggest-heredoc-20260103-073503
+   295: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7099396Z  * [new branch]      main                                     -> origin/main
+   296: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7100546Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+   297: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7102151Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+   298: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7103902Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+   299: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7105644Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+   300: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7107383Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320  -> origin/ops/chat-packet-lf-only-20260104-155320
+   301: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7108937Z  * [new branch]      ops/noise-rules-fix-20260104-155715      -> origin/ops/noise-rules-fix-20260104-155715
+   302: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7110241Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+   303: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7111733Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+   304: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7113052Z  * [new branch]      restore-master-spec                      -> origin/restore-master-spec
+   305: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7114229Z  * [new branch]      restore/apply-stash0-20260107-013724     -> origin/restore/apply-stash0-20260107-013724
+   306: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7115997Z  * [new branch]      restore/from-backup-local-main-diverge-20260104-023853-20260107-001012 -> origin/restore/from-backup-local-main-diverge-20260104-023853-20260107-001012
+   307: suggest	Checkout (full history, PAT)	2026-01-06T16:38:22.7117944Z  * [new branch]      test/metadata-signedby-20260106213347    -> origin/test/metadata-signedby-20260106213347

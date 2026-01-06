@@ -1,0 +1,23 @@
+﻿--- 20755051637.log : 6 lines 415..436 ---
+   415: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3434458Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   416: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3435510Z env:
+   417: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3436318Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   418: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3437600Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   419: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3438864Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   420: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3440022Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   421: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3441197Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+   422: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3442404Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+   423: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3443629Z ##[endgroup]
+   424: semantic-audit	Binary guard (CORE)	2026-01-06T16:38:25.3505106Z CORE binary: SKIP
+   425: semantic-audit	Semantic audit (CORE)	・ｿ2026-01-06T16:38:25.3557227Z ##[group]Run set -euo pipefail
+   426: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3558137Z [36;1mset -euo pipefail[0m
+   427: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3558984Z [36;1mif [ -s core_inputs.txt ]; then[0m
+   428: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3560253Z [36;1m  python tools/mep_integration_compiler/semantic_audit_core.py core_inputs.txt[0m
+   429: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3561475Z [36;1melse[0m
+   430: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3562347Z [36;1m  echo "CORE audit: SKIP"[0m
+   431: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3563287Z [36;1mfi[0m
+   432: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3594448Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+   433: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3595464Z env:
+   434: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3596276Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+   435: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3597552Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+   436: semantic-audit	Semantic audit (CORE)	2026-01-06T16:38:25.3598814Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
