@@ -24,124 +24,118 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run Signed-by verification
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const { owner, repo } = context.repo;
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
-            const prBody = pr.body || "";
-            const workspace = process.env.GITHUB_WORKSPACE || ".";
-            const allowlistPath = path.join(workspace, "docs/MEP/SIGNED_BY_ALLOWLIST.yml");
-            const auditPath = path.join(workspace, "signed_by_audit.jsonl");
+- name: Run Signed-by verification
+  uses: actions/github-script@v6
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    script: |
+      const fs = require('fs');
+      const path = require('path');
+      const { owner, repo } = context.repo;
+      const pr = context.payload.pull_request;
+      const prNumber = pr.number;
+      const prBody = pr.body || "";
+      const workspace = process.env.GITHUB_WORKSPACE || ".";
+      const allowlistPath = path.join(workspace, "docs/MEP/SIGNED_BY_ALLOWLIST.yml");
+      const auditPath = path.join(workspace, "signed_by_audit.jsonl");
 
-            function appendAudit(record) {
-              try {
-                fs.appendFileSync(auditPath, JSON.stringify(record, null, 0) + "\n", { encoding: "utf8" });
-              } catch (e) {
-                core.info("Failed to append audit: " + e.message);
-              }
-            }
+      function appendAudit(record){
+        try { fs.appendFileSync(auditPath, JSON.stringify(record, null, 0) + "\n", { encoding: "utf8" }); }
+        catch (e) { core.info("Failed to append audit: " + e.message); }
+      }
 
-            // 1) extract Signed-by
-            const m = prBody.match(/^Signed-by:\s*(\S+)/m);
-            if (!m) {
-              const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: null, result: "FAIL", reason: "missing Signed-by line" };
-              appendAudit(rec);
-              await github.issues.createComment({ owner, repo, issue_number: prNumber, body: `❌ Signed-by 検証失敗: PR Body に \`Signed-by: <github-login>\` 行が見つかりません。FAST_LOOP / auto-merge の対象外です。` });
-              core.setFailed("Signed-by line missing in PR body.");
-              return;
-            }
-            const signedBy = m[1];
+      // 1) extract Signed-by (case-insensitive, tolerate extra whitespace, take first occurrence)
+      const m = prBody.match(/^\s*Signed-by:\s*([^\s#]+)/im);
+      if (!m) {
+        const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: null, result: "FAIL", reason: "missing Signed-by line", checks: [] , allowlist_snapshot: null };
+        appendAudit(rec);
+        await github.issues.createComment({ owner, repo, issue_number: prNumber, body: "❌ Signed-by 検証失敗: PR Body に `Signed-by: <github-login>` 行が見つかりません。FAST_LOOP / auto-merge の対象外です。" });
+        core.setFailed("Signed-by line missing in PR body.");
+        return;
+      }
+      const signedBy = m[1];
 
-            // 2) load allowlist (simple parse)
-            let allowlist = [];
-            try {
-              const data = fs.readFileSync(allowlistPath, "utf8");
-              const matches = Array.from(data.matchAll(/login:\s*([^\s]+)/g)).map(x=>x[1]);
-              allowlist = matches;
-            } catch (e) {
-              // file missing or unreadable -> treat as empty
-              core.info("Allowlist file not found or unreadable: " + e.message);
-              allowlist = [];
-            }
+      // 2) load allowlist (capture snapshot)
+      let allowlist = [];
+      let allowlist_snapshot = null;
+      try {
+        const data = fs.readFileSync(allowlistPath, "utf8");
+        allowlist_snapshot = data;
+        const matches = Array.from(data.matchAll(/login:\s*([^\s]+)/g)).map(x => x[1]);
+        allowlist = matches;
+      } catch (e) {
+        core.info("Allowlist file not found or unreadable: " + e.message);
+        allowlist = [];
+        allowlist_snapshot = null;
+      }
 
-            // helper: success record
-            async function pass(reason, checks) {
-              const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: signedBy, result: "PASS", reason, checks, allowlist_snapshot: null };
-              appendAudit(rec);
-              core.info("Signed-by verification PASS: " + reason);
-              return;
-            }
+      // helper: write PASS with extra metadata
+      async function pass(reason, checks, extra = {}) {
+        const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: signedBy, result: "PASS", reason, checks, allowlist_snapshot, ...extra };
+        appendAudit(rec);
+        core.info("Signed-by verification PASS: " + reason);
+        return;
+      }
 
-            // 3) check allowlist direct match
-            if (allowlist.includes(signedBy)) {
-              await pass("allowlist match", ["allowlist"]);
-              return;
-            }
+      // 3) allowlist direct match
+      if (allowlist.includes(signedBy)) {
+        await pass("allowlist match", ["allowlist"]);
+        return;
+      }
 
-            // 4) check PR author == signedBy and membership in org
-            if (pr.user && pr.user.login === signedBy) {
-              try {
-                // check membership (org = owner)
-                // Note: if repo owner is a user, this call may 404; handle gracefully.
-                const res = await github.orgs.checkMembershipForUser({ org: owner, username: signedBy }).catch(e => e);
-                if (res && res.status === 204) {
-                  await pass("pr author is org member", ["author-membership"]);
-                  return;
-                }
-              } catch (e) {
-                core.info("Org membership check failed: " + e.message);
-              }
-            }
+      // 4) PR author == signedBy and org membership
+      if (pr.user && pr.user.login === signedBy) {
+        try {
+          const res = await github.orgs.checkMembershipForUser({ org: owner, username: signedBy }).catch(e => e);
+          if (res && res.status === 204) {
+            await pass("pr author is org member", ["author-membership"]);
+            return;
+          }
+        } catch (e) {
+          core.info("Org membership check failed: " + e.message);
+        }
+      }
 
-            // 5) check commits for verification
-            try {
-              const commitsRes = await github.pulls.listCommits({ owner, repo, pull_number: prNumber });
-              const commits = commitsRes.data || [];
-              for (const c of commits) {
-                // GitHub returns verification under commit.verification
-                const verification = (c.commit && c.commit.verification) ? c.commit.verification : null;
-                const authorLogin = c.author ? c.author.login : null;
-                if (verification && verification.verified === true) {
-                  // prefer match by commit author login
-                  if (authorLogin && authorLogin === signedBy) {
-                    await pass("commit verified and author login matches", ["commit.verification"]);
-                    return;
-                  }
-                  // fallback: verified true (but cannot map signer reliably) -> still consider as potential pass
-                  // To be conservative, do NOT auto-pass solely on verification without login match.
-                }
-              }
-            } catch (e) {
-              core.info("Commits check failed: " + e.message);
-            }
+      // 5) check commits for verification and collect commit checks for audit
+      let commitChecks = [];
+      try {
+        const commitsRes = await github.pulls.listCommits({ owner, repo, pull_number: prNumber });
+        const commits = commitsRes.data || [];
+        for (const c of commits) {
+          const verification = (c.commit && c.commit.verification) ? c.commit.verification : null;
+          const authorLogin = c.author ? c.author.login : null;
+          commitChecks.push({ sha: c.sha, authorLogin, verified: verification ? verification.verified : false, reason: verification ? verification.reason : null });
+          if (verification && verification.verified === true && authorLogin && authorLogin === signedBy) {
+            await pass("commit verified and author login matches", ["commit.verification"], { commitChecks });
+            return;
+          }
+        }
+      } catch (e) {
+        core.info("Commits check failed: " + e.message);
+      }
 
-            // 6) check PR comments for single-line FAST_LOOP triggers by the signedBy actor
-            try {
-              const commentsRes = await github.issues.listComments({ owner, repo, issue_number: prNumber });
-              const comments = commentsRes.data || [];
-              for (const cm of comments) {
-                if ((cm.body || "").trim() === "FAST_LOOP_GAS" && cm.user && cm.user.login === signedBy) {
-                  await pass("fast-loop trigger comment by signedBy", ["comment-trigger"]);
-                  return;
-                }
-              }
-            } catch (e) {
-              core.info("Comments check failed: " + e.message);
-            }
+      // 6) check PR comments for FAST_LOOP_GAS trigger by signedBy
+      try {
+        const commentsRes = await github.issues.listComments({ owner, repo, issue_number: prNumber });
+        const comments = commentsRes.data || [];
+        for (const cm of comments) {
+          if ((cm.body || "").trim() === "FAST_LOOP_GAS" && cm.user && cm.user.login === signedBy) {
+            await pass("fast-loop trigger comment by signedBy", ["comment-trigger"], { commitChecks });
+            return;
+          }
+        }
+      } catch (e) {
+        core.info("Comments check failed: " + e.message);
+      }
 
-            // 7) all checks failed -> FAIL
-            const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: signedBy, result: "FAIL", reason: "no allowlist/membership/commit.verification/comment match", checks: [] };
-            appendAudit(rec);
-            await github.issues.createComment({ owner, repo, issue_number: prNumber, body: `❌ Signed-by 検証失敗: \`Signed-by: ${signedBy}\` は許可されていないか、署名/コミット検証が取れませんでした。FAST_LOOP / auto-merge は実行されません。Ops Lead に連絡してください。` });
-            core.setFailed("Signed-by verification failed: no matching proof found.");
-      - name: Upload Signed-by verification audit (artifact)
+      // 7) all checks failed -> FAIL and create comment + audit
+      const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: signedBy, result: "FAIL", reason: "no allowlist/membership/commit.verification/comment match", checks: [], allowlist_snapshot, commitChecks };
+      appendAudit(rec);
+      await github.issues.createComment({ owner, repo, issue_number: prNumber, body: `❌ Signed-by 検証失敗: \`Signed-by: ${signedBy}\` は許可されていないか、署名/コミット検証が取れませんでした。FAST_LOOP / auto-merge は実行されません。Ops Lead に連絡してください。` });
+      core.setFailed("Signed-by verification failed: no matching proof found.");      - name: Upload Signed-by verification audit (artifact)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: signed-by-audit
           path: signed_by_audit.jsonl
+
