@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 123368
+- included_total_bytes: 125029
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -892,8 +892,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 92688855769b79881cc06fbddc69065bdafdf423cd1013cbaee7d8d7d0690d9c
-- bytes: 8032
+- sha256: 82ef66c208bf8cb1b0d25803f74ae2716110f9f1e9fdae6b3e7c9c8478db61ee
+- bytes: 9191
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1120,14 +1120,44 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ### Notes
 - Repeat until `fixed == 0` and `conflicts == 0` for the scanned range.
+
+## CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
+
+### Purpose
+- Update GAS WebApp without changing /exec URL (deploymentId fixed), and verify by GET /exec.
+
+### Preconditions (one-time)
+- Node.js + npm installed
+- clasp installed: npm i -g @google/clasp
+- clasp login completed (creates ~/.clasprc.json)
+- Google Apps Script API enabled (Apps Script user settings)
+- Workspace exists: gas\clasp_webapp
+  - .clasp.json contains:
+    - scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc
+    - rootDir=src
+
+### Fixed endpoint
+- deploymentId (fixed URL): AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw
+- fixed /exec: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+
+### Fast loop (PowerShell)
+- Edit: gas\clasp_webapp\src\コード.js
+- Then run (single-block): push -> create-version -> redeploy -> GET verify
+  - NOTE: redeploy CLI:
+    clasp redeploy <deploymentId> --versionNumber <ver> --description <desc>
+
+### Local safety note
+- If you use git clean -fd often, protect workspace locally:
+  Add to .git/info/exclude:
+    gas/clasp_webapp/
 ```
 
 
 ---
 
 ### FILE: docs/MEP/RUNBOOK_SUMMARY.md
-- sha256: 902e2028b51598274c51c2fe1f7af8616f88bf2f00f5aa8346fe7a5468841b8e
-- bytes: 352
+- sha256: 839f635c8c55bd679c75a4437d19c70e2d3ecb41438fa01b9d8c75b7a952d00a
+- bytes: 404
 
 ```text
 # RUNBOOK_SUMMARY（復旧サマリ） v1.0
@@ -1140,14 +1170,15 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ## カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 - CARD-07: Request Status Normalization (status/requestStatus)
+- CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: b3d63efa0ec9d4edaa94e5e8ffa2c3b02d9c5c56f109f5b4b0aa4b1c5cd3a4d0
-- bytes: 4274
+- sha256: 5e20180949fe0a62798fa39c2c236f9b5fbda30b1d0f87c86be44c587e1cb69b
+- bytes: 4672
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1166,6 +1197,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (OPS) clasp fixed-URL redeploy loop established (RUNBOOK CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)): scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc deploymentId=AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw exec=https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (NEXT) B24: TBD (define next theme)
 - 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
@@ -1201,8 +1233,8 @@ Tell the assistant:
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 7b0a6f3420ea582591bd8359ff5f2cc968b4a53a6469f429c98080f1659c30f7
-- bytes: 2192
+- sha256: 8611754f72d94eac16551548d4bc80c96c91dafcc43a82697aae5cfd0c569362
+- bytes: 2244
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1251,6 +1283,7 @@ Tell the assistant:
 ## RUNBOOK カード一覧
 - CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
 - CARD-07: Request Status Normalization (status/requestStatus)
+- CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
 
 ---
 
