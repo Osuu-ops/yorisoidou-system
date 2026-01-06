@@ -1,0 +1,14 @@
+﻿# docs/MEP/SIGNED_BY_ALLOWLIST.yml
+# 初期 Allowlist: 許可アカウント／bot を列挙します
+# 変更ルール: Allowlist を変更する PR は Owner または Ops Lead の承認を最低 2 名必要とします（SPECS を参照）。
+
+allowlist:
+  - login: yorisoidoupdf
+    roles: [ops-lead]
+    note: "Primary ops lead account"
+  - login: ci-bot
+    roles: [ci-bot]
+    note: "CI automation bot (allowed for FAST_LOOP if configured)"
+
+teams:
+  ops-leads-team: "org/ops-leads"
