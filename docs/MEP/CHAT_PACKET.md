@@ -188,3 +188,34 @@ exit 0
 ---- 
 (追記日時: 2026-01-06T23:16:38+09:00 / actor: Osuu-ops)
 
+
+## 運用ルール（採用済み）
+受領しました。ここからは、あなたが冒頭に固定した運用ルールに従います（Decision Gate厳守／採用宣言まで実行可能コード提示禁止、FAST_LOOP_* 以外でコマンド提示禁止）。
+
+### 確定：現在地（事実）
+- チャット種別：Aチャット（MEP/GAS運用の続き）
+- GAS：B22（固定URLの /exec を clasp redeploy で高速ループ可能）
+  - deploymentId：' + $deploymentId + '
+  - /exec：' + $execUrl + '
+- GitHub：open PR = 0
+
+### トリガー仕様（最優先）
+- `FAST_LOOP_GAS`（単独行で送信） → 返答は**単一の PowerShell 1 ブロックのみ**（内容：push→create-version→redeploy→GET検証）。
+- `FAST_LOOP_GH`（単独行で送信） → 返答は**単一の PowerShell 1 ブロックのみ**（内容：openPR=0 収束の自動化）。
+- それ以外の要求・提案は **Decision Gate** による採用宣言があるまで **実行可能なコード／コマンドを提示しない**。
+
+### STATE_CURRENT 記録ルール（必須）
+- 例外運用を行ったら必ず1行で記録（ISO日時／実行者／トリガー／要約／scriptId／deploymentId／version／理由／結果）。例：
+  `- 2026-01-06T10:59:41+09:00 (A:actor) FAST_LOOP_GAS: redeploy→verify; scriptId=...; deploymentId=...; ver=16; reason="hotfix/ops"; result="OK:version match"`
+
+### 検証基準（redeploy 後 GET）
+- 合格判定：`res.ok === true` AND `res.version === expected`（expected は src\コード.js の CFG.VERSION）
+- 失敗時：自動ロールバック（直近安定 ver）→通知（Slack/Email/Runbook 担当）→STATE_CURRENT に失敗ログ記録。
+
+### セーフティとガバナンス
+- autopilot による自動マージは required checks を迂回しないこと。自動化が失敗した場合の通知先と担当を RUNBOOK に明記すること。
+- 例外運用を起こせる者は限定（Ops Lead, Owner 等）し、その権限を RUNBOOK に記載。
+
+----
+(追記日時: ' + $now + ' / actor: ' + $actor + ')
+
