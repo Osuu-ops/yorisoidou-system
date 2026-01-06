@@ -222,3 +222,33 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ### Notes
 - Repeat until `fixed == 0` and `conflicts == 0` for the scanned range.
+
+## CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
+
+### Purpose
+- Update GAS WebApp without changing /exec URL (deploymentId fixed), and verify by GET /exec.
+
+### Preconditions (one-time)
+- Node.js + npm installed
+- clasp installed: npm i -g @google/clasp
+- clasp login completed (creates ~/.clasprc.json)
+- Google Apps Script API enabled (Apps Script user settings)
+- Workspace exists: gas\clasp_webapp
+  - .clasp.json contains:
+    - scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc
+    - rootDir=src
+
+### Fixed endpoint
+- deploymentId (fixed URL): AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw
+- fixed /exec: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+
+### Fast loop (PowerShell)
+- Edit: gas\clasp_webapp\src\コード.js
+- Then run (single-block): push -> create-version -> redeploy -> GET verify
+  - NOTE: redeploy CLI:
+    clasp redeploy <deploymentId> --versionNumber <ver> --description <desc>
+
+### Local safety note
+- If you use git clean -fd often, protect workspace locally:
+  Add to .git/info/exclude:
+    gas/clasp_webapp/
