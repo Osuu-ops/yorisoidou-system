@@ -1,0 +1,20 @@
+﻿9c6dcc0 docs(MEP): append FAST_LOOP safety & audit block
+37e060b chore(mep): update CHAT_PACKET via handoff script
+e12f4b5 WIP: auto-save before mep_handoff (from recovery-f0e7624) by Osuu-ops at 20260106-231346
+f0e7624 chore(scope): suggest Scope-IN for PR #251
+e516301 chore(scope): suggest Scope-IN for PR #248 (#249)
+dbc280f docs(MEP): update generated docs (#250)
+977cad7 docs(MEP): add IDEA_RECEIPTS + finalize tool (delete only after implemented) (#248)
+f6fd78e chore(scope): suggest Scope-IN for PR #245 (#246)
+97b2610 docs(MEP): update generated docs (#247)
+258efad tools: improve idea UX (clipboard confirmations) + delete picked ideas (no stockpile) (#245)
+9d01283 chore(scope): suggest Scope-IN for PR #228 (#229)
+8eff50e docs(MEP): update generated docs (#244)
+b1ee718 docs(MEP): install idea capture/list/pick flow + embed menu into HANDOFF (#242)
+6d3b764 docs(MEP): update generated docs (#240)
+7b13a29 docs(MEP): add IDEA_VAULT pull system (ACTIVE->ARCHIVE + clipboard) (#238)
+6921d78 docs(MEP): update generated docs (#237)
+0d67499 docs(MEP): add IDEA_VAULT (single-file idea handoff) (#236)
+7f38a9d docs(MEP): update generated docs (#235)
+973d1cf docs(MEP): fix HANDOFF generator (escape-safe) + ensure HANDOFF_TRIGGER (#234)
+53dee07 docs(MEP): fix HANDOFF generator + embed handoff trigger (one-liner) (#233)

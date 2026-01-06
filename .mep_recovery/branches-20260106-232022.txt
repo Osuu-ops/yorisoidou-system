@@ -1,0 +1,303 @@
+﻿  auto/chat-packet-update-20664550110                                   dec506f [origin/auto/chat-packet-update-20664550110] chore(self-heal): trigger checks
+  auto/mep-runbook-20260103-205204                                      edbd321 [origin/auto/mep-runbook-20260103-205204: gone] docs(MEP): add RUNBOOK
+  auto/mep-runbook-recreate-20260103-215009                             3127292 [origin/auto/mep-runbook-recreate-20260103-215009] docs(MEP): add RUNBOOK
+  auto/state-summary-update-20708938410                                 e14ae8b [origin/auto/state-summary-update-20708938410: gone] docs(MEP): regenerate CHAT_PACKET.md
+  backup/local-main-diverge-20260104-023853                             344db8c README.mdに変更を加えました
+  biz/alertlabels-recalc-trigger-20260104-200205                        d008fa1 [origin/biz/alertlabels-recalc-trigger-20260104-200205] biz(master_spec): fix alertLabels recalculation trigger (9.2.1)
+  biz/expense-business-master-20260104-052234                           50560be [origin/biz/expense-business-master-20260104-052234] business(EXPENSE): extend business_master (Phase-1)
+  biz/expense-business-spec-20260104-052212                             e97aa2f [origin/biz/expense-business-spec-20260104-052212] business(EXPENSE): extend business_spec (Phase-1)
+  biz/fix-review-rootcause-dup-20260104-203953                          3461e1f [origin/biz/fix-review-rootcause-dup-20260104-203953] biz(master_spec): dedupe REVIEW.rootCause block + disambiguate internal 禁止事項 headings
+  biz/inconsistency-signals-20260104-194245                             4e4886d [origin/biz/inconsistency-signals-20260104-194245] biz(master_spec): define inconsistency signals (11.1.2)
+  biz/management-alert-labels-20260104-194416                           e2d5a67 [origin/biz/management-alert-labels-20260104-194416] biz(master_spec): add management alert labels (8.4.1)
+  biz/master-spec-lf-normalize-20260104-193832                          84c0f5c [origin/biz/master-spec-lf-normalize-20260104-193832] docs(MEP): update generated docs (#378)
+  biz/order-alertlabels-columns-fix-20260104-195655                     69e590c biz(master_spec): add Order_YYYY alertLabels field (refs 8.4.1) (#383)
+  biz/order-alertlabels-columns-fix-20260104-195904                     280c2ae [origin/biz/order-alertlabels-columns-fix-20260104-195904] biz(master_spec): add alertLabels to Order_YYYY columns (after STATUS)
+  biz/order-alertlabels-field-20260104-195223                           d1e412e [origin/biz/order-alertlabels-field-20260104-195223] biz(master_spec): add Order_YYYY alertLabels field (refs 8.4.1)
+  biz/order-business-master-20260104-045819                             1267a9b [origin/biz/order-business-master-20260104-045819] docs(MEP): update generated docs (#326)
+  biz/order-business-master-20260104-050019                             d427bde [origin/biz/order-business-master-20260104-050019] business(ORDER): extend business_master (Phase-1)
+  biz/parts-business-master-20260104-051732                             9a3d31a [origin/biz/parts-business-master-20260104-051732] business(PARTS): extend business_master (Phase-1)
+  biz/parts-business-spec-20260104-051453                               9e47850 [origin/biz/parts-business-spec-20260104-051453] business(PARTS): extend business_spec (Phase-1)
+  biz/parts-section-normalize-20260105-021540                           34da87c [origin/biz/parts-section-normalize-20260105-021540: gone] business(parts): normalize PARTS section (no meaning change)
+  biz/phase2-contract-min-fix-20260105-184734                           a66611c [origin/biz/phase2-contract-min-fix-20260105-184734: gone] biz(phase2): tighten resync idempotency + add Recovery Queue CANCELLED
+  biz/phase2-form-ledger-recovery-align-20260105-042526                 48e9301 [origin/biz/phase2-form-ledger-recovery-align-20260105-042526: gone] business(phase2): align Form->Ledger W/B with Recovery Queue fields
+  biz/phase2-recovery-ledger-align-20260105-040105                      31fc4fa docs(MEP): update generated docs (#484)
+  biz/phase2-recovery-ledger-align-20260105-040148                      31fc4fa docs(MEP): update generated docs (#484)
+  biz/phase2-recoveryqueue-ledger-schema-20260105-045154                9365037 business(phase2): fix Reconcile/Resync responsibility (Ledger->UI only) (#498)
+  biz/phase2-recoveryqueue-ledger-schema-20260105-045657                9365037 business(phase2): fix Reconcile/Resync responsibility (Ledger->UI only) (#498)
+  biz/phase2-recoveryqueue-storage-20260105-043312                      6924df0 [origin/biz/phase2-recoveryqueue-storage-20260105-043312: gone] business(phase2): fix Recovery Queue implementation target (Ledger as SoT)
+  biz/phase2-resync-responsibility-20260105-044644                      5d99532 [origin/biz/phase2-resync-responsibility-20260105-044644: gone] business(phase2): fix Reconcile/Resync responsibility (Ledger->UI only)
+  biz/photo-sufficiency-rules-20260104-194018                           399ff6d [origin/biz/photo-sufficiency-rules-20260104-194018] biz(master_spec): define photo sufficiency rules (11.1.1)
+  biz/request-resolution-metadata-contract-20260104-201319              e5384ae [origin/biz/request-resolution-metadata-contract-20260104-201319] biz(master_spec): define resolution metadata for RequestStatus (3.7.4)
+  biz/request-status-contract-20260104-200542                           2ce13fa [origin/biz/request-status-contract-20260104-200542] biz(master_spec): define RequestStatus and unify pending criteria
+  biz/review-rootcause-keys-20260104-203610                             e2d0ce7 [origin/biz/review-rootcause-keys-20260104-203610] biz(master_spec): add REVIEW rootCause keys (3.7.2.2) constrained to fixed enumerations
+  biz/review-rootcause-schema-keys-20260104-204639                      0e303c3 biz(master_spec): tidy duplicated 禁止事項（補助｜固定） headers in 3.7.2 (no meaning change) (#397)
+  biz/review-rootcause-schema-keys2-20260104-204820                     bb9484a [origin/biz/review-rootcause-schema-keys2-20260104-204820] biz(master_spec): add rootCause keys to REVIEW schema (3.7.2) (alignment only)
+  biz/reviewtype-mapping-20260104-203306                                905a02f [origin/biz/reviewtype-mapping-20260104-203306] biz(master_spec): fix REVIEW.reviewType mapping (3.7.2.1) to signals/photo flags
+  biz/tidy-3.7.2-subbans2-20260104-204428                               58d6405 [origin/biz/tidy-3.7.2-subbans2-20260104-204428] biz(master_spec): tidy duplicated 禁止事項（補助｜固定） headers in 3.7.2 (no meaning change)
+  biz/work-business-master-20260104-050912                              ffff230 [origin/biz/work-business-master-20260104-050912] business(WORK): extend business_master (Phase-1)
+  biz/work-business-spec-20260104-050739                                fc3d88f [origin/biz/work-business-spec-20260104-050739] business(WORK): extend business_spec (Phase-1)
+  biz/work-normalize-20260105-002105                                    e8cf57e docs(business): add INDEX + align master_spec scope (#444)
+  biz/work-normalize-20260105-002720                                    e8cf57e docs(business): add INDEX + align master_spec scope (#444)
+  biz/work-normalize-20260105-003408                                    7039451 [origin/biz/work-normalize-20260105-003408: gone] business(work): normalize Phase-1 WORK section (no meaning change)
+  biz/work-normalize-20260105-003638                                    b34a6e5 docs(MEP): forbid nested code blocks; require single powershell block (#445)
+  business/apps-script-sync-phase2-20260105-045926                      856d5b8 [origin/business/apps-script-sync-phase2-20260105-045926: gone] business(phase2): formalize Apps Script sync (full replace only)
+  business/comment-concierge-phase2-20260105-230836                     13dd794 [origin/business/comment-concierge-phase2-20260105-230836: gone] business(phase2): add comment concierge + task presentation contracts
+  business/comment-mode-20260106-000047                                 bab64e0 [origin/business/comment-mode-20260106-000047: gone] business_spec: define comment mode (fixed target, execute/cancel)
+  business/degraded-mode-phase2-20260105-050006                         4253c06 [origin/business/degraded-mode-phase2-20260105-050006: gone] business(phase2): add degraded mode policy (enabled=false fallbacks)
+  business/delete-mode-final-20260106-001240                            9a564af [origin/business/delete-mode-final-20260106-001240: gone] business_spec: finalize delete/void mode (freeze/release + FIX linkage)
+  business/doc-flow-normalize-20260104-152705                           631be3e [origin/business/doc-flow-normalize-20260104-152705] docs(MEP-business): normalize DOC flows (meaning in master_spec)
+  business/idempotencykey-phase2-20260105-041043                        a8a07ce [origin/business/idempotencykey-phase2-20260105-041043: gone] business(phase2): formalize IdempotencyKey (event-wise contract)
+  business/index-phase2-quicklinks-20260105-041535                      f21311c [origin/business/index-phase2-quicklinks-20260105-041535: gone] docs(index): add Phase-2 quick links (Integration/Recovery/Idempotency/Runtime)
+  business/index-yorisoidou-20260105-001442                             bea4ff5 [origin/business/index-yorisoidou-20260105-001442: gone] docs(business): add INDEX + align master_spec scope
+  business/integration-contract-phase2-20260105-035451                  d2467f3 [origin/business/integration-contract-phase2-20260105-035451: gone] business(phase2): add Integration Contract (Todoist×ClickUp×Ledger)
+  business/logs-system-policy-phase2-20260105-045952                    33a524e [origin/business/logs-system-policy-phase2-20260105-045952: gone] business(phase2): fix logs/system policy (Drive JSON + Sheet index + PII mask)
+  business/order-lifecycle-controls-20260105-233556                     a65841c [origin/business/order-lifecycle-controls-20260105-233556: gone] business_spec: add Order Lifecycle Controls (tombstone)
+  business/order-status-enum-20260104-152927                            07730f4 [origin/business/order-status-enum-20260104-152927] docs(MEP-business): define Order STATUS enum (canonical)
+  business/parts-expense-ex-align-20260104-154921                       ef0efa0 [origin/business/parts-expense-ex-align-20260104-154921] docs(MEP-business): align Parts/EX/Expense invariants (canonical)
+  business/recoveryqueue-linkage-phase2-20260105-040420                 1a8fea2 [origin/business/recoveryqueue-linkage-phase2-20260105-040420: gone] business(phase2): finalize Recovery Queue linkage (Request mapping + idempotency)
+  business/request-category-enum-20260104-153111                        9f862d4 [origin/business/request-category-enum-20260104-153111] docs(MEP-business): define Request Category enum (canonical)
+  business/request-payload-schema-20260104-153400                       633c3fc [origin/business/request-payload-schema-20260104-153400] docs(MEP-business): define Request payload schema (canonical)
+  business/request-uf07-uf08-id-consistency-20260104-220830             dd29971 [origin/business/request-uf07-uf08-id-consistency-20260104-220830] business(master_spec): enforce UF07/UF08 id consistency (partId/orderId == targetId)
+  business/resync-scope-phase2-20260105-045939                          d36b7e3 [origin/business/resync-scope-phase2-20260105-045939: gone] business(phase2): fix resync scope (ledger integrity + UI projection)
+  business/rollback-policy-phase2-20260105-045857                       372a04c [origin/business/rollback-policy-phase2-20260105-045857: gone] business(phase2): add rollback policy (stabilize after repeated runtime NG)
+  business/runtime-audit-checklist-phase2-20260105-041318               ab7e7bc [origin/business/runtime-audit-checklist-phase2-20260105-041318: gone] business(phase2): add Runtime Audit Checklist (expected/unexpected effects)
+  business/runtime-selftest-phase2-20260105-045843                      237feea [origin/business/runtime-selftest-phase2-20260105-045843: gone] business(phase2): add RuntimeSelfTest (test-run protocol)
+  business/self-diff-policy-phase2-20260105-045912                      9382c1f [origin/business/self-diff-policy-phase2-20260105-045912: gone] business(phase2): add Self-Diff policy (warning-only contradiction guard)
+  business/task-projection-lifecycle-20260105-235142                    258fb1d [origin/business/task-projection-lifecycle-20260105-235142: gone] business_spec: define task projection for lifecycle controls
+  business/trigger-registry-20260106-000428                             f06abfe [origin/business/trigger-registry-20260106-000428: gone] business_spec: define trigger registry and conflict resolution
+  business/webhook-retry-dedupe-phase2-20260105-050020                  844903b [origin/business/webhook-retry-dedupe-phase2-20260105-050020: gone] business(phase2): fix webhook retry/dedupe contract (idempotent, no growth)
+  chore/chat-packet-schedule-dod-20260103-052152                        f347dd6 ci: auto-run chat packet update after docs/MEP PR merge (#174)
+  chore/fix-chat-packet-self-heal-push-20260103-062451                  b0dddbb [origin/chore/fix-chat-packet-self-heal-push-20260103-062451] chore(ci): make chat packet self-heal fail on push failure
+  chore/mep-gate-dispatch-20260103-063059                               437b082 [origin/chore/mep-gate-dispatch-20260103-063059] chore(ci): add workflow_dispatch to MEP Gate
+  chore/required-checks-drift-guard-20260103-032130                     4cbae43 [origin/chore/required-checks-drift-guard-20260103-032130: gone] Merge remote-tracking branch 'origin/main' into chore/required-checks-drift-guard-20260103-032130
+  chore/scope-guard-self-diagnose-20260103-030137                       0843e1c [origin/chore/scope-guard-self-diagnose-20260103-030137] chore: remove annotation from Scope-IN (path only)
+  chore/upgrade-bundle-001-20260103-061405                              ce290da [origin/chore/upgrade-bundle-001-20260103-061405] chore(ci): upgrade bundle 001 (self-heal docs PRs)
+  ci/chat-packet-schedule-20260103                                      baf33d3 [origin/ci/chat-packet-schedule-20260103] ci: add scheduled chat packet auto PR
+  ci/fix-chat-packet-schedule-20260103                                  6066a96 [origin/ci/fix-chat-packet-schedule-20260103] ci: tighten CURRENT_SCOPE formatting
+  ci/mep-state-summary-auto-update-20260103-152119                      38b5ae7 [origin/ci/mep-state-summary-auto-update-20260103-152119] ci: add STATE_SUMMARY auto-update workflow
+  ci/mep-updater-include-chat-packet-20260103-160220                    b77a71e docs(MEP): update generated docs (#219)
+  ci/mep-updater-include-chat-packet-20260103-160231                    9b1620d [origin/ci/mep-updater-include-chat-packet-20260103-160231] ci: include CHAT_PACKET in generated-doc auto-updater
+  docs/adopt-decision-gate-20260105-031515                              7f68c41 [origin/docs/adopt-decision-gate-20260105-031515: gone] docs(MEP): formally adopt decision-first gate + startup rule
+  docs/ai-boot-output-format-rule-20260105-001733                       19f8993 [origin/docs/ai-boot-output-format-rule-20260105-001733: gone] docs(MEP): rebuild CHAT_PACKET for AI_BOOT update
+  docs/b23-normalize-runbook-20260106-023511                            79b3b22 [origin/docs/b23-normalize-runbook-20260106-023511: gone] docs(MEP): B23 runbook for status normalization (B22)
+  docs/chat-packet-autopilot-20260105-035239                            bb03206 [origin/docs/chat-packet-autopilot-20260105-035239: gone] docs(MEP): add autopilot command to CHAT_PACKET (via PROCESS)
+  docs/chat-packet-bundle-20260106-022004                               3dfc036 docs(MEP): update generated docs (#578)
+  docs/chat-packet-bundle-20260106-022226                               8ae5b6c [origin/docs/chat-packet-bundle-20260106-022226: gone] docs(MEP): add CHAT_PACKET_BUNDLE (self-contained start/current)
+  docs/chat-packet-bundle-20260106-022309                               1e5641f [origin/docs/chat-packet-bundle-20260106-022309: gone] docs(MEP): add CHAT_PACKET_BUNDLE (self-contained start/current)
+  docs/chat-packet-handoff-short-memo-20260104-210143                   87bb6f9 [origin/docs/chat-packet-handoff-short-memo-20260104-210143] docs(MEP): handoff trigger returns path + short free memo
+  docs/chat-packet-handoff-trigger-20260104-203132                      8a53b1e [origin/docs/chat-packet-handoff-trigger-20260104-203132] docs(MEP): add handoff trigger (return CHAT_PACKET path)
+  docs/chat-packet-regenerate-20260104-212238                           5cc6ea1 [origin/docs/chat-packet-regenerate-20260104-212238] docs(MEP): regenerate CHAT_PACKET.md (fix Chat Packet Guard)
+  docs/chat-packet-startup-rule-20260105-022338                         c24f748 tools(MEP): autopilot ignore gh stderr success and verify state (#465)
+  docs/chat-packet-sync-20260104-232919                                 1777af6 [origin/docs/chat-packet-sync-20260104-232919: gone] docs(MEP): sync CHAT_PACKET.md with generator
+  docs/chat-packet-update-v1-1-20260105-023842                          3fab6e1 [origin/docs/chat-packet-update-v1-1-20260105-023842: gone] docs(MEP): regenerate CHAT_PACKET to satisfy Chat Packet Guard
+  docs/external-normalize-to-main-20260106-002157                       196a5df [origin/docs/external-normalize-to-main-20260106-002157: gone] docs(MEP): add external work normalization method and regenerate CHAT_PACKET
+  docs/final-audit-contract-20260104-191025                             aed5266 [origin/docs/final-audit-contract-20260104-191025] docs(MEP): add mandatory final audit (Go/No-Go) rule
+  docs/fix-chat-packet-guard-20260104-154448                            9ff1927 [origin/docs/fix-chat-packet-guard-20260104-154448] docs(MEP): regenerate chat packet/docs index (fix guard)
+  docs/fix-state-current-scope-mojibake-20260104-205028                 76d5dc8 [origin/docs/fix-state-current-scope-mojibake-20260104-205028] docs(STATE_CURRENT): fix mojibake in CURRENT_SCOPE (canonical)
+  docs/gas-state-b16-1-20260106-001447                                  27313dc [origin/docs/gas-state-b16-1-20260106-001447: gone] docs(MEP): record GAS B16-1 current state (endpoints/ledger) + regenerate CHAT_PACKET
+  docs/idea-cleanup-20260104-214212                                     f51a5a3 [origin/docs/idea-cleanup-20260104-214212] docs(MEP): remove implemented IDEA:1c4d4e1a7f30 from ACTIVE
+  docs/idea-cleanup-20260104-214248                                     3af1074 docs(MEP): remove implemented IDEA:1c4d4e1a7f30 from ACTIVE (#415)
+  docs/idea-index1-implemented-20260104-212244                          07b616d [origin/docs/idea-index1-implemented-20260104-212244] docs(MEP): mark IDEA_INDEX=1 implemented
+  docs/idea-trigger-phrases-20260104-192353                             6eb6fd1 [origin/docs/idea-trigger-phrases-20260104-192353] docs(MEP): add fixed trigger phrases for idea flow
+  docs/mep-add-handoff-and-bundles-20260103-155334                      2012d29 [origin/docs/mep-add-handoff-and-bundles-20260103-155334] docs(MEP): add HANDOFF_100 + REQUEST_BUNDLE (SYSTEM/BUSINESS) as generated docs
+  docs/mep-add-idea-vault-20260103-205303                               bbfbed3 [origin/docs/mep-add-idea-vault-20260103-205303] docs(MEP): add IDEA_VAULT (single-file idea handoff)
+  docs/mep-add-manual-summaries-20260103-153458                         270f058 [origin/docs/mep-add-manual-summaries-20260103-153458] docs(MEP): add PLAYBOOK/RUNBOOK summaries + extend updater
+  docs/mep-add-playbook-20260103-151247                                 b390cf6 [origin/docs/mep-add-playbook-20260103-151247] docs(MEP): add PLAYBOOK + link from INDEX
+  docs/mep-add-runbook-20260103-150840                                  5b87aaf [origin/docs/mep-add-runbook-20260103-150840] docs(MEP): add RUNBOOK recovery cards
+  docs/mep-add-state-summary-20260103-151520                            222b4dd docs(MEP): add PLAYBOOK + link from INDEX (#203)
+  docs/mep-add-state-summary-20260103-151642                            1f30c08 [origin/docs/mep-add-state-summary-20260103-151642] docs(MEP): add STATE_SUMMARY generator + auto-update workflow
+  docs/mep-add-state-summary-step1-20260103-151916                      7dc324a [origin/docs/mep-add-state-summary-step1-20260103-151916] docs(MEP): add STATE_SUMMARY generator + initial summary
+  docs/mep-add-upgrade-gate-20260103-153509                             157ae9d [origin/docs/mep-add-upgrade-gate-20260103-153509: gone] chore: rerun CI (trigger push)
+  docs/mep-bootstrap-memory-zero-20260104-025426                        46a3c31 [origin/docs/mep-bootstrap-memory-zero-20260104-025426: gone] docs(MEP): rebuild CHAT_PACKET after bootstrap docs update
+  docs/mep-chat-style-contract-20260104-044201                          78765bd [origin/docs/mep-chat-style-contract-20260104-044201] docs(MEP): add CHAT_STYLE_CONTRACT and include it in mep packet
+  docs/mep-decision-gate-hardening-20260105-044047                      364a692 [origin/docs/mep-decision-gate-hardening-20260105-044047: gone] docs(MEP): harden Decision Gate + Adoption Trigger (AI_BOOT/CHAT_PACKET)
+  docs/mep-doc-registry-20260104-204436                                 ddef86f [origin/docs/mep-doc-registry-20260104-204436: gone] docs(MEP): add DOC_REGISTRY to prevent duplicate edits
+  docs/mep-expand-request-bundles-platform-20260103-155717              f6a9d33 [origin/docs/mep-expand-request-bundles-platform-20260103-155717] docs(MEP): expand REQUEST_BUNDLE sources to include platform/MEP (glob + caps)
+  docs/mep-fix-handoff-generator-20260103-193849                        78513e6 [origin/docs/mep-fix-handoff-generator-20260103-193849] docs(MEP): fix HANDOFF generator (escape-safe) + ensure HANDOFF_TRIGGER
+  docs/mep-fix-handoff-trigger-20260103-193547                          17aece5 [origin/docs/mep-fix-handoff-trigger-20260103-193547] docs(MEP): fix HANDOFF generator + embed handoff trigger (one-liner)
+  docs/mep-guidance-align-20260104-153937                               d7475c1 [origin/docs/mep-guidance-align-20260104-153937] docs(MEP): align guidance docs for BUSINESS master_spec (100%)
+  docs/mep-handoff-current-archive-20260103-164630                      a50f918 [origin/docs/mep-handoff-current-archive-20260103-164630] docs(MEP): make HANDOFF_100 single-file (CURRENT+ARCHIVE)
+  docs/mep-handoff-id-overview-20260103-181619                          1d35a18 [origin/docs/mep-handoff-id-overview-20260103-181619] docs(MEP): add HANDOFF_ID + overview header in HANDOFF_100 CURRENT
+  docs/mep-handoff-trigger-20260103-182010                              af03ed8 [origin/docs/mep-handoff-trigger-20260103-182010] docs(MEP): pin handoff trigger one-liner in HANDOFF_100
+  docs/mep-idea-flow-20260103-212432                                    ddf7b2c [origin/docs/mep-idea-flow-20260103-212432] docs(MEP): install idea capture/list/pick flow + embed menu into HANDOFF
+  docs/mep-idea-receipts-finalize-20260103-214123                       1b21a96 [origin/docs/mep-idea-receipts-finalize-20260103-214123] docs(MEP): add IDEA_RECEIPTS + finalize tool (delete only after implemented)
+  docs/mep-idea-vault-pull-20260103-205912                              f9a0733 [origin/docs/mep-idea-vault-pull-20260103-205912] docs(MEP): add IDEA_VAULT pull system (ACTIVE->ARCHIVE + clipboard)
+  docs/mep-index-add-runbook-20260103-151053                            6bea863 [origin/docs/mep-index-add-runbook-20260103-151053] docs(MEP): add RUNBOOK link to INDEX
+  docs/mep-lease-continue-20260103-220947                               a2cbd59 [origin/docs/mep-lease-continue-20260103-220947] docs(MEP): add LEASE + CONTINUE_TARGET v1.0
+  docs/mep-normalize-master-spec-roles-20260104-032520                  4570fa4 [origin/docs/mep-normalize-master-spec-roles-20260104-032520: gone] docs(business): normalize master_spec roles (canonical=extensionless, md=entry guide)
+  docs/mep-one-packet-bootstrap-20260104-025511                         505dc79 docs(MEP): add bootstrap files for memory-zero conversations
+  docs/mep-one-packet-bootstrap-20260104-025527                         e4072a1 [origin/docs/mep-one-packet-bootstrap-20260104-025527: gone] Merge remote-tracking branch 'origin/main' into docs/mep-one-packet-bootstrap-20260104-025527
+  docs/mep-one-packet-bootstrap-rebuild-20260104-030214                 d3de079 [origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214] docs(MEP): resolve conflict on START_HERE (keep main + one-packet section)
+  docs/mep-postmerge-autorecovery-fix-20260105-042531                   98deab8 [origin/docs/mep-postmerge-autorecovery-fix-20260105-042531: gone] docs(MEP): enforce post-merge notes + autorecovery rules
+  docs/mep-postmerge-state-current-rule-20260105-040934                 0f6b663 [origin/docs/mep-postmerge-state-current-rule-20260105-040934: gone] docs(MEP): add post-merge STATE_CURRENT minimal update rule
+  docs/mep-powershell-output-contract-20260103-143429                   31f8081 [origin/docs/mep-powershell-output-contract-20260103-143429: gone] docs(MEP): add PowerShell single-paste AI output contract
+  docs/mep-powershell-output-contract-v2-20260103-145848                8b9f50b [origin/docs/mep-powershell-output-contract-v2-20260103-145848] docs(MEP): PowerShell single-paste output contract (v2)
+  docs/mep-process-chat-packet-update-20260104-221151                   44c4b84 [origin/docs/mep-process-chat-packet-update-20260104-221151] Merge remote-tracking branch 'origin/main' into docs/mep-process-chat-packet-update-20260104-221151
+  docs/mep-pwsh-guard-20260104-233323                                   d085d12 [origin/docs/mep-pwsh-guard-20260104-233323: gone] docs(MEP): add pwsh guard to prevent PS5.1 crashes
+  docs/mep-receipts-example-fix-20260103-230600                         6772899 [origin/docs/mep-receipts-example-fix-20260103-230600: gone] docs(MEP): make IDEA_RECEIPTS example non-executable
+  docs/mep-repair-1-2-3-20260103-153905                                 1316db2 [origin/docs/mep-repair-1-2-3-20260103-153905] docs(MEP): repair missing summaries + UPGRADE_GATE
+  docs/mep-runbook-crash-recovery-v1_2-20260103-221911                  157f993 docs(MEP): update generated docs (#275)
+  docs/mep-runbook-crash-recovery-v1_2-20260103-222107                  adf2cef docs(MEP): update generated docs (#277)
+  docs/mep-runbook-crash-recovery-v1_2-20260103-222254                  7c16c58 docs(MEP): make IDEA_RECEIPTS example non-executable (#278)
+  docs/mep-runbook-crash-recovery-v1_2-20260103-222813                  dbed35e [origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813] docs(MEP): add RUNBOOK CARD-06 local crash recovery (v1.2)
+  docs/mep-split-phase1-yorisoidou-20260104-040150                      bb467a4 [origin/docs/mep-split-phase1-yorisoidou-20260104-040150: gone] docs(business): phase-1 split skeleton (business_master/spec + ui_master/spec) for Yorisoidou
+  docs/mep-state-b17-1-20260106-003822                                  a3e5dc1 [origin/docs/mep-state-b17-1-20260106-003822: gone] docs(MEP): record GAS B17-1 verification
+  docs/mep-state-summary-startpack-20260103-153413                      7323237 [origin/docs/mep-state-summary-startpack-20260103-153413: gone] docs(MEP): enhance STATE_SUMMARY start-pack (v1.1)
+  docs/mep-update-state-current-20260103-150444                         26ee0c5 docs(MEP): PowerShell single-paste output contract (v2) (#198)
+  docs/mep-update-state-current-v12-20260103-150635                     ed6f7d7 [origin/docs/mep-update-state-current-v12-20260103-150635] docs(MEP): update STATE_CURRENT to v1.2 (no fences)
+  docs/ops-chat-packet-followup-20260103                                5920974 [origin/docs/ops-chat-packet-followup-20260103] docs(MEP): document chat packet follow-up rule
+  docs/ops-rules-20260103                                               f9872f8 [origin/docs/ops-rules-20260103: behind 2] chore: add Required Checks drift guard (manual) (#156)
+  docs/ops-scope-suggest-20260103-150621                                0ebd9f5 [origin/docs/ops-scope-suggest-20260103-150621] docs(ops): add Scope-IN Suggest runbook
+  docs/required1-mep-gate-migration-20260103-062110                     3b2ced7 [origin/docs/required1-mep-gate-migration-20260103-062110] docs(MEP): update CHAT_PACKET (required1 migration doc)
+  docs/revert-chat-packet-schedule-test-20260103                        119b424 [origin/docs/revert-chat-packet-schedule-test-20260103] docs(MEP): revert chat packet schedule test
+  docs/revert-chat-packet-schedule-test-v2-20260103                     18049e0 [origin/docs/revert-chat-packet-schedule-test-v2-20260103] docs(MEP): revert chat packet schedule test v2
+* docs/runbook-autoappend/20260106-231639                               9c6dcc0 [origin/docs/runbook-autoappend/20260106-231639] docs(MEP): append FAST_LOOP safety & audit block
+  docs/runbook-business-go-20260104-053757                              66b6248 [origin/docs/runbook-business-go-20260104-053757] docs(RUNBOOK): add BUSINESS_IMPL_GO_NOGO card
+  docs/runbook-gas-clasp-fixedurl-20260106-202640                       bcc4f9c [origin/docs/runbook-gas-clasp-fixedurl-20260106-202640: gone] docs(MEP): record clasp fixed-URL redeploy loop (RUNBOOK)
+  docs/state-current-adopt-ledger-mapping-20260106-021900               cb07062 [origin/docs/state-current-adopt-ledger-mapping-20260106-021900: gone] docs(MEP): record adoption of ledger mapping (PR #576)
+  docs/state-current-adopt-ledger-reflection-20260106-012001            1cbe3f0 [origin/docs/state-current-adopt-ledger-reflection-20260106-012001: gone] docs(MEP): record adoption of ledger reflection (PR #562)
+  docs/state-current-b17-1-normalize-20260106-005222                    4cad59d [origin/docs/state-current-b17-1-normalize-20260106-005222: gone] docs(MEP): normalize STATE_CURRENT to B17-1 + NEXT B18
+  docs/state-current-b18-20260106-010455                                002def5 [origin/docs/state-current-b18-20260106-010455: gone] docs(MEP): record GAS B18 (read ops) verification
+  docs/state-current-b19-20260106-012335                                20e037e [origin/docs/state-current-b19-20260106-012335: gone] docs(MEP): record GAS B19 hardening (autoCreateRecovery opt-in)
+  docs/state-current-b20-20260106-013252                                26e32e1 [origin/docs/state-current-b20-20260106-013252: gone] docs(MEP): record GAS B20 lifecycle (cancel/resolve guards) verification
+  docs/state-current-b21-20260106-020617                                6d7df13 [origin/docs/state-current-b21-20260106-020617: gone] docs(MEP): record GAS B21 compat (status/requestStatus + list_status) verification
+  docs/state-current-b22-20260106-022402                                ae71b99 [origin/docs/state-current-b22-20260106-022402: gone] docs(MEP): record GAS B22 normalization tool verification
+  docs/state-current-collector-tabless-20260105-170358                  c9deb09 [origin/docs/state-current-collector-tabless-20260105-170358: gone] docs(MEP): record PR #509 collector robustness in STATE_CURRENT
+  docs/state-current-v12-20260103-152232                                12de0fd docs(ops): add link to Scope-IN Suggest runbook (#208)
+  docs/state-current-v12-20260103-152511                                12de0fd docs(ops): add link to Scope-IN Suggest runbook (#208)
+  docs/state-current-v12-20260103-153345                                2ba3107 [origin/docs/state-current-v12-20260103-153345] docs(MEP): align CHAT_PACKET to CURRENT guard sha 7d35a324dcd0 (run )
+  docs/state-current-v12-retry-20260103-163647                          5ffba17 [origin/docs/state-current-v12-retry-20260103-163647: gone] docs(MEP): update STATE_CURRENT v1.2 (retry from main) + rebuild CHAT_PACKET
+  docs/test-chat-packet-schedule-20260103                               4b4e0ec [origin/docs/test-chat-packet-schedule-20260103] docs(MEP): test chat packet schedule
+  docs/test-chat-packet-schedule-20260103b                              c436e05 [origin/docs/test-chat-packet-schedule-20260103b] docs(MEP): test chat packet schedule v2
+  docs/yorisoidou-estimate-master-20260104-040725                       73b6e8f [origin/docs/yorisoidou-estimate-master-20260104-040725: gone] docs(business): extend BUSINESS_MASTER for ESTIMATE fields/enums (Phase-1)
+  docs/yorisoidou-estimate-spec-20260104-040427                         f56dcae [origin/docs/yorisoidou-estimate-spec-20260104-040427: gone] docs(business): define ESTIMATE workflow rules (Phase-1)
+  docs/yorisoidou-estimate-ui-master-20260104-041320                    ff76d6f [origin/docs/yorisoidou-estimate-ui-master-20260104-041320: gone] docs(ui): extend UI_MASTER for ESTIMATE fields (Phase-1)
+  docs/yorisoidou-estimate-ui-spec-20260104-041518                      a1bd11b [origin/docs/yorisoidou-estimate-ui-spec-20260104-041518: gone] docs(ui): refine UI_SPEC for ESTIMATE flow (Phase-1)
+  docs/yorisoidou-invoice-master-20260104-042430                        ed527b4 [origin/docs/yorisoidou-invoice-master-20260104-042430] docs(business): extend BUSINESS_MASTER for INVOICE fields/enums (Phase-1)
+  docs/yorisoidou-invoice-spec-20260104-041723                          adea111 [origin/docs/yorisoidou-invoice-spec-20260104-041723: gone] docs(business): add INVOICE minimal spec (Phase-1)
+  docs/yorisoidou-invoice-spec-recover-20260104-041924                  4f49edc [origin/docs/yorisoidou-invoice-spec-recover-20260104-041924] docs(business): add INVOICE minimal spec (Phase-1)
+  docs/yorisoidou-invoice-ui-master-20260104-042636                     4652f13 [origin/docs/yorisoidou-invoice-ui-master-20260104-042636] docs(ui): extend UI_MASTER for INVOICE fields (Phase-1)
+  docs/yorisoidou-invoice-ui-spec-20260104-042810                       03c7921 [origin/docs/yorisoidou-invoice-ui-spec-20260104-042810] docs(ui): add INVOICE flow to UI_SPEC (Phase-1)
+  docs/yorisoidou-order-spec-20260104-043908                            97e298c [origin/docs/yorisoidou-order-spec-20260104-043908] docs(business): add ORDER minimal spec (Phase-1)
+  docs/yorisoidou-receipt-master-20260104-043310                        a75c428 [origin/docs/yorisoidou-receipt-master-20260104-043310] docs(business): extend BUSINESS_MASTER for RECEIPT fields/enums (Phase-1)
+  docs/yorisoidou-receipt-spec-20260104-043052                          85e0f62 [origin/docs/yorisoidou-receipt-spec-20260104-043052] docs(business): add RECEIPT minimal spec (Phase-1)
+  docs/yorisoidou-receipt-ui-master-20260104-043436                     6c6df56 [origin/docs/yorisoidou-receipt-ui-master-20260104-043436] docs(ui): extend UI_MASTER for RECEIPT fields (Phase-1)
+  docs/yorisoidou-receipt-ui-spec-20260104-043655                       c992256 [origin/docs/yorisoidou-receipt-ui-spec-20260104-043655] docs(ui): add RECEIPT flow to UI_SPEC (Phase-1)
+  feat/mep-gate-pr-20260103-061907                                      bec138c [origin/feat/mep-gate-pr-20260103-061907] feat(ci): add MEP Gate (PR) aggregator
+  feat/scope-suggest-20260103-072132                                    59bbdaf [origin/feat/scope-suggest-20260103-072132] fix(scope): fix heredoc redirect for scope_suggest.json
+  fix/add-debug-artifact-20260106-222203                                a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  fix/add-debug-artifact-20260106-222236                                18da77a wip(save-local-before-stash-apply): 20260106222320
+  fix/add-debug-artifact-20260106-222521                                a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  fix/add-debug-artifact-20260106-222528                                a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  fix/add-debug-artifact-20260106-222743                                a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  fix/add-debug-artifact-20260106-222859                                c37b7bf [origin/fix/add-debug-artifact-20260106-222859] wip(auto): 20260106223236
+  fix/current-scope-remove-conflict-20260103-025449                     17a9ca6 [origin/fix/current-scope-remove-conflict-20260103-025449: gone] chore(scope): dedupe CURRENT_SCOPE note line
+  fix/mep-autopilot-ascii-20260105-020823                               03a86b3 [origin/fix/mep-autopilot-ascii-20260105-020823: gone] tools(MEP): autopilot ASCII-only + confirm actions + deadlock stop
+  fix/mep-autopilot-deadlock-20260105-020138                            6d12c3b [origin/fix/mep-autopilot-deadlock-20260105-020138: gone] tools(MEP): autopilot confirm merge/close + deadlock stop
+  fix/mep-autopilot-ghstderr-20260105-021347                            cd30e23 [origin/fix/mep-autopilot-ghstderr-20260105-021347: gone] tools(MEP): autopilot use cmd wrapper to avoid gh stderr errors
+  fix/mep-autopilot-nativeerr-20260105-021854                           560b9de [origin/fix/mep-autopilot-nativeerr-20260105-021854: gone] tools(MEP): autopilot ignore gh stderr success and verify state
+  fix/mep-autopilot-syntax-20260105-014304                              061bca0 [origin/fix/mep-autopilot-syntax-20260105-014304: gone] tools(MEP): fix mep_autopilot parser error
+  fix/mep-gate-register-20260103-063318                                 3953843 [origin/fix/mep-gate-register-20260103-063318] fix(ci): ensure MEP Gate workflow is registered
+  fix/phase2-http-write-cli-bom-20260105-233857                         d4a83d1 [origin/fix/phase2-http-write-cli-bom-20260105-233857: gone] fix(phase2): accept UTF-8 BOM for --row-json-file (utf-8-sig)
+  fix/phase2-http-write-cli-rowfile-20260105-233256                     b562e44 [origin/fix/phase2-http-write-cli-rowfile-20260105-233256: gone] fix(phase2): http_write_client_cli support --row-json-file (PowerShell-safe)
+  fix/remove-mojibake-master_spec_md-20260104-031602                    1180964 [origin/fix/remove-mojibake-master_spec_md-20260104-031602: gone] fix(business): restore master_spec.md as compatibility wrapper (canonical is extensionless master_spec)
+  fix/restore-master-spec-20260104-021809                               3a0eb7e [origin/fix/restore-master-spec-20260104-021809: gone] BUSINESS: restore canonical master_spec (from master_spec.md) as UTF-8/LF
+  fix/scope-suggest-env-20260103-135312                                 eafe914 [origin/fix/scope-suggest-env-20260103-135312] fix(scope): pass base/head SHA into scope suggest python
+  fix/scope-suggest-export-20260103-135906                              a5466c6 [origin/fix/scope-suggest-export-20260103-135906] fix(scope): export base/head env for Scope-IN Suggest
+  fix/scope-suggest-gitident-20260103-141328                            a361571 [origin/fix/scope-suggest-gitident-20260103-141328] fix(scope): configure git identity for Scope-IN Suggest
+  fix/scope-suggest-gitident2-20260103-141957                           d839f02 [origin/fix/scope-suggest-gitident2-20260103-141957] fix(scope): set git identity inside Scope-IN Suggest run step
+  fix/scope-suggest-heredoc-20260103-073503                             e2136ab [origin/fix/scope-suggest-heredoc-20260103-073503] chore(self-heal): trigger checks
+  fix/text-integrity-halfkana-20260104-024147                           5c53658 [origin/fix/text-integrity-halfkana-20260104-024147: gone] fix(text-integrity): block mojibake by halfwidth-kana tripwire
+  fix/text-stability-20260104-024718                                    9f423bc [origin/fix/text-stability-20260104-024718: gone] fix(text): stabilize UTF-8/LF via gitattributes+editorconfig
+  impl/phase2-b1-recovery-idempotency-20260105-185456                   4b2369e [origin/impl/phase2-b1-recovery-idempotency-20260105-185456: gone] impl(phase2): runtime helpers for idempotency/resync/recovery/request-linkage
+  impl/phase2-b10-http-header-provider-20260105-222940                  c553975 [origin/impl/phase2-b10-http-header-provider-20260105-222940: gone] impl(phase2): B10 HTTP header provider (read-only) + parser tests
+  impl/phase2-b12-http-write-client-20260105-231035                     2e4f89a [origin/impl/phase2-b12-http-write-client-20260105-231035: gone] impl(phase2): B12 safe HTTP write client (dry-run first)
+  impl/phase2-b2-ledger-recovery-queue-20260105-190404                  0213699 [origin/impl/phase2-b2-ledger-recovery-queue-20260105-190404: gone] impl(phase2): B2 ledger Recovery Queue schema + idempotent upsert
+  impl/phase2-b3-ledger-request-dedupe-20260105-191512                  1f1fca1 [origin/impl/phase2-b3-ledger-request-dedupe-20260105-191512: gone] impl(phase2): B3 Request OPEN dedupe (ledger schema + requestKey)
+  impl/phase2-b5-ledger-adapter-20260105-193447                         326e41f [origin/impl/phase2-b5-ledger-adapter-20260105-193447: gone] impl(phase2): B5 LedgerAdapter interface + CSV adapter
+  impl/phase2-b6-sheets-adapter-skeleton-20260105-210404                ae836ed [origin/impl/phase2-b6-sheets-adapter-skeleton-20260105-210404: gone] impl(phase2): B6 Sheets adapter skeleton (LedgerAdapter boundary)
+  impl/phase2-b8-sheets-schema-check-20260105-221824                    413495a [origin/impl/phase2-b8-sheets-schema-check-20260105-221824: gone] impl(phase2): B8 sheets header/schema check (no I/O)
+  impl/phase2-b9-sheets-readonly-boundary-20260105-222240               932fe45 [origin/impl/phase2-b9-sheets-readonly-boundary-20260105-222240: gone] impl(phase2): B9 sheets read-only boundary (header fetch + schema validate)
+  main                                                                  12631f1 [origin/main: behind 3] docs(MEP): add Signed-by allowlist, allowlist-change template, metadata-format-check workflow
+  mep/chat-packet-min-stabilize-20260104-185742                         eb747f9 [origin/mep/chat-packet-min-stabilize-20260104-185742] tools(MEP): stabilize chat_packet_min output + include IDEA_INDEX
+  mep/fix-chat-packet-min-parsererror-20260104-200805                   f906da4 [origin/mep/fix-chat-packet-min-parsererror-20260104-200805] tools(MEP): fix CHAT_PACKET_MIN ParserError (param placement) + keep PS5.1-safe dynamic paths
+  mep/idea-integration-timing-contract-20260104-190142                  fd7c003 [origin/mep/idea-integration-timing-contract-20260104-190142] docs(MEP): add mandatory final audit (Go/No-Go) rule
+  mep/packet-dynamic+trigger-variants-20260104-192717                   a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  mep/packet-dynamic-trigger-variants-20260104-193501                   c235abf [origin/mep/packet-dynamic-trigger-variants-20260104-193501] mep: fix chat_packet_min dynamic business path + trigger variants (7.1)
+  new-branch                                                            d85814b [origin/new-branch: gone] README.mdに変更を加えました
+  ops/chat-packet-intake-20260106-003117                                0aca6ce [origin/ops/chat-packet-intake-20260106-003117: gone] ops: add chat-packet intake workflow (issue-driven, idempotent)
+  ops/chat-packet-intake-no-drift-20260106-004220                       2b21af4 [origin/ops/chat-packet-intake-no-drift-20260106-004220: gone] ops: chat packet intake NO-DRIFT (mismatch => score=0; evidence lines)
+  ops/chat-packet-intake-score-20260106-003625                          902a2aa [origin/ops/chat-packet-intake-score-20260106-003625: gone] ops: chat packet intake adds HANDOFF_SCORE gating (100/100 only)
+  ops/chat-packet-lf-only-20260104-155320                               895e391 [origin/ops/chat-packet-lf-only-20260104-155320] docs(MEP): enforce LF-only for generated chat packet
+  ops/fix-mep-handoff-parse-hard-20260106-012344                        37b833f ops: replace tools/mep_handoff.ps1 with parse-safe v2.0 (no GraphQL)
+  ops/fix-mep-handoff-parser-20260106-011302                            4c1fb50 [origin/ops/fix-mep-handoff-parser-20260106-011302: gone] ops: fix tools/mep_handoff.ps1 (no-drift; 100/100 only; parse-safe)
+  ops/fix-mep-handoff-v1-3-20260106-011710                              5b145d3 [origin/ops/fix-mep-handoff-v1-3-20260106-011710: gone] ops: rewrite tools/mep_handoff.ps1 v1.3 (parse-safe; 100/100 only)
+  ops/fix-mep-handoff-v2-2-20260106-013149                              0f8c837 [origin/ops/fix-mep-handoff-v2-2-20260106-013149: gone] ops: fix tools/mep_handoff.ps1 v2.2 (no here-strings; 100/100 only)
+  ops/mep-handoff-add-id-20260106-023558                                07e69a7 [origin/ops/mep-handoff-add-id-20260106-023558: gone] ops: mep_handoff outputs HANDOFF_ID + CURRENT (100/100 only)
+  ops/mep-handoff-ascii-no-drift-20260106-025104                        9fa7c7c [origin/ops/mep-handoff-ascii-no-drift-20260106-025104: gone] ops: mep_handoff prints HANDOFF_ID + ID-timestamped CURRENT (100/100 only)
+  ops/mep-handoff-clean-tolerant-20260106-031012                        b5aaa6d [origin/ops/mep-handoff-clean-tolerant-20260106-031012: gone] ops: mep_handoff tolerates git clean failures (still refuses dirty worktree)
+  ops/mep-handoff-id-fix-20260106-025510                                37ee0b1 [origin/ops/mep-handoff-id-fix-20260106-025510: gone] ops: mep_handoff adds HANDOFF_ID + CREATED_AT_UTC (100/100 only)
+  ops/mep-handoff-no-drift-fix-20260106-010802                          5a9952d [origin/ops/mep-handoff-no-drift-fix-20260106-010802: gone] ops: fix mep_handoff no-drift generator (no nested @' '@)
+  ops/mep-handoff-selfheal-v3-3-20260106-205713                         051dc37 [origin/ops/mep-handoff-selfheal-v3-3-20260106-205713: gone] ops: mep_handoff v3.3 self-heal (no GraphQL; no here-strings)
+  ops/mep-handoff-stderrfix2-20260106-024512                            7d2f83c [origin/ops/mep-handoff-stderrfix2-20260106-024512: gone] ops: harden mep_handoff git sync (cmd.exe) to avoid NativeCommandError
+  ops/mep-handoff-v2-3-bom-pwsh-20260106-020434                         921df63 [origin/ops/mep-handoff-v2-3-bom-pwsh-20260106-020434: gone] ops: fix mep_handoff v2.3 (UTF-8 BOM + pwsh guard; no here-strings)
+  ops/mep-handoff-v2-parse-safe-20260106-012615                         d9f0038 [origin/ops/mep-handoff-v2-parse-safe-20260106-012615: gone] ops: fix tools/mep_handoff.ps1 v2.1 (parse-safe; 100/100 only)
+  ops/noise-rules-fix-20260104-155715                                   e0a9a65 [origin/ops/noise-rules-fix-20260104-155715] Merge remote-tracking branch 'origin/main' into ops/noise-rules-fix-20260104-155715
+  ops/recover-allowlist-20260106215206                                  d8947a3 [origin/ops/recover-allowlist-20260106215206: gone] chore(recover): restore SIGNED_BY_ALLOWLIST.yml from SIGNED_BY_ALLOWLIST.yml.bak.20260106214810
+  ops/rule-fix-atomic-json-20260104-160515                              67fd8fc [origin/ops/rule-fix-atomic-json-20260104-160515] docs(MEP): fix ops rules (atomic + gh json + LF policy)
+  recover/stash-2-20260106221909                                        ae00986 docs(MEP): update CHAT_PACKET (#440)
+  recover/stash-3-20260106221909                                        a7ed1e7 docs(MEP): treat similar phrases as idea triggers (variants)
+  recovery-f0e7624                                                      f0e7624 [origin/recovery-f0e7624] chore(scope): suggest Scope-IN for PR #251
+  rescue/bad-local-main-20260103-161010                                 d2653b7 ci: include CHAT_PACKET in generated-doc auto-updater (#221)
+  rescue/local-main-20260103-154008                                     9aa77e3 docs(MEP): repair missing summaries + UPGRADE_GATE (#214)
+  system-a1-gas-write-mapping-20260106-023956                           11f5b7a ops: mep_handoff outputs HANDOFF_ID + CURRENT (100/100 only) (#587)
+  system-a1-gas-write-mapping-20260106-024657                           6066c25 ops: harden mep_handoff git sync (cmd.exe) to avoid NativeCommandError (#588)
+  system-a1-gas-write-mapping-20260106-025311                           6261f80 ops: mep_handoff prints HANDOFF_ID + ID-timestamped CURRENT (100/100 only) (#589)
+  system-a1-gas-write-mapping-20260106-210030                           295a015 ops: mep_handoff v3.3 self-heal (no GraphQL; no here-strings) (#599)
+  system-a1-gas-write-mapping-20260106-210859                           0767efd [origin/system-a1-gas-write-mapping-20260106-210859: gone] A1: force-add injected GAS helper; allow path in .gitignore
+  test/metadata-signedby-20260106213347                                 d7c9def [origin/test/metadata-signedby-20260106213347] docs(MEP): record test metadata-format-check result (2026-01-06T21:38:27+09:00)
+  test/phase2-b4-csv-e2e-20260105-192549                                b207c36 [origin/test/phase2-b4-csv-e2e-20260105-192549: gone] test(phase2): B4 CSV pseudo-ledger E2E for recovery/request/resync invariants
+  test/phase2-b7-adapter-e2e-20260105-214645                            8a74e00 [origin/test/phase2-b7-adapter-e2e-20260105-214645: gone] test(phase2): B7 adapter-driven E2E via CsvLedgerAdapter
+  test/seed-mep-gate-20260103-062802                                    6e81069 [origin/test/seed-mep-gate-20260103-062802] chore(self-heal): trigger checks
+  theme/master_spec-ledger-mapping-20260106-020914                      8c9a4a4 [origin/theme/master_spec-ledger-mapping-20260106-020914: gone] master_spec: add minimal event→ledger mapping for delete/FREEZE/FIX
+  theme/master_spec-ledger-reflection-delete-freeze-fix-20260106-011252 aae8ea7 [origin/theme/master_spec-ledger-reflection-delete-freeze-fix-20260106-011252: gone] master_spec: ledger reflection for delete/FREEZE/Request(FIX) (v1.0)
+  tmp/guard-merge-209-7d35a324dcd0                                      796f5a7 docs(MEP): align CHAT_PACKET to guard sha 7d35a324dcd0 (run 20673596571)
+  tools/fix-mep-chat-packet-min-scope-20260104-200340                   6f877d6 [origin/tools/fix-mep-chat-packet-min-scope-20260104-200340] tools(MEP): derive BUSINESS master_spec path from STATE_CURRENT
+  tools/gate-doctor-20260104-232037                                     7898686 docs(MEP): update generated docs (#430)
+  tools/gate-doctor-20260104-232103                                     7898686 docs(MEP): update generated docs (#430)
+  tools/mep-autopilot-20260105-013538                                   c606fd5 [origin/tools/mep-autopilot-20260105-013538: gone] tools(MEP): add mep_autopilot (self-heal + auto sweep) + OPS entry + rebuild CHAT_PACKET
+  tools/mep-autopilot-decision-ui-20260105-043713                       396771b [origin/tools/mep-autopilot-decision-ui-20260105-043713: gone] tools(MEP): autopilot decision UI + exit on manual-only
+  tools/mep-autopilot-decision-ui-20260105-044032                       5f3d570 tools(MEP): autopilot decision UI + exit on manual-only (#495)
+  tools/mep-entry-20260104-233759                                       3ec33d5 [origin/tools/mep-entry-20260104-233759: gone] tools(MEP): add tools/mep.ps1 as single entrypoint (pwsh-safe)
+  tools/mep-fix-param-top-20260103-215224                               37c6428 [origin/tools/mep-fix-param-top-20260103-215224] tools: fix param placement in idea tools (pick/receipt/finalize)
+  tools/mep-gate-doctor-20260104-233112                                 68d14dd docs(MEP): sync CHAT_PACKET.md with generator (#432)
+  tools/mep-gate-doctor-20260104-235915                                 1bfea8b [origin/tools/mep-gate-doctor-20260104-235915: gone] tools: add mep_gate_doctor (read-only diagnostics)
+  tools/mep-handoff-oneliner-20260103-171959                            698e27e [origin/tools/mep-handoff-oneliner-20260103-171959] tools: add mep_handoff.ps1 (one-line chat migration)
+  tools/mep-idea-receipt-20260103-214537                                4a87ffb [origin/tools/mep-idea-receipt-20260103-214537] tools: add mep_idea_receipt.ps1 (numbers -> implemented receipts -> PR)
+  tools/mep-idea-ux-and-no-stockpile-20260103-212835                    69c2ab5 [origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835] tools: improve idea UX (clipboard confirmations) + delete picked ideas (no stockpile)
+  ui/add-phase1-flow-markers-20260104-205931                            545f7da [origin/ui/add-phase1-flow-markers-20260104-205931] ui(ui_spec): add Phase-1 flow markers (PARTS/EXPENSE) for BUSINESS_IMPL_GO_NOGO
+  ui/alert-label-display-20260104-194620                                e99bafa [origin/ui/alert-label-display-20260104-194620] ui(ui_spec): add alert label display flow (refs master_spec 8.4.1)
+  ui/expense-ui-master-20260104-052304                                  6d54f9a [origin/ui/expense-ui-master-20260104-052304] ui(EXPENSE): extend ui_master (Phase-1)
+  ui/expense-ui-spec-20260104-052334                                    97ac6bd [origin/ui/expense-ui-spec-20260104-052334] ui(EXPENSE): extend ui_spec (Phase-1)
+  ui/issue-dispatch-observe-20260104-191235                             1cd2044 [origin/ui/issue-dispatch-observe-20260104-191235] ci(MEP): implement Issue->OBSERVE dispatch (UI+GitHub)
+  ui/issue-dispatch-skeleton-20260104-190721                            316cf22 [origin/ui/issue-dispatch-skeleton-20260104-190721] docs(MEP): add issue-form UI + dispatch workflow skeleton
+  ui/order-ui-master-20260104-050304                                    855b432 [origin/ui/order-ui-master-20260104-050304] ui(ORDER): extend ui_master (Phase-1)
+  ui/order-ui-spec-20260104-050613                                      0e0625a [origin/ui/order-ui-spec-20260104-050613] ui(ORDER): extend ui_spec (Phase-1)
+  ui/parts-ui-master-20260104-051901                                    dc395a9 [origin/ui/parts-ui-master-20260104-051901] ui(PARTS): extend ui_master (Phase-1)
+  ui/parts-ui-spec-20260104-052140                                      dffac6d [origin/ui/parts-ui-spec-20260104-052140] ui(PARTS): extend ui_spec (Phase-1)
+  ui/request-open-list-flow-20260104-202848                             b525669 [origin/ui/request-open-list-flow-20260104-202848] ui(ui_spec): add RequestStatus=OPEN list flow (refs master_spec 3.7.3/3.7.4)
+  ui/work-ui-master-20260104-051037                                     0252178 [origin/ui/work-ui-master-20260104-051037] ui(WORK): extend ui_master (Phase-1)
+  ui/work-ui-master-20260104-051204                                     6e30f83 [origin/ui/work-ui-master-20260104-051204] ui(WORK): extend ui_master (Phase-1) (#332)
+  ui/work-ui-spec-20260104-051311                                       129bf64 [origin/ui/work-ui-spec-20260104-051311] ui(WORK): extend ui_spec (Phase-1)
+  wip-recover-20260106215805                                            d8947a3 chore(recover): restore SIGNED_BY_ALLOWLIST.yml from SIGNED_BY_ALLOWLIST.yml.bak.20260106214810
+  wip/auto-save-before-handoff-20260106-231346                          37e060b chore(mep): update CHAT_PACKET via handoff script
+  wip/auto-save-before-handoff-20260106-231615                          37e060b chore(mep): update CHAT_PACKET via handoff script
+  work/chat-packet-human-20260103-162222                                5c05150 [origin/work/chat-packet-human-20260103-162222] docs(MEP): update CHAT_PACKET (human reissue)
+  work/chat-packet-reissue-20260103-161638                              d2653b7 [origin/work/chat-packet-reissue-20260103-161638] ci: include CHAT_PACKET in generated-doc auto-updater (#221)
+  work/idea-capture-20260103-215353                                     05275a4 [origin/work/idea-capture-20260103-215353] docs(MEP): capture idea IDEA:1c4d4e1a7f30
+  work/idea-capture-20260103-220645                                     ff1ec1f [origin/work/idea-capture-20260103-220645] docs(MEP): capture idea IDEA:1c4d4e1a7f30
+  work/idea-capture-20260104-184000                                     602e99e [origin/work/idea-capture-20260104-184000] docs(MEP): capture idea IDEA:e61113b095cb
+  work/idea-finalize-20260103-220329                                    545f4f2 [origin/work/idea-finalize-20260103-220329] docs(MEP): delete implemented ideas from ACTIVE
+  work/idea-receipt-20260103-220025                                     e91263d [origin/work/idea-receipt-20260103-220025] docs(MEP): add implemented receipts (IDEA:1c4d4e1a7f30)
+  work/mep-20260103-151930                                              8da5479 docs(MEP): add STATE_SUMMARY generator + auto-update workflow (#204)
+  work/mep-doc-link-20260103-152129                                     b4c2e33 [origin/work/mep-doc-link-20260103-152129] docs(ops): add link to Scope-IN Suggest runbook
