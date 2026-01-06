@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 343390
+- included_total_bytes: 344797
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -93,8 +93,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 4b75eb15fa750125617e4a4065cb8540f3322421507df69753420198f5e140de
-- bytes: 22995
+- sha256: 37efdbdbafc250af801fcbcfc08c5b3edab0e8c2f24ed2e04956cd4c7d04e9ca
+- bytes: 23536
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -394,6 +394,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (OPS) clasp fixed-URL redeploy loop established (RUNBOOK CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)): scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc deploymentId=AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw exec=https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (NEXT) B24: TBD (define next theme)
 - 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
@@ -423,6 +424,14 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
 - (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
+
+
+
+
+
+
+
+- 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
 ```
 
 ---
@@ -1371,35 +1380,29 @@ Tell the assistant:
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/tictactoe/master_spec.md
-- sha256: e7a82f7a6240f473815a656b55985d6146bdbb7da38901862f4e218f7d4009a3
-- bytes: 605
+- sha256: 4d2af51f29198559a20432ce42c990ec2bebefa99e5962cf4f60952751b03867
+- bytes: 939
 
 ```text
 # TicTacToe Specification
 
-## 概要
-本仕様は、コンソールで動作する〇×ゲームを生成するための仕様である。
+## 讎りｦ・譛ｬ莉墓ｧ倥・縲√さ繝ｳ繧ｽ繝ｼ繝ｫ縺ｧ蜍穂ｽ懊☆繧九・励ご繝ｼ繝繧堤函謌舌☆繧九◆繧√・莉墓ｧ倥〒縺ゅｋ縲・
+豕ｨ險假ｼ壽悽讌ｭ蜍吶↓縺ｯ console迚茨ｼ・ode/tictactoe.py・峨→縲∝盾閠ザI迚茨ｼ・i/index.html・峨′蜷梧｢ｱ縺輔ｌ繧九・
 
-注記：本業務には console版（code/tictactoe.py）と、参考UI版（ui/index.html）が同梱される。
+## 逶､髱｢
+- 3x3 縺ｮ繝槭せ
+- 蛻晄悄迥ｶ諷九・縺吶∋縺ｦ遨ｺ逋ｽ
 
+## 繝励Ξ繧､繝､繝ｼ
+- 繝励Ξ繧､繝､繝ｼ1・唸
+- 繝励Ξ繧､繝､繝ｼ2・唹
 
-## 盤面
-- 3x3 のマス
-- 初期状態はすべて空白
+## 蜍晏茜譚｡莉ｶ
+- 讓ｪ繝ｻ邵ｦ繝ｻ譁懊ａ縺ｮ縺・★繧後°縺梧純縺｣縺溷ｴ蜷医↓蜍晏茜
 
-## プレイヤー
-- プレイヤー1：X
-- プレイヤー2：O
-
-## 勝利条件
-- 横・縦・斜めのいずれかが揃った場合に勝利
-
-## 入力
-- 行と列を数値で指定する（各 1〜3）
-
-## 出力
-- 毎ターン盤面を表示
-- 勝敗または引き分けを表示
+## 蜈･蜉・- 陦後→蛻励ｒ謨ｰ蛟､縺ｧ謖・ｮ壹☆繧具ｼ亥推 1縲・・・
+## 蜃ｺ蜉・- 豈弱ち繝ｼ繝ｳ逶､髱｢繧定｡ｨ遉ｺ
+- 蜍晄風縺ｾ縺溘・蠑輔″蛻・￠繧定｡ｨ遉ｺ
 ```
 
 
@@ -1426,8 +1429,8 @@ CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
-- sha256: 7b62b617592855e1d52f8f0f199100acfdd9f5d53435a8db1ad4ec56abcedb0e
-- bytes: 1203
+- sha256: 061660e35f49244b656a3510ed2f62fb6a7d642c668a8e5e0d34da47256c9292
+- bytes: 1244
 
 ```text
 ﻿# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
@@ -1442,6 +1445,8 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
+<<<<<<< HEAD
+=======
 
 ## 唯一の正（実体）
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
@@ -1461,6 +1466,8 @@ Rule:
 ### フェーズ方針
 - Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
 - Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
+
+>>>>>>> origin/main
 ```
 
 
@@ -3817,30 +3824,24 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
-- sha256: 8ec9f8cbd32430512d349e57343948965f07429b29dcf2c2d4c2f50325ec6993
-- bytes: 933
+- sha256: 1d96b95f0cbe02b05221dee4ee26d0ca6c8e896985734605a6b6bb14d5969f12
+- bytes: 1342
 
 ```text
-<!--
+﻿<!--
 ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
-CANONICAL CONTENT: platform/MEP/03_BUSINESS/よりそい堂/master_spec
+CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 -->
 
-# master_spec.md（入口・案内専用）
-
-このファイルは **入口（案内）**です。本文（唯一の正）は次です：
-
-- **唯一の正（実体）**：platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
-
-## 編集ルール（固定）
-- 仕様の本文を編集する場合は **必ず master_spec を編集**する
-- master_spec.md は案内・要点・手順のみ（本文は置かない）
-
-## 関連（このディレクトリ内）
-
-- INDEX（入口・読む順番）：platform/MEP/03_BUSINESS/よりそい堂/INDEX.md
-- 業務スペック（フロー/例外/最小定義）：platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- UI適用仕様（導線/表示のみ・意味変更なし）：platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
+# master_spec.md・亥・蜿｣繝ｻ譯亥・蟆ら畑・・
+縺薙・繝輔ぃ繧､繝ｫ縺ｯ **蜈･蜿｣・域｡亥・・・*縺ｧ縺吶よ悽譁・ｼ亥髪荳縺ｮ豁｣・峨・谺｡縺ｧ縺呻ｼ・
+- **蜚ｯ荳縺ｮ豁｣・亥ｮ滉ｽ難ｼ・*・嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec・域僑蠑ｵ蟄舌↑縺暦ｼ・
+## 邱ｨ髮・Ν繝ｼ繝ｫ・亥崋螳夲ｼ・- 莉墓ｧ倥・譛ｬ譁・ｒ邱ｨ髮・☆繧句ｴ蜷医・ **蠢・★ master_spec 繧堤ｷｨ髮・*縺吶ｋ
+- master_spec.md 縺ｯ譯亥・繝ｻ隕∫せ繝ｻ謇矩・・縺ｿ・域悽譁・・鄂ｮ縺九↑縺・ｼ・
+## 髢｢騾｣・医％縺ｮ繝・ぅ繝ｬ繧ｯ繝医Μ蜀・ｼ・
+- INDEX・亥・蜿｣繝ｻ隱ｭ繧鬆・分・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・INDEX.md
+- 讌ｭ蜍吶せ繝壹ャ繧ｯ・医ヵ繝ｭ繝ｼ/萓句､・譛蟆丞ｮ夂ｾｩ・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_spec.md
+- UI驕ｩ逕ｨ莉墓ｧ假ｼ亥ｰ守ｷ・陦ｨ遉ｺ縺ｮ縺ｿ繝ｻ諢丞袖螟画峩縺ｪ縺暦ｼ会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_spec.md
 ```
 
 
@@ -4198,8 +4199,8 @@ UI責務（固定）：
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 51979abeecf2e6388108ab6b63cd296ba9fd5ca4a5575785e3a556ad044d715f
-- bytes: 8612
+- sha256: 3edc9070beb84dbc1281a37cac1b601ee97c2bd13ec4c2bfd6026b8722819021
+- bytes: 8694
 
 ```text
 <!--
@@ -4268,6 +4269,8 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 次にユーザーが取るべき行動を示す
 
 4. 入力項目の意味配置
+<<<<<<< HEAD
+=======
 
 ## Request入力の整合チェック（UI制約｜意味変更なし）
 
@@ -4282,6 +4285,7 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
   - targetType = Order_ID
   - orderId は必須
   - **orderId と targetId は同値**（矛盾は送信不可）
+>>>>>>> origin/main
 4.1 入力項目の原則
 
 ユーザーが 意味を理解できない専門語を使わない
@@ -4372,6 +4376,8 @@ UI_PROTOCOL の変更を伴う修正は行わない
 UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
+<<<<<<< HEAD
+=======
 
 ## DOC_FLOWS（参照のみ）
 
@@ -4446,6 +4452,7 @@ UIの禁止事項（固定）：
 <!-- PHASE1_MARKERS (do not change meaning; for Go/No-Go checks only) -->
 <!-- PARTS_FLOW_PHASE1 -->
 <!-- EXPENSE_FLOW_PHASE1 -->
+>>>>>>> origin/main
 ```
 
 
