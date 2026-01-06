@@ -1,0 +1,41 @@
+﻿name: Chat Packet Guard
+
+on:
+  pull_request:
+    paths:
+      - "START_HERE.md"
+      - "docs/MEP/**"
+      - ".github/workflows/chat_packet_guard.yml"
+      - ".github/workflows/chat_packet_update_dispatch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/MEP/CHAT_PACKET.md
+          test -f docs/MEP/MEP_MANIFEST.yml
+          test -f START_HERE.md
+          test -f docs/MEP/build_chat_packet.py
+
+      - name: Regenerate and ensure no diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 docs/MEP/build_chat_packet.py
+          if ! git diff --exit-code -- docs/MEP/CHAT_PACKET.md; then
+            echo "::error file=docs/MEP/CHAT_PACKET.md::CHAT_PACKET.md is outdated. Run Chat Packet Update (Dispatch) or regenerate and commit."
+            exit 1
+          fi
