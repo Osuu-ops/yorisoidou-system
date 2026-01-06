@@ -85,6 +85,11 @@
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 - tools/chat_packet_intake/analyze_issue.py
+- .github/ISSUE_TEMPLATE/mep_dispatch.yml
+- .gitignore
+- gas/clasp_webapp/src/A1_WriteEndpoint_LedgerApply.js
+- tools/mep.ps1
+- tools/mep_gate_doctor.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
