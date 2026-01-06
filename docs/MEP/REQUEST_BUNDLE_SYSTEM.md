@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 125029
+- included_total_bytes: 125165
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1177,8 +1177,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 5e20180949fe0a62798fa39c2c236f9b5fbda30b1d0f87c86be44c587e1cb69b
-- bytes: 4672
+- sha256: 4769cb47482b472843474d71f31e665e395835e584cd3c976e0bf2192097b87b
+- bytes: 4808
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1227,6 +1227,14 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
 - (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
+
+
+
+
+
+
+
+- 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
 ```
 
 
