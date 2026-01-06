@@ -1,4 +1,4 @@
-* text=auto eol=lf
+﻿* text=auto eol=lf
 
 *.md  text eol=lf
 *.yml text eol=lf
@@ -13,3 +13,18 @@
 *.gif  binary
 *.pdf  binary
 *.zip  binary
+
+# --- MEP text stability (UTF-8/LF) ---
+* text=auto eol=lf
+
+# Markdown/spec files must be treated as text with LF
+*.md text eol=lf
+master_spec text eol=lf
+ui_spec.md text eol=lf
+
+# YAML workflows also LF (avoid CRLF diffs)
+*.yml text eol=lf
+*.yaml text eol=lf
+docs/MEP/CHAT_PACKET.md text eol=lf
+docs/MEP/IDEA_INDEX.md text eol=lf
+

@@ -7,8 +7,7 @@
 ---
 
 ## 目的（STATE_CURRENTから要約）
-本書は「いま何が成立しているか／次に何をするか」を1枚で固定する。
-UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs）に置く。
+- （未取得）STATE_CURRENT.md の「目的」節を確認
 
 ---
 
@@ -22,11 +21,12 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## STATE_CURRENT の主要見出し
-- STATE_CURRENT（現在地） v1.2
-- 目的
-- 1) docs/MEP：CHAT_PACKET 自動追随 = 成立
-- 2) 重要ルール（固定）
-- 3) 次の改良 Top3（一本道）
+- STATE_CURRENT (MEP)
+- Doc status registry（重複防止）
+- CURRENT_SCOPE (canonical)
+- Guards / Safety
+- Current objective
+- How to start a new conversation
 
 ---
 
@@ -42,15 +42,14 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 ---
 
 ## RUNBOOK カード一覧
-- CARD-01: no-checks（Checksがまだ出ない／表示されない）
-- CARD-02: Chat Packet Guard NG（CHAT_PACKET outdated）
-- CARD-03: Scope不足（Scope Guard / Scope-IN Suggest）
-- CARD-04: Head branch is out of date（behind/out-of-date）
-- CARD-05: DIRTY（自動で安全に解決できない）
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）
+- CARD-07: Request Status Normalization (status/requestStatus)
+- CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
 
 ---
 
 ## INDEX の主要見出し
+- MEP INDEX（入口） v1.0
 - 参照順（固定）
 - Links
 - RUNBOOK（復旧カード）
@@ -64,4 +63,8 @@ UI/APIは実行器であり、唯一の正は GitHub（main / PR / Checks / docs
 - IDEA_VAULT（アイデア避難所）
 - IDEA_INDEX（統合用一覧）
 - IDEA_RECEIPTS（実装レシート）
+- Tools
+- Lease / Continue Target（追加）
+- RUNBOOK（追加）
+- DOC_STATUS（追加）
 

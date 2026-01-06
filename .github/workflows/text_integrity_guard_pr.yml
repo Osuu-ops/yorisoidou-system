@@ -1,4 +1,4 @@
-name: Text Integrity Guard (PR)
+﻿name: Text Integrity Guard (PR)
 
 on:
   pull_request:
@@ -16,6 +16,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Halfwidth Kana Guard (mojibake tripwire)
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAX=50
+          python3 - <<'PY'
+          import os, sys, re
+          max_n = int(os.environ.get('MAX','50'))
+          paths = [
+            'platform/MEP/03_BUSINESS/よりそい堂/master_spec',
+            'platform/MEP/03_BUSINESS/よりそい堂/master_spec',
+          ]
+          pat = re.compile(r'[\\uFF61-\\uFF9F]')  # halfwidth-kana range
+          bad = []
+          for p in paths:
+            if not os.path.exists(p):
+              continue
+            b = open(p,'rb').read()
+            try:
+              s = b.decode('utf-8')
+            except UnicodeDecodeError:
+              print(f'::error::{p}: not valid UTF-8')
+              sys.exit(1)
+            n = len(pat.findall(s))
+            if n > max_n:
+              bad.append((p,n))
+          if bad:
+            for p,n in bad:
+              print(f'::error::{p}: halfwidth-kana count={n} exceeds MAX={max_n} (likely mojibake)')
+            sys.exit(1)
+          print('Halfwidth Kana Guard: OK')
+          PY
       - name: Checkout (full history)
         uses: actions/checkout@v4
         with:
@@ -28,7 +60,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           MAX_CHANGED_LINES: "200"
           SENSITIVE_GLOBS: |
-            platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+            platform/MEP/03_BUSINESS/tictactoe/master_spec
         run: |
           set -euo pipefail
 
@@ -144,4 +176,6 @@ jobs:
 
           print("OK: Text Integrity Guard passed.")
           PY
+
+
 

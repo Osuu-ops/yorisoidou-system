@@ -1,4 +1,4 @@
-﻿import pathlib
+import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "MEP" / "CHAT_PACKET.md"
@@ -49,3 +49,9 @@ def main():
 
 if __name__ == "__main__":
   main()
+
+def write_text_lf_only(path: str, text: str) -> None:
+    # Force LF even on Windows; prevents CRLF noise in generated artifacts.
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)

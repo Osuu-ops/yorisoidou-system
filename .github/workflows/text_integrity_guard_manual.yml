@@ -1,4 +1,4 @@
-name: Text Integrity Guard (Manual)
+﻿name: Text Integrity Guard (Manual)
 
 on:
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
           MAX_CHANGED_LINES: ${{ inputs.max_changed_lines }}
           BASE_REF: ${{ inputs.base_ref }}
           SENSITIVE_GLOBS: |
-            platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+            platform/MEP/03_BUSINESS/tictactoe/master_spec
         run: |
           set -euo pipefail
 
@@ -167,4 +167,5 @@ jobs:
 
           print("OK: Text Integrity Guard passed.")
           PY
+
 

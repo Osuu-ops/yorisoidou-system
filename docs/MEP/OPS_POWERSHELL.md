@@ -1,4 +1,4 @@
-﻿# OPS_POWERSHELL（PowerShellコピペ運用ルール）
+# OPS_POWERSHELL（PowerShellコピペ運用ルール）
 
 ## 絶対ルール（最重要）
 - GitHub Actions YAML 等「${{ }} / $」を含むテキストは、PowerShellでは必ず @' '@（シングルクォート Here-String）で書く
@@ -63,3 +63,11 @@ gh pr list --state all --base main --search "head:auto/chat-packet-update-" --li
 - 詳細は以下を唯一の正とする：
   - docs/MEP/AI_OUTPUT_CONTRACT_POWERSHELL.md
 
+## Autopilot（自動エラー回し／自動掃除）
+- open PR を自動で回し、safe-auto（auto/*, docs更新系, 整形PRなど）を merge/close して open PR=0 に収束させる
+- docs/MEP の guard fail は、PRブランチ上で CHAT_PACKET を再生成して self-heal を試す
+- 人間が考える必要がある PR（上記に該当しないもの）は触らず一覧表示して止まる
+
+~~~powershell
+.\tools\mep_autopilot.ps1
+~~~

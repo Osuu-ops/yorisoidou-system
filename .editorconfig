@@ -1,4 +1,4 @@
-root = true
+﻿root = true
 
 [*]
 charset = utf-8
@@ -8,3 +8,21 @@ trim_trailing_whitespace = true
 
 [*.md]
 trim_trailing_whitespace = false
+
+# --- MEP text stability (UTF-8/LF) ---
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = true
+
+[*.yml]
+trim_trailing_whitespace = true
+
+[*.yaml]
+trim_trailing_whitespace = true
+

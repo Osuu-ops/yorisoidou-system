@@ -5,12 +5,13 @@
 #   - Copies selected idea blocks to clipboard (insertion-ready)
 #   - Marks them as STATUS: picked (does NOT delete)
 #   - Deletion is done only after implemented receipt exists: .\tools\mep_idea_finalize.ps1 1 3
-$ErrorActionPreference = "Stop"
 
 param(
   [Parameter(Mandatory=$true, ValueFromRemainingArguments=$true)]
   [string[]]$Numbers
 )
+
+$ErrorActionPreference = "Stop"
 
 if (git status --porcelain) { throw "Working tree is not clean. Commit/stash changes first." }
 $repo = (gh repo view --json nameWithOwner -q .nameWithOwner)
@@ -42,7 +43,7 @@ foreach ($n in $Numbers) {
 }
 $idxs = $idxs | Sort-Object -Unique
 
-# Collect picks (by current order)
+# Collect picks
 $picks = @()
 foreach ($i in $idxs) { $picks += $blocks[$i].Groups[1].Value.Trim() }
 
@@ -58,7 +59,6 @@ foreach ($p in $picks) {
   if ($p2 -match '(?m)^\-\s*STATUS:\s*') {
     $p2 = [regex]::Replace($p2, '(?m)^\-\s*STATUS:\s*\w+\s*$', '- STATUS: picked')
   } else {
-    # Insert STATUS under TITLE if missing
     $p2 = [regex]::Replace($p2, '(?m)^\-\s*TITLE:.*$', '$0' + "`r`n" + '- STATUS: picked', 1)
   }
   $active2 = $active2 -replace [regex]::Escape($p), $p2

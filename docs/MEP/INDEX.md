@@ -1,4 +1,4 @@
-﻿# MEP INDEX（入口） v1.0
+# MEP INDEX（入口） v1.0
 
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
@@ -52,3 +52,21 @@
 
 ## IDEA_RECEIPTS（実装レシート）
 - IDEA_RECEIPTS.md（RESULT: implemented が付いたら削除可能）
+
+## Tools
+- [mep_idea_receipt.ps1](../../tools/mep_idea_receipt.ps1) — IDEA を「IDEA_RECEIPTS」に固定し、必要ならPRとして提出する
+
+---
+
+## Lease / Continue Target（追加）
+- LEASE: docs/MEP/LEASE.md
+- CONTINUE_TARGET: docs/MEP/CONTINUE_TARGET.md
+
+---
+
+## RUNBOOK（追加）
+- CARD-06: Local Crash Recovery（ローカルクラッシュ復旧）: docs/MEP/RUNBOOK.md
+
+## DOC_STATUS（追加）
+- [DOC_REGISTRY](./DOC_REGISTRY.md)  — 文書状態台帳（ACTIVE/STABLE/GENERATED）
+

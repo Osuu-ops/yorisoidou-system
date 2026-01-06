@@ -7,8 +7,17 @@
 ---
 
 ## 最小手数の推奨（貼り付け）
+
+## 起動時ルール（新チャット1通目）
+
+- CHAT_PACKETのみ（指示なし）：作業開始しない。溜まっている引継ぎ（open PR / CONTINUE_TARGET 等）＋アイデア一覧（IDEA_INDEX / ACTIVE）を提示し、「どれを始めますか？」で選択させる。
+- CHAT_PACKET＋指示あり：指示に当てはまるリストを提示し、工程表を作成する（以後、ユーザーの自由文による採用宣言があるまでコードは出さない）。
+
 - 最短は docs/MEP/CHAT_PACKET.md を貼る（1枚で開始できる）。
 - CHAT_PACKET が無い場合は、本書（START_HERE）を貼って開始する。
+
+- PRをMERGEしたら、STATE_CURRENT.mdへ最小追記（1〜3行）を行い、「何が正式採用になったか」を固定する。
+- 対象は「運用ルール／ゲート／境界」および「BUSINESSの契約（同期・冪等・回収など）」で、整形や生成物更新だけは原則スキップする。
 
 ---
 
@@ -44,4 +53,5 @@
 - docs/MEP/GOLDEN_PATH.md
 
 - [OPS: Scope-IN Suggest 運用（Out-of-scope 自動提案PR）](docs/MEP/OPS_SCOPE_SUGGEST.md)
+
 
