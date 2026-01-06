@@ -295,6 +295,7 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 - UTF-8/LF stabilization: enabled (.gitattributes/.editorconfig)
 
 ## Current objective
+- 2026-01-06: (OPS) clasp fixed-URL redeploy loop established (RUNBOOK CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)): scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc deploymentId=AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw exec=https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (NEXT) B24: TBD (define next theme)
 - 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
@@ -324,6 +325,14 @@ AIはまず以下を提示し、採用/不採用の判断材料を揃える：
 Tell the assistant:
 - "Read docs/MEP/START_HERE.md and proceed."
 - (If memory=0 / new chat) paste CHAT_PACKET_MIN first (tools/mep_chat_packet_min.ps1 output).
+
+
+
+
+
+
+
+- 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
 ```
 
 ---
