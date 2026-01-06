@@ -12,3 +12,11 @@ allowlist:
 
 teams:
   ops-leads-team: "org/ops-leads"
+# SIGNED_BY_ALLOWLIST.yml
+# List allowed "Signed-by" GitHub logins here.
+# The verification step scans for lines containing: login: <github-login>
+# - This file is intentionally simple: each entry is a YAML mapping with `login: "<name>"`.
+# - I will inject the current authenticated user and include common bot accounts.
+- login: "Osuu-ops"
+- login: "dependabot[bot]"
+- login: "github-actions[bot]"
