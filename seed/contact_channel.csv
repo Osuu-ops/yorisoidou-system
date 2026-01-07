@@ -1,0 +1,8 @@
+channelKey,displayName,sortOrder,isActive
+
+PHONE,電話,1,TRUE
+SMS,SMS,2,TRUE
+LINE,LINE,3,TRUE
+EMAIL,メール,4,TRUE
+OTHER,その他,5,TRUE
+

@@ -7,3 +7,6 @@ order,file,kind,required,note
 130,seed/parts_category.csv,business,TRUE,部材カテゴリ
 140,seed/doc_templates.csv,business,TRUE,帳票テンプレ識別子
 
+150,seed/contact_channel.csv,system,FALSE,連絡経路
+160,seed/payment_channel.csv,system,FALSE,決済チャネル（直客/媒体）
+170,seed/payment_method.csv,system,FALSE,支払い方法（現金/振込/カード/後払い）

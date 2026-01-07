@@ -1,0 +1,7 @@
+channelKey,displayName,sortOrder,isActive,note
+
+DIRECT,直客,1,TRUE,現状：現金のみ
+MITSUMOA,ミツモア,2,TRUE,媒体カテゴリに従う
+KURASHI,くらしのマーケット,3,TRUE,媒体カテゴリに従う
+MEDIA_OTHER,その他媒体,4,TRUE,媒体カテゴリに従う
+
