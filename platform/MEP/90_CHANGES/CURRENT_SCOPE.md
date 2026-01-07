@@ -87,6 +87,13 @@
 - tools/chat_packet_intake/analyze_issue.py
 - business/master_spec.md
 - business/ui_spec.md
+- business/business_master.md
+- business/business_spec.md
+- business/ui_master.md
+- seed/doc_templates.csv
+- seed/settings.csv
+- seed/status.csv
+- seed/type.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
