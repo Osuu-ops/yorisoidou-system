@@ -13,3 +13,4 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 - 讌ｭ蜍吶せ繝壹ャ繧ｯ・医ヵ繝ｭ繝ｼ/萓句､・譛蟆丞ｮ夂ｾｩ・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_spec.md
 - UI驕ｩ逕ｨ莉墓ｧ假ｼ亥ｰ守ｷ・陦ｨ遉ｺ縺ｮ縺ｿ繝ｻ諢丞袖螟画峩縺ｪ縺暦ｼ会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_spec.md
 
+
