@@ -1,0 +1,69 @@
+name: MEP Done Check
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  done_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Done check (final validation)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "=== D1: canonical present ==="
+          test -f business/master_spec.md
+          test -f business/ui_spec.md
+          test -f seed/SEED_MANIFEST.csv
+
+          echo "Gate passed: $(git log -n 1 --pretty=format='%s')"
+
+          echo "=== D2: required seed files exist (manifest) ==="
+          python - <<'PY'
+          import csv, pathlib, sys
+          m = pathlib.Path("seed/SEED_MANIFEST.csv")
+          rows = list(csv.DictReader(m.read_text(encoding="utf-8").splitlines()))
+          need = [r for r in rows if (r.get("required","").upper()=="TRUE")]
+          if not need: sys.exit("ERROR: no required=TRUE rows in manifest")
+          for r in need:
+              f = (r.get("file") or "").strip()
+              if not f: sys.exit("ERROR: manifest row missing file")
+              if not pathlib.Path(f).exists(): sys.exit(f"ERROR: required seed file missing: {f}")
+          print("OK: required seed files exist")
+          PY
+
+          echo "=== D3: extensionless canonicals must not exist ==="
+          if test -f business/master_spec; then echo "ERROR: business/master_spec exists"; exit 1; fi
+          if test -f business/ui_spec; then echo "ERROR: business/ui_spec exists"; exit 1; fi
+
+          echo "=== D4: generation (placeholder) ==="
+          echo "OK: generation step not yet wired (no-op)"
+
+          echo "=== D5: minimal required files ==="
+          python - <<'PY'
+          import pathlib, sys
+          files_to_check = [
+              "business/master_spec.md",
+              "business/ui_spec.md",
+              "seed/SEED_MANIFEST.csv",
+              "seed/status.csv", "seed/type.csv", "seed/settings.csv",
+              "seed/work_menu.csv", "seed/price_list.csv", "seed/parts_category.csv", "seed/doc_templates.csv",
+          ]
+          for f in files_to_check:
+              if not pathlib.Path(f).exists():
+                  sys.exit(f"ERROR: missing required file: {f}")
+          print("OK: required files exist")
+          PY
+
+          echo "OK: Done check passed"
