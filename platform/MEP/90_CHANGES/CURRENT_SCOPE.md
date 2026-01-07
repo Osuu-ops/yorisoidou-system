@@ -94,6 +94,9 @@
 - seed/settings.csv
 - seed/status.csv
 - seed/type.csv
+- seed/parts_category.csv
+- seed/price_list.csv
+- seed/work_menu.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
