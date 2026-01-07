@@ -1,0 +1,70 @@
+name: MEP Gate (min5)
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gate (min5)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "=== G1: canonical uniqueness ==="
+          test -f business/master_spec.md
+          test -f business/ui_spec.md
+          if test -f business/master_spec; then echo "ERROR: business/master_spec (no extension) exists"; exit 1; fi
+          if test -f business/ui_spec; then echo "ERROR: business/ui_spec (no extension) exists"; exit 1; fi
+
+          echo "=== G2: UTF-8 readability (strict) ==="
+          python - <<'PY'
+          import pathlib
+          for p in ["business/master_spec.md","business/ui_spec.md","seed/SEED_MANIFEST.csv"]:
+              pathlib.Path(p).read_bytes().decode("utf-8")
+          print("OK: UTF-8 strict decode")
+          PY
+
+          echo "=== G3: scope guard (changed files) ==="
+          base_ref="${GITHUB_BASE_REF:-main}"
+          git fetch origin "$base_ref" --depth=1 || true
+          base="origin/$base_ref"
+          changed="$(git diff --name-only "$base"...HEAD || true)"
+          if [ -n "$changed" ]; then
+            echo "$changed" | while IFS= read -r f; do
+              case "$f" in
+                business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*) : ;;
+                *) echo "ERROR: out-of-scope change: $f"; exit 1 ;;
+              esac
+            done
+          fi
+
+          echo "=== G4: generation success (placeholder) ==="
+          echo "OK: generation step not yet wired (no-op)"
+
+          echo "=== G5: seed manifest consistency ==="
+          test -f seed/SEED_MANIFEST.csv
+          python - <<'PY'
+          import csv, pathlib, sys
+          rows = list(csv.DictReader(pathlib.Path("seed/SEED_MANIFEST.csv").read_text(encoding="utf-8").splitlines()))
+          need = [r for r in rows if (r.get("required","").upper()=="TRUE")]
+          if not need: sys.exit("ERROR: no required=TRUE rows in manifest")
+          for r in need:
+              f = (r.get("file") or "").strip()
+              if not f: sys.exit("ERROR: manifest row missing file")
+              if not pathlib.Path(f).exists(): sys.exit(f"ERROR: required seed file missing: {f}")
+          print("OK: required seeds exist")
+          PY
+
+          echo "OK: Gate(min5) passed"
