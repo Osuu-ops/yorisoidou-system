@@ -1,0 +1,8 @@
+methodKey,displayName,sortOrder,isActive,note
+
+CASH,現金,1,TRUE,直客は原則これ
+BANK,銀行振込,2,TRUE,必要時
+CARD,クレジットカード,3,TRUE,将来/媒体経由で利用あり
+POSTPAY,後払い,4,TRUE,媒体経由で利用あり
+OTHER,その他,5,TRUE,
+
