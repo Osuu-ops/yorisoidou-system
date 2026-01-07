@@ -248,4 +248,3 @@ UIの禁止事項（固定）：
 <!-- PARTS_FLOW_PHASE1 -->
 <!-- EXPENSE_FLOW_PHASE1 -->
 >>>>>>> origin/main
-
