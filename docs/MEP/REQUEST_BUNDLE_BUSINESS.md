@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 344833
+- included_total_bytes: 345230
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -93,8 +93,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 37efdbdbafc250af801fcbcfc08c5b3edab0e8c2f24ed2e04956cd4c7d04e9ca
-- bytes: 23536
+- sha256: 7948683b7bde1a4b0da474df2b6f7502bc0a429b479f8e3d2e2e94b904b4e777
+- bytes: 23613
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -432,6 +432,11 @@ Tell the assistant:
 
 
 - 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
+
+<!-- CI_SMOKE 20260108_002241 -->
+
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
 ```
 
 ---
@@ -1177,8 +1182,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: e5f31f5e78c14e0e1d03f6ec92222bf11e7d4338a65f692ad704a2bb925a21c7
-- bytes: 4844
+- sha256: 2df4a9d42837ce2e6781157eaf86afb30a166f1c53b3e76769adca47b5c3ae38
+- bytes: 4886
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1237,6 +1242,9 @@ Tell the assistant:
 - 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
 
 <!-- CI_SMOKE 20260108_002241 -->
+
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
 ```
 
 
@@ -4472,8 +4480,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 6978b89a45773d21af0141d73d27e4af954a526d18651423a3d35caae209d5aa
-- bytes: 6440
+- sha256: cdb795e26d940f15e1867c3c77692af1981a4d4d110393abccc0eb897b1c3dfe
+- bytes: 6718
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -4563,6 +4571,18 @@ UIの禁止事項（固定）：
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 - tools/chat_packet_intake/analyze_issue.py
+- business/master_spec.md
+- business/ui_spec.md
+- business/business_master.md
+- business/business_spec.md
+- business/ui_master.md
+- seed/doc_templates.csv
+- seed/settings.csv
+- seed/status.csv
+- seed/type.csv
+- seed/parts_category.csv
+- seed/price_list.csv
+- seed/work_menu.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
