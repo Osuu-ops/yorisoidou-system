@@ -333,6 +333,11 @@ Tell the assistant:
 
 
 - 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
+
+<!-- CI_SMOKE 20260108_002241 -->
+
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
 ```
 
 ---
