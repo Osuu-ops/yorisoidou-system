@@ -55,3 +55,6 @@ Tell the assistant:
 
 <!-- CI_SMOKE 20260108_002241 -->
 
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
+
