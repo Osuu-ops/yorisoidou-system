@@ -1,2 +1,9 @@
 statusKey,displayName,sortOrder,isActive
+ESTIMATE,見積,1,TRUE
+ORDER,受注,2,TRUE
+WORK,施工,3,TRUE
+INVOICE,請求,4,TRUE
+RECEIPT,領収,5,TRUE
+PARTS,部材,6,TRUE
+EXPENSE,経費,7,TRUE
 

@@ -1,2 +1,5 @@
 templateKey,displayName,version,note
+TPL_ESTIMATE,見積書,v1,ESTIMATE
+TPL_INVOICE,請求書,v1,INVOICE
+TPL_RECEIPT,領収書,v1,RECEIPT
 
