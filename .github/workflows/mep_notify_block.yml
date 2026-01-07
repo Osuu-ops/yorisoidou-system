@@ -1,0 +1,46 @@
+name: MEP Notify (No-Touch)
+
+on:
+  workflow_run:
+    workflows:
+      - "MEP Gate (min5)"
+      - "MEP Done Check"
+    types: [completed]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  notify:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR + comment (STOP notice)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY}"
+          RUN_ID="${{ github.event.workflow_run.id }}"
+
+          js="$(gh api "repos/$REPO/actions/runs/$RUN_ID")"
+          pr_number="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); prs=j.get('pull_requests',[]); print(prs[0]['number'] if prs else '')")"
+          if [ -z "$pr_number" ]; then
+            echo "No PR for this workflow_run; exit."
+            exit 0
+          fi
+
+          workflow_name="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); print(j.get('name',''))")"
+          conclusion="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); print(j.get('conclusion',''))")"
+          html_url="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); print(j.get('html_url',''))")"
+
+          body=$'STOP（自動停止）\n\n'
+          body+=$'Workflow: '"$workflow_name"$'\n'
+          body+=$'Conclusion: '"$conclusion"$'\n'
+          body+=$'Run: '"$html_url"$'\n\n'
+          body+=$'次にやること：上のRunを開き、失敗理由を確認してください。\n'
+          body+=$'※範囲外変更（OUT_OF_SCOPE）や外部ブロックの場合は、Self-Healのコメントが別途付きます。\n'
+
+          gh pr comment "$pr_number" --repo "$REPO" --body "$body" || true
