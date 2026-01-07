@@ -85,6 +85,16 @@
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 - tools/chat_packet_intake/analyze_issue.py
+- business/master_spec.md
+- business/ui_spec.md
+- seed/SEED_MANIFEST.csv
+- seed/doc_templates.csv
+- seed/parts_category.csv
+- seed/price_list.csv
+- seed/settings.csv
+- seed/status.csv
+- seed/type.csv
+- seed/work_menu.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
