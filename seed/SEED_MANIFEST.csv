@@ -1,0 +1,9 @@
+order,file,kind,required,note
+10,seed/status.csv,system,TRUE,状態一覧
+20,seed/type.csv,system,TRUE,種別一覧
+30,seed/settings.csv,system,TRUE,既定設定
+110,seed/work_menu.csv,business,TRUE,標準作業メニュー
+120,seed/price_list.csv,business,TRUE,標準単価
+130,seed/parts_category.csv,business,TRUE,部材カテゴリ
+140,seed/doc_templates.csv,business,TRUE,帳票テンプレ識別子
+
