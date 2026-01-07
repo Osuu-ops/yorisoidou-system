@@ -97,6 +97,10 @@
 - seed/parts_category.csv
 - seed/price_list.csv
 - seed/work_menu.csv
+- seed/SEED_MANIFEST.csv
+- seed/contact_channel.csv
+- seed/payment_channel.csv
+- seed/payment_method.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
