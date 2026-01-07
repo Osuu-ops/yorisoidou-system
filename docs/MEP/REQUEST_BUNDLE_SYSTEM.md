@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 125742
+- included_total_bytes: 125861
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 37efdbdbafc250af801fcbcfc08c5b3edab0e8c2f24ed2e04956cd4c7d04e9ca
-- bytes: 23536
+- sha256: 7948683b7bde1a4b0da474df2b6f7502bc0a429b479f8e3d2e2e94b904b4e777
+- bytes: 23613
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -441,6 +441,11 @@ Tell the assistant:
 
 
 - 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
+
+<!-- CI_SMOKE 20260108_002241 -->
+
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
 ```
 
 ---
@@ -1186,8 +1191,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: e5f31f5e78c14e0e1d03f6ec92222bf11e7d4338a65f692ad704a2bb925a21c7
-- bytes: 4844
+- sha256: 2df4a9d42837ce2e6781157eaf86afb30a166f1c53b3e76769adca47b5c3ae38
+- bytes: 4886
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1246,6 +1251,9 @@ Tell the assistant:
 - 2026-01-06T21:38:27+09:00 (actor: True) TEST-SIGNEDBY: PR test created; metadata-format-check executed; refer to CI logs for details.
 
 <!-- CI_SMOKE 20260108_002241 -->
+
+
+<!-- AUTOMERGE_TEST 20260108_020127 -->
 ```
 
 

@@ -7,4 +7,5 @@
 ---
 
 1. One-paste capture wrapper idea; implemented as scripts + merged PR  [IDEA:e61113b095cb]
+2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 
