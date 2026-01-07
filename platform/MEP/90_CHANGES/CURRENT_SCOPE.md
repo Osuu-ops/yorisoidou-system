@@ -85,6 +85,11 @@
 - tools/mep_integration_compiler/runtime/tests/__pycache__/b12_http_write_import.cpython-314.pyc
 - tools/mep_integration_compiler/runtime/tests/b12_http_write_import.py
 - tools/chat_packet_intake/analyze_issue.py
+- MEP_EXT/KNOWLEDGE/FUEL_CORE/example_core.md
+- MEP_EXT/KNOWLEDGE/FUEL_LOCAL/example_local.md
+- MEP_EXT/KNOWLEDGE/FUEL_README.md
+- MEP_EXT/KNOWLEDGE/SHARED_MEMO_TEMPLATE.md
+- MEP_EXT/SPEC/OPERATION_NAVIGATOR.md
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
