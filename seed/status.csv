@@ -1,9 +1,7 @@
 statusKey,displayName,sortOrder,isActive
-ESTIMATE,見積,1,TRUE
-ORDER,受注,2,TRUE
-WORK,施工,3,TRUE
-INVOICE,請求,4,TRUE
-RECEIPT,領収,5,TRUE
-PARTS,部材,6,TRUE
-EXPENSE,経費,7,TRUE
-
+S01,受注カード,1,TRUE
+S02,見積もり→連絡待ち,2,TRUE
+S03,調達/発注関連（必要なら）,3,TRUE
+S04,納品待ち→日時調整待ち,4,TRUE
+S05,日時確定→作業待ち,5,TRUE
+S06,入金待ち,6,TRUE
