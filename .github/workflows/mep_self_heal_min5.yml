@@ -1,0 +1,165 @@
+name: MEP Self-Heal (min5)
+
+on:
+  workflow_run:
+    workflows: ["MEP Gate (min5)"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  self_heal:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR info from run
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          REPO="${GITHUB_REPOSITORY}"
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          js="$(gh api "repos/$REPO/actions/runs/$RUN_ID")"
+          pr_number="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); prs=j.get('pull_requests',[]); print(prs[0]['number'] if prs else '')")"
+          head_branch="$(echo "$js" | python -c "import sys,json; j=json.load(sys.stdin); print((j.get('head_branch') or ''))")"
+          if [ -z "$pr_number" ] || [ -z "$head_branch" ]; then
+            echo "No PR found for this workflow_run; exiting."
+            exit 0
+          fi
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "head_branch=$head_branch" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR branch
+        if: ${{ steps.pr.outputs.pr_number != '' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.head_branch }}
+          fetch-depth: 0
+
+      - name: Apply safe auto-fixes (canonical/utf8/seed)
+        if: ${{ steps.pr.outputs.pr_number != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # 0) out-of-scope change detector (if out-of-scope exists, stop and comment)
+          base_ref="main"
+          git fetch origin "$base_ref" --depth=1 || true
+          base="origin/$base_ref"
+          changed="$(git diff --name-only "$base"...HEAD || true)"
+          bad=""
+          if [ -n "$changed" ]; then
+            while IFS= read -r f; do
+              case "$f" in
+                business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*) : ;;
+                *) bad="$bad$f\n" ;;
+              esac
+            done <<< "$changed"
+          fi
+          if [ -n "$bad" ]; then
+            echo "OUT_OF_SCOPE=1" >> "$GITHUB_ENV"
+            printf "%b" "$bad" > /tmp/out_of_scope.txt
+            exit 0
+          fi
+
+          # 1) canonical missing -> restore from platform/MEP reference (best-effort)
+          if [ ! -f business/master_spec.md ] || [ ! -f business/ui_spec.md ]; then
+            mkdir -p business
+            if [ -f "platform/MEP/03_BUSINESS/よりそい堂/master_spec.md" ] && [ ! -f business/master_spec.md ]; then
+              cp "platform/MEP/03_BUSINESS/よりそい堂/master_spec.md" business/master_spec.md
+            fi
+            if [ -f "platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md" ] && [ ! -f business/ui_spec.md ]; then
+              cp "platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md" business/ui_spec.md
+            fi
+          fi
+
+          # 2) delete extensionless canonicals if exist
+          rm -f business/master_spec business/ui_spec || true
+
+          # 3) ensure seed scaffold exists (manifest + required files)
+          mkdir -p seed
+          if [ ! -f seed/SEED_MANIFEST.csv ]; then
+            cat > seed/SEED_MANIFEST.csv <<'CSV'
+order,file,kind,required,note
+10,seed/status.csv,system,TRUE,状態一覧
+20,seed/type.csv,system,TRUE,種別一覧
+30,seed/settings.csv,system,TRUE,既定設定
+110,seed/work_menu.csv,business,TRUE,標準作業メニュー
+120,seed/price_list.csv,business,TRUE,標準単価
+130,seed/parts_category.csv,business,TRUE,部材カテゴリ
+140,seed/doc_templates.csv,business,TRUE,帳票テンプレ識別子
+CSV
+          fi
+          # required CSV shells
+          [ -f seed/status.csv ]        || printf "statusKey,displayName,sortOrder,isActive\n" > seed/status.csv
+          [ -f seed/type.csv ]          || printf "typeKey,displayName,sortOrder,isActive\n" > seed/type.csv
+          [ -f seed/settings.csv ]      || printf "key,value,note\n" > seed/settings.csv
+          [ -f seed/work_menu.csv ]     || printf "workKey,displayName,defaultPrice,note\n" > seed/work_menu.csv
+          [ -f seed/price_list.csv ]    || printf "priceKey,displayName,priceYen,note\n" > seed/price_list.csv
+          [ -f seed/parts_category.csv ]|| printf "categoryKey,displayName,sortOrder,isActive\n" > seed/parts_category.csv
+          [ -f seed/doc_templates.csv ] || printf "templateKey,displayName,version,note\n" > seed/doc_templates.csv
+
+          # 4) normalize to UTF-8 (strict) without BOM by re-encoding
+          python - <<'PY'
+          import pathlib
+          targets = [
+            "business/master_spec.md",
+            "business/ui_spec.md",
+            "seed/SEED_MANIFEST.csv",
+            "seed/status.csv","seed/type.csv","seed/settings.csv",
+            "seed/work_menu.csv","seed/price_list.csv","seed/parts_category.csv","seed/doc_templates.csv",
+          ]
+          for p in targets:
+            path = pathlib.Path(p)
+            if not path.exists(): 
+              continue
+            b = path.read_bytes()
+            # strip UTF-8 BOM if present
+            if b.startswith(b"\xef\xbb\xbf"):
+              b = b[3:]
+            # make valid utf-8 (replace invalid) then write back as utf-8
+            s = b.decode("utf-8", errors="replace")
+            path.write_text(s, encoding="utf-8", newline="\n")
+          print("OK: normalized to utf-8")
+          PY
+
+      - name: Comment and stop (out-of-scope)
+        if: ${{ env.OUT_OF_SCOPE == '1' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr="${{ steps.pr.outputs.pr_number }}"
+          echo "Out-of-scope changes detected; posting comment."
+          body="P(Self-Heal): out-of-scope changes detected. Fix manually.\n\nFiles:\n$(sed 's/^/- /' /tmp/out_of_scope.txt)"
+          gh pr comment "$pr" --body "$body" || true
+
+      - name: Commit and push fixes back to PR branch
+        if: ${{ steps.pr.outputs.pr_number != '' && env.OUT_OF_SCOPE != '1' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name  "mep-self-heal"
+          git config user.email "mep-self-heal@users.noreply.github.com"
+          git add -A
+          git commit -m "P: self-heal min5 (canonical/utf8/seed)" || true
+          git push origin HEAD:${{ steps.pr.outputs.head_branch }}
+
+      - name: Comment on PR (self-heal applied)
+        if: ${{ steps.pr.outputs.pr_number != '' && env.OUT_OF_SCOPE != '1' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr="${{ steps.pr.outputs.pr_number }}"
+          gh pr comment "$pr" --body "P(Self-Heal): applied safe fixes (canonical/utf8/seed). Gate will re-run." || true
