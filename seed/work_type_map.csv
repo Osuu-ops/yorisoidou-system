@@ -1,0 +1,8 @@
+workTypeCode,displayName,sortOrder,isActive,note
+F01,水栓交換,1,TRUE,faucet replace
+T01,トイレ交換,2,TRUE,toilet replace
+W01,ウォシュレット交換,3,TRUE,washlet replace
+V01,洗面台交換,4,TRUE,vanity replace
+P01,部品交換,5,TRUE,small parts exchange
+R01,リフォーム,90,TRUE,remodel
+X00,その他,99,TRUE,other

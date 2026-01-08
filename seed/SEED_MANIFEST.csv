@@ -10,3 +10,6 @@ order,file,kind,required,note
 150,seed/contact_channel.csv,system,FALSE,連絡経路
 160,seed/payment_channel.csv,system,FALSE,決済チャネル（直客/媒体）
 170,seed/payment_method.csv,system,FALSE,支払い方法（現金/振込/カード/後払い）
+180,seed/location_code.csv,system,FALSE,場所カテゴリコード
+190,seed/work_type_map.csv,system,FALSE,作業タイプコード
+200,seed/work_menu_type_link.csv,system,FALSE,work_menu→作業タイプ紐付け
