@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 133012
+- included_total_bytes: 133241
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -102,8 +102,8 @@
 ---
 
 ### FILE: docs/MEP/CHAT_PACKET.md
-- sha256: 7948683b7bde1a4b0da474df2b6f7502bc0a429b479f8e3d2e2e94b904b4e777
-- bytes: 23613
+- sha256: 4bf530f63a0ed617928f4cddd0b5153551f700a6119eff17200b2000e76ff97a
+- bytes: 23842
 
 ```text
 # CHAT_PACKET（新チャット貼り付け用） v1.1
@@ -446,6 +446,13 @@ Tell the assistant:
 
 
 <!-- AUTOMERGE_TEST 20260108_020127 -->
+
+
+<!-- GO_FREEZE 20260108_060248 -->
+## GO（凍結）
+- 日時: 20260108_060248
+- 内容: ビジネス仕様（business/*）と seed（seed/*）を唯一の正として運用開始。以後の変更はPRで反映。
+- 承認: 0
 ```
 
 ---
