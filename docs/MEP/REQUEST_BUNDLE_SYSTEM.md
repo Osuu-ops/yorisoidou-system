@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 126107
+- included_total_bytes: 128393
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -906,8 +906,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 82ef66c208bf8cb1b0d25803f74ae2716110f9f1e9fdae6b3e7c9c8478db61ee
-- bytes: 9191
+- sha256: 7c02f30b7665dbc9917fa47be91f132f546712d075b600604555a9487f12c17e
+- bytes: 11477
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1164,6 +1164,71 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - If you use git clean -fd often, protect workspace locally:
   Add to .git/info/exclude:
     gas/clasp_webapp/
+
+<!-- OPS_RUNBOOK_CARD_BEGIN -->
+# 運用RUNBOOK（現場）｜コピペ運用カード（確定）
+
+## 目的
+- 現場は「全文コピペ」だけで進める
+- 抽出・判定は自動（最後は 0＝承認）
+
+## 受注コピペ（ORDER）
+### 抽出 7項目（固定）
+1) 顧客名
+2) 住所（必須）
+3) 決済チャネル（DIRECT / MITSUMOA / KURAMA / MEDIA_OTHER）
+4) 支払い方法（CASH / BANK / CARD / POSTPAY / OTHER）
+5) 作業内容（work_menu 複数可）※未確定は空欄
+6) 金額（合計）
+7) 既存顧客フラグ（空欄 / ◯ / ◎）
+
+### 既存顧客フラグ
+- 初回：空欄
+- 2回目：◯
+- 3回目以降：◎
+- ◯/◎ の場合：コメントに「過去の作業＋日時」を追記（必須）
+
+### 媒体差分
+- KURAMA：定型文から取れる範囲だけ採用（作業内容が無ければ空欄）
+- MITSUMOA：回答内容以下は捨てる（作業内容は原則空欄）
+
+## 完了報告コピペ（DONE）
+### 最終チェック（完了可否）
+- 最優先：確定申告チェック（不足があれば必ず❌→完了復旧）
+  - 顧客名
+  - 住所（番地・建物名まで）
+  - 作業日（訪問日時）
+  - 作業内容（work_menu 複数可）
+  - 金額（0円不可。ただし WM_900/901/902 例外あり）
+  - 支払い方法
+
+### 書類判定（完了報告時）
+- 判定対象は「請求書」「領収書」のみ（見積書は対象外）
+- 0円は請求書/領収書を発行しない
+
+### 完了確認コメント（省略形・一時UI）
+【完了確認】
+顧客：<顧客名>（<空欄/◯/◎>）
+作業：<作業一覧（/区切り）>
+金額：<合計>（<支払い方法>）
+
+確定申告：✅/❌（理由1語）
+書類作成：
+✅/❌ 請求書
+✅/❌ 領収書
+
+## 例外（WM_900/901/902）
+- WM_900（見積のみ）
+- WM_901（キャンセル）
+- WM_902（無料対応）
+上記が選択/記録されている場合のみ、0円/未記入でも完了可能（書類は発行しない）
+
+## 状態（手動が正）
+- 状態の確定は手動（自動は提案・ガードのみ）
+- 3→4 を手動で進めるのは許可。ただし警告コメント：
+  - 「納品未確認のまま4へ移行」
+  - 「残タスク：納品確認」
+<!-- OPS_RUNBOOK_CARD_END -->
 ```
 
 
