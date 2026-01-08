@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 347867
+- included_total_bytes: 349424
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -897,8 +897,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 7c02f30b7665dbc9917fa47be91f132f546712d075b600604555a9487f12c17e
-- bytes: 11477
+- sha256: 77ac6f1ec2ce389518c086ce7c43a4f956f7b6b858d161b65108ed3654c693ec
+- bytes: 12953
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1220,6 +1220,35 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
   - 「納品未確認のまま4へ移行」
   - 「残タスク：納品確認」
 <!-- OPS_RUNBOOK_CARD_END -->
+
+
+<!-- FIXATION_PROTOCOL_BEGIN -->
+# FIXATION_PROTOCOL（固定・保管・汚染防止）｜唯一の正
+
+## 目的
+- GPT側の忘却・推測で汚染が起きないようにする
+- 「確定」は必ず GitHub（MEP）へ固定し、次回以降の唯一の正とする
+
+## 固定の原則（必須）
+- 会話で「採用」「確定」「0（承認）」になった内容は **必ず MEP に記録して main に反映**する
+- main に反映されていない内容は **確定扱いにしない**
+- 仕様に無いことは **提案** と明記し、0（承認）まで確定しない
+
+## 汚染防止（必須）
+- GPTは、MEP（business/*, seed/*, docs/MEP/*）に根拠が無い断定をしない
+- 断定が必要な場合は、必ず以下のいずれか：
+  1) 該当ファイルのパスと該当セクション（見出し）を示す
+  2) ユーザーに該当箇所の貼り付けを要求する
+  3) 「提案」として提示し、0（承認）を待つ
+
+## マージ時の運用（必須）
+- “思想・運用・判断ルール” を含む変更は、PR内に固定ブロック（この章）またはRUNBOOK更新を伴う
+- auto-merge が通らない場合でも、0（承認）後は **手動マージで main に確定反映**する
+
+## 実務ルール
+- 以後、決定事項は「PRで固定→main反映」を完了条件とする
+- 反映が終わるまで次の確定事項に進まない（汚染防止）
+<!-- FIXATION_PROTOCOL_END -->
 ```
 
 
@@ -4553,8 +4582,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 42be7aa2e8694e8473b0bf496994db1fe3ffb4a03ff9f894d940f41cf62dcf92
-- bytes: 6823
+- sha256: 3c7d21992d7a5711c047e0570e0e5b34ead886a64731f7b45a2e38e1ee2fa99b
+- bytes: 6904
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -4660,6 +4689,9 @@ UIの禁止事項（固定）：
 - seed/contact_channel.csv
 - seed/payment_channel.csv
 - seed/payment_method.csv
+- seed/location_code.csv
+- seed/work_menu_type_link.csv
+- seed/work_type_map.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
