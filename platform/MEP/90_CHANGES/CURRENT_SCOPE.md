@@ -101,6 +101,9 @@
 - seed/contact_channel.csv
 - seed/payment_channel.csv
 - seed/payment_method.csv
+- seed/location_code.csv
+- seed/work_menu_type_link.csv
+- seed/work_type_map.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
