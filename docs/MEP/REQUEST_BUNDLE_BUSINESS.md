@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 349424
+- included_total_bytes: 352993
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2122,8 +2122,8 @@ business_spec で確定した削除/FREEZE/FIXを、台帳（Request/Recovery_Qu
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
-- sha256: 25c62dfad22f64bd6aec70f0d3be9c06c8b6d014829bdab987e1554d953f9097
-- bytes: 11776
+- sha256: 2377bec39b246062d2d754dd226aa5134cbadd0e3c5dd97cf7898fbd8ea4421a
+- bytes: 12427
 
 ```text
 <!--
@@ -2455,14 +2455,27 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - CreatedAt
   - type: datetime
   - required: true
+
+<!-- PARTS_AA_NUMBERING_CONTRACT_BEGIN -->
+# PARTS_AA_NUMBERING_CONTRACT（AA群/枝番の採番・欠番）
+
+## 確定タイミングと表示タイミング
+- 発注時：AA（および枝番）は内部で確定する。
+- 納品時：タスク名へ反映する（表示タイミングは運用で遅らせる）。
+
+## 欠番（予約値）
+- `??00` は予約値（欠番）とし、運用で表示される有効IDは `??01` からとする。
+  - 例：`AA00` / `AB00` / `BA00` … は使わない。
+- 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
+<!-- PARTS_AA_NUMBERING_CONTRACT_END -->
 ```
 
 
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 78840c47b77c5d3b1c4212cf156f134d109e77bfbd80ddd19a516fe26baa8501
-- bytes: 78011
+- sha256: 0af783023f7e170002f1b227852191c6727421e659085716a709de4396cd24d7
+- bytes: 80929
 
 ```text
 <!--
@@ -3913,6 +3926,69 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - ID Issuance & UI Responsibility（Phase-2）が存在し、PART_ID/OD_ID/AA/PA/MA/EXP_ID の発行責務とタイミングが固定されている。
 - Recovery Queue（Phase-2）が存在し、BLOCKER/WARNING の回収（登録→通知→解消→記録）が固定されている。
 - Integration Contract（Phase-2）が存在し、統合の責務分界・同期範囲・切替・冪等・競合時の回収が固定されている。
+
+<!-- TODOIST_UI_CONTRACT_BEGIN -->
+# TODOIST_UI_CONTRACT（Todoist運用UI/入力の固定）
+
+## セクション名
+- セクション名は運用で固定し、以後変更しない（現場の迷い防止）。
+
+## タスク名（タイトル）フォーマット
+- 現場運用のタスク名（タイトル）は以下を基本形とする：
+  - `<AA>_<顧客名>_<市区町村>_<媒体>_(自由文)`
+- 例：
+  - `422_丸林様_西宮市_くらま_()`
+
+## 自由文
+- 自由文は「現場メモ用スロット」であり、解析・自動判定の根拠にしない（汚染防止）。
+<!-- TODOIST_UI_CONTRACT_END -->
+
+<!-- PARTS_AA_NUMBERING_CONTRACT_BEGIN -->
+# PARTS_AA_NUMBERING_CONTRACT（AA群/枝番の採番・欠番）
+
+## 確定タイミングと表示タイミング
+- 発注時：AA（および枝番）は内部で確定する。
+- 納品時：タスク名へ反映する（表示タイミングは運用で遅らせる）。
+
+## 欠番（予約値）
+- `??00` は予約値（欠番）とし、運用で表示される有効IDは `??01` からとする。
+  - 例：`AA00` / `AB00` / `BA00` … は使わない。
+- 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
+<!-- PARTS_AA_NUMBERING_CONTRACT_END -->
+
+<!-- PARTS_TO_WORK_INFERENCE_POLICY_BEGIN -->
+# PARTS_TO_WORK_INFERENCE_POLICY（部品→作業コード 推定の方針）
+
+## 原則
+- 手動が正。自動は提案のみ（採用/修正は人が行う）。
+
+## 品番がある場合
+- 品番がある場合は検索してカテゴリ判定し、作業コードを提案する。
+- 提案は誤りうるため、必ず人が最終確定する。
+
+## 品番がない場合（自由文部品名）
+- 原則「部品交換」（WM_080）として提案し、明らかに大型/工事系の場合のみ工事系へ提案を寄せる。
+- 手動修正の結果は辞書化して精度を上げる（追記のみ、削除しない）。
+<!-- PARTS_TO_WORK_INFERENCE_POLICY_END -->
+
+<!-- AGGREGATION_SERIAL_POLICY_BEGIN -->
+# AGGREGATION_SERIAL_POLICY（月次/年次 集計・連番の扱い）
+
+## 集計の考え方
+- 集計は「イベント別」に数える（例：受注/発注/完了は別カウントとして扱う）。
+- 欠番やズレがあるのは正常（業務件数と完全一致させない）。
+
+## 目的
+- 現場/コンシェルジュが「月次・年次の件数」を即答できる状態を作る（ダッシュボード等）。
+<!-- AGGREGATION_SERIAL_POLICY_END -->
+
+<!-- APP_BOUNDARY_DESIGN_NOTE_BEGIN -->
+# APP_BOUNDARY_DESIGN_NOTE（将来アプリ化に備えた境界：設計のみ）
+
+## 方針
+- 現状は Todoist 前提で運用する。
+- 将来の自作アプリ化で差し替え可能にするため、ドメイン（業務状態/ID/ガード）と運用基盤（Todoist等）を分離して記述する。
+<!-- APP_BOUNDARY_DESIGN_NOTE_END -->
 ```
 
 
