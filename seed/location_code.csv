@@ -1,0 +1,8 @@
+locationCode,displayName,sortOrder,isActive,note
+K01,台所,1,TRUE,kitchen
+B01,浴室,2,TRUE,bath
+W01,洗面,3,TRUE,washroom
+L01,洗濯,4,TRUE,laundry
+T01,トイレ,5,TRUE,toilet
+O01,屋外,6,TRUE,outdoor
+X00,不明,99,TRUE,unknown
