@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 352993
+- included_total_bytes: 353360
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1541,11 +1541,11 @@ CURRENT_SCOPE: platform/MEP/03_BUSINESS/よりそい堂/
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
-- sha256: 061660e35f49244b656a3510ed2f62fb6a7d642c668a8e5e0d34da47256c9292
-- bytes: 1244
+- sha256: 81d66188246ffb751fdf4179e3965291de5fe7bae61c7304b016a9dc0128efa5
+- bytes: 1364
 
 ```text
-﻿# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
+# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
 
 This file is navigation-only. It does NOT change the meaning of business specifications.
 
@@ -4391,8 +4391,8 @@ UI責務（固定）：
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 3edc9070beb84dbc1281a37cac1b601ee97c2bd13ec4c2bfd6026b8722819021
-- bytes: 8694
+- sha256: 54c845bfa9b2735dad7556b63ff57b663c6850c15c408aaf94fe7970af21c1e2
+- bytes: 8941
 
 ```text
 <!--
@@ -4795,4 +4795,5 @@ UIの禁止事項（固定）：
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
 ```
+
 
