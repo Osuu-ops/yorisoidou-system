@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 356381
+- included_total_bytes: 356560
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -897,8 +897,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: e00a1858a52581b0a9351a2f3591e531a92001bb322397d6b94c3d6ebe5e748a
-- bytes: 15974
+- sha256: 9a70a46af6d60f9f1a6dcb5c30e6d106dee8cc20b55978d27b4ac02eca72c734
+- bytes: 16153
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1269,6 +1269,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - ユーザーが「4行見せて」と言った時のみ4行表示（2行＋[ブレイン]＋[プロダクト]）。
 - 生成中（実装モード）は表示0行（コードのみ）。失敗があれば即コードで修正し、完了までコード提示を継続する。
 - 生成完了時は「完了した瞬間」だけ4行表示を1回だけ行い、その後は通常表示（2行）に戻す。
+- 完了ゲートで「0承認」を求める文言を出す瞬間は、その回だけ4行表示を行う（[モード]＋[現在地]＋[ブレイン]＋[プロダクト]）。
 - ユーザーが自由文を送ったらコード提示を停止して天才へ戻り、「コード書いて」「生成に進む」で再び生成に入る。
 <!-- MEP_UI_DISPLAY_RULES_END -->
 
