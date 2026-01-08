@@ -53,7 +53,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 129869
+- included_total_bytes: 132760
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -906,8 +906,8 @@ scope-guard enforcement test 20260103-002424
 ---
 
 ### FILE: docs/MEP/RUNBOOK.md
-- sha256: 77ac6f1ec2ce389518c086ce7c43a4f956f7b6b858d161b65108ed3654c693ec
-- bytes: 12953
+- sha256: 50f5f9da22a41c751c006f87e921965ac6ad7c267cd0c6e9ab2ddac21143cadc
+- bytes: 15844
 
 ```text
 # RUNBOOK（復旧カード）
@@ -1258,6 +1258,48 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - 以後、決定事項は「PRで固定→main反映」を完了条件とする
 - 反映が終わるまで次の確定事項に進まない（汚染防止）
 <!-- FIXATION_PROTOCOL_END -->
+
+<!-- MEP_UI_ZERO_BUNDLE_POLICY_BEGIN -->
+## UI汚染ゼロ：単一フルバンドル運用（固定）
+
+- UIでは「単一フルバンドル（本文差し込み済み1ファイル）」のみを入口投入物とする（それ以外は前提にしない）。
+- 変更はチャット内では「提案」止まり。確定は 0（承認）→PR→main 反映→フルバンドル更新→次チャット開始時に最新バンドル投入。
+- 完了ゲート：網羅チェック → 「この内容が引き継がれました（BUNDLE_VERSION/commit）」表記 → 0（承認）。
+- 引き継ぎ／引っ越し／新規チャット開始時に貼り付けるパス（参照・投入対象）は、必ず「最後の完結分（完了ゲート後）」に貼る。
+- 決定・反映に関する発言は必ず状態タグで明示（Draft / Adopted / PR Open / Merged to main / Bundled / Completed Gate）。PR番号・commit・BUNDLE_VERSION等の証跡がない限り「反映済み」と扱わない。
+- 表示規約（チャット出力）：毎回 [STOCK]→[FOCUS]→[PROGRESS] を先頭3行に置き、説明は最小化する。
+
+<!-- MEP_UI_ZERO_BUNDLE_POLICY_END -->
+
+<!-- MEP_UI_DISPLAY_RULES_BEGIN -->
+## 表示ルール（固定）
+
+- 通常表示：2行のみ（[モード] / [現在地]）。
+- ユーザーが「4行見せて」と言った時のみ4行表示（2行＋[ブレイン]＋[プロダクト]）。
+- 生成中（実装モード）は表示0行（コードのみ）。失敗があれば即コードで修正し、完了までコード提示を継続する。
+- ユーザーが自由文を送ったらコード提示を停止して天才へ戻り、「コード書いて」「生成に進む」で再び生成に入る。
+<!-- MEP_UI_DISPLAY_RULES_END -->
+
+<!-- MEP_BRAIN_PRODUCT_FLOW_BEGIN -->
+## ブレイン／プロダクト（メモ→採用→生成→完了）運用（固定）
+
+- ブレインとプロダクトは独立に管理する。
+- カウント運用：
+  - 「メモ」＝メモに追加（保留）
+  - 「採用」「ここまで採用！」＝メモを飛ばして採用へ（「ここまで採用！」は束ねて1採用）
+  - 「生成に進む」「コード書いて」＝生成へ
+- 完了の定義：
+  - ブレイン：バンドル完了（起動ファイルに反映される）
+  - プロダクト：マージ完了（成果物がmainに反映される）
+<!-- MEP_BRAIN_PRODUCT_FLOW_END -->
+
+<!-- MEP_APPROVAL_GATE_BEGIN -->
+## 承認ゲート（固定）
+
+- 「メモ」および「採用（メモを採用含む）」を行う際は必ず承認（0/1）を取る。
+- メモ/採用の対象が「メモ時点の内容」か「その後の追加分を含む」かを必ず明示する。
+- 追加分が未記載の場合は「追加してよいか」を必ず確認し、承認を取る。
+<!-- MEP_APPROVAL_GATE_END -->
 ```
 
 
