@@ -1,4 +1,4 @@
-﻿# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
+# INDEX (CURRENT_SCOPE: Yorisoidou BUSINESS)
 
 This file is navigation-only. It does NOT change the meaning of business specifications.
 
@@ -10,8 +10,11 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
-<<<<<<< HEAD
-=======
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
+<!-- OURS_BEGIN -->
+<!-- OURS_END -->
+
+<!-- THEIRS_BEGIN -->
 
 ## 唯一の正（実体）
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
@@ -32,4 +35,5 @@ Rule:
 - Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
 - Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
 
->>>>>>> origin/main
+<!-- THEIRS_END -->
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
