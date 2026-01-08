@@ -375,11 +375,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - CARD-07: Request Status Normalization (status/requestStatus)
 > - CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
 
-### ARCHIVE_ENTRY sha256:8acd4621b01e8833c3fd74f7462122c06fc15faea7539dc5e4a6860efc2d7846
+### ARCHIVE_ENTRY sha256:5ed60373c02e3af376ca932f8d524df2290676dd4174e922026bcf5c29b5df17
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:bb41daced0e9
+> HANDOFF_ID: HOF:0371986952e5
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -487,6 +487,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - Guards / Safety
 > - Current objective
 > - How to start a new conversation
+> - GO（凍結）
 > 
 > ---
 > 
@@ -562,11 +563,11 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > - CARD-07: Request Status Normalization (status/requestStatus)
 > - CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)
 
-### ARCHIVE_ENTRY sha256:d6285a236a8990a634e984a72b2975d467f77d8b06cd6c21db5e0f88a6b9e1e4
+### ARCHIVE_ENTRY sha256:8acd4621b01e8833c3fd74f7462122c06fc15faea7539dc5e4a6860efc2d7846
 
 （過去のCURRENTスナップショット。通常は貼らない。）
 
-> HANDOFF_ID: HOF:0f8f7c2ddffa
+> HANDOFF_ID: HOF:bb41daced0e9
 > HANDOFF_TRIGGER: ユーザーが『引継ぎ』と言ったら、AIは次の1行だけを返す（説明なし）： .\tools\mep_handoff.ps1
 > CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗チェック / PLAYBOOK次の一手」で確定する。
 > # HANDOFF_100（引継ぎ100点・新チャット1通目に貼る1枚）
@@ -628,6 +629,7 @@ CONTINUE_TARGET: (AUTO) 旧チャットの続きは「open PR / 直近の失敗�
 > 
 > ■ アイデア一覧（番号で統合）
 > 1. One-paste capture wrapper idea; implemented as scripts + merged PR  [IDEA:e61113b095cb]
+> 2. .\tools\mep_idea_capture.ps1  [IDEA:1c4d4e1a7f30]
 > 
 > ■ 統合の指示例
 > - 新チャットで：『アイデア統合 1 3』→ PowerShellで： .\tools\mep_idea_pick.ps1 1 3 → 貼り付け → 『統合して進めて』
