@@ -1,3 +1,4 @@
+BUNDLE_VERSION: v0.0.0+20260109_043222+main_5ee3d4c
 # MEP_BUNDLE
 BUNDLE_VERSION: v0.0.0+20260109_025708
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
@@ -127,3 +128,4 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 ### 次の遷移
 - ALL_OK → PR → main → Bundled → Completed Gate
+
