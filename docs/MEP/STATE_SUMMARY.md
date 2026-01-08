@@ -27,6 +27,7 @@
 - Guards / Safety
 - Current objective
 - How to start a new conversation
+- GO（凍結）
 
 ---
 

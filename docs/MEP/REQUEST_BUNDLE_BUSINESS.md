@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 345230
+- included_total_bytes: 345581
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1182,8 +1182,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: 2df4a9d42837ce2e6781157eaf86afb30a166f1c53b3e76769adca47b5c3ae38
-- bytes: 4886
+- sha256: a90ad6b588611095a88569e294c68704ed46730ff177c4cc961fb542d79080fd
+- bytes: 5115
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1245,14 +1245,21 @@ Tell the assistant:
 
 
 <!-- AUTOMERGE_TEST 20260108_020127 -->
+
+
+<!-- GO_FREEZE 20260108_060248 -->
+## GO（凍結）
+- 日時: 20260108_060248
+- 内容: ビジネス仕様（business/*）と seed（seed/*）を唯一の正として運用開始。以後の変更はPRで反映。
+- 承認: 0
 ```
 
 
 ---
 
 ### FILE: docs/MEP/STATE_SUMMARY.md
-- sha256: 8611754f72d94eac16551548d4bc80c96c91dafcc43a82697aae5cfd0c569362
-- bytes: 2244
+- sha256: 3a7694beba65ad113dd061f23be6600cc9b770ca5b861b012e6d5dcb7082cc5a
+- bytes: 2261
 
 ```text
 # STATE_SUMMARY（現在地サマリ） v1.0
@@ -1284,6 +1291,7 @@ Tell the assistant:
 - Guards / Safety
 - Current objective
 - How to start a new conversation
+- GO（凍結）
 
 ---
 
@@ -4480,8 +4488,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: cdb795e26d940f15e1867c3c77692af1981a4d4d110393abccc0eb897b1c3dfe
-- bytes: 6718
+- sha256: 42be7aa2e8694e8473b0bf496994db1fe3ffb4a03ff9f894d940f41cf62dcf92
+- bytes: 6823
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -4583,6 +4591,10 @@ UIの禁止事項（固定）：
 - seed/parts_category.csv
 - seed/price_list.csv
 - seed/work_menu.csv
+- seed/SEED_MANIFEST.csv
+- seed/contact_channel.csv
+- seed/payment_channel.csv
+- seed/payment_method.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
