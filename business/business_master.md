@@ -327,3 +327,16 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 - CreatedAt
   - type: datetime
   - required: true
+
+<!-- PARTS_AA_NUMBERING_CONTRACT_BEGIN -->
+# PARTS_AA_NUMBERING_CONTRACT（AA群/枝番の採番・欠番）
+
+## 確定タイミングと表示タイミング
+- 発注時：AA（および枝番）は内部で確定する。
+- 納品時：タスク名へ反映する（表示タイミングは運用で遅らせる）。
+
+## 欠番（予約値）
+- `??00` は予約値（欠番）とし、運用で表示される有効IDは `??01` からとする。
+  - 例：`AA00` / `AB00` / `BA00` … は使わない。
+- 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
+<!-- PARTS_AA_NUMBERING_CONTRACT_END -->
