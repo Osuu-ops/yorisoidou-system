@@ -1,3 +1,65 @@
+# MEP_BUNDLE
+BUNDLE_VERSION: v0.0.0+20260109_000132
+SOURCE_COMMIT: bb15457
+GENERATED_AT: 2026-01-09 00:01:32 +09:00
+REPO: Osuu-ops/yorisoidou-system
+INCLUDES:
+- docs/MEP/RULESET.md
+- docs/MEP/RUNBOOK.md
+
+---
+<!-- BEGIN docs/MEP/RULESET.md -->
+# RULESET
+
+
+<!-- FIXATION_PROTOCOL_BEGIN -->
+# FIXATION_PROTOCOL（固定・保管・汚染防止）｜唯一の正
+
+## 目的
+- GPT側の忘却・推測で汚染が起きないようにする
+- 「確定」は必ず GitHub（MEP）へ固定し、次回以降の唯一の正とする
+
+## 固定の原則（必須）
+- 会話で「採用」「確定」「0（承認）」になった内容は **必ず MEP に記録して main に反映**する
+- main に反映されていない内容は **確定扱いにしない**
+- 仕様に無いことは **提案** と明記し、0（承認）まで確定しない
+
+## 汚染防止（必須）
+- GPTは、MEP（business/*, seed/*, docs/MEP/*）に根拠が無い断定をしない
+- 断定が必要な場合は、必ず以下のいずれか：
+  1) 該当ファイルのパスと該当セクション（見出し）を示す
+  2) ユーザーに該当箇所の貼り付けを要求する
+  3) 「提案」として提示し、0（承認）を待つ
+
+## マージ時の運用（必須）
+- “思想・運用・判断ルール” を含む変更は、PR内に固定ブロック（この章）またはRUNBOOK更新を伴う
+- auto-merge が通らない場合でも、0（承認）後は **手動マージで main に確定反映**する
+
+## 実務ルール
+- 以後、決定事項は「PRで固定→main反映」を完了条件とする
+- 反映が終わるまで次の確定事項に進まない（汚染防止）
+<!-- FIXATION_PROTOCOL_END -->
+
+<!-- ONE_BUSINESS_ONE_REPO_BEGIN -->
+# ONE_BUSINESS_ONE_REPO（業務パック境界）｜必須
+
+## 原則
+- **1業務＝1リポジトリ** を唯一の正とする。
+
+## 目的
+- 導入・差し替え・削除・ロールバックを **1単位で完全に成立** させる。
+- 業務パック間の汚染（依存・混線）を防止する。
+
+## 運用
+- 新しい業務を追加する場合、既存リポジトリへ混載しない。**新規リポジトリとして開始**する。
+
+## 例外
+- 例外を設ける場合は、その理由と境界（共有/分離の範囲）を **RULESETに明文化**し、0（承認）で固定する。
+<!-- ONE_BUSINESS_ONE_REPO_END -->
+<!-- END docs/MEP/RULESET.md -->
+
+---
+<!-- BEGIN docs/MEP/RUNBOOK.md -->
 # RUNBOOK（復旧カード）
 
 本書は「異常時の復旧」をカードとして固定する。
@@ -358,4 +420,5 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - 表示規約（チャット出力）：毎回 [STOCK]→[FOCUS]→[PROGRESS] を先頭3行に置き、説明は最小化する。
 
 <!-- MEP_UI_ZERO_BUNDLE_POLICY_END -->
+<!-- END docs/MEP/RUNBOOK.md -->
 
