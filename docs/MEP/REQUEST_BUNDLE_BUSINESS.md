@@ -1557,8 +1557,11 @@ Entry points:
 Rule:
 - 1 theme = 1 branch = 1 PR
 - Canonical is main after merge (not this PR conversation)
-<<<<<<< HEAD
-=======
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
+<!-- OURS_BEGIN -->
+<!-- OURS_END -->
+
+<!-- THEIRS_BEGIN -->
 
 ## 唯一の正（実体）
 - platform/MEP/03_BUSINESS/よりそい堂/master_spec（拡張子なし）
@@ -1579,7 +1582,8 @@ Rule:
 - Phase-1: 追加のみ（参照切替なし／既存の意味を変えない）
 - Phase-2: 参照切替（監査・生成・RUNBOOKの参照先を4本へ移行）
 
->>>>>>> origin/main
+<!-- THEIRS_END -->
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
 ```
 
 
@@ -4457,8 +4461,11 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 次にユーザーが取るべき行動を示す
 
 4. 入力項目の意味配置
-<<<<<<< HEAD
-=======
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
+<!-- OURS_BEGIN -->
+<!-- OURS_END -->
+
+<!-- THEIRS_BEGIN -->
 
 ## Request入力の整合チェック（UI制約｜意味変更なし）
 
@@ -4473,7 +4480,8 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
   - targetType = Order_ID
   - orderId は必須
   - **orderId と targetId は同値**（矛盾は送信不可）
->>>>>>> origin/main
+<!-- THEIRS_END -->
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
 4.1 入力項目の原則
 
 ユーザーが 意味を理解できない専門語を使わない
@@ -4564,8 +4572,11 @@ UI_PROTOCOL の変更を伴う修正は行わない
 UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
-<<<<<<< HEAD
-=======
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
+<!-- OURS_BEGIN -->
+<!-- OURS_END -->
+
+<!-- THEIRS_BEGIN -->
 
 ## DOC_FLOWS（参照のみ）
 
@@ -4640,7 +4651,8 @@ UIの禁止事項（固定）：
 <!-- PHASE1_MARKERS (do not change meaning; for Go/No-Go checks only) -->
 <!-- PARTS_FLOW_PHASE1 -->
 <!-- EXPENSE_FLOW_PHASE1 -->
->>>>>>> origin/main
+<!-- THEIRS_END -->
+<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
 ```
 
 
@@ -4783,5 +4795,4 @@ UIの禁止事項（固定）：
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
 ```
-
 
