@@ -1,8 +1,7 @@
 # MEP_BUNDLE
-BUNDLE_VERSION: v0.0.0+20260109_014744
-INHERITED: この内容が引き継がれました（BUNDLE_VERSION=v0.0.0+20260109_014744 / commit=03c31df）
-SOURCE_COMMIT: c8f8a46
-GENERATED_AT: 2026-01-09 01:47:44 +09:00
+BUNDLE_VERSION: v0.0.0+20260109_021953
+SOURCE_COMMIT: f84f298
+GENERATED_AT: 2026-01-09 02:19:53 +09:00
 REPO: Osuu-ops/yorisoidou-system
 INCLUDES:
 - docs/MEP/RULESET.md
@@ -428,6 +427,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 - 通常表示：2行のみ（[モード] / [現在地]）。
 - ユーザーが「4行見せて」と言った時のみ4行表示（2行＋[ブレイン]＋[プロダクト]）。
 - 生成中（実装モード）は表示0行（コードのみ）。失敗があれば即コードで修正し、完了までコード提示を継続する。
+- 生成完了時は「完了した瞬間」だけ4行表示を1回だけ行い、その後は通常表示（2行）に戻す。
 - ユーザーが自由文を送ったらコード提示を停止して天才へ戻り、「コード書いて」「生成に進む」で再び生成に入る。
 <!-- MEP_UI_DISPLAY_RULES_END -->
 
