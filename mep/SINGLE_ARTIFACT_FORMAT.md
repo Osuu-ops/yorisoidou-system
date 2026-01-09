@@ -3,7 +3,7 @@ StatusTag: Adopted
 Scope:
   - SINGLE_ARTIFACT_FORMAT
 Evidence:
-  - BUNDLE_VERSION: v0.0.0+20260110_030257+main_31f4b1a
+  - BUNDLE_VERSION: v0.0.0+20260110_040155+main_f01f16b
 Changes:
   - Fixes the Single Artifact v1 headers and constraints as the only accepted artifact format.
 Unfinalized:

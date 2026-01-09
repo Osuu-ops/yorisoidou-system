@@ -3,7 +3,7 @@ StatusTag: Adopted
 Scope:
   - ACCEPTANCE_TESTS
 Evidence:
-  - BUNDLE_VERSION: v0.0.0+20260110_030257+main_31f4b1a
+  - BUNDLE_VERSION: v0.0.0+20260110_040155+main_f01f16b
 Changes:
   - Defines machine-enforced acceptance tests at the ingestion boundary.
   - FAIL-fast, reason-coded, and "NG = discard (no PR)" contract.
