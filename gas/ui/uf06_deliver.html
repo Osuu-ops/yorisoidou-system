@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UF06 納品</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; margin: 16px; }
+      label { display:block; font-size: 12px; margin-top: 8px; }
+      input, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+      button { padding: 10px 14px; }
+      .muted { color:#666; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>UF06 納品（雛形）</h1>
+    <p class="muted">この画面は雛形。実運用の「発注日時順一覧」「チェック一括」は次のPRで拡張。</p>
+
+    <label>partKey（実装層で PART_ID 等へ解決）</label><input id="partKey">
+    <label>品番</label><input id="modelNumber">
+    <label>納品日時（文字列で可）</label><input id="deliveredAt">
+    <label>チェック</label><input id="checked" type="checkbox">
+    <label>メモ</label><textarea id="note"></textarea>
+
+    <button onclick="submitOne()">送信（1件）</button>
+    <pre id="out"></pre>
+
+    <script>
+      function payload() {
+        return {
+          items: [{
+            partKey: document.getElementById('partKey').value,
+            modelNumber: document.getElementById('modelNumber').value,
+            deliveredAt: document.getElementById('deliveredAt').value,
+            checked: document.getElementById('checked').checked,
+            note: document.getElementById('note').value
+          }]
+        };
+      }
+      function submitOne() {
+        google.script.run
+          .withSuccessHandler(function(res){ document.getElementById('out').textContent = JSON.stringify(res, null, 2); })
+          .withFailureHandler(function(err){ document.getElementById('out').textContent = String(err); })
+          .UF06_DELIVER_normalize(payload());
+      }
+    </script>
+  </body>
+</html>
