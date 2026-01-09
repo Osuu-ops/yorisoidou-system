@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 364831
+- included_total_bytes: 365055
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -4868,8 +4868,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 3c7d21992d7a5711c047e0570e0e5b34ead886a64731f7b45a2e38e1ee2fa99b
-- bytes: 6904
+- sha256: e5b3154d65363755f6e5581b560ce6f28e76674cb0bf4d38d88fb716192ff534
+- bytes: 7128
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -4978,6 +4978,14 @@ UIの禁止事項（固定）：
 - seed/location_code.csv
 - seed/work_menu_type_link.csv
 - seed/work_type_map.csv
+- gas/uf06/README_UF06_QUEUE.md
+- gas/uf06/ledger_adapter.gs
+- gas/uf06/uf06_queue.gs
+- gas/uf06/uf06_app.gs
+- gas/ui/uf06_deliver.html
+- gas/ui/uf06_order.html
+- gas/uf06/README_UF06_SELFTEST.md
+- gas/uf06/uf06_selftest.gs
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
