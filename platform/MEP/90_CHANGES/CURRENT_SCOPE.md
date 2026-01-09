@@ -118,6 +118,8 @@
 - mep/MEP_ARTIFACT.md
 - mep/SINGLE_ARTIFACT_FORMAT.md
 - tools/acceptance_tests.ps1
+- gas/uf06/README_ORCHESTRATOR_WRITE.md
+- gas/uf06/orchestrator_write.gs
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
