@@ -1,10 +1,44 @@
-﻿name: MEP Auto PR Gate Dispatch (Minimal)
+name: MEP Auto PR Gate Dispatch (Minimal)
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  ping:
+  observe:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "dispatch-ok"
+      - name: Checkout (main)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: MEP Observe (summary)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "MEP OBSERVE REPORT" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- repo: $GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ref: main (fixed)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- head: $(git rev-parse --short HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "CURRENT_SCOPE (canonical):" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "docs/MEP/STATE_CURRENT.md" ]; then
+            scope_line="$(grep -E '^\s*-\s*platform/MEP/03_BUSINESS/よりそい堂/\*\*' -m 1 docs/MEP/STATE_CURRENT.md || true)"
+            if [ -n "$scope_line" ]; then
+              echo "- $scope_line" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "- (not found in docs/MEP/STATE_CURRENT.md)" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo "- (missing: docs/MEP/STATE_CURRENT.md)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "Notes:" >> "$GITHUB_STEP_SUMMARY"
+          echo "- SINGLE_ARTIFACT_FORMAT is Draft/undecided; automation expansion is paused (observe-only)." >> "$GITHUB_STEP_SUMMARY"
