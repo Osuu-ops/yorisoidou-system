@@ -340,3 +340,35 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
   - 例：`AA00` / `AB00` / `BA00` … は使わない。
 - 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
 <!-- PARTS_AA_NUMBERING_CONTRACT_END -->
+
+
+<!-- FIXATE_DICTIONARY_TABLES_BEGIN -->
+# FIXATE（設計・追記）: 部品辞書（品番/用途タグ/旧→新/廃盤記号）テーブル案
+
+本ブロックは「設計のみ」。実装（シート名/列名/正規化/運用）は別PRで確定する。
+
+## Dictionary: Parts_Dict（部品辞書）
+- purpose: UF06（発注）での検索・メーカー自動入力・用途タグ検索・旧品番/後継の誘導を支える。
+- authority: 採用（チェック）されたレコードのみを“確定”として扱う。AIは提案のみ。
+
+### Fields（最小）
+- dictId: string（再利用不可）
+- maker: string|null
+- modelNumber: string（現行/入力の主キー候補）
+- tags: list<string>（用途タグ。メーカー同格で検索対象）
+- legacyStatus: enum（CURRENT / OLD / UNKNOWN）
+- legacyModelNumber: string|null（旧品番）
+- replacementModelNumber: string|null（後継候補。確定は採用時のみ）
+- discontinuedMark: enum|null（◇ / ◆ / null）
+- adopted: boolean（採用済みフラグ。true のみ確定扱い）
+- adoptedAt: datetime|null
+- adoptedBy: string|null
+- note: string|null
+
+### Rules（最小）
+- legacyStatus は 3値（現行／旧／不明）。
+- 旧品番は削除しない（旧→新リンクを保持）。
+- discontinuedMark（◇/◆）は採用済みレコードにのみ付与（候補段階は確定扱いしない）。
+- 全品番チェック（廃盤判定）は実装時にAPIで年2回（6月/12月）想定（設計のみ）。
+
+<!-- FIXATE_DICTIONARY_TABLES_END -->
