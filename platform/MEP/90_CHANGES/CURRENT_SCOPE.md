@@ -104,6 +104,12 @@
 - seed/location_code.csv
 - seed/work_menu_type_link.csv
 - seed/work_type_map.csv
+- gas/uf06/README_UF06.md
+- gas/uf06/parts_dict.gs
+- gas/uf06/task_title_projector.gs
+- gas/uf06/uf06_app.gs
+- gas/ui/uf06_deliver.html
+- gas/ui/uf06_order.html
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
