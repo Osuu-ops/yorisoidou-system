@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 365055
+- included_total_bytes: 368077
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: f5786183a411ee80feb8a80ff64b398cf8ca3950942d57863cef247005d1132d
-- bytes: 85202
+- sha256: 785f082eaa665cb72bf67fc0ed2943998be2c8b97b6ad3a6b8f46efe1aae6014
+- bytes: 88043
 
 ```text
 <!--
@@ -4147,6 +4147,63 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 記号付与は確定（採用）された辞書レコードにのみ行う（候補段階では確定扱いしない）。
 - 廃盤の全品番チェックは実装時にAPIで実施し、頻度は年2回（6月・12月）を採用（このブロックは設計のみ）。
 <!-- FIXATE_ADOPTED_20260109_UI_ORDER_DELIVER_DICT_END -->
+
+<!-- FIXATE_UF06_QUEUE_CONTRACT_BEGIN -->
+# FIXATE（実装契約・追記）: UF06_QUEUE（受付キュー）仕様
+
+本ブロックは「追記のみ」。既存本文と矛盾する場合は本文を優先する。  
+目的：UF06（発注/納品）入力を「安全に受け付け、確定処理（Orchestrator）へ渡す」ための唯一の正。
+
+## 1) キュー台帳（Sheet）— UF06_QUEUE
+- Sheet 名：`UF06_QUEUE`
+- 1行＝1イベント（UF06_ORDER / UF06_DELIVER）
+- 直接 Parts_Master 等へ確定書込しない（キュー投入のみ）
+
+### Columns（固定）
+- receivedAt: string（ISO datetime）
+- kind: string（`UF06_ORDER` / `UF06_DELIVER`）
+- idempotencyKey: string（冪等キー）
+- status: string（`OPEN` / `ACCEPTED` / `REJECTED` / `PROCESSED`）
+- customerId: string|null
+- customerName: string|null
+- cityTown: string|null
+- payloadJson: string（正規化済みpayloadのJSON）
+
+## 2) status 遷移（固定）
+- OPEN: 受付済み（未処理）
+- ACCEPTED: Orchestrator が処理対象としてロック（処理中）
+- PROCESSED: 台帳確定まで完了（確定書込と監査ログが成立）
+- REJECTED: 入力不備などで処理不可（理由を logs/system または別回収へ）
+
+※ OPEN のまま放置は許可（運用回収対象）。勝手に PROCESSED にしない。
+
+## 3) 冪等（固定）
+- idempotencyKey は「同一イベント判定」の唯一基準。
+- 推奨（Phase-1 実装基準）：
+  - `eventType + ":" + sha1(payloadJson)`
+- 同一 idempotencyKey の再到達は「同一イベントの再観測」として扱い、
+  - 新規行の増殖は禁止（重複登録禁止）
+  - details/log 追記は許容（別ログ/列で扱う）
+
+## 4) Orchestrator の責務（固定）
+- UF06_QUEUE の OPEN を読み取り、種別ごとに確定処理へ接続する。
+- 処理単位は「1行（1イベント）」。
+- 自動辻褄合わせ禁止：不明・競合・前提不足は OPEN 維持＋回収へ寄せる。
+
+### UF06_ORDER（発注）処理の最小期待（Phase-1）
+- 正規化payloadを根拠に、発注確定（PART_ID/OD_ID/AA 等）は Orchestrator が行う。
+- 受付キュー投入の時点では台帳は確定しない。
+
+### UF06_DELIVER（納品）処理の最小期待（Phase-1）
+- 納品確定により、対象部材の状態遷移（DELIVERED）と DELIVERED_AT が成立する。
+- 在庫→顧客割当は即 DELIVERED を許可（x/y の同時加算を許可）。
+
+## 5) 失敗時の扱い（固定）
+- 失敗は「OPEN 維持」を基本とする（再試行できる状態を保つ）。
+- REJECTED は「入力不備が確定」した場合のみ（理由の記録必須）。
+- 重大不整合は Recovery Queue（BLOCKER/OPEN）へ回収（自動で解決しない）。
+
+<!-- FIXATE_UF06_QUEUE_CONTRACT_END -->
 ```
 
 
@@ -4868,8 +4925,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: e5b3154d65363755f6e5581b560ce6f28e76674cb0bf4d38d88fb716192ff534
-- bytes: 7128
+- sha256: 8d21fcb3f3981bc99f9ab0c9e4277993712acb8faf865b9c602ceac2289f9439
+- bytes: 7309
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -4986,6 +5043,12 @@ UIの禁止事項（固定）：
 - gas/ui/uf06_order.html
 - gas/uf06/README_UF06_SELFTEST.md
 - gas/uf06/uf06_selftest.gs
+- gas/uf06/README_ORCHESTRATOR_RO.md
+- gas/uf06/orchestrator_ro.gs
+- mep/ACCEPTANCE_TESTS_SPEC.md
+- mep/MEP_ARTIFACT.md
+- mep/SINGLE_ARTIFACT_FORMAT.md
+- tools/acceptance_tests.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
