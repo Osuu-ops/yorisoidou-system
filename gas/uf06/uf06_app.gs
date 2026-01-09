@@ -76,3 +76,19 @@ function UF06_UI_deliver() {
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
+
+/* UF06_UI_TO_QUEUE_BEGIN */
+/**
+ * UI → Queue 連携（Phase-1）
+ * - UI は normalize ではなく submitToQueue を呼ぶ（受付キューへ登録）。
+ * - 確定（Parts_Master等への反映）は Orchestrator が実行する。
+ */
+function UF06_ORDER_submitToQueue(payload) {
+  var normalized = UF06_ORDER_normalize(payload);
+  return UF06_QUEUE_submit_ORDER(normalized);
+}
+function UF06_DELIVER_submitToQueue(payload) {
+  var normalized = UF06_DELIVER_normalize(payload);
+  return UF06_QUEUE_submit_DELIVER(normalized);
+}
+/* UF06_UI_TO_QUEUE_END */

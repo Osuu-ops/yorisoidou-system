@@ -77,7 +77,7 @@
         google.script.run
           .withSuccessHandler(function(res){ document.getElementById('out').textContent = JSON.stringify(res, null, 2); })
           .withFailureHandler(function(err){ document.getElementById('out').textContent = String(err); })
-          .UF06_ORDER_normalize(payload());
+          .UF06_ORDER_submitToQueue(payload());
       }
     </script>
   </body>
