@@ -1,4 +1,4 @@
-BUNDLE_VERSION: v0.0.0+20260110_022253+main_a14d6e4
+BUNDLE_VERSION: v0.0.0+20260110_030257+main_31f4b1a
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
