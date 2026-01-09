@@ -1,7 +1,5 @@
 BUNDLE_VERSION: v0.0.0+20260110_022253+main_a14d6e4
-BUNDLE_VERSION: v0.0.0+20260109_043222+main_5ee3d4c
 # MEP_BUNDLE
-BUNDLE_VERSION: v0.0.0+20260109_025708
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
 ## CARD: Response Behavior & Display Rules（応答挙動・表示規約）  [Adopted]
