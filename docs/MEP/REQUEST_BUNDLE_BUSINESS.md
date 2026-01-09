@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 361005
+- included_total_bytes: 364831
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2177,8 +2177,8 @@ business_spec で確定した削除/FREEZE/FIXを、台帳（Request/Recovery_Qu
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_master.md
-- sha256: 2377bec39b246062d2d754dd226aa5134cbadd0e3c5dd97cf7898fbd8ea4421a
-- bytes: 12427
+- sha256: e82571e3d83dd44b1725736bd7032b0fe2a6970b58cc962b4f179522ae3b4b20
+- bytes: 13993
 
 ```text
 <!--
@@ -2523,6 +2523,38 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
   - 例：`AA00` / `AB00` / `BA00` … は使わない。
 - 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
 <!-- PARTS_AA_NUMBERING_CONTRACT_END -->
+
+
+<!-- FIXATE_DICTIONARY_TABLES_BEGIN -->
+# FIXATE（設計・追記）: 部品辞書（品番/用途タグ/旧→新/廃盤記号）テーブル案
+
+本ブロックは「設計のみ」。実装（シート名/列名/正規化/運用）は別PRで確定する。
+
+## Dictionary: Parts_Dict（部品辞書）
+- purpose: UF06（発注）での検索・メーカー自動入力・用途タグ検索・旧品番/後継の誘導を支える。
+- authority: 採用（チェック）されたレコードのみを“確定”として扱う。AIは提案のみ。
+
+### Fields（最小）
+- dictId: string（再利用不可）
+- maker: string|null
+- modelNumber: string（現行/入力の主キー候補）
+- tags: list<string>（用途タグ。メーカー同格で検索対象）
+- legacyStatus: enum（CURRENT / OLD / UNKNOWN）
+- legacyModelNumber: string|null（旧品番）
+- replacementModelNumber: string|null（後継候補。確定は採用時のみ）
+- discontinuedMark: enum|null（◇ / ◆ / null）
+- adopted: boolean（採用済みフラグ。true のみ確定扱い）
+- adoptedAt: datetime|null
+- adoptedBy: string|null
+- note: string|null
+
+### Rules（最小）
+- legacyStatus は 3値（現行／旧／不明）。
+- 旧品番は削除しない（旧→新リンクを保持）。
+- discontinuedMark（◇/◆）は採用済みレコードにのみ付与（候補段階は確定扱いしない）。
+- 全品番チェック（廃盤判定）は実装時にAPIで年2回（6月/12月）想定（設計のみ）。
+
+<!-- FIXATE_DICTIONARY_TABLES_END -->
 ```
 
 
@@ -4513,8 +4545,8 @@ UI責務（固定）：
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_spec.md
-- sha256: 54c845bfa9b2735dad7556b63ff57b663c6850c15c408aaf94fe7970af21c1e2
-- bytes: 8941
+- sha256: a8aa7f232a22dd019c07fe73b14db69f3ceb5ba6c3203ac4c0bfe94ef2050fe5
+- bytes: 11201
 
 ```text
 <!--
@@ -4775,6 +4807,50 @@ UIの禁止事項（固定）：
 <!-- EXPENSE_FLOW_PHASE1 -->
 <!-- THEIRS_END -->
 <!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
+
+<!-- FIXATE_UF06_UI_SPEC_BEGIN -->
+# FIXATE（実装契約・追記）: UF06（発注/納品）UI 仕様（発注UI/納品UI）
+
+本ブロックは「追記のみ」。既存本文と矛盾する場合は本文を優先する。
+
+## UF06-ORDER（発注フォーム）— 画面仕様（UI）
+- 画面は「左：顧客」「右：部品」を1行として縦に複数行（まとめて一括登録）。
+- 表罫線（セル罫線）は出さない。左右の境界線を基本とする。
+- 顧客が確定した行は横線で区切る。
+- 行の自動追加（フリーセル感）:
+  - 初期3行
+  - 入力が進み残り空行が3行になったら5行を自動追加（以後繰り返し）
+
+### 顧客検索（左）
+- 対象セクション：①〜⑤（セクションで絞り込み可）。初期は①②③。
+- 全フィールド対象の部分一致検索。
+- スペース区切りはAND検索（全語を含む顧客のみ）。
+- 検索結果表示：顧客名＋市区町村＋顧客ID（最後）。
+
+### 部品入力（右：部品1個単位）
+- 部品ごとに「新規発注／在庫」を選択（初期=新規発注）。
+- 色分けは文字色のみ（背景色は使わない）。
+
+#### 新規発注
+- 品番（modelNumber）の部分一致検索。
+- 表示要素：切替（新規/在庫）＋メーカー＋部品（品番）。
+- メーカーは自動入力（辞書がある場合）。メーカー絞り込みは任意（必須化しない）。
+
+#### 在庫
+- 在庫候補は「AA＋品番」で表示し、選択する。
+
+## UF06-DELIVER（納品フォーム）— 画面仕様（UI）
+- 現在発注している物の一覧を表示する。
+- 品番は発注日時順（古いものが上）。
+- 品番一致したものをチェックし、一括納品できる。
+- 品番の羅列はタスク説明に書く（区切りは「+」、改行なし）。
+
+## タスク名投影（表示契約）
+- 先頭表示：AA最大5個。6個以上は「現在納品数/総発注数（x/y）」へ切替。
+- 自由文スロット（末尾 `_ `）は完全非干渉（自動追記しない、保持のみ）。
+- 欠番/キャンセルはタスク名へ反映しない（台帳のみ）。
+
+<!-- FIXATE_UF06_UI_SPEC_END -->
 ```
 
 
