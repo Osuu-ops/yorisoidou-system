@@ -107,6 +107,9 @@
 - gas/uf06/README_UF06_QUEUE.md
 - gas/uf06/ledger_adapter.gs
 - gas/uf06/uf06_queue.gs
+- gas/uf06/uf06_app.gs
+- gas/ui/uf06_deliver.html
+- gas/ui/uf06_order.html
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
