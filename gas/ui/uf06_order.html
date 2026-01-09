@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UF06 発注</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, sans-serif; margin: 16px; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 12px 0; border-bottom: 1px solid #ddd; }
+      .box { border-left: 2px solid #222; padding-left: 12px; }
+      label { display:block; font-size: 12px; margin-top: 8px; }
+      input, textarea, select { width: 100%; padding: 8px; box-sizing: border-box; }
+      .muted { color:#666; font-size: 12px; }
+      button { padding: 10px 14px; }
+    </style>
+  </head>
+  <body>
+    <h1>UF06 発注（雛形）</h1>
+    <p class="muted">この画面は雛形。実運用の検索UI/行自動追加/辞書サジェストは次のPRで拡張。</p>
+
+    <div class="row">
+      <div class="box">
+        <h3>顧客（左）</h3>
+        <label>顧客名</label><input id="c_name">
+        <label>市区町村</label><input id="c_city">
+        <label>顧客ID（末尾）</label><input id="c_id">
+        <label>セクション（①〜⑤）</label>
+        <select id="c_section">
+          <option value="">未指定</option>
+          <option value="1">①受注</option>
+          <option value="2">②見積→連絡待ち</option>
+          <option value="3">③発注済→納品待ち</option>
+          <option value="4">④納品待→日時調整待ち</option>
+          <option value="5">⑤日時確定→作業待ち</option>
+        </select>
+      </div>
+      <div class="box">
+        <h3>部品（右：1個）</h3>
+        <label>モード</label>
+        <select id="p_mode">
+          <option value="NEW">新規発注</option>
+          <option value="STOCK">在庫</option>
+        </select>
+        <label>メーカー</label><input id="p_maker">
+        <label>品番</label><input id="p_model">
+        <label>数量</label><input id="p_qty" type="number" value="1">
+        <label>AA（在庫時）</label><input id="p_aa">
+        <label>メモ</label><textarea id="p_note"></textarea>
+      </div>
+    </div>
+
+    <button onclick="submitOne()">送信（1行）</button>
+    <pre id="out"></pre>
+
+    <script>
+      function payload() {
+        return {
+          rows: [{
+            customer: {
+              name: document.getElementById('c_name').value,
+              cityTown: document.getElementById('c_city').value,
+              customerId: document.getElementById('c_id').value,
+              section: document.getElementById('c_section').value
+            },
+            parts: [{
+              mode: document.getElementById('p_mode').value,
+              maker: document.getElementById('p_maker').value,
+              modelNumber: document.getElementById('p_model').value,
+              quantity: document.getElementById('p_qty').value,
+              aa: document.getElementById('p_aa').value,
+              note: document.getElementById('p_note').value
+            }]
+          }]
+        };
+      }
+      function submitOne() {
+        google.script.run
+          .withSuccessHandler(function(res){ document.getElementById('out').textContent = JSON.stringify(res, null, 2); })
+          .withFailureHandler(function(err){ document.getElementById('out').textContent = String(err); })
+          .UF06_ORDER_normalize(payload());
+      }
+    </script>
+  </body>
+</html>
