@@ -129,3 +129,144 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 ### 次の遷移
 - ALL_OK → PR → main → Bundled → Completed Gate
 
+<!-- BEGIN: HYBRID_ROADMAP_PHASE1_3 (MEP) -->
+## CARD: HYBRID / ROADMAP（Phase 1〜3）  [Draft]
+
+### ゴール（誤解防止）
+- 「揺れをゼロにする」ではなく **揺れを成果物に通さない**（通過しない/採用されない）ことで、結果として揺れゼロに“見せる”。
+- 「真実」は常に **PR → main → Bundled（BUNDLE_VERSION確認）** の証跡のみ。
+- 検疫優先：**受入テスト実装（入口の機械化）が完成するまで、以後の自動化拡張はしない**。通らない成果物は **破棄（PRを作らない）**。
+
+---
+
+### Phase 1：MEP最上位化（証跡一本化）
+#### 目的
+- 採用・導入・引き継ぎの真実を Git 証跡に一本化し、幽霊（採用したつもり）を発生させない。
+
+#### 完了条件（Definition of Done）
+- 採用対象は「成果物（カード/差分）」のみ。会話ログは採用対象外。
+- 採用＝PR作成、導入＝mainマージ、固定＝Bundled（BUNDLE_VERSION更新）で再現できる。
+- 「入った/入ってない」を PowerShellで機械確認できる（mainの該当文言＋BUNDLE_VERSION）。
+
+---
+
+### Phase 2：ハイブリッド入口固定（思考UI × 決裁/実行系）
+#### 目的
+- UI（思考・候補生成）と、決裁/実行（採用・監査・固定）を分離し、UIの揺れを成果物に入れない。
+
+#### 完了条件（Definition of Done）
+- UI側は「候補生成（カード案）」まで。採用・完了宣言は禁止（会話は監査対象外）。
+- 実行系は「唯一の成果物フォーマット」を1つに固定（未確定なら明記して止める）。
+- 受入テスト（出力ガード）により、形式違反/禁止事項/境界崩壊は採用ルートに入らない（NGは破棄またはDIRTY停止）。
+
+---
+
+### Phase 3：安定化（揺れ結果ゼロ運用）
+#### 目的
+- 揺れは発生しても「採用されない」ことで、第三者でも壊れない運用を実現する。
+
+#### 完了条件（Definition of Done）
+- NG時の挙動が固定：再生成上限 or DIRTY停止、復旧カードで再開できる。
+- 証跡の自動化：PR/commit/BUNDLE_VERSION/監査結果が常に残る（幽霊がほぼ消える）。
+- 次チャット開始時に貼るべき最新束ね（BUNDLE_VERSION付き）が一意に分かる。
+
+<!-- END: HYBRID_ROADMAP_PHASE1_3 (MEP) -->
+
+<!-- BEGIN: HYBRID_UPGRADE_SPEC (MEP) -->
+## CARD: HYBRID / UPGRADE SPEC（MEPハイブリッド化）  [Draft]
+
+### 基本原則（固定）
+- UI（GPT UI / 対話）＝ **思考・発散・候補生成**（確定しない）
+- 実行系（Git/CI/API）＝ **採用・監査・固定**（証跡のみが真実）
+- 揺れは「発生しても良い」が **成果物に通さない**。
+
+### UI側の禁止（汚染防止）
+- 採用・確定・完了の宣言を UI 会話で行わない。
+- 会話ログを採用対象にしない。
+- 監査100点のような“実態以上の保証”を出さない。
+
+### 実行系（採用）側の固定
+- 採用単位は「カード（成果物）」のみ（1枚ずつ）。
+- 採用フロー：Draft → PR → Merged to main → Bundled（BUNDLE_VERSION更新）。
+- 監査対象は main の成果物のみ（会話は対象外）。
+
+<!-- END: HYBRID_UPGRADE_SPEC (MEP) -->
+
+<!-- BEGIN: ACCEPTANCE_TESTS_SPEC (MEP) -->
+## CARD: ACCEPTANCE_TESTS / SPEC（受入テスト仕様）  [Draft]
+
+### 実装場所（固定）
+- 受入テストは **採用ルートの入口**で実行する。
+- 原則：**受入テストが通らない成果物は破棄（PRを作らない）**。
+
+### 実行条件（固定）
+- 「カード（成果物）」を採用ルートへ投入する前に必ず実行。
+- NGの場合：再生成（上限あり）またはDIRTY停止。
+
+### 機械判定（最小）
+- 形式：必須マーカー（BEGIN/END）整合、必須フィールドの存在
+- 禁止：コンフリクト痕跡、片側欠損、曖昧な範囲採用（例：「ここまで全部採用」）
+- 境界：カード定義の重複/多重定義がない
+- 判定は exit code（0=OK / 非0=NG）で返す
+
+<!-- END: ACCEPTANCE_TESTS_SPEC (MEP) -->
+
+<!-- BEGIN: EVIDENCE_WRITEBACK_SPEC (MEP) -->
+## CARD: EVIDENCE / WRITEBACK SPEC（証跡貼り戻し仕様）  [Draft]
+
+### 対象（必須）
+- PR番号
+- merge commit
+- BUNDLE_VERSION
+- 監査結果（OK/NG、検出コード）
+
+### 貼り戻し先（今回の固定）
+- **MEP_BUNDLE.md に一本化**（Runbook側へは貼らない）。
+
+### 更新主体（固定）
+- 手作業ではなく **スクリプト/CI** が自動で貼り戻す。
+- 証跡が欠けるものは「入った扱い禁止」。
+
+<!-- END: EVIDENCE_WRITEBACK_SPEC (MEP) -->
+
+<!-- BEGIN: DIFF_POLICY_BOUNDARY_AUDIT (MEP) -->
+## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
+
+### 基本
+- 大置換・全文書き換えは禁止。更新は **差分（最小パッチ）** を原則とする。
+
+### 境界監査（最小）
+- BEGIN/END は必ず対で存在し、片側欠損は DIRTY（停止）。
+- 同一BEGINの重複定義は禁止（検出したらNG）。
+
+<!-- END: DIFF_POLICY_BOUNDARY_AUDIT (MEP) -->
+
+<!-- BEGIN: DIRTY_RECOVERY_SPEC (MEP) -->
+## CARD: DIRTY / RECOVERY（停止・復旧仕様）  [Draft]
+
+### DIRTY条件（最小）
+- 受入テストNG（形式/禁止事項/境界崩壊）
+- BEGIN/ENDの片側欠損
+- 証跡が残せない（PR/commit/BUNDLE_VERSION不明）
+
+### 取るべきログ（最小）
+- 対象ファイル名
+- 検出コード（NG理由）
+- 直前の差分（最小）
+
+### 復旧カード（フォーマット最小）
+- 現状（何が起きたか）
+- 影響範囲
+- 次にやる手順（1ステップ）
+- 再開条件（何が揃えば進めるか）
+
+<!-- END: DIRTY_RECOVERY_SPEC (MEP) -->
+
+<!-- BEGIN: SINGLE_ARTIFACT_FORMAT (MEP) -->
+## CARD: SINGLE ARTIFACT FORMAT（唯一の成果物フォーマット）  [Draft]
+
+### 未確定（明記）
+- 採用ルートに投入する「唯一の成果物フォーマット」は未確定。
+- 次ゲートで **1つに確定**するまで、採用ルートの自動化は段階停止（拡張を禁止）。
+
+<!-- END: SINGLE_ARTIFACT_FORMAT (MEP) -->
