@@ -1,18 +1,14 @@
-﻿name: MEP Auto PR + Gate (GitHub-only)
+name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:
     inputs:
-      file_path:
-        description: "Modify this file (example: README.md)"
+      artifact_title:
+        description: "Artifact title (short)"
         required: true
         type: string
-      append_text:
-        description: "Append this text as a new line"
-        required: true
-        type: string
-      pr_title:
-        description: "PR title"
+      artifact_markdown:
+        description: "Artifact body (markdown). This is the ONLY input content."
         required: true
         type: string
       pr_body:
@@ -34,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main
+      - name: Checkout main (fixed)
         uses: actions/checkout@v4
         with:
           ref: main
@@ -46,11 +42,11 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git config --global core.quotepath false
 
-      - name: Create branch + commit change
+      - name: Create branch + commit artifact (fixed path)
         id: commit
         env:
-          FILE_PATH: ${{ inputs.file_path }}
-          APPEND_TEXT: ${{ inputs.append_text }}
+          ART_TITLE: ${{ inputs.artifact_title }}
+          ART_BODY: ${{ inputs.artifact_markdown }}
         run: |
           set -euo pipefail
           TS=$(date +%Y%m%d-%H%M%S)
@@ -59,16 +55,24 @@ jobs:
 
           git checkout -b "$BRANCH"
 
-          if [ ! -f "$FILE_PATH" ]; then
-            echo "File not found: $FILE_PATH"
-            exit 1
-          fi
+          mkdir -p .mep/artifacts
+          ART_PATH=".mep/artifacts/artifact_${TS}.md"
 
-          printf "\n%s\n" "$APPEND_TEXT" >> "$FILE_PATH"
+          {
+            echo "# ${ART_TITLE}"
+            echo ""
+            echo "- created_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "- source: workflow_dispatch"
+            echo ""
+            echo "${ART_BODY}"
+            echo ""
+          } > "$ART_PATH"
 
-          git add "$FILE_PATH"
-          git commit -m "${{ inputs.pr_title }}"
+          git add "$ART_PATH"
+          git commit -m "MEP artifact: ${ART_TITLE}"
           git push -u origin "$BRANCH"
+
+          echo "artifact_path=$ART_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Create PR
         id: pr
@@ -77,10 +81,11 @@ jobs:
         run: |
           set -euo pipefail
           BRANCH="${{ steps.commit.outputs.branch }}"
+          TITLE="MEP artifact: ${{ inputs.artifact_title }}"
           PR_URL=$(gh pr create \
             --base main \
             --head "$BRANCH" \
-            --title "${{ inputs.pr_title }}" \
+            --title "$TITLE" \
             --body "${{ inputs.pr_body }}" \
             --repo "${{ github.repository }}")
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
@@ -174,13 +179,26 @@ jobs:
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           RESULT="${{ steps.gate.outputs.result }}"
-          gh pr comment "$PR" --body "### MEP Auto PR + Gate : $RESULT" --repo "${{ github.repository }}"
+          ART="${{ steps.commit.outputs.artifact_path }}"
+          gh pr comment "$PR" --body "$(cat <<'EOF'
+### MEP Auto PR + Gate : RESULT_PLACEHOLDER
+- artifact_path: ARTIFACT_PLACEHOLDER
+- core_audit_rc: CORE_AUDIT_PLACEHOLDER
+- biz_audit_rc: BIZ_AUDIT_PLACEHOLDER
+- core_bin_rc: CORE_BIN_PLACEHOLDER
+- biz_bin_rc: BIZ_BIN_PLACEHOLDER
+EOF
+          )" --repo "${{ github.repository }}" \
+          --body-file <(printf "%s" "")
 
       - name: Merge PR if OK
-        if: ${{ inputs.merge_if_ok == 'true' && steps.gate.outputs.result == 'OK' }}
+        if: steps.gate.outputs.result == 'OK' && inputs.merge_if_ok == 'true'
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           gh pr merge "$PR" --merge --delete-branch --repo "${{ github.repository }}"
+          API="/repos/${{ github.repository }}/pulls/$PR"
+          MERGE_SHA=$(gh api "$API" --jq .merge_commit_sha)
+          gh pr comment "$PR" --body "### MEP Auto Merge: DONE`n- merge_commit: ${MERGE_SHA}" --repo "${{ github.repository }}"
