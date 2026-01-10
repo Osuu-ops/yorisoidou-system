@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 368150
+- included_total_bytes: 368183
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -4925,8 +4925,8 @@ UIの禁止事項（固定）：
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 54d9b406b90c174b7a1b77f60ac5dd417f4805f33876a9f115d55baf1e94838b
-- bytes: 7382
+- sha256: 90d6325a157ef155df056fa2901e1dcdb150f5b1056444cbf3becac38d780ee4
+- bytes: 7415
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5051,6 +5051,7 @@ UIの禁止事項（固定）：
 - tools/acceptance_tests.ps1
 - gas/uf06/README_ORCHESTRATOR_WRITE.md
 - gas/uf06/orchestrator_write.gs
+- tools/mep_writeback_bundle.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
