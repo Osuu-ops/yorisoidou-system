@@ -1,6 +1,6 @@
 name: UX Rooftop Entry (FULLAUTO)
 
-on:
+'on':
   workflow_dispatch:
     inputs:
       artifact_title:
