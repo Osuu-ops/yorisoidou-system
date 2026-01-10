@@ -28,7 +28,6 @@ permissions:
 jobs:
   auto-pr-gate:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout main (fixed)
         uses: actions/checkout@v4
@@ -42,31 +41,54 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git config --global core.quotepath false
 
-      - name: Create branch + commit artifact (fixed path)
-        id: commit
+      - name: Preflight (minimal acceptance)
+        id: preflight
         env:
           ART_TITLE: ${{ inputs.artifact_title }}
           ART_BODY: ${{ inputs.artifact_markdown }}
+        shell: bash
         run: |
           set -euo pipefail
-          TS=$(date +%Y%m%d-%H%M%S)
-          BRANCH="auto/pr-gate-${TS}"
-          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
-
-          git checkout -b "$BRANCH"
-
-          mkdir -p .mep/artifacts
-          ART_PATH=".mep/artifacts/artifact_${TS}.md"
-
+          mkdir -p .mep/tmp
+          TS="$(date -u +%Y%m%d-%H%M%S)"
+          ART_IN=".mep/tmp/input_artifact_${TS}.md"
           {
             echo "# ${ART_TITLE}"
             echo ""
             echo "- created_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             echo "- source: workflow_dispatch"
             echo ""
-            echo "${ART_BODY}"
+            printf "%s\n" "${ART_BODY}"
             echo ""
-          } > "$ART_PATH"
+          } > "$ART_IN"
+
+          if grep -nE '^(<{7}|={7}|>{7})' "$ART_IN" >/dev/null 2>&1; then
+            echo "NG: conflict markers detected" >&2
+            exit 2
+          fi
+          if grep -nF 'ここまで全部採用' "$ART_IN" >/dev/null 2>&1; then
+            echo "NG: ambiguous bulk-adoption phrase detected" >&2
+            exit 3
+          fi
+
+          echo "ts=$TS" >> "$GITHUB_OUTPUT"
+          echo "artifact_in=$ART_IN" >> "$GITHUB_OUTPUT"
+
+      - name: Create branch + commit artifact (fixed path)
+        id: commit
+        env:
+          ART_TITLE: ${{ inputs.artifact_title }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TS="${{ steps.preflight.outputs.ts }}"
+          BRANCH="auto/pr-gate-${TS}"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+          git checkout -b "$BRANCH"
+          mkdir -p .mep/artifacts
+          ART_PATH=".mep/artifacts/artifact_${TS}.md"
+          cp "${{ steps.preflight.outputs.artifact_in }}" "$ART_PATH"
 
           git add "$ART_PATH"
           git commit -m "MEP artifact: ${ART_TITLE}"
@@ -77,26 +99,22 @@ jobs:
       - name: Create PR
         id: pr
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           BRANCH="${{ steps.commit.outputs.branch }}"
           TITLE="MEP artifact: ${{ inputs.artifact_title }}"
-          PR_URL=$(gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "$TITLE" \
-            --body "${{ inputs.pr_body }}" \
-            --repo "${{ github.repository }}")
+          PR_URL=$(gh pr create --base main --head "$BRANCH" --title "$TITLE" --body "${{ inputs.pr_body }}" --repo "${{ github.repository }}")
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
           PR_NUMBER=$(echo "$PR_URL" | sed -E 's#.*/pull/([0-9]+).*#\1#')
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          echo "Created PR: $PR_URL"
 
       - name: Resolve PR SHAs
         id: shas
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
@@ -107,6 +125,7 @@ jobs:
           echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Checkout PR head (for gate)
+        shell: bash
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
@@ -114,91 +133,52 @@ jobs:
           git checkout --detach "refs/remotes/pull/${PR}/head"
 
       - name: Collect changed files (git diff -z)
+        shell: bash
         run: |
           set -euo pipefail
-          python3 tools/mep_integration_compiler/collect_changed_files.py \
-            --base "${{ steps.shas.outputs.base_sha }}" \
-            --head "${{ steps.shas.outputs.head_sha }}" \
-            --out-dir ".mep/tmp"
+          python3 tools/mep_integration_compiler/collect_changed_files.py --base "${{ steps.shas.outputs.base_sha }}" --head "${{ steps.shas.outputs.head_sha }}" --out-dir ".mep/tmp"
 
-      - name: Run Gate (semantic audits + binary guards)
+      - name: Run Gate (best-effort)
         id: gate
         shell: bash
         run: |
           set +e
-
-          if [ -s ".mep/tmp/core_audit.txt" ]; then
-            python tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log 2>&1
-            CORE_AUDIT_RC=$?
-          else
-            echo "CORE: SKIP (no auditable files)" > core_audit.log
-            CORE_AUDIT_RC=0
-          fi
-
-          if [ -s ".mep/tmp/biz_audit.txt" ]; then
-            python tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log 2>&1
-            BIZ_AUDIT_RC=$?
-          else
-            echo "BUSINESS: SKIP (no auditable files)" > biz_audit.log
-            BIZ_AUDIT_RC=0
-          fi
-
-          if [ -s ".mep/tmp/core_binary.txt" ]; then
-            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/core_binary.txt .mep/allowlists/core.sha256 > core_binary_guard.log 2>&1
-            CORE_BIN_RC=$?
-          else
-            echo "CORE: SKIP (no binary files)" > core_binary_guard.log
-            CORE_BIN_RC=0
-          fi
-
-          if [ -s ".mep/tmp/biz_binary.txt" ]; then
-            python tools/mep_integration_compiler/binary_guard.py .mep/tmp/biz_binary.txt .mep/allowlists/business.sha256 > biz_binary_guard.log 2>&1
-            BIZ_BIN_RC=$?
-          else
-            echo "BUSINESS: SKIP (no binary files)" > biz_binary_guard.log
-            BIZ_BIN_RC=0
-          fi
-
+          if [ -s ".mep/tmp/core_audit.txt" ]; then python3 tools/mep_integration_compiler/semantic_audit_core.py .mep/tmp/core_audit.txt > core_audit.log 2>&1; CORE_AUDIT_RC=$?; else CORE_AUDIT_RC=0; fi
+          if [ -s ".mep/tmp/biz_audit.txt" ]; then python3 tools/mep_integration_compiler/semantic_audit_business.py .mep/tmp/biz_audit.txt > biz_audit.log 2>&1; BIZ_AUDIT_RC=$?; else BIZ_AUDIT_RC=0; fi
+          if [ -s ".mep/tmp/core_binary.txt" ] && [ -f ".mep/allowlists/core.sha256" ]; then python3 tools/mep_integration_compiler/binary_guard.py .mep/tmp/core_binary.txt .mep/allowlists/core.sha256 > core_binary_guard.log 2>&1; CORE_BIN_RC=$?; else CORE_BIN_RC=0; fi
+          if [ -s ".mep/tmp/biz_binary.txt" ] && [ -f ".mep/allowlists/business.sha256" ]; then python3 tools/mep_integration_compiler/binary_guard.py .mep/tmp/biz_binary.txt .mep/allowlists/business.sha256 > biz_binary_guard.log 2>&1; BIZ_BIN_RC=$?; else BIZ_BIN_RC=0; fi
           echo "core_audit_rc=$CORE_AUDIT_RC" >> "$GITHUB_OUTPUT"
           echo "biz_audit_rc=$BIZ_AUDIT_RC" >> "$GITHUB_OUTPUT"
           echo "core_bin_rc=$CORE_BIN_RC" >> "$GITHUB_OUTPUT"
           echo "biz_bin_rc=$BIZ_BIN_RC" >> "$GITHUB_OUTPUT"
-
-          if [ "$CORE_AUDIT_RC" = "0" ] && [ "$BIZ_AUDIT_RC" = "0" ] && [ "$CORE_BIN_RC" = "0" ] && [ "$BIZ_BIN_RC" = "0" ]; then
-            echo "result=OK" >> "$GITHUB_OUTPUT"
-          else
-            echo "result=NG" >> "$GITHUB_OUTPUT"
-          fi
-
+          if [ "$CORE_AUDIT_RC" = "0" ] && [ "$BIZ_AUDIT_RC" = "0" ] && [ "$CORE_BIN_RC" = "0" ] && [ "$BIZ_BIN_RC" = "0" ]; then echo "result=OK" >> "$GITHUB_OUTPUT"; else echo "result=NG" >> "$GITHUB_OUTPUT"; fi
           exit 0
 
       - name: Comment Gate result on PR
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           RESULT="${{ steps.gate.outputs.result }}"
           ART="${{ steps.commit.outputs.artifact_path }}"
-          gh pr comment "$PR" --body "$(cat <<'EOF'
-### MEP Auto PR + Gate : RESULT_PLACEHOLDER
-- artifact_path: ARTIFACT_PLACEHOLDER
-- core_audit_rc: CORE_AUDIT_PLACEHOLDER
-- biz_audit_rc: BIZ_AUDIT_PLACEHOLDER
-- core_bin_rc: CORE_BIN_PLACEHOLDER
-- biz_bin_rc: BIZ_BIN_PLACEHOLDER
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "$(cat <<EOF
+### MEP Auto PR + Gate : ${RESULT}
+- artifact_path: ${ART}
+- core_audit_rc: ${{ steps.gate.outputs.core_audit_rc }}
+- biz_audit_rc: ${{ steps.gate.outputs.biz_audit_rc }}
+- core_bin_rc: ${{ steps.gate.outputs.core_bin_rc }}
+- biz_bin_rc: ${{ steps.gate.outputs.biz_bin_rc }}
 EOF
-          )" --repo "${{ github.repository }}" \
-          --body-file <(printf "%s" "")
+)"
 
       - name: Merge PR if OK
         if: steps.gate.outputs.result == 'OK' && inputs.merge_if_ok == 'true'
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           gh pr merge "$PR" --merge --delete-branch --repo "${{ github.repository }}"
-          API="/repos/${{ github.repository }}/pulls/$PR"
-          MERGE_SHA=$(gh api "$API" --jq .merge_commit_sha)
-          gh pr comment "$PR" --body "### MEP Auto Merge: DONE`n- merge_commit: ${MERGE_SHA}" --repo "${{ github.repository }}"
