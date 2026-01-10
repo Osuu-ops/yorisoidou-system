@@ -2,7 +2,6 @@ name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:
-  workflow_dispatch:
     inputs:
       artifact_title:
         description: "Artifact title (short)"
@@ -63,10 +62,12 @@ jobs:
             echo ""
           } > "$ART_IN"
 
+          # conflict痕跡
           if grep -nE '^(<{7}|={7}|>{7})' "$ART_IN" >/dev/null 2>&1; then
             echo "NG: conflict markers detected" >&2
             exit 2
           fi
+          # 曖昧採用語（最小）
           if grep -nF 'ここまで全部採用' "$ART_IN" >/dev/null 2>&1; then
             echo "NG: ambiguous bulk-adoption phrase detected" >&2
             exit 3
@@ -87,6 +88,7 @@ jobs:
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
           git checkout -b "$BRANCH"
+
           mkdir -p .mep/artifacts
           ART_PATH=".mep/artifacts/artifact_${TS}.md"
           cp "${{ steps.preflight.outputs.artifact_in }}" "$ART_PATH"
