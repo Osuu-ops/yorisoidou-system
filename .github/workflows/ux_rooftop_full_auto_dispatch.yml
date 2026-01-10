@@ -1,0 +1,153 @@
+name: UX Rooftop Full Auto Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_title:
+        description: "Artifact title (short)"
+        required: true
+        type: string
+      artifact_markdown:
+        description: "Artifact body (markdown)"
+        required: true
+        type: string
+      pr_body:
+        description: "PR body"
+        required: true
+        type: string
+      merge_if_ok:
+        description: "Merge automatically if gate OK (true/false)"
+        required: true
+        default: "true"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  full-auto:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (fixed)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git config --global core.quotepath false
+
+      - name: Preflight (minimal contamination checks)
+        id: preflight
+        env:
+          ART_TITLE: ${{ inputs.artifact_title }}
+          ART_BODY:  ${{ inputs.artifact_markdown }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TS="$(date -u +%Y%m%d-%H%M%S)"
+          mkdir -p .mep/tmp
+          IN=".mep/tmp/input_${TS}.md"
+          {
+            echo "# ${ART_TITLE}"
+            echo ""
+            echo "- created_at_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "- source: workflow_dispatch"
+            echo ""
+            printf "%s\n" "${ART_BODY}"
+            echo ""
+          } > "$IN"
+
+          if grep -nE '^(<{7}|={7}|>{7})' "$IN" >/dev/null 2>&1; then
+            echo "NG: conflict markers detected" >&2
+            exit 2
+          fi
+          if grep -nF 'ここまで全部採用' "$IN" >/dev/null 2>&1; then
+            echo "NG: ambiguous bulk-adoption phrase detected" >&2
+            exit 3
+          fi
+
+          echo "ts=$TS" >> "$GITHUB_OUTPUT"
+          echo "in_path=$IN" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR branch + commit artifact
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          TS="${{ steps.preflight.outputs.ts }}"
+          BR="auto/artifact-${TS}"
+          echo "branch=$BR" >> "$GITHUB_OUTPUT"
+
+          git checkout -b "$BR"
+
+          mkdir -p .mep/artifacts
+          ART=".mep/artifacts/artifact_${TS}.md"
+          cp "${{ steps.preflight.outputs.in_path }}" "$ART"
+
+          git add "$ART"
+          git commit -m "MEP artifact: ${{ inputs.artifact_title }}"
+          git push -u origin "$BR"
+
+          echo "artifact_path=$ART" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BR="${{ steps.commit.outputs.branch }}"
+          TITLE="MEP artifact: ${{ inputs.artifact_title }}"
+          PR_URL=$(gh pr create --repo "${{ github.repository }}" --base main --head "$BR" --title "$TITLE" --body "${{ inputs.pr_body }}")
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          PR_NUMBER=$(echo "$PR_URL" | sed -E 's#.*/pull/([0-9]+).*#\1#')
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Gate (minimal scope check)
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          API="/repos/${{ github.repository }}/pulls/${PR}/files?per_page=100"
+          bad=$(gh api "$API" --jq '[.[].filename | select(startswith(".mep/artifacts/") | not)] | length')
+          if [ "$bad" = "0" ]; then
+            echo "result=OK" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=NG" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment result (safe)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          RES="${{ steps.gate.outputs.result }}"
+          ART="${{ steps.commit.outputs.artifact_path }}"
+          cat > /tmp/ux_rooftop_gate_comment.md <<EOF
+### Auto Gate: ${RES}
+- artifact_path: ${ART}
+EOF
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body-file /tmp/ux_rooftop_gate_comment.md
+
+      - name: Merge if OK
+        if: steps.gate.outputs.result == 'OK' && inputs.merge_if_ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.pr_number }}"
+          gh pr merge "$PR" --repo "${{ github.repository }}" --merge --delete-branch
