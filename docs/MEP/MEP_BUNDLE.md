@@ -1,4 +1,4 @@
-BUNDLE_VERSION: v0.0.0+20260110_040155+main_f01f16b
+BUNDLE_VERSION = v0.0.0+20260110_040155+main_f01f16b
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
@@ -211,8 +211,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 <!-- END: ACCEPTANCE_TESTS_SPEC (MEP) -->
 
 <!-- BEGIN: EVIDENCE_WRITEBACK_SPEC (MEP) -->
-## CARD: EVIDENCE / WRITEBACK SPEC[Adopted]（証跡貼り戻し仕様）  [Draft]
-
+## CARD: EVIDENCE / WRITEBACK SPEC[Adopted]（証跡貼り戻し仕様）
 ### 対象（必須）
 - PR番号
 - merge commit
