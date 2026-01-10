@@ -211,7 +211,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 <!-- END: ACCEPTANCE_TESTS_SPEC (MEP) -->
 
 <!-- BEGIN: EVIDENCE_WRITEBACK_SPEC (MEP) -->
-## CARD: EVIDENCE / WRITEBACK SPEC（証跡貼り戻し仕様）  [Draft]
+## CARD: EVIDENCE / WRITEBACK SPEC[Adopted]（証跡貼り戻し仕様）  [Draft]
 
 ### 対象（必須）
 - PR番号
@@ -229,6 +229,13 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 <!-- END: EVIDENCE_WRITEBACK_SPEC (MEP) -->
 
 <!-- BEGIN: DIFF_POLICY_BOUNDARY_AUDIT (MEP) -->
+
+### 機械貼り戻し（実装）
+- tools/mep_writeback_bundle.ps1（update / pr）
+- .github/workflows/mep_writeback_bundle_dispatch.yml（workflow_dispatch）
+
+### 証跡ログ（自動貼り戻し）
+- PR #734 | mergedAt=01/10/2026 05:43:49 | mergeCommit=a66e88532a4198568efcbc847ad12782fabaaa4a | BUNDLE_VERSION=v0.0.0+20260110_040155+main_f01f16b | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/734
 ## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
 
 ### 基本
