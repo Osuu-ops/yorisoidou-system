@@ -121,6 +121,8 @@
 - gas/uf06/README_ORCHESTRATOR_WRITE.md
 - gas/uf06/orchestrator_write.gs
 - tools/mep_writeback_bundle.ps1
+- gas/uf06/README_ORCHESTRATOR_DELIVER_WRITE.md
+- gas/uf06/orchestrator_deliver_write.gs
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
