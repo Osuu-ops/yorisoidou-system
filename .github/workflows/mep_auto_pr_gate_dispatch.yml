@@ -129,7 +129,6 @@ jobs:
           else
             echo "result=NG" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Comment result
         env:
           GH_TOKEN: ${{ github.token }}
@@ -139,8 +138,11 @@ jobs:
           PR="${{ steps.pr.outputs.pr_number }}"
           RES="${{ steps.gate.outputs.result }}"
           ART="${{ steps.commit.outputs.artifact_path }}"
-          gh pr comment "$PR" --repo "${{ github.repository }}" --body "### Auto Gate: ${RES}`n- artifact_path: ${ART}"
-
+          cat > /tmp/mep_gate_comment.md <<EOF
+### Auto Gate: ${RES}
+- artifact_path: ${ART}
+EOF
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body-file /tmp/mep_gate_comment.md
       - name: Merge if OK
         if: steps.gate.outputs.result == 'OK' && inputs.merge_if_ok == 'true'
         env:
