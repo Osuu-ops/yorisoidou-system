@@ -1,0 +1,24 @@
+name: MEP Bundle AutoFix (Allowlist)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "13 */2 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bundle allowlist audit+autofix -> PR
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File tools/mep_bundle_autofix.ps1 -Mode pr -AutoMerge
