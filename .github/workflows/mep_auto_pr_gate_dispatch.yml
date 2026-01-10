@@ -2,6 +2,7 @@ name: MEP Auto PR + Gate (GitHub-only)
 
 on:
   workflow_dispatch:
+  workflow_dispatch:
     inputs:
       artifact_title:
         description: "Artifact title (short)"
