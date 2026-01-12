@@ -1,25 +1,21 @@
 name: UX Rooftop Entry (FULLAUTO)
 
-'on':
+on:
   workflow_dispatch:
     inputs:
       artifact_title:
         description: "Artifact title (short)"
         required: true
-        type: string
       artifact_markdown:
         description: "Artifact body (markdown)"
         required: true
-        type: string
       pr_body:
         description: "PR body"
         required: true
-        type: string
       merge_if_ok:
         description: "Merge automatically if gate OK (true/false)"
         required: true
         default: "true"
-        type: string
 
 permissions:
   contents: write
@@ -43,7 +39,7 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git config --global core.quotepath false
 
-      - name: Preflight (minimal contamination checks)
+      - name: Preflight
         id: preflight
         env:
           ART_TITLE: ${{ inputs.artifact_title }}
@@ -86,7 +82,6 @@ jobs:
           echo "branch=$BR" >> "$GITHUB_OUTPUT"
 
           git checkout -b "$BR"
-
           mkdir -p .mep/artifacts
           ART=".mep/artifacts/artifact_${TS}.md"
           cp "${{ steps.preflight.outputs.in_path }}" "$ART"
@@ -121,13 +116,9 @@ jobs:
           PR="${{ steps.pr.outputs.pr_number }}"
           API="/repos/${{ github.repository }}/pulls/${PR}/files?per_page=100"
           bad=$(gh api "$API" --jq '[.[].filename | select(startswith(".mep/artifacts/") | not)] | length')
-          if [ "$bad" = "0" ]; then
-            echo "result=OK" >> "$GITHUB_OUTPUT"
-          else
-            echo "result=NG" >> "$GITHUB_OUTPUT"
-          fi
+          if [ "$bad" = "0" ]; then echo "result=OK" >> "$GITHUB_OUTPUT"; else echo "result=NG" >> "$GITHUB_OUTPUT"; fi
 
-      - name: Comment result (safe)
+      - name: Comment result
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
