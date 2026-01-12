@@ -124,6 +124,12 @@
 - gas/uf06/README_ORCHESTRATOR_DELIVER_WRITE.md
 - gas/uf06/orchestrator_deliver_write.gs
 - tools/mep_bundle_autofix.ps1
+- businesses/REGISTRY.yml
+- businesses/yorisoidou/GATES.yml
+- businesses/yorisoidou/README.md
+- businesses/yorisoidou/TARGETS.yml
+- businesses/yorisoidou/TEMPLATE.md
+- tools/mep_business_new.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
