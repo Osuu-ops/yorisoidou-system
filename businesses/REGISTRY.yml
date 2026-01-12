@@ -1,0 +1,8 @@
+# Business Registry (append-only)
+# - key: stable biz_key used by Rooftop entry
+# - display_name: human friendly name
+# - root: canonical root (informational)
+businesses:
+  - key: yorisoidou
+    display_name: "よりそい堂"
+    root: "platform/MEP/03_BUSINESS/よりそい堂"
