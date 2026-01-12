@@ -128,9 +128,9 @@ jobs:
           RES="${{ steps.gate.outputs.result }}"
           ART="${{ steps.commit.outputs.artifact_path }}"
           cat > /tmp/ux_rooftop_gate_comment.md <<EOF
-### Auto Gate: ${RES}
-- artifact_path: ${ART}
-EOF
+          ### Auto Gate: ${RES}
+          - artifact_path: ${ART}
+          EOF
           gh pr comment "$PR" --repo "${{ github.repository }}" --body-file /tmp/ux_rooftop_gate_comment.md
 
       - name: Merge if OK
