@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 368303
+- included_total_bytes: 368347
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1327,8 +1327,8 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 ---
 
 ### FILE: docs/MEP/STATE_CURRENT.md
-- sha256: a90ad6b588611095a88569e294c68704ed46730ff177c4cc961fb542d79080fd
-- bytes: 5115
+- sha256: 1e80ff2a3befa617030329e53511f55552d1877838839f31cec03973821cbff6
+- bytes: 5159
 
 ```text
 # STATE_CURRENT (MEP)
@@ -1348,7 +1348,7 @@ if ($ng.Count -ne 0) { $ng | ForEach-Object { "MISSING: $_" }; throw "NO-GO: mis
 
 ## Current objective
 - 2026-01-06: (OPS) clasp fixed-URL redeploy loop established (RUNBOOK CARD-08: GAS Fixed-URL Redeploy (clasp fast loop)): scriptId=1wpUF60VBRASNKuFOx1hLXK2bGQ74qL7YwU4Eq_wnd9eEAApHp9F4okxc deploymentId=AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw exec=https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
-- 2026-01-06: (OPS) B23 adopted: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint: https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
+- 2026-01-06: (OPS) B23: RUNBOOK CARD-07 fixes operational procedure for request.normalize_status_columns (status/requestStatus) using B22 endpoint (evidence: TBD; PR/commit/BUNDLE not recorded here): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (NEXT) B24: TBD (define next theme)
 - 2026-01-06: (GAS) WRITE endpoint is B22 (B21 + tool: request.normalize_status_columns for status/requestStatus normalization): https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
 - 2026-01-06: (GAS) B22 verified: normalize_status_columns exists and runs (dryRun + write), then request.get returns effectiveStatus on https://script.google.com/macros/s/AKfycbxdJqepEVK_q0y3JI_8pdHQJPjDJzzCNNU-jJGy41Vdh-R55gblEcscBxJgKA1ekRdzaw/exec
