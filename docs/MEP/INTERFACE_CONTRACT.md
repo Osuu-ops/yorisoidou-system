@@ -1,4 +1,4 @@
-# INTERFACE_CONTRACT (MEP Dispatch) v1.0
+﻿# INTERFACE_CONTRACT (MEP Dispatch) v1.0
 
 目的：
 - 入口（PowerShell/UI）を差し替えても同じ挙動になるよう、外部入力の契約を固定する。
