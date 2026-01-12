@@ -1,6 +1,6 @@
 name: UX Rooftop Full Auto Dispatch v2
 
-'on':
+on:
   workflow_dispatch:
     inputs:
       artifact_title:
