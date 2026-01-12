@@ -57,3 +57,27 @@
 <!-- ONE_BUSINESS_ONE_REPO_END -->
 
 
+
+## Issue-01: STATE_CURRENT 語彙と証跡 整合ルール
+
+### 目的
+STATE_CURRENT.md における「強い事実表現（verified/fixed/resolved/confirmed/established 等）」が、
+FIXATION_PROTOCOL の「証跡必須（PR→main→BUNDLE_VERSION）」と同居したときに、
+証跡なしの断定が「確定扱い」に見える誤読リスクを除去する。
+
+### ルール
+- R1: STATE_CURRENT の語彙は 3区分（FIXED / OBSERVED / PLAN）で運用する。
+  - FIXED（確定語彙）: 確定 / Merged / Bundled / BUNDLE_VERSION など、FIXATION_PROTOCOL の成立条件を満たす事実にのみ使用可。
+  - OBSERVED（検証語彙）: observed / checked / tested 等、観測・実行結果を表す。確定ではない。
+  - PLAN（計画語彙）: TBD / NEXT 等、未実施・未決を表す。
+- R2: verified / fixed / resolved / confirmed / established は FIXED（確定語彙）として扱う。
+  - これらを STATE_CURRENT に置く場合、同一行または直近行に PR#/commit/BUNDLE_VERSION の証跡を併記すること。
+  - 証跡が無い場合、上記語彙は禁止し、OBSERVED へ置換する（非確定を明示すること）。
+- R3: 「evidence:TBD; PR/commit/BUNDLE not recorded here」近傍（±5行）に R2 語彙を混在させない。
+  - 混在が必要な場合は R2 語彙を OBSERVED へ置換し、「not FIXED（非確定）」を明示する。
+
+### 受入条件（機械的チェック観点）
+- STATE_CURRENT.md 内に verified|fixed|resolved|confirmed|established が存在する場合、
+  同一行または直近行に PR # / commit / BUNDLE_VERSION が存在すること。
+- evidence:TBD; PR/commit/BUNDLE not recorded here の近傍（±5行）に R2 語彙が存在しないこと。
+
