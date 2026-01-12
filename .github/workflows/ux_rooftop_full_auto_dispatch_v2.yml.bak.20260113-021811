@@ -1,4 +1,4 @@
-name: UX Rooftop Entry (FULLAUTO)
+name: UX Rooftop Full Auto Dispatch v2
 
 on:
   workflow_dispatch:
@@ -118,7 +118,7 @@ jobs:
           bad=$(gh api "$API" --jq '[.[].filename | select(startswith(".mep/artifacts/") | not)] | length')
           if [ "$bad" = "0" ]; then echo "result=OK" >> "$GITHUB_OUTPUT"; else echo "result=NG" >> "$GITHUB_OUTPUT"; fi
 
-      - name: Comment result
+      - name: Comment result (safe)
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -128,9 +128,9 @@ jobs:
           RES="${{ steps.gate.outputs.result }}"
           ART="${{ steps.commit.outputs.artifact_path }}"
           cat > /tmp/ux_rooftop_gate_comment.md <<EOF
-          ### Auto Gate: ${RES}
-          - artifact_path: ${ART}
-          EOF
+### Auto Gate: ${RES}
+- artifact_path: ${ART}
+EOF
           gh pr comment "$PR" --repo "${{ github.repository }}" --body-file /tmp/ux_rooftop_gate_comment.md
 
       - name: Merge if OK
