@@ -21,6 +21,11 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 
 本書は UI_PROTOCOL に従属する
 
+（参照の特定）
+- UI_PROTOCOL: platform/MEP/01_CORE/system/protocol/UI_PROTOCOL.md
+- master_spec: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md（3.7.2 PayloadJSON 共通ルール）
+
+
 本書は 業務 UI 専用の派生文書である
 
 本書は MEP 操作 UI（UI_spec_MEP）とは責務を分離する
@@ -65,6 +70,11 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 
 4. 入力項目の意味配置
 ## Request入力の整合チェック（UI制約｜意味変更なし）
+
+- 判定キー：ユーザーが選択する UF（UF07 / UF08）
+  - UF07（価格申請）→ PART_ID 系の制約を適用
+  - UF08（追加報告）→ Order_ID 系の制約を適用
+
 
 本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
 
@@ -169,6 +179,11 @@ UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
 ## Request入力の整合チェック（UI制約｜意味変更なし）
+
+- 判定キー：ユーザーが選択する UF（UF07 / UF08）
+  - UF07（価格申請）→ PART_ID 系の制約を適用
+  - UF08（追加報告）→ Order_ID 系の制約を適用
+
 
 本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
 
