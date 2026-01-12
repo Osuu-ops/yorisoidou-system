@@ -64,12 +64,6 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
 次にユーザーが取るべき行動を示す
 
 4. 入力項目の意味配置
-<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
-<!-- OURS_BEGIN -->
-<!-- OURS_END -->
-
-<!-- THEIRS_BEGIN -->
-
 ## Request入力の整合チェック（UI制約｜意味変更なし）
 
 本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
@@ -83,8 +77,7 @@ UI_PROTOCOL に定義された UI 統治・意味仕様を、
   - targetType = Order_ID
   - orderId は必須
   - **orderId と targetId は同値**（矛盾は送信不可）
-<!-- THEIRS_END -->
-<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
+
 4.1 入力項目の原則
 
 ユーザーが 意味を理解できない専門語を使わない
@@ -175,87 +168,20 @@ UI_PROTOCOL の変更を伴う修正は行わない
 UI 実装は、本書との差分として管理される
 
 以上で、UI_spec_<業務>.md（業務 UI 用テンプレート）の生成を完了します。
-<!-- CONFLICT_RESOLVED_KEEP_BOTH_BEGIN -->
-<!-- OURS_BEGIN -->
-<!-- OURS_END -->
+## Request入力の整合チェック（UI制約｜意味変更なし）
 
-<!-- THEIRS_BEGIN -->
+本UIは、master_spec 3.7.2 の PayloadJSON 共通ルールに従い、入力の矛盾を作らない。
 
-## DOC_FLOWS（参照のみ）
+- targetType / targetId は必須（master_spec 3.7.2）
+- UF07（価格申請）の場合：
+  - targetType = PART_ID
+  - partId は必須
+  - **partId と targetId は同値**（矛盾は送信不可）
+- UF08（追加報告）の場合：
+  - targetType = Order_ID
+  - orderId は必須
+  - **orderId と targetId は同値**（矛盾は送信不可）
 
-本 ui_spec は「表示／導線（ナビゲーション）」のみを扱い、
-見積・請求・領収の **業務上の意味／必須条件／状態遷移** は定義しない。
-
-DOC系の業務定義（唯一の正）は master_spec を参照する：
-- platform/MEP/03_BUSINESS/よりそい堂/master_spec
-  - 10.3 DOC（書類リクエスト）
-  - 10.4 DOC系ステータスと導線（見積／請求／領収｜業務定義）
-
-## ALERT_LABELS（表示／導線のみ）
-
-本節は「管理警告ラベル」を UI 上でどこにどう表示するかの導線を定義する。
-業務上の意味・判定・列挙は master_spec が唯一の正であり、本 ui_spec は再定義しない。
-
-参照（唯一の正）：
-- platform/MEP/03_BUSINESS/よりそい堂/master_spec
-  - 8.4 管理警告（業務要件）
-  - 8.4.1 管理警告ラベル（固定｜監督UIの表示根拠）
-  - 11.1.1 写真不足フラグの根拠
-  - 11.1.2 違和感素材フラグ（signals）
-
-表示位置（推奨・固定）：
-1) 管理タスク（監督UI）
-- タスク名や本文の上部に「警告ラベル」を一覧表示する。
-- 表示は短いラベル（例：PHOTO_INSUFFICIENT / ADDRESS_VARIANCE 等）を基本とし、必要なら日本語補足を併記する。
-- 複数ラベルがある場合は並列表示し、優先順位は UI で強制しない（監督判断）。
-
-2) OV01（閲覧カルテ）
-- 健康スコア付近、または概要セクションに「警告ラベル」を一覧表示する。
-- ラベルクリック（または展開）で、該当する根拠（写真不足／signals種別）への説明表示へ遷移してよい。
-
-表示ルール（固定）：
-- UI はラベルを“確定”しない。業務ロジックが確定したラベルを表示するのみ。
-- 未確定（判定不能）の場合はラベルを出さない。曖昧さは REVIEW 申請導線へ誘導する。
-
-導線（固定）：
-- ALERT_REQUEST_PENDING_* がある場合は、申請一覧（Request）への導線を表示してよい。
-- ALERT_PHOTO_INSUFFICIENT がある場合は、写真セクション（before/after）への導線を表示してよい。
-- ADDRESS_VARIANCE / TIME_ANOMALY / TEXT_ANOMALY / PARTS_INCONSISTENCY がある場合は、
-  “違和感素材” セクション（signals一覧）への導線を表示してよい。
-
-## REQUEST_LIST_FLOW（表示／導線のみ）
-
-本節は「未処理申請（RequestStatus=OPEN）」の一覧へ導く導線を定義する。
-業務上の意味・判定・状態遷移は master_spec が唯一の正であり、本 ui_spec は再定義しない。
-
-参照（唯一の正）：
-- platform/MEP/03_BUSINESS/よりそい堂/master_spec
-  - 3.7 Request（申請台帳）
-  - 3.7.3 RequestStatus（OPEN/RESOLVED/CANCELLED）
-  - 3.7.4 ResolutionMetadata（ResolvedAt等）
-  - 8.4.1 管理警告ラベル（ALERT_REQUEST_PENDING_*）
-  - 9.4 健康スコア（D: RequestStatus=OPEN）
-
-表示・導線（固定）：
-1) 管理タスク（監督UI）
-- ALERT_REQUEST_PENDING_FIX / ALERT_REQUEST_PENDING_REVIEW が存在する場合、
-  「未処理申請（OPEN）」一覧へのリンク（またはボタン）を表示してよい。
-- 一覧は “RequestStatus=OPEN のみ” を表示対象とする（未処理の定義は master_spec に従属）。
-
-2) OV01（閲覧カルテ）
-- 健康スコア付近、または警告ラベル付近に「未処理申請（OPEN）」への導線を表示してよい。
-- クリックで “未処理申請一覧（OPEN）” へ遷移し、該当 Order_ID でフィルタしてよい（表示のみ）。
-
-UIの禁止事項（固定）：
-- UI は RequestStatus を確定しない（OPEN/RESOLVED/CANCELLED の判断は業務ロジック）。
-- UI は “勝手に解決扱い（RESOLVED/CANCELLED）” にしない。
-- 未確定（判定不能）の場合は、一覧導線を出して “監督判断” に寄せる。
-
-<!-- PHASE1_MARKERS (do not change meaning; for Go/No-Go checks only) -->
-<!-- PARTS_FLOW_PHASE1 -->
-<!-- EXPENSE_FLOW_PHASE1 -->
-<!-- THEIRS_END -->
-<!-- CONFLICT_RESOLVED_KEEP_BOTH_END -->
 
 <!-- FIXATE_UF06_UI_SPEC_BEGIN -->
 # FIXATE（実装契約・追記）: UF06（発注/納品）UI 仕様（発注UI/納品UI）
