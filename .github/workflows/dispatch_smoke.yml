@@ -14,7 +14,7 @@ on:
         required: true
       merge_if_ok:
         description: "Merge automatically if gate OK (true/false)"
-        required: true
+        required: false
         default: "true"
 
 permissions:
