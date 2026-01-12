@@ -1,4 +1,4 @@
-﻿# INTERFACE_CONTRACT (MEP Dispatch) v1.0
+# INTERFACE_CONTRACT (MEP Dispatch) v1.0
 
 目的：
 - 入口（PowerShell/UI）を差し替えても同じ挙動になるよう、外部入力の契約を固定する。
@@ -8,6 +8,12 @@ Inputs（固定）：
 - theme: 1テーマ=1PR の識別子（例: health_score）
 - intent: OBSERVE / UPDATE_SPEC / REGENERATE
 - payload: 自由文（追記したい仕様や指示）。大型ファイル貼付は禁止。
+
+### 執行（禁止事項：大型ファイル貼付）
+- 執行主体：入口（PowerShell/UI）実行者（ユーザー）
+- 成立条件：payload に「大型ファイル貼付」を伴う入力が含まれる
+- 判定方法：入口ガード／CIガードで検知し、NG として停止（本文生成・PR作成に進まない）
+- 違反時の扱い：当該入力は不受理（入力を縮小して再投入する）
 
 Outputs（固定）：
 - PR URL（UPDATE_SPEC/REGENERATEの場合）
