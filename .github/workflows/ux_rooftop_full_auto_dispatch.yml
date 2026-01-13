@@ -8,7 +8,7 @@ on:
         required: false
         default: "yorisoidou"
       artifact_title:
-        description: "Artifact title (short)"
+description: "Artifact title (short)"
         required: true
       artifact_markdown:
         description: "Artifact body (markdown)"
