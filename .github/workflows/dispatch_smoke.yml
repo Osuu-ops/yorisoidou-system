@@ -63,7 +63,7 @@ jobs:
           if [ -z "${BODY}" ]; then BODY="Gate X: FULLAUTO PR"; fi
 # Gate X smoke evidence (force diff to allow PR)
 mkdir -p .github
-echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) run_id=${GITHUB_RUN_ID} biz=${BIZ}" >> .github/gate_x_smoke.log
+printf "%s run_id=%s biz=%s\n" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${GITHUB_RUN_ID}" "${BIZ}" >> .github/gate_x_smoke.log
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
