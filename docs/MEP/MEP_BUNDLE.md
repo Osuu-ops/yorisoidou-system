@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260113_034639+main_a6f4c77
+BUNDLE_VERSION=v0.0.0+20260113_225654+main_55f1d3e
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
@@ -275,4 +275,5 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 - 次ゲートで **1つに確定**するまで、採用ルートの自動化は段階停止（拡張を禁止）。
 
 <!-- END: SINGLE_ARTIFACT_FORMAT (MEP) -->
+
 
