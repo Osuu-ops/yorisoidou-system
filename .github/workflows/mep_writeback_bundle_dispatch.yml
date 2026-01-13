@@ -2,12 +2,12 @@ name: MEP Writeback Bundle (Evidence)
 
 on:
   workflow_dispatch:
-
     inputs:
       pr_number:
         description: 'PR number to write back (optional; 0 = auto latest merged PR)'
         required: false
-        default: '0'permissions:
+        default: '0'
+permissions:
   contents: write
   pull-requests: write
 
