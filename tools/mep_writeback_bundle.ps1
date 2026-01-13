@@ -32,7 +32,7 @@ $repo = (Run "gh repo view" { gh repo view --json nameWithOwner -q .nameWithOwne
 if (-not $repo) { Fail "gh repo view failed to resolve nameWithOwner" }
 
 $bundle = ReadUtf8 $BundlePath
-$mx = [regex]::Match($bundle, 'BUNDLE_VERSION:\s*([^\s]+)')
+$mx = [regex]::Match($bundle, 'BUNDLE_VERSION\s*[:=]\s*([^\s]+)')
 if (-not $mx.Success) { Fail "BUNDLE_VERSION not found in MEP_BUNDLE.md" }
 $bv = $mx.Groups[1].Value.Trim()
 
