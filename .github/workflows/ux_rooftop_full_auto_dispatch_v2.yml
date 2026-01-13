@@ -6,8 +6,7 @@ on:
       biz_key:
         description: "Business key (must exist in businesses/REGISTRY.yml). Default=yorisoidou"
         required: false
-        default: "yorisoidou"
-      artifact_title:
+        default: "yorisoidou"      artifact_title:
         description: "Artifact title (short)"
         required: true
       artifact_markdown:
