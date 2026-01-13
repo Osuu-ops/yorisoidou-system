@@ -26,6 +26,6 @@ jobs:
       - name: Writeback evidence -> PR
         shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
