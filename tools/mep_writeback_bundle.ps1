@@ -1,4 +1,5 @@
 param(
+  [int]$PrNumber = 0,
   [ValidateSet("update","pr")]
   [string]$Mode = "update",
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
@@ -35,22 +36,28 @@ $mx = [regex]::Match($bundle, 'BUNDLE_VERSION:\s*([^\s]+)')
 if (-not $mx.Success) { Fail "BUNDLE_VERSION not found in MEP_BUNDLE.md" }
 $bv = $mx.Groups[1].Value.Trim()
 
-# latest merged PR
-$latestJson = (Run "gh pr list merged" {
-  gh pr list --repo $repo --state merged --base main --limit 1 --json number,url,mergedAt,mergeCommit,statusCheckRollup
-}).Trim()
-if (-not $latestJson) { Fail "No merged PR found (gh pr list returned empty)." }
-
-$latest = ($latestJson | ConvertFrom-Json)
-if ($null -eq $latest -or $latest.Count -lt 1) { Fail "No merged PR found (parsed empty)." }
-
-$pr = $latest[0]
+# select PR (explicit if provided; else latest merged PR)
+if ($PrNumber -gt 0) {
+  $prJson = (Run "gh pr view" { gh pr view $PrNumber --repo $repo --json number,url,mergedAt,mergeCommit,statusCheckRollup -q . })
+  if (-not $prJson) { Fail ("PR not found or inaccessible: #{0}" -f $PrNumber) }
+  $pr = ($prJson | ConvertFrom-Json)
+} else {
+  # latest merged PR
+  $latestJson = (Run "gh pr list merged" {
+    gh pr list --repo $repo --state merged --base main --limit 1 --json number,url,mergedAt,mergeCommit,statusCheckRollup
+  }).Trim()
+  if (-not $latestJson) { Fail "No merged PR found (gh pr list returned empty)." }
+  $latest = ($latestJson | ConvertFrom-Json)
+  if ($null -eq $latest -or $latest.Count -lt 1) { Fail "No merged PR found (parsed empty)." }
+  $pr = $latest[0]
+}
 $prNum = [int]$pr.number
 $prUrl = [string]$pr.url
 $mergedAt = [string]$pr.mergedAt
 $mergeCommit = ""
 try { $mergeCommit = [string]$pr.mergeCommit.oid } catch { $mergeCommit = "" }
 
+if (-not $mergeCommit) { Fail "mergeCommit is required (missing). Refuse to write back incomplete evidence." }
 $chk = @()
 try {
   foreach ($c in $pr.statusCheckRollup) {
@@ -106,8 +113,10 @@ $logHeader = "### 証跡ログ（自動貼り戻し）"
 if ($block2 -notlike ("*"+$logHeader+"*")) {
   $block2 = $block2.TrimEnd() + "`n`n" + $logHeader + "`n"
 }
-
-$line = "- PR #$prNum | mergedAt=$mergedAt | mergeCommit=$mergeCommit | BUNDLE_VERSION=$bv | $chkLine | $prUrl"
+$audit = "OK"
+$auditCode = "WB0000"
+if ($chkLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="NG"; $auditCode="WB2001" }
+$line = "- PR #${pr} | mergedAt=${ma} | mergeCommit=${mc} | BUNDLE_VERSION=${bv} | audit=$audit,$auditCode | $chkLine | $prUrl"
 if ($block2 -notlike ("*- PR #$prNum *")) {
   $block2 = $block2.TrimEnd() + "`n" + $line + "`n"
 }

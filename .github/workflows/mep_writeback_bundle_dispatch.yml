@@ -3,7 +3,11 @@ name: MEP Writeback Bundle (Evidence)
 on:
   workflow_dispatch:
 
-permissions:
+    inputs:
+      pr_number:
+        description: 'PR number to write back (optional; 0 = auto latest merged PR)'
+        required: false
+        default: '0'permissions:
   contents: write
   pull-requests: write
 
@@ -19,4 +23,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr
+          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
