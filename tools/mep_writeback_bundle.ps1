@@ -1,4 +1,40 @@
 param(
+Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+function Format-Scalar($v){
+  try {
+    if($null -eq $v){ return "" }
+    if($v -is [string] -or $v -is [int] -or $v -is [long]){ return [string]$v }
+    return [string]$v
+  } catch { return "" }
+}
+function Format-PrNumber($pr){
+  try {
+    if($null -eq $pr){ return "" }
+    if($pr -is [int] -or $pr -is [long] -or $pr -is [string]){ return [string]$pr }
+    if($pr.PSObject.Properties.Match("number").Count -gt 0){ return [string]$pr.number }
+    return [string]$pr
+  } catch { return "" }
+}
+function Format-MergedAt($pr){
+  try {
+    if($null -eq $pr){ return "" }
+    if($pr.PSObject.Properties.Match("mergedAt").Count -gt 0){ return Format-Scalar $pr.mergedAt }
+    return ""
+  } catch { return "" }
+}
+function Format-MergeCommit($pr){
+  try {
+    if($null -eq $pr){ return "" }
+    if($pr.PSObject.Properties.Match("mergeCommit").Count -gt 0){
+      $mc = $pr.mergeCommit
+      if($null -eq $mc){ return "" }
+      if($mc.PSObject.Properties.Match("oid").Count -gt 0){ return Format-Scalar $mc.oid }
+      return Format-Scalar $mc
+    }
+    return ""
+  } catch { return "" }
+}
+param(
   [int]$PrNumber = 0,
   [ValidateSet("update","pr")]
   [string]$Mode = "update",
