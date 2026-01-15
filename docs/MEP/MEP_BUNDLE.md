@@ -278,3 +278,143 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 <!-- END: SINGLE_ARTIFACT_FORMAT (MEP) -->
 
 
+
+<!-- BEGIN: OFFICIAL_DESCRIPTION (MEP) -->
+## CARD: OFFICIAL_DESCRIPTION（MEP公式説明文書）  [Draft]
+# MEP 公式説明文書（Bundled記録ベース／到達点整理版）
+
+## 1. 概要（What is MEP）
+
+**MEP（Meaning Enforcement Platform）**とは、  
+採用・反映・固定といった判断を、会話や記憶ではなく  
+**Git 上の証跡（PR → main → Bundled）に一本化して扱うための運用基盤**である。
+
+Bundled（`MEP_BUNDLE.md`）は、  
+「main に反映された唯一の正」を前提に、  
+次回再開時の再現性を最大化するための **生成物（束ね）** として位置付けられている。
+
+---
+
+## 2. MEP が前提としている原則（Bundled記載ベース）
+
+Bundled 本文から、以下の原則が確認できる。
+
+* 採用・反映の真実は **PR → main → Bundled（BUNDLE_VERSION）** の証跡のみ
+* 会話ログは採用対象・監査対象ではない
+* 更新は手編集ではなく、ゲートを経た反映（PR→main→Bundled）で行う
+* 証跡が欠けるものは「入った扱い禁止」
+
+これらは Bundled 内の複数カード（Hybrid Roadmap / Upgrade Spec / Evidence Writeback Spec）に明記されている。
+
+---
+
+## 3. Bundled で確認できる「到達条件・判定材料」
+
+本章は「MEP が完成したと断定する定義」ではなく、  
+**Bundled 本文から確認できる“到達条件・判断材料”** を整理したものである。
+
+### 3.1 採用・反映に関する到達条件（Bundled記載）
+
+Bundled には、少なくとも以下が明記されている。
+
+* 採用ルートの入口で **受入テスト（ACCEPTANCE_TESTS）** を実行する
+* 受入テストが通らない成果物は **破棄（PRを作らない）**
+* 境界崩壊・形式違反・禁止事項は NG として遮断される
+
+これらは、採用・反映に進むための **判定材料** として Bundled に記載されている。
+
+---
+
+### 3.2 状態表記・証跡に関する判定材料
+
+Bundled では、カード単位で以下の状態表記が確認できる。
+
+* `[Draft]`
+* `[Adopted]`
+
+また、Evidence Writeback Spec では、  
+少なくとも次の **証跡要素が必須** として定義されている。
+
+* PR番号
+* merge commit
+* BUNDLE_VERSION
+* 監査結果（OK/NG、検出コード）
+
+これらにより、  
+**状態や完了可否を判断するための材料が Bundled 上に固定される**  
+という点までは確認できる。
+
+---
+
+### 3.3 停止条件（DIRTY）に関する到達条件
+
+Bundled の RUNBOOK / DIRTY カードには、以下が明記されている。
+
+* 自動で安全に解決できない状態は DIRTY として停止する
+* DIRTY のまま次工程へ進まない
+* 復旧は影響範囲を明示し、証跡を残して行う
+
+これは、進行を許可しない条件として Bundled に記載されている到達点である。
+
+---
+
+## 4. 運用構造に関する Bundled 記載範囲
+
+### 4.1 ゲートを経た反映
+
+Bundled には、更新が
+
+**ゲートを経て PR → main → Bundled に反映される**
+
+という流れで行われることが明記されている。
+
+個々の Gate の一般仕様（目的・入力・Done 条件の体系定義）については、  
+本書では Bundled に明記されている範囲を超えて断定しない。
+
+---
+
+### 4.2 UI と実行系の分離
+
+Bundled（Hybrid Upgrade Spec / Roadmap）には、以下が明記されている。
+
+* UI（対話）は候補生成・思考用であり、確定は行わない
+* 採用・監査・固定は実行系（Git/CI）で行う
+* 揺れは発生しても、成果物としては採用されない
+
+これは Bundled 上で確認できる運用原則である。
+
+---
+
+## 5. Gate 9 完了時点で確認できる事実（Bundled記録ベース）
+
+Bundled の証跡ログには、以下の行が存在する。
+
+* PR #803
+* merge commit
+* BUNDLE_VERSION
+* audit=OK,WB0000（他チェック SUCCESS）
+
+Evidence Writeback Spec で定義された必須要素が記載されているため、  
+**Gate 9（反映実装ゲート）が Bundled 記録ベースで Completed 扱いとなっている**  
+という事実は確認できる。
+
+---
+
+## 6. 本書の位置づけ
+
+本書は、
+
+* MEP が「完成した」と断定する文書ではない
+* 将来像や未確定事項を確定させるものではない
+
+Bundled 本文に基づき、
+
+**現時点で確認できる原則・到達条件・判定材料を、  
+誤読が起きない形で整理・固定するための公式説明文書**
+
+として位置付けられる。
+
+---
+
+以上。
+<!-- END: OFFICIAL_DESCRIPTION (MEP) -->
