@@ -234,7 +234,12 @@ if ($chkLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="NG
   $pr = $prNumScalar
   $ma = $maScalar
   $mc = $mcScalar
-  # END: SCALARIZE_EVIDENCE_FIELDS$line = "- PR #${pr} | mergedAt=${ma} | mergeCommit=${mc} | BUNDLE_VERSION=${bv} | audit=$audit,$auditCode | $chkLine | $prUrl"
+  # BEGIN: EVIDENCE_LINE_SCALAR_V3
+  $prNumScalar = Format-PrNumber $pr
+  $maScalar    = Format-MergedAt $pr
+  $mcScalar    = Format-MergeCommit $pr
+  $line = "- PR #$prNumScalar | mergedAt=$maScalar | mergeCommit=$mcScalar | BUNDLE_VERSION=$bv | audit=$audit,$auditCode | $chkLine | $prUrl"
+  # END: EVIDENCE_LINE_SCALAR_V3
 if ($block2 -notlike ("*- PR #$prNum *")) {
   $block2 = $block2.TrimEnd() + "`n" + $line + "`n"
 }
