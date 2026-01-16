@@ -226,7 +226,15 @@ if ($block2 -notlike ("*"+$logHeader+"*")) {
 $audit = "OK"
 $auditCode = "WB0000"
 if ($chkLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="NG"; $auditCode="WB2001" }
-$line = "- PR #${pr} | mergedAt=${ma} | mergeCommit=${mc} | BUNDLE_VERSION=${bv} | audit=$audit,$auditCode | $chkLine | $prUrl"
+  # BEGIN: SCALARIZE_EVIDENCE_FIELDS
+  # Ensure evidence fields are scalars (avoid Hashtable/PSCustomObject stringification like "PR #@{...}").
+  $prNumScalar = Format-PrNumber $pr
+  $maScalar    = Format-MergedAt $pr
+  $mcScalar    = Format-MergeCommit $pr
+  $pr = $prNumScalar
+  $ma = $maScalar
+  $mc = $mcScalar
+  # END: SCALARIZE_EVIDENCE_FIELDS$line = "- PR #${pr} | mergedAt=${ma} | mergeCommit=${mc} | BUNDLE_VERSION=${bv} | audit=$audit,$auditCode | $chkLine | $prUrl"
 if ($block2 -notlike ("*- PR #$prNum *")) {
   $block2 = $block2.TrimEnd() + "`n" + $line + "`n"
 }
