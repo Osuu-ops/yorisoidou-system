@@ -8,10 +8,14 @@ param(
 # BEGIN: SCRUB_BROKEN_EVIDENCE_LINES
 function Scrub-BrokenEvidenceLines([string]$text){
   if([string]::IsNullOrEmpty($text)){ return $text }
+
+  # BEGIN: SCRUB_BROKEN_EVIDENCE_LINES_STRICT
+  # Remove ANY evidence-log line that contains PowerShell object stringification: "PR #@{...}".
+  # This is intentionally strict to prevent re-accumulation.
   $t = $text
-  $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?\}\s*\|\s*mergedAt=\s*\|\s*mergeCommit=\s*\|.*?$[\r\n]*', '')
   $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?$[\r\n]*', '')
   return $t
+  # END: SCRUB_BROKEN_EVIDENCE_LINES_STRICT
 }
 # END: SCRUB_BROKEN_EVIDENCE_LINES
 
