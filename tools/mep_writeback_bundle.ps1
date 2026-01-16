@@ -5,6 +5,15 @@ param(
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
   [string]$TargetBranchPrefix = "auto/writeback-bundle"
 )
+# BEGIN: SCRUB_BROKEN_EVIDENCE_LINES
+function Scrub-BrokenEvidenceLines([string]$text){
+  if([string]::IsNullOrEmpty($text)){ return $text }
+  $t = $text
+  $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?\}\s*\|\s*mergedAt=\s*\|\s*mergeCommit=\s*\|.*?$[\r\n]*', '')
+  $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?$[\r\n]*', '')
+  return $t
+}
+# END: SCRUB_BROKEN_EVIDENCE_LINES
 
 function Try-GetDictValue($obj,[string]$key){
   try{
@@ -245,6 +254,9 @@ if ($block2 -notlike ("*- PR #$prNum *")) {
 }
 
 $bundle2 = $pre + $block2 + $post
+  if(Get-Variable bundle -Scope Local -ErrorAction SilentlyContinue){ $bundle = Scrub-BrokenEvidenceLines $bundle }
+  elseif(Get-Variable content -Scope Local -ErrorAction SilentlyContinue){ $content = Scrub-BrokenEvidenceLines $content }
+  elseif(Get-Variable dst -Scope Local -ErrorAction SilentlyContinue){ $dst = Scrub-BrokenEvidenceLines $dst }
 if ($bundle2 -ne $bundle) { WriteUtf8 $BundlePath $bundle2 }
 
 if ($Mode -eq "update") {
