@@ -257,6 +257,10 @@ $bundle2 = $pre + $block2 + $post
   if(Get-Variable bundle -Scope Local -ErrorAction SilentlyContinue){ $bundle = Scrub-BrokenEvidenceLines $bundle }
   elseif(Get-Variable content -Scope Local -ErrorAction SilentlyContinue){ $content = Scrub-BrokenEvidenceLines $content }
   elseif(Get-Variable dst -Scope Local -ErrorAction SilentlyContinue){ $dst = Scrub-BrokenEvidenceLines $dst }
+  # BEGIN: SCRUB_BROKEN_EVIDENCE_LINES_V2
+  # Scrub MUST apply to $bundle2 (the value that gets written), not $bundle.
+  $bundle2 = Scrub-BrokenEvidenceLines $bundle2
+  # END: SCRUB_BROKEN_EVIDENCE_LINES_V2
 if ($bundle2 -ne $bundle) { WriteUtf8 $BundlePath $bundle2 }
 
 if ($Mode -eq "update") {
