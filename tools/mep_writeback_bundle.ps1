@@ -254,7 +254,12 @@ if ($Mode -eq "update") {
 
 # Mode=pr: commit + PR (bundle only)
 $porc = (Run "git status porcelain" { git status --porcelain }).Trim()
-if (-not $porc) { Fail "No changes to commit (writeback produced no diff)." }
+if (-not $porc) {
+  # BEGIN: NO_DIFF_IS_OK
+  Write-Host "No changes to commit (writeback produced no diff). Treat as OK (idempotent)."
+  return
+  # END: NO_DIFF_IS_OK
+}
 
 Run "git checkout main" { git checkout main }
 Run "git pull main" { git pull --ff-only origin main }
