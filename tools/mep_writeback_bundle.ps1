@@ -155,6 +155,10 @@ $repo = (Run "gh repo view" { gh repo view --json nameWithOwner -q .nameWithOwne
 if (-not $repo) { Fail "gh repo view failed to resolve nameWithOwner" }
 
 $bundle = ReadUtf8 $BundlePath
+# BEGIN: SCRUB_APPLY_ON_READ
+# Always scrub the loaded bundle to remove any historical corrupted lines before further processing.
+$bundle = Scrub-BrokenEvidenceLines $bundle
+# END: SCRUB_APPLY_ON_READ
 $mx = [regex]::Match($bundle, 'BUNDLE_VERSION\s*[:=]\s*([^\s]+)')
 if (-not $mx.Success) { Fail "BUNDLE_VERSION not found in MEP_BUNDLE.md" }
 $bv = $mx.Groups[1].Value.Trim()
@@ -265,6 +269,9 @@ $bundle2 = $pre + $block2 + $post
   # Scrub MUST apply to $bundle2 (the value that gets written), not $bundle.
   $bundle2 = Scrub-BrokenEvidenceLines $bundle2
   # END: SCRUB_BROKEN_EVIDENCE_LINES_V2
+  # BEGIN: SCRUB_APPLY_ON_BUNDLE2
+  $bundle2 = Scrub-BrokenEvidenceLines $bundle2
+  # END: SCRUB_APPLY_ON_BUNDLE2
 if ($bundle2 -ne $bundle) { WriteUtf8 $BundlePath $bundle2 }
 
 if ($Mode -eq "update") {
