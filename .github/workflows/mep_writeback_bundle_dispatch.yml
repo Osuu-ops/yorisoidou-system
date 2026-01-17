@@ -34,5 +34,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
-          pwsh -NoProfile -File tools/mep_repair_evidence_line.ps1 -PrNumber ${{ inputs.pr_number }}
-
+          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
