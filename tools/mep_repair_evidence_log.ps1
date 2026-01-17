@@ -1,7 +1,7 @@
 param(
   [Parameter(Mandatory=$false)][string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
   [Parameter(Mandatory=$false)][string]$RepoNwo = "",
-  [Parameter(Mandatory=$false)][int]$Limit = 50
+  [Parameter(Mandatory=$false)][int]$Limit = 80
 )
 
 $ErrorActionPreference='Stop'
@@ -24,7 +24,7 @@ $repo=$RepoNwo.Split('/')[1]
 
 $txt = Get-Content -Raw -Encoding UTF8 $BundlePath
 
-# BUNDLE_VERSION for self-consistency (optional replace)
+# BUNDLE_VERSION for consistency (optional replace)
 $bv=""
 $m=[regex]::Match($txt,'(?m)^BUNDLE_VERSION\s*=\s*(.+)\s*$')
 if($m.Success){ $bv=$m.Groups[1].Value.Trim() }
@@ -47,7 +47,7 @@ $after=$txt.Substring($end)
 
 $lines=$ev -split "`r?`n"
 
-# Find offending PR lines (empty mergedAt or empty mergeCommit)
+# Collect PRs that have empty mergedAt or empty mergeCommit
 $targets = New-Object System.Collections.Generic.List[int]
 for($i=0;$i -lt $lines.Count; $i++){
   $ln=$lines[$i]
@@ -69,9 +69,8 @@ if($targets.Count -gt $Limit){
   $targets = $targets.GetRange(0,$Limit)
 }
 
-Write-Host ("Repair targets (PRs with empty mergedAt/mergeCommit): " + ($targets -join ","))
+Write-Host ("Repair targets: " + ($targets -join ","))
 
-# Helper: fetch API truth (merged_at + merge_commit_sha). If not merged, return $null (we will remove lines for that PR).
 function Get-MergeTruth([int]$pr){
   $mergedAtZ = ((& gh api ("repos/{0}/{1}/pulls/{2}" -f $owner,$repo,$pr) --jq '.merged_at' 2>$null) | Out-String).Trim()
   $mergeCommit = ((& gh api ("repos/{0}/{1}/pulls/{2}" -f $owner,$repo,$pr) --jq '.merge_commit_sha' 2>$null) | Out-String).Trim()
@@ -82,7 +81,7 @@ function Get-MergeTruth([int]$pr){
   return @{ mergedAtFmt=$mergedAtFmt; mergeCommit=$mergeCommit }
 }
 
-# Repair or remove offending lines per PR
+# Patch or remove corrupted lines
 for($ti=0;$ti -lt $targets.Count; $ti++){
   $pr=$targets[$ti]
   $truth=Get-MergeTruth $pr
@@ -90,11 +89,9 @@ for($ti=0;$ti -lt $targets.Count; $ti++){
   for($i=0;$i -lt $lines.Count; $i++){
     $ln=$lines[$i]
     if($ln -match ('^\s*[\-\*]\s+PR\s+#' + $pr + '\s+\|')){
-      # Only act on lines that are still empty
       if($ln -match 'mergedAt=\s*\|' -or $ln -match 'mergeCommit=\s*\|'){
         if($null -eq $truth){
-          # Not merged / no truth -> remove corrupted line
-          $lines[$i] = $null
+          $lines[$i]=$null
         } else {
           $new=$ln
           $new=[regex]::Replace($new,'mergedAt=[^|]*\|', ("mergedAt=" + $truth.mergedAtFmt + " |"), 1)
@@ -102,7 +99,7 @@ for($ti=0;$ti -lt $targets.Count; $ti++){
           if($bv){
             $new=[regex]::Replace($new,'BUNDLE_VERSION=[^|]*\|', ("BUNDLE_VERSION=" + $bv + " |"), 1)
           }
-          $lines[$i] = $new
+          $lines[$i]=$new
         }
       }
     }
@@ -110,21 +107,18 @@ for($ti=0;$ti -lt $targets.Count; $ti++){
 }
 
 # Compact removed lines
-$lines2 = @()
-foreach($ln in $lines){
-  if($null -ne $ln){ $lines2 += $ln }
-}
-$ev2 = ($lines2 -join "`n")
+$lines2=@()
+foreach($ln in $lines){ if($null -ne $ln){ $lines2 += $ln } }
+$ev2=($lines2 -join "`n")
 
-# Final guard: no PR#@{, no empty mergedAt, no empty mergeCommit
+# Final guard
 $badPSObj=[regex]::Matches($ev2,'(?m)PR\s+#@\{').Count
 $badEmptyMergedAt=[regex]::Matches($ev2,'(?m)^\s*[\-\*]\s+PR\s+#\d+\s+\|\s+mergedAt=\s*\|').Count
 $badEmptyMergeCommit=[regex]::Matches($ev2,'(?m)^\s*[\-\*]\s+PR\s+#\d+\s+\|\s+mergedAt=.*\|\s+mergeCommit=\s*\|').Count
 if($badPSObj -gt 0 -or $badEmptyMergedAt -gt 0 -or $badEmptyMergeCommit -gt 0){
-  Fail "E_EVID_STILL_DIRTY" ("Evidence Log still DIRTY after full repair. PR#@{=" + $badPSObj + ", emptyMergedAt=" + $badEmptyMergedAt + ", emptyMergeCommit=" + $badEmptyMergeCommit)
+  Fail "E_EVID_STILL_DIRTY" ("Evidence Log still DIRTY after repair. PR#@{=" + $badPSObj + ", emptyMergedAt=" + $badEmptyMergedAt + ", emptyMergeCommit=" + $badEmptyMergeCommit)
 }
 
-$txt2 = $before + $ev2 + $after
+$txt2=$before + $ev2 + $after
 Set-Content -Encoding UTF8 $BundlePath -Value $txt2
-
-Write-Host "Repaired Evidence Log: empty mergedAt/mergeCommit removed/filled."
+Write-Host "Repaired Evidence Log holistically."

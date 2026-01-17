@@ -29,9 +29,10 @@ jobs:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
-      - name: Repair Evidence line (fill mergedAt/mergeCommit)
+      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
+
