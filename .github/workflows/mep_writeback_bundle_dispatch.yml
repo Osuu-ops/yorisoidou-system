@@ -14,7 +14,11 @@ permissions:
 jobs:
   writeback:
     runs-on: ubuntu-latest
-    steps:
+steps:
+      - name: Repair Evidence line (fill mergedAt/mergeCommit)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File tools/mep_repair_evidence_line.ps1 -PrNumber ${{ github.event.inputs.pr_number }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -29,3 +33,4 @@ jobs:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
+
