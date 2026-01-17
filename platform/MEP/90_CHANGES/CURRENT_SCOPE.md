@@ -131,6 +131,7 @@
 - businesses/yorisoidou/TEMPLATE.md
 - tools/mep_business_new.ps1
 - tools/mep_repair_evidence_line.ps1
+- tools/mep_repair_evidence_log.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
