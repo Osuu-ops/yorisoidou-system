@@ -35,4 +35,21 @@ jobs:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
+      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "diff detected; creating repair PR"
+            BR="auto/repair-evidence-log_${{ github.run_id }}_${{ github.run_attempt }}"
+            git checkout -b "$BR"
+            git add docs/MEP/MEP_BUNDLE.md
+            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
+            git push -u origin "$BR"
+            gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "main" --head "$BR" || true
+          else
+            echo "no diff; skip repair PR"
+          fi
 
