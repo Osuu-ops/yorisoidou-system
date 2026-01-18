@@ -48,7 +48,11 @@ jobs:
             git add docs/MEP/MEP_BUNDLE.md
             git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
             git push -u origin "$BR"
-            gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "main" --head "$BR" || true
+            PRURL=$(gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "${{ github.ref_name }}" --head "$BR" || true)
+            if [ -n "${PRURL:-}" ]; then
+              echo "repair PR=$PRURL"
+              gh pr merge --auto --merge "$PRURL" || true
+            fi
           else
             echo "no diff; skip repair PR"
           fi
