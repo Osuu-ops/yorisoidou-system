@@ -1,0 +1,67 @@
+name: Auto-merge repair PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+  checks: read
+
+concurrency:
+  group: auto-merge-repair-prs-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  merge_repair_pr:
+    if: startsWith(github.head_ref, 'auto/repair-evidence-log_')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up GH auth
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          gh auth status
+
+      - name: Wait for PR checks to complete and pass
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.pull_request.number }}"
+          echo "PR=$PR"
+          start="$(date +%s)"
+          while true; do
+            out="$(gh pr checks "$PR" 2>&1 || true)"
+            echo "$out"
+            if echo "$out" | grep -qiE 'no checks'; then
+              echo "No checks detected; wait."
+            fi
+            if echo "$out" | grep -qiE '(fail|failed|cancel|cancelled|timed out|error)'; then
+              echo "Checks failed/cancelled."
+              exit 1
+            fi
+            if ! echo "$out" | grep -qiE '(pending|in progress|queued|running|waiting)'; then
+              if echo "$out" | grep -qiE '(pass|passed|success|successful)'; then
+                echo "Checks passed."
+                break
+              fi
+            fi
+            now="$(date +%s)"
+            if [ $((now-start)) -ge 1200 ]; then
+              echo "Timeout waiting for checks."
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Merge repair PR
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.pull_request.number }}"
+          # Best-effort merge (will fail if not mergeable)
+          gh pr merge "$PR" --merge --delete-branch
