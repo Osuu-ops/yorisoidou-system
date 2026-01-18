@@ -1,0 +1,19 @@
+name: mep_acceptance_tests_pr
+
+on:
+  pull_request:
+    paths:
+      - "docs/MEP/MEP_BUNDLE.md"
+      - "tools/mep_acceptance_tests.ps1"
+      - ".github/workflows/mep_acceptance_tests_pr.yml"
+      - ".github/workflows/mep_acceptance_tests_dispatch.yml"
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run acceptance tests (MEP)
+        shell: pwsh
+        run: |
+          ./tools/mep_acceptance_tests.ps1 -Path "docs/MEP/MEP_BUNDLE.md"
