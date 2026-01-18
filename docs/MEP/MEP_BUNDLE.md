@@ -243,6 +243,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 ### 機械貼り戻し（実装）
 - tools/mep_writeback_bundle.ps1（update / pr）
 - .github/workflows/mep_writeback_bundle_dispatch.yml（workflow_dispatch）
+- .github/workflows/auto_merge_repair_prs.yml（auto/repair-evidence-log_* の自動マージ）
 
 ### 証跡ログ（自動貼り戻し）
 - PR #819 | mergedAt=01/15/2026 23:02:31 | mergeCommit=d781d06e07b13f988244efee666f3456083cb753 | BUNDLE_VERSION=v0.0.0+20260114_005937+main_fa31bda | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/819
@@ -466,6 +467,7 @@ Bundled 本文に基づき、
 
 以上。
 <!-- END: OFFICIAL_DESCRIPTION (MEP) -->
+
 
 
 
