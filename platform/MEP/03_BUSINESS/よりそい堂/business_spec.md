@@ -1637,6 +1637,12 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 重大不整合は Recovery Queue（BLOCKER/OPEN）へ回収（自動で解決しない）。
 
 
+<<<<<<< HEAD
+## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
+<!-- BEGIN: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
+### 目的（固定）
+- Ledger（台帳）を唯一の正として、Todoist（現場）と ClickUp（管理）へ安全に投影し、以後の完了報告・コメント・AI補助・書類・部材運用の母艦とする。
+=======
 
 ## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
 <!-- BEGIN: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
@@ -1644,19 +1650,78 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 ### 目的（固定）
 - Ledger（台帳）を唯一の正として、Todoist（現場）と ClickUp（管理）へ安全に投影し、以後の完了報告・コメント・AI補助・書類・部材運用の母艦とする。
 
+>>>>>>> origin/main
 ### Authority（正の階層｜固定）
 - Ledger（台帳）：唯一の正（確定値の保存先）
 - Orchestrator（業務ロジック）：確定値の決定者（実装方式は問わない）
 - Field UI（Todoist）：素材入力（完了コメント等）の入口（確定しない）
 - Management UI（ClickUp）：監督・参照投影のみ（入力禁止：確定値を作らない）
 - AI補助：抽出・監査・警告候補のみ（判断禁止）
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/main
 ### 双方向の定義（固定）
 - Ledger → UI：参照投影（確定情報の表示）
 - UI → Ledger：素材入力（確定処理の材料）
 禁止：
 - 管理UI入力をLedger確定値として取り込む
 - UIが STATUS / PRICE / ID 等を確定する
+<<<<<<< HEAD
+### 投影（Ledger→Todoist）契約（固定）
+- タスク名：AA群／6個以上は納品x/y／末尾 `_ ` 保持
+- タスク説明：`+` 区切り／[INFO]のみ上書き／`--- USER ---` 以降非干渉
+- コメント：最小ログ（[STATE] / [OP]）
+### 投影（Ledger→ClickUp）契約（固定）
+- 管理向け参照のみ（Order_ID/STATUS/alertLabels/OPEN要点）
+- 入力禁止（Ledger確定値を上書きしない）
+### 冪等（固定）
+- 全イベントは idempotencyKey を持つ（再到達で増殖禁止）
+### 競合・不備（固定）
+- 自動辻褄合わせ禁止／Recovery Queue（OPEN）へ回収
+### 再同期（RESYNC｜固定）
+- Ledger確定状態をUIへ再投影（UI→Ledger上書き禁止）
+### 最小Done（固定）
+- 投影再現／`_ `保持／冪等／OPEN回収／RESYNC
+<!-- END: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
+
+## CARD: WORK_DONE_MOTHERSHIP_CONTRACT（完了報告素材受付→Ledger→投影）  [Draft]
+<!-- BEGIN: WORK_DONE_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+### 目的（固定）
+- WORK_DONE を素材として受領しLedgerへ根拠記録、UIへ参照投影（確定はしない）
+### 入力入口（固定）
+- FieldSource：Todoist を唯一入口
+- workDoneAt / workDoneComment（必須）、添付は任意
+### 冪等（固定）
+- eventType=WORK_DONE, primaryId=Order_ID, eventAt=workDoneAt
+### 回収（固定）
+- 必須不足は BLOCKER → Recovery Queue（OPEN）
+- BLOCKER/WARNING分類は Phase-1 に従属
+<!-- END: WORK_DONE_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+## CARD: PARTS_MOTHERSHIP_CONTRACT（UF06/UF07 → Ledger → 母艦投影）  [Draft]
+<!-- BEGIN: PARTS_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+### 目的（固定）
+- UF06/UF07 をLedger正規化しUIへ参照投影（確定はOrchestrator）
+### 入力入口（固定）
+- UF06_ORDER / UF06_DELIVER / UF07_PRICE
+### Ledger記録（固定）
+- PART_ID/OD_ID/Order_ID/STATUS/DELIVERED_AT/PRICE/BM=0/LOCATION(STOCK必須)
+### 冪等（固定）
+- UF06_ORDER, UF06_DELIVER, UF07_PRICE は idempotencyKey で増殖禁止
+<!-- END: PARTS_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+## CARD: RECEIPT_MOTHERSHIP_CONTRACT（領収書 → Ledger → 母艦投影）  [Draft]
+<!-- BEGIN: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+### 目的（固定）
+- RECEIPT をLedgerで管理しUIへ参照投影（確定はしない）
+### 生成トリガ（固定）
+- 原則：INVOICEがPAID後、例外はdocMemoに理由
+### Ledger記録（固定）
+- docType=RECEIPT / docName / docDesc / docPrice / docMemo / receiptStatus / receivedDate / paymentMethod
+### 冪等（固定）
+- RECEIPT_CREATE / RECEIPT_ISSUE は増殖禁止
+=======
 
 ### 投影（Ledger→Todoist）契約（固定）
 - タスク名：
@@ -1878,6 +1943,7 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - BLOCKER は Recovery Queue（OPEN）へ。
 - Todoist / ClickUp に参照投影される。
 
+>>>>>>> origin/main
 <!-- END: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
 
 <!-- FIXATE_UF06_QUEUE_CONTRACT_END -->
