@@ -4,3 +4,6 @@ dist/
 
 # Allow injected GAS helper
 !gas/clasp_webapp/**
+crash.*.log
+evidence_check.*.log
+run_evidence_check.*.log
