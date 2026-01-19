@@ -1,0 +1,19 @@
+name: mep_acceptance_tests_dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: "Target markdown path"
+        required: true
+        default: "docs/MEP/MEP_BUNDLE.md"
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run acceptance tests (MEP)
+        shell: pwsh
+        run: |
+          ./tools/mep_acceptance_tests.ps1 -Path "${{ github.event.inputs.path }}"
