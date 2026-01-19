@@ -10,3 +10,5 @@
 2. 受入テストを実行する（exit code: 0=OK / 非0=NG）。
 3. OK の場合のみ PR を作成し main にマージする。
 4. Bundled に反映され BUNDLE_VERSION が更新された時点で確定する。
+
+- gh最小手順：PR作成→Checks→merge→Bundled(BUNDLE_VERSION)確認（PowerShellで実行）
