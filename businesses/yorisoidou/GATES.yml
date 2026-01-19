@@ -1,2 +1,19 @@
-# Biz-specific gates (optional; placeholder)
-gates: []
+# Biz-specific gates for biz_key=yorisoidou
+# Minimal gates: ensure scope safety and input shape only
+
+gates:
+  - id: scope_fence
+    description: >
+      Ensure all touched paths are within allowed TARGETS for yorisoidou.
+    require:
+      - targets.allow_only
+      - targets.deny_respected
+
+  - id: template_shape
+    description: >
+      Ensure TEMPLATE.md sections are filled to provide minimal intent clarity.
+    require:
+      - template.purpose.present
+      - template.change_summary.present
+      - template.impact_scope.present
+      - template.done_criteria.present
