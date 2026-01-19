@@ -1636,4 +1636,248 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - REJECTED は「入力不備が確定」した場合のみ（理由の記録必須）。
 - 重大不整合は Recovery Queue（BLOCKER/OPEN）へ回収（自動で解決しない）。
 
+
+
+## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
+<!-- BEGIN: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
+
+### 目的（固定）
+- Ledger（台帳）を唯一の正として、Todoist（現場）と ClickUp（管理）へ安全に投影し、以後の完了報告・コメント・AI補助・書類・部材運用の母艦とする。
+
+### Authority（正の階層｜固定）
+- Ledger（台帳）：唯一の正（確定値の保存先）
+- Orchestrator（業務ロジック）：確定値の決定者（実装方式は問わない）
+- Field UI（Todoist）：素材入力（完了コメント等）の入口（確定しない）
+- Management UI（ClickUp）：監督・参照投影のみ（入力禁止：確定値を作らない）
+- AI補助：抽出・監査・警告候補のみ（判断禁止）
+
+### 双方向の定義（固定）
+- Ledger → UI：参照投影（確定情報の表示）
+- UI → Ledger：素材入力（確定処理の材料）
+禁止：
+- 管理UI入力をLedger確定値として取り込む
+- UIが STATUS / PRICE / ID 等を確定する
+
+### 投影（Ledger→Todoist）契約（固定）
+- タスク名：
+  - 先頭は AA群（重複排除）を基本とする
+  - AAが6個以上は「納品 x/y」へ切替
+  - 末尾 `_ `（アンダースコア＋半角スペース）の自由文スロットは必ず保持（非干渉）
+- タスク説明：
+  - 品番羅列は `+` 区切り、改行なし
+  - [INFO] ブロックのみ上書きし、`--- USER ---` 以降は非干渉
+- コメント：
+  - 状態/操作ログは最小（例：[STATE] VOID/CANCEL/RESTORE、[OP] REOPEN）
+
+### 投影（Ledger→ClickUp）契約（固定）
+- 管理向け参照のみ：
+  - Order_ID / STATUS / alertLabels / OPEN（Request/Recovery Queue）の要点
+- 入力禁止：
+  - ClickUp入力でLedger確定値を上書きしない
+
+### 冪等（Idempotency｜固定）
+- 全イベントは idempotencyKey を持つ（同一キー再到達で増殖禁止）
+- 同一イベント再観測は「同一扱い」で吸収（主要台帳・タスクの重複作成禁止）
+
+### 競合・不備（固定）
+- 自動で辻褄合わせをしない
+- 競合・参照不整合・素材不一致は Recovery Queue（OPEN）へ登録し監督回収へ寄せる
+
+### 再同期（RESYNC｜固定）
+- 定義：Ledgerの確定状態を UI へ再投影して整合回復すること
+- 禁止：UI側の値でLedger確定値を上書きする用途に使わない
+
+### 最小Done（監査観点｜固定）
+- Ledger→Todoist/ClickUp 投影が再現可能（同一Ledger状態で同一表示へ収束）
+- `_ ` 自由文スロット保持／[INFO]上書き非干渉が守られる
+- 冪等：同一イベント再送で台帳・タスクが増殖しない
+- NG/競合は Recovery Queue（OPEN）へ落ち、勝手にRESOLVEDにしない
+- RESYNCで整合回復できる
+
+<!-- END: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
+
+
+## CARD: WORK_DONE_MOTHERSHIP_CONTRACT（完了報告素材受付→Ledger→投影）  [Draft]
+<!-- BEGIN: WORK_DONE_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+### 目的（固定）
+- 現場完了（WORK_DONE）を「素材」として受け取り、Ledgerへ根拠記録し、Todoist/ClickUpへ参照投影する。
+- 確定（STATUS/PRICE/ID/台帳確定処理）は Orchestrator の責務に委譲し、UIは確定しない。
+
+### 入力入口（固定）
+- FieldSource（完了報告の唯一入口）：Todoist（現場）を唯一の正とする（併用で確定しない）。
+- 受ける素材（最小）：
+  - workDoneAt（完了日時）
+  - workDoneComment（完了コメント全文）
+  - photosBefore / photosAfter / photosParts / photosExtra / videoInspection（任意）
+  - workSummary（任意：判断を置換しない）
+
+### Ledger記録（固定）
+- Ledgerは唯一の正として、以下を保存する（確定値の上書きは禁止）：
+  - Order_ID（対象）
+  - workDoneAt / workDoneComment（根拠）
+  - 添付（任意）と受信メタ（receivedAt/sourceId 等）
+
+### 冪等（固定）
+- eventType=WORK_DONE
+- primaryId=Order_ID
+- eventAt=workDoneAt
+- sourceId（取得できる場合のみ）
+- 同一 idempotencyKey の再到達は「同一イベント再観測」として扱い、台帳/タスクの増殖は禁止（ログ追記は許容）。
+
+### バリデーション → 回収（固定）
+- 必須不足（workDoneAt / workDoneComment 欠落）は BLOCKER 扱いで完了同期を停止し、Recovery Queue（OPEN）へ登録する。
+- 以降の分類は WARNINGS & BLOCKERS（Phase-1）に従属する：
+  - BLOCKER：LOCATION不整合、BPのPRICE未確定（経費確定不可）
+  - WARNING：写真不足、抽出不備（在庫戻し対象がある場合はBLOCKERへ昇格し得る）
+- 自動辻褄合わせは禁止。競合・素材不一致・参照不整合も Recovery Queue（OPEN）へ寄せる。
+
+### 投影更新（固定）
+- Ledger→Todoist：
+  - タスク表示契約（AA群/納品x/y/`_ `自由文保持、[INFO]上書き非干渉）を維持したまま、
+    「完了報告受領（素材）」の参照情報を反映してよい（確定状態は断定しない）。
+- Ledger→ClickUp：
+  - 管理向け参照（Order_ID / STATUS参照 / OPEN回収要点）を更新してよい（入力禁止）。
+
+### ログ（固定）
+- 重要イベント（WORK_DONE受領/再観測/競合/回収登録）は logs/system 相当へ記録する。
+- PIIはログ保存前にマスキングする（Ledger正式列へ複製しない）。
+
+### 最小Done（監査観点｜固定）
+- WORK_DONE素材をLedgerに記録できる（必須2点）。
+- 同一イベント再送で増殖しない（冪等）。
+- BLOCKER/WARNING が Recovery Queue（OPEN）へ登録され、勝手にRESOLVEDにしない。
+- Todoist/ClickUp 投影が「参照更新」として反映される（確定を作らない）。
+
+<!-- END: WORK_DONE_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+
+## CARD: PARTS_MOTHERSHIP_CONTRACT（UF06/UF07 → Ledger → 母艦投影）  [Draft]
+<!-- BEGIN: PARTS_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+### 目的（固定）
+- 部品（PARTS）の発注／納品／価格イベント（UF06/UF07）を Ledger に正規化し、
+  Todoist（現場）と ClickUp（管理）へ **参照投影のみ** を行う。
+- PRICE/STATUS/ID 等の確定は Orchestrator の責務とし、UI は確定しない。
+
+### 入力入口（固定）
+- UF06_ORDER（発注確定）：発注採用の意思のみを受ける。
+- UF06_DELIVER（納品確定）：納品確定と DELIVERED_AT を受ける。
+- UF07_PRICE（価格確定）：BP の PRICE 確定値のみを受ける（推測代入禁止）。
+
+### Ledger記録（固定）
+- Parts_Master（唯一の正）に以下を確定記録する：
+  - PART_ID / OD_ID / Order_ID
+  - partType（BP/BM）
+  - STATUS（ORDERED / DELIVERED / USED / STOCK / STOCK_ORDERED）
+  - DELIVERED_AT（納品時）
+  - PRICE（BPのみ確定、BM=0）
+  - LOCATION（STATUS=STOCK の場合は必須）
+- ID 再発番／再利用は禁止。
+
+### 冪等（固定）
+- UF06_ORDER:
+  - eventType=UF06_ORDER
+  - primaryId=PART_ID
+  - eventAt=確定時刻
+- UF06_DELIVER:
+  - eventType=UF06_DELIVER
+  - primaryId=PART_ID
+  - eventAt=DELIVERED_AT
+- UF07_PRICE:
+  - eventType=UF07_PRICE
+  - primaryId=PART_ID
+  - eventAt=価格確定時刻
+- 同一 idempotencyKey の再到達は増殖禁止（再観測扱い）。
+
+### バリデーション → 回収（固定）
+- BLOCKER（完了同期停止）：
+  - BP の PRICE 未確定（経費確定不可）
+  - LOCATION 不整合（在庫戻し対象）
+- WARNING（同期継続・管理回収）：
+  - 写真不足
+  - 抽出不備
+- 自動辻褄合わせは禁止。競合は Recovery Queue（OPEN）へ。
+
+### 投影（Ledger→Todoist）契約（固定）
+- タスク名：
+  - 先頭 AA群、6個以上は「納品 x/y」表示へ切替
+  - 末尾 `_ ` 自由文スロット保持
+- タスク説明：
+  - 品番は `+` 区切り、改行なし
+  - [INFO] ブロックのみ上書き、`--- USER ---` 以降非干渉
+- 状態表示：
+  - 発注／納品の進捗を参照表示（確定値を断定しない）
+
+### 投影（Ledger→ClickUp）契約（固定）
+- 管理向け参照のみ：
+  - Order_ID / PART_ID / STATUS / OPEN回収要点
+- 入力禁止（確定値を書き換えない）。
+
+### 最小Done（監査観点｜固定）
+- UF06/UF07 イベントが Ledger に確定記録される。
+- 冪等：再送で台帳・タスクが増殖しない。
+- BLOCKER/WARNING が Recovery Queue（OPEN）へ登録される。
+- Todoist/ClickUp へ参照投影される（確定禁止）。
+
+<!-- END: PARTS_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+
+## CARD: RECEIPT_MOTHERSHIP_CONTRACT（領収書 → Ledger → 母艦投影）  [Draft]
+<!-- BEGIN: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
+### 目的（固定）
+- 領収書（RECEIPT）を Ledger（唯一の正）で管理し、
+  Todoist / ClickUp へは **状態の参照投影のみ** を行う。
+- UI / AI は領収書を確定しない。
+
+### 生成トリガ（固定）
+- 原則：
+  - INVOICE が invoiceStatus=PAID（入金済み）になった後に生成する。
+- 例外：
+  - 現金受領等で手動生成する場合は理由を docMemo に記録する。
+
+### Ledger記録（固定）
+- Ledger に以下を確定記録する：
+  - docType = RECEIPT
+  - docName（宛名）
+  - docDesc（領収内容）
+  - docPrice（金額）
+  - docMemo（備考／例外理由）
+  - receiptStatus（DRAFT / ISSUED）
+  - receivedDate（任意）
+  - paymentMethod（任意：CASH / BANK / OTHER）
+- PRICE 推測代入は禁止（確定値のみ）。
+
+### 冪等（固定）
+- eventType = RECEIPT_CREATE / RECEIPT_ISSUE
+- primaryId = DOC_ID（領収書ID）
+- eventAt = 確定時刻
+- 同一 idempotencyKey の再到達は増殖禁止。
+
+### バリデーション → 回収（固定）
+- 必須不足（docName / docDesc / docPrice 欠落）は BLOCKER。
+- 入金根拠不明・金額不整合は BLOCKER。
+- 自動辻褄合わせは禁止。問題は Recovery Queue（OPEN）へ。
+
+### 投影（Ledger→Todoist）契約（固定）
+- タスク説明またはコメントに：
+  - 「領収書：DRAFT / ISSUED」
+  - 金額（参照）
+- タスク名・自由文スロット（`_ `）は変更しない。
+
+### 投影（Ledger→ClickUp）契約（固定）
+- 管理向け参照のみ：
+  - RECEIPT 状態（DRAFT / ISSUED）
+  - 金額
+- 入力禁止（Ledger確定値を上書きしない）。
+
+### 最小Done（監査観点｜固定）
+- RECEIPT が Ledger に確定記録される。
+- 冪等：再送で重複生成されない。
+- BLOCKER は Recovery Queue（OPEN）へ。
+- Todoist / ClickUp に参照投影される。
+
+<!-- END: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
+
 <!-- FIXATE_UF06_QUEUE_CONTRACT_END -->
