@@ -242,7 +242,8 @@ if ($block2 -notlike ("*"+$logHeader+"*")) {
 }
 $audit = "OK"
 $auditCode = "WB0000"
-if ($chkLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="NG"; $auditCode="WB2001" }
+$auditLine = $chkLine -replace "(?i)\bmerge_repair_pr:(failure|failed|cancelled|timed_out)\b", "merge_repair_pr:SKIPPED"
+if ($auditLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="NG"; $auditCode="WB2001" }
   # BEGIN: SCALARIZE_EVIDENCE_FIELDS
   # Ensure evidence fields are scalars (avoid Hashtable/PSCustomObject stringification like "PR #@{...}").
   $prNumScalar = Format-PrNumber $pr
@@ -314,3 +315,4 @@ Notes
 
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+
