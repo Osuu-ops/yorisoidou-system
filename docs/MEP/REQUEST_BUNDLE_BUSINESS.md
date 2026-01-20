@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 386677
+- included_total_bytes: 393136
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 4c8fcb807c1d4bb91e686a4ec17326ed9a450177f52c5e016d219dfac07d1393
-- bytes: 106826
+- sha256: b4a77ceff2be8ac72d54c6280db20c202f088543448e0920117fa6df470ef873
+- bytes: 113285
 
 ```text
 <!--
@@ -4647,6 +4647,220 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 投影は参照のみで、確定値を作らない。
 
 <!-- END: YORISOIDOU_WORK_DONE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_INVOICE_V1 -->
+## CARD: INVOICE_V1（請求：台帳根拠→請求生成→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは INVOICE（請求）に限定する。
+- RECEIPT / EXPENSE / TAX申告は対象外。
+
+### 入口（固定）
+- INVOICE の唯一入口は Ledger とする。
+- 参照可能根拠：
+  - Order_ID
+  - WORK_DONE（確定済み根拠）
+- UI/AI からの直接起票は禁止。
+
+### Ledger 根拠（固定）
+- Ledger が唯一の正（Authority）。
+- 以下を必ず保持：
+  - Invoice_ID
+  - Order_ID
+  - issuedAt
+  - amount（確定値のみ）
+  - tax
+  - source（Order_ID / WORK_DONE_ID）
+
+### 冪等（固定）
+- primaryKey = Order_ID
+- secondaryKey = issuedAt
+- 同一キーでの再実行は再観測として吸収。
+- 二重請求は禁止。
+
+### 生成（固定）
+- 請求データは Ledger 根拠のみから生成。
+- PRICE / tax の推測・補完は禁止。
+- 未確定金額が含まれる場合は BLOCKER。
+
+### UI責務（固定）
+- 表示／プレビュー／発行意思受付のみ。
+- 金額・税・番号を確定しない。
+
+### 投影（参照のみ）
+- Ledger → 管理UI：
+  - Invoice_ID / status / issuedAt を参照表示。
+- Ledger → 顧客向け出力：
+  - 請求書データ（PDF等）は後続工程で扱う。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - amount 未確定
+  - WORK_DONE 根拠欠落
+- WARNING：
+  - 補足情報不足（自動補完禁止）
+
+### Done（INVOICE v1）
+- Ledger 根拠のみで請求生成可能。
+- 冪等が成立し、二重請求が起きない。
+- UI/AI が確定値を生成しない。
+
+<!-- END: YORISOIDOU_INVOICE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_RECEIPT_V1 -->
+## CARD: RECEIPT_V1（領収：台帳根拠→領収生成→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは RECEIPT（領収）に限定する。
+- INVOICE（請求）の仕様変更・EXPENSE・確定申告は対象外。
+
+### 入口（固定）
+- RECEIPT の唯一入口は Ledger とする。
+- 参照可能根拠：
+  - Invoice_ID（推奨）
+  - Order_ID
+  - 入金根拠（invoiceStatus=PAID 等、または現金受領の理由）
+- UI/AI からの直接確定は禁止。
+
+### 生成トリガ（固定）
+- 原則：INVOICE が入金済み（例：invoiceStatus=PAID）の根拠がある場合に生成する。
+- 例外：現金受領等で手動生成する場合は理由を memo/docMemo に根拠として記録する。
+
+### Ledger 根拠（固定）
+- Ledger が唯一の正（Authority）。
+- 以下を必ず保持：
+  - Receipt_ID
+  - Invoice_ID（任意だが推奨）
+  - Order_ID
+  - receivedAt（受領日/入金日）
+  - amount（確定値のみ）
+  - paymentMethod（CASH/BANK/OTHER）
+  - status（DRAFT/ISSUED）
+  - memo（例外理由/補足）
+- 金額の推測・補完は禁止。
+
+### 冪等（固定）
+- primaryKey = Receipt_ID
+- 同一 Receipt_ID の再実行は再観測として吸収。
+- 二重発行は禁止。
+
+### 生成（固定）
+- 領収データは Ledger 根拠のみから生成する。
+- amount 未確定は BLOCKER。
+
+### UI責務（固定）
+- 表示／プレビュー／発行意思受付のみ。
+- 金額・支払方法・受領日・ID を UI/AI が確定しない。
+
+### 投影（参照のみ）
+- Ledger → 管理UI：
+  - Receipt_ID / status / receivedAt / amount を参照表示。
+- Ledger → 顧客向け出力：
+  - 領収書データ（PDF等）は後続工程で扱う。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - amount 未確定
+  - 入金根拠欠落（原則トリガ不成立）
+- WARNING：
+  - 補足情報不足（自動補完禁止）
+
+### Done（RECEIPT v1）
+- Ledger 根拠のみで領収生成可能。
+- 冪等が成立し、二重領収が起きない。
+- UI/AI が確定値を生成しない。
+
+<!-- END: YORISOIDOU_RECEIPT_V1 -->
+
+<!-- BEGIN: YORISOIDOU_TAX_REPORT_V1 -->
+## CARD: TAX_REPORT_V1（確定申告：台帳/ログ集計→申告用出力） [Draft]
+
+### Scope（固定）
+- 本カードは 確定申告（集計・申告用出力）に限定する。
+- INVOICE / RECEIPT / EXPENSE の生成仕様は対象外（参照のみ）。
+- 税理士判断・最終申告書提出は本カードの外。
+
+### 目的（固定）
+- Ledger と logs/system を唯一の根拠として、
+  年次・月次の申告用集計データを再現可能に出力する。
+
+### 入口（固定）
+- TAX_REPORT の唯一入口は Ledger + logs/system。
+- UI/AI からの直接入力は禁止。
+
+### 参照根拠（固定）
+- Ledger：
+  - INVOICE（請求）
+  - RECEIPT（入金）
+  - EXPENSE（経費）
+- logs/system：
+  - eventType
+  - occurredAt
+  - Order_ID / PART_ID（存在する場合）
+  - severity
+  - idempotencyKey
+  - memo（PII除外済み）
+
+### ログ保存ルール（固定）
+- logs/system は以下で保存：
+  - 実体：Google Drive（JSON）
+  - 索引：Google Sheets（Index）
+- Index 最小列：
+  - date
+  - eventType
+  - Order_ID
+  - PART_ID
+  - severity
+  - idempotencyKey
+  - driveFileId（またはURL）
+  - memo
+
+### PII ルール（固定）
+- logs/system には以下を保存しない：
+  - 氏名
+  - 電話番号
+  - 住所
+  - メールアドレス
+- これらは Ledger 側の参照IDでのみ追跡する。
+
+### 集計ルール（固定）
+- 集計は「イベント単位」で行う。
+- 欠番・未発生イベントは正常扱い。
+- 金額は Ledger の確定値のみ使用。
+- 推測・補完は禁止。
+
+### 出力（固定）
+- 年次集計：
+  - 売上合計（INVOICE）
+  - 入金合計（RECEIPT）
+  - 経費合計（EXPENSE）
+- 月次内訳（任意出力）
+- 税理士提出用 CSV / JSON を生成可能とする。
+
+### 冪等（固定）
+- primaryKey = 対象年度
+- secondaryKey = 集計実行日時
+- 同一年度の再実行は再観測として吸収。
+- Ledger / logs を書き換えない。
+
+### UI責務（固定）
+- 年度選択／出力トリガのみ。
+- 金額・分類・税区分を UI/AI が決めない。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - Ledger 参照不可
+  - logs/system 欠損
+- WARNING：
+  - 一部月のデータ欠落（集計自体は継続）
+
+### Done（TAX_REPORT v1）
+- Ledger + logs から申告用集計を再現可能。
+- 冪等が成立し、再実行で結果がぶれない。
+- PII が logs/system に残らない。
+- 推測・自動補完が存在しない。
+
+<!-- END: YORISOIDOU_TAX_REPORT_V1 -->
 ```
 
 
