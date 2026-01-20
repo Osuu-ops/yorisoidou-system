@@ -230,7 +230,6 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 ### 証跡ログ破損の検知（必須）
 - 証跡ログ（自動貼り戻し）に以下の破損パターンを検出した場合、**DIRTY（停止）**とする（入った扱い禁止）。
-  - `PR #@{` を含む行（PowerShellオブジェクト文字列化）
   - `mergedAt=` が空
   - `mergeCommit=` が空
 - 復旧は「壊れ行の除去」＋「正規行（PR番号／mergedAt／mergeCommit／BUNDLE_VERSION／audit）を1本だけ残す」。
@@ -592,4 +591,6 @@ Bundled 本文に基づき、
   - CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
 
 <!-- END: BUNDLE_EVIDENCE_APPEND -->
+
+
 
