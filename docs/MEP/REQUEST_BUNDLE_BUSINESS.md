@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 379626
+- included_total_bytes: 377682
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: bd1753cc49f8a6d5b3d85a9e21aeaf27b06ff3abdb7368fdcc99cba9a62bbfc3
-- bytes: 102159
+- sha256: c8faae66a83f9173997f392d7225a596b2c643b14976df0d8b65284ce5dab52d
+- bytes: 100179
 
 ```text
 <!--
@@ -4212,45 +4212,6 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 =======
 
 ## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
-<!-- BEGIN: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
-
-### 目的（固定）
-- Ledger（台帳）を唯一の正として、Todoist（現場）と ClickUp（管理）へ安全に投影し、以後の完了報告・コメント・AI補助・書類・部材運用の母艦とする。
-
->>>>>>> origin/main
-### Authority（正の階層｜固定）
-- Ledger（台帳）：唯一の正（確定値の保存先）
-- Orchestrator（業務ロジック）：確定値の決定者（実装方式は問わない）
-- Field UI（Todoist）：素材入力（完了コメント等）の入口（確定しない）
-- Management UI（ClickUp）：監督・参照投影のみ（入力禁止：確定値を作らない）
-- AI補助：抽出・監査・警告候補のみ（判断禁止）
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
-### 双方向の定義（固定）
-- Ledger → UI：参照投影（確定情報の表示）
-- UI → Ledger：素材入力（確定処理の材料）
-禁止：
-- 管理UI入力をLedger確定値として取り込む
-- UIが STATUS / PRICE / ID 等を確定する
-<<<<<<< HEAD
-### 投影（Ledger→Todoist）契約（固定）
-- タスク名：AA群／6個以上は納品x/y／末尾 `_ ` 保持
-- タスク説明：`+` 区切り／[INFO]のみ上書き／`--- USER ---` 以降非干渉
-- コメント：最小ログ（[STATE] / [OP]）
-### 投影（Ledger→ClickUp）契約（固定）
-- 管理向け参照のみ（Order_ID/STATUS/alertLabels/OPEN要点）
-- 入力禁止（Ledger確定値を上書きしない）
-### 冪等（固定）
-- 全イベントは idempotencyKey を持つ（再到達で増殖禁止）
-### 競合・不備（固定）
-- 自動辻褄合わせ禁止／Recovery Queue（OPEN）へ回収
-### 再同期（RESYNC｜固定）
-- Ledger確定状態をUIへ再投影（UI→Ledger上書き禁止）
-### 最小Done（固定）
-- 投影再現／`_ `保持／冪等／OPEN回収／RESYNC
-<!-- END: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
 
 ## CARD: WORK_DONE_MOTHERSHIP_CONTRACT（完了報告素材受付→Ledger→投影）  [Draft]
 <!-- BEGIN: WORK_DONE_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
@@ -5176,8 +5137,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 8102eeb01242fcce68e3fd6fefbcdbf59f1a7d93a2cb5f2cc248f2eaace8bbf5
-- bytes: 7836
+- sha256: 8265bb93fe3ee28c5faa02d357e8f4a11a04aa479fa7eab8321547a2aec1258d
+- bytes: 7872
 
 ```text
 ﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5315,6 +5276,7 @@ UI 実装は、本書との差分として管理される
 - tools/mep_repair_evidence_line.ps1
 - tools/mep_repair_evidence_log.ps1
 - tools/mep_acceptance_tests.ps1
+- tools/mep_bump_bundle_version.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
