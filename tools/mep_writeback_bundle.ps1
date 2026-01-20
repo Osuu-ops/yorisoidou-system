@@ -256,10 +256,9 @@ if ($auditLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="
   $ma = $maScalar
   $mc = $mcScalar
   # BEGIN: EVIDENCE_LINE_SCALAR_V3
-$prObj       = $pr
-$prNumScalar = Format-PrNumber    $prObj
-$maScalar    = Format-MergedAt    $prObj
-$mcScalar    = Format-MergeCommit $prObj
+$prNumScalar = [string]$prNum
+$maScalar    = [string]$mergedAt
+$mcScalar    = [string]$mergeCommit
 
 if (-not $maScalar) { Fail "mergedAt is required (missing). Refuse to write back incomplete evidence." }
 if (-not $mcScalar) { Fail "mergeCommit is required (missing). Refuse to write back incomplete evidence." }
@@ -323,5 +322,6 @@ Notes
 
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+
 
 
