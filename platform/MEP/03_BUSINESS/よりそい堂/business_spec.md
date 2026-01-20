@@ -1961,3 +1961,67 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - orderStatus 等の確定状態は UI/AI では決定しない。
 
 <!-- END: YORISOIDOU_ORDER_INTAKE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_UF06_V1 -->
+## CARD: UF06_V1（発注/納品：入力→確定→台帳反映） [Draft]
+
+### Scope（固定）
+- 本カードは UF06（発注/納品）に限定する。
+- ORDER / WORK_DONE / INVOICE / RECEIPT / EXPENSE は対象外。
+
+### 入口（固定）
+- UF06 は 2 イベント：
+  - UF06_ORDER（発注）
+  - UF06_DELIVER（納品）
+- UI/コメント/フォームは素材入力のみ。確定は Orchestrator。
+
+### UF06_QUEUE（固定）
+- 直接 Parts_Master を更新しない。
+- 1行=1イベント。
+- Columns：
+  - receivedAt
+  - kind（UF06_ORDER / UF06_DELIVER）
+  - idempotencyKey
+  - status（OPEN / ACCEPTED / PROCESSED / REJECTED）
+  - payloadJson
+
+### 冪等（固定）
+- 同一 idempotencyKey は再観測として吸収。
+- 行の増殖は禁止。
+
+### UF06_ORDER（発注）
+- 採用行のみ確定。
+- PART_ID / OD_ID / AA / PA/MA 発行。
+- STATUS=ORDERED
+- Order_ID 無しは STOCK_ORDERED
+- BP：PRICE 未確定可
+- BM：PRICE=0 固定
+
+### UF06_DELIVER（納品）
+- STATUS=DELIVERED
+- DELIVERED_AT 記録
+- BP：PRICE 未確定は BLOCKER
+- LOCATION 整合必須（在庫戻し対象）
+
+### UI責務（固定）
+- 入力補助／確定意思受付／表示のみ。
+- STATUS / PRICE / ID を確定しない。
+
+### 表示契約
+- AA 最大5個、超過は 納品 x/y。
+- 末尾 _  自由文スロット非干渉。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - BP PRICE 未確定
+  - LOCATION 不整合
+- WARNING：
+  - 写真不足
+  - 補足情報不足
+
+### Done
+- 冪等処理成立
+- ID再発番なし
+- 推測代入なし
+
+<!-- END: YORISOIDOU_UF06_V1 -->
