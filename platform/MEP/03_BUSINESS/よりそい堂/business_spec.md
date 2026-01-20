@@ -2080,3 +2080,62 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 投影は参照のみで、確定値を作らない。
 
 <!-- END: YORISOIDOU_WORK_DONE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_INVOICE_V1 -->
+## CARD: INVOICE_V1（請求：台帳根拠→請求生成→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは INVOICE（請求）に限定する。
+- RECEIPT / EXPENSE / TAX申告は対象外。
+
+### 入口（固定）
+- INVOICE の唯一入口は Ledger とする。
+- 参照可能根拠：
+  - Order_ID
+  - WORK_DONE（確定済み根拠）
+- UI/AI からの直接起票は禁止。
+
+### Ledger 根拠（固定）
+- Ledger が唯一の正（Authority）。
+- 以下を必ず保持：
+  - Invoice_ID
+  - Order_ID
+  - issuedAt
+  - amount（確定値のみ）
+  - tax
+  - source（Order_ID / WORK_DONE_ID）
+
+### 冪等（固定）
+- primaryKey = Order_ID
+- secondaryKey = issuedAt
+- 同一キーでの再実行は再観測として吸収。
+- 二重請求は禁止。
+
+### 生成（固定）
+- 請求データは Ledger 根拠のみから生成。
+- PRICE / tax の推測・補完は禁止。
+- 未確定金額が含まれる場合は BLOCKER。
+
+### UI責務（固定）
+- 表示／プレビュー／発行意思受付のみ。
+- 金額・税・番号を確定しない。
+
+### 投影（参照のみ）
+- Ledger → 管理UI：
+  - Invoice_ID / status / issuedAt を参照表示。
+- Ledger → 顧客向け出力：
+  - 請求書データ（PDF等）は後続工程で扱う。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - amount 未確定
+  - WORK_DONE 根拠欠落
+- WARNING：
+  - 補足情報不足（自動補完禁止）
+
+### Done（INVOICE v1）
+- Ledger 根拠のみで請求生成可能。
+- 冪等が成立し、二重請求が起きない。
+- UI/AI が確定値を生成しない。
+
+<!-- END: YORISOIDOU_INVOICE_V1 -->
