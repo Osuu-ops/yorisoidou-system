@@ -44,7 +44,7 @@ jobs:
           if [ -n "$changed" ]; then
             echo "$changed" | while IFS= read -r f; do
               case "$f" in
-                business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*) : ;;
+                business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*|platform/MEP/03_BUSINESS/*) : ;;
                 *) echo "ERROR: out-of-scope change: $f"; exit 1 ;;
               esac
             done
