@@ -1,0 +1,51 @@
+name: MEP Bump BUNDLE_VERSION (Dispatch)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git identity
+        shell: bash
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump BUNDLE_VERSION
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1
+
+      - name: Create PR if diff
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "no diff; skip"
+            exit 0
+          fi
+
+          BR="auto/bump-bundle-version_$(date -u +%Y%m%d_%H%M%S)"
+          git checkout -b "$BR"
+          git add docs/MEP/MEP_BUNDLE.md
+          git commit -m "chore(mep): bump BUNDLE_VERSION"
+          git push -u origin "$BR"
+
+          PRURL=$(gh pr create --title "chore(mep): bump BUNDLE_VERSION" --body "Automated bump of BUNDLE_VERSION in docs/MEP/MEP_BUNDLE.md." --base "main" --head "$BR" || true)
+          if [ -n "${PRURL:-}" ]; then
+            gh pr merge --auto --merge "$PRURL" || true
+          fi
