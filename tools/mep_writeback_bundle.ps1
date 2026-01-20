@@ -14,6 +14,9 @@ function Scrub-BrokenEvidenceLines([string]$text){
   # This is intentionally strict to prevent re-accumulation.
   $t = $text
   $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?$[\r\n]*', '')
+# Remove evidence-log lines with empty mergedAt or mergeCommit
+$t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#\d+.*\|\s*mergedAt=\s*\|\s*mergeCommit=.*?$[\r\n]*', '')
+$t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#\d+.*\|\s*mergedAt=.*\|\s*mergeCommit=\s*\|.*?$[\r\n]*', '')
   return $t
   # END: SCRUB_BROKEN_EVIDENCE_LINES_STRICT
 }
@@ -253,11 +256,15 @@ if ($auditLine -match "(?i)\b(failure|failed|cancelled|timed_out)\b") { $audit="
   $ma = $maScalar
   $mc = $mcScalar
   # BEGIN: EVIDENCE_LINE_SCALAR_V3
-  $prNumScalar = Format-PrNumber $pr
-  $maScalar    = Format-MergedAt $pr
-  $mcScalar    = Format-MergeCommit $pr
-  $line = "- PR #$prNumScalar | mergedAt=$maScalar | mergeCommit=$mcScalar | BUNDLE_VERSION=$bv | audit=$audit,$auditCode | $chkLine | $prUrl"
-  # END: EVIDENCE_LINE_SCALAR_V3
+$prNumScalar = [string]$prNum
+$maScalar    = [string]$mergedAt
+$mcScalar    = [string]$mergeCommit
+
+if (-not $maScalar) { Fail "mergedAt is required (missing). Refuse to write back incomplete evidence." }
+if (-not $mcScalar) { Fail "mergeCommit is required (missing). Refuse to write back incomplete evidence." }
+
+$line = "- PR #$prNumScalar | mergedAt=$maScalar | mergeCommit=$mcScalar | BUNDLE_VERSION=$bv | audit=$audit,$auditCode | $chkLine | $prUrl"
+# END: EVIDENCE_LINE_SCALAR_V3
 if ($block2 -notlike ("*- PR #$prNum *")) {
   $block2 = $block2.TrimEnd() + "`n" + $line + "`n"
 }
@@ -315,4 +322,6 @@ Notes
 
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+
+
 
