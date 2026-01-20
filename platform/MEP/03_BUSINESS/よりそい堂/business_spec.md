@@ -2204,3 +2204,93 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - UI/AI が確定値を生成しない。
 
 <!-- END: YORISOIDOU_RECEIPT_V1 -->
+
+<!-- BEGIN: YORISOIDOU_TAX_REPORT_V1 -->
+## CARD: TAX_REPORT_V1（確定申告：台帳/ログ集計→申告用出力） [Draft]
+
+### Scope（固定）
+- 本カードは 確定申告（集計・申告用出力）に限定する。
+- INVOICE / RECEIPT / EXPENSE の生成仕様は対象外（参照のみ）。
+- 税理士判断・最終申告書提出は本カードの外。
+
+### 目的（固定）
+- Ledger と logs/system を唯一の根拠として、
+  年次・月次の申告用集計データを再現可能に出力する。
+
+### 入口（固定）
+- TAX_REPORT の唯一入口は Ledger + logs/system。
+- UI/AI からの直接入力は禁止。
+
+### 参照根拠（固定）
+- Ledger：
+  - INVOICE（請求）
+  - RECEIPT（入金）
+  - EXPENSE（経費）
+- logs/system：
+  - eventType
+  - occurredAt
+  - Order_ID / PART_ID（存在する場合）
+  - severity
+  - idempotencyKey
+  - memo（PII除外済み）
+
+### ログ保存ルール（固定）
+- logs/system は以下で保存：
+  - 実体：Google Drive（JSON）
+  - 索引：Google Sheets（Index）
+- Index 最小列：
+  - date
+  - eventType
+  - Order_ID
+  - PART_ID
+  - severity
+  - idempotencyKey
+  - driveFileId（またはURL）
+  - memo
+
+### PII ルール（固定）
+- logs/system には以下を保存しない：
+  - 氏名
+  - 電話番号
+  - 住所
+  - メールアドレス
+- これらは Ledger 側の参照IDでのみ追跡する。
+
+### 集計ルール（固定）
+- 集計は「イベント単位」で行う。
+- 欠番・未発生イベントは正常扱い。
+- 金額は Ledger の確定値のみ使用。
+- 推測・補完は禁止。
+
+### 出力（固定）
+- 年次集計：
+  - 売上合計（INVOICE）
+  - 入金合計（RECEIPT）
+  - 経費合計（EXPENSE）
+- 月次内訳（任意出力）
+- 税理士提出用 CSV / JSON を生成可能とする。
+
+### 冪等（固定）
+- primaryKey = 対象年度
+- secondaryKey = 集計実行日時
+- 同一年度の再実行は再観測として吸収。
+- Ledger / logs を書き換えない。
+
+### UI責務（固定）
+- 年度選択／出力トリガのみ。
+- 金額・分類・税区分を UI/AI が決めない。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - Ledger 参照不可
+  - logs/system 欠損
+- WARNING：
+  - 一部月のデータ欠落（集計自体は継続）
+
+### Done（TAX_REPORT v1）
+- Ledger + logs から申告用集計を再現可能。
+- 冪等が成立し、再実行で結果がぶれない。
+- PII が logs/system に残らない。
+- 推測・自動補完が存在しない。
+
+<!-- END: YORISOIDOU_TAX_REPORT_V1 -->
