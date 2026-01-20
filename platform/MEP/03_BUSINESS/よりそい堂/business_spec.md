@@ -2139,3 +2139,68 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - UI/AI が確定値を生成しない。
 
 <!-- END: YORISOIDOU_INVOICE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_RECEIPT_V1 -->
+## CARD: RECEIPT_V1（領収：台帳根拠→領収生成→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは RECEIPT（領収）に限定する。
+- INVOICE（請求）の仕様変更・EXPENSE・確定申告は対象外。
+
+### 入口（固定）
+- RECEIPT の唯一入口は Ledger とする。
+- 参照可能根拠：
+  - Invoice_ID（推奨）
+  - Order_ID
+  - 入金根拠（invoiceStatus=PAID 等、または現金受領の理由）
+- UI/AI からの直接確定は禁止。
+
+### 生成トリガ（固定）
+- 原則：INVOICE が入金済み（例：invoiceStatus=PAID）の根拠がある場合に生成する。
+- 例外：現金受領等で手動生成する場合は理由を memo/docMemo に根拠として記録する。
+
+### Ledger 根拠（固定）
+- Ledger が唯一の正（Authority）。
+- 以下を必ず保持：
+  - Receipt_ID
+  - Invoice_ID（任意だが推奨）
+  - Order_ID
+  - receivedAt（受領日/入金日）
+  - amount（確定値のみ）
+  - paymentMethod（CASH/BANK/OTHER）
+  - status（DRAFT/ISSUED）
+  - memo（例外理由/補足）
+- 金額の推測・補完は禁止。
+
+### 冪等（固定）
+- primaryKey = Receipt_ID
+- 同一 Receipt_ID の再実行は再観測として吸収。
+- 二重発行は禁止。
+
+### 生成（固定）
+- 領収データは Ledger 根拠のみから生成する。
+- amount 未確定は BLOCKER。
+
+### UI責務（固定）
+- 表示／プレビュー／発行意思受付のみ。
+- 金額・支払方法・受領日・ID を UI/AI が確定しない。
+
+### 投影（参照のみ）
+- Ledger → 管理UI：
+  - Receipt_ID / status / receivedAt / amount を参照表示。
+- Ledger → 顧客向け出力：
+  - 領収書データ（PDF等）は後続工程で扱う。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - amount 未確定
+  - 入金根拠欠落（原則トリガ不成立）
+- WARNING：
+  - 補足情報不足（自動補完禁止）
+
+### Done（RECEIPT v1）
+- Ledger 根拠のみで領収生成可能。
+- 冪等が成立し、二重領収が起きない。
+- UI/AI が確定値を生成しない。
+
+<!-- END: YORISOIDOU_RECEIPT_V1 -->
