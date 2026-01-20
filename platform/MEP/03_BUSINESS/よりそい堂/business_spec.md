@@ -2025,3 +2025,58 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 推測代入なし
 
 <!-- END: YORISOIDOU_UF06_V1 -->
+
+<!-- BEGIN: YORISOIDOU_WORK_DONE_V1 -->
+## CARD: WORK_DONE_V1（完了報告：素材受付→Ledger根拠→回収→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは WORK_DONE（完了報告）に限定する。
+- UF06 / INVOICE / RECEIPT / EXPENSE の確定仕様は対象外（参照のみ）。
+
+### 入口（固定）
+- 現場完了（WORK_DONE）の唯一入口は Todoist（現場）とする。
+- 受ける素材（最小）：
+  - workDoneAt（必須）
+  - workDoneComment（必須：全文）
+  - 添付（任意）：photosBefore / photosAfter / photosParts / photosExtra / videoInspection
+  - workSummary（任意：判断を置換しない）
+
+### Ledger 記録（固定）
+- Ledger（台帳）が唯一の正（Authority）。
+- WORK_DONE 受領時に以下を Order へ根拠として記録する：
+  - Order_ID
+  - workDoneAt / workDoneComment（根拠）
+  - receivedAt / sourceId（取得できる場合）
+- UI/AI は STATUS/PRICE/ID 等の確定値を作らない。
+
+### 冪等（固定）
+- eventType = WORK_DONE
+- primaryId = Order_ID
+- eventAt = workDoneAt
+- 同一 idempotencyKey の再到達は「再観測」として吸収し、台帳/タスクを増殖させない。
+
+### 回収（BLOCKER / WARNING：固定）
+- 必須不足：
+  - workDoneAt 欠落 → BLOCKER
+  - workDoneComment 欠落 → BLOCKER
+- Phase-1 分類に従属（本カードで再定義しない）：
+  - BLOCKER：LOCATION 不整合（在庫戻し対象）、BP の PRICE 未確定（経費確定不可）
+  - WARNING：写真不足、抽出不備（在庫戻し対象がある場合は BLOCKER へ昇格し得る）
+- 自動辻褄合わせは禁止。競合・参照不整合・素材不一致は Recovery Queue（OPEN）へ登録する。
+
+### 投影（参照のみ：固定）
+- Ledger → Todoist：
+  - 参照情報として「完了報告受領」を反映してよい（確定を断定しない）。
+  - タスク名（AA群/納品x/y）・末尾 _  自由文スロットは非干渉で保持する。
+  - [INFO] ブロックのみ上書きし、--- USER --- 以降は非干渉。
+- Ledger → ClickUp：
+  - 管理向け参照（Order_ID / STATUS参照 / OPEN回収要点）を更新してよい。
+  - 入力禁止（Ledger確定値を上書きしない）。
+
+### Done（WORK_DONE バンドル v1）
+- 必須2点（workDoneAt/workDoneComment）を根拠として Ledger に記録できる。
+- 冪等：同一イベント再送で増殖しない。
+- BLOCKER/WARNING が Recovery Queue（OPEN）へ落ち、勝手に RESOLVED にしない。
+- 投影は参照のみで、確定値を作らない。
+
+<!-- END: YORISOIDOU_WORK_DONE_V1 -->
