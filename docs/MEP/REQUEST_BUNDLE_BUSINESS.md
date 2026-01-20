@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 377682
+- included_total_bytes: 386677
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: c8faae66a83f9173997f392d7225a596b2c643b14976df0d8b65284ce5dab52d
-- bytes: 100179
+- sha256: 4c8fcb807c1d4bb91e686a4ec17326ed9a450177f52c5e016d219dfac07d1393
+- bytes: 106826
 
 ```text
 <!--
@@ -4475,6 +4475,178 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 <!-- END: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
 
 <!-- FIXATE_UF06_QUEUE_CONTRACT_END -->
+
+<!-- BEGIN: YORISOIDOU_ORDER_INTAKE_V1 --> 
+## CARD: ORDER_INTAKE_V1（受注入口: HTML+コメント / raw解析 / タスク名 / セクション1）  [Draft]
+
+### Scope（固定）
+- 本カードは「受注（ORDER）まで」のみ。WORK/PARTS/INVOICE/RECEIPT/EXPENSE は対象外。
+
+### 入口（固定）
+- 入口は 2 系統を許可する：
+  - HTMLフォーム
+  - コメント入口（Todoist/ClickUp 等のタスクコメント）
+
+### コメント入口（固定）
+- トリガー：新規受注
+- 運用：
+  - 1行目：新規受注
+  - 2行目以降：媒体通知本文を raw として自由貼付（ぶつ切り可）
+  - モード中は素材蓄積のみ
+  - 確定は 実行 のみ（実行 以前に受注カード生成を行わない）
+
+### raw（受注素材）
+- raw は「媒体通知の原文全文」を保持する。
+- raw は解析素材であり、確定値ではない。
+
+### AI解析（素材抽出）
+- AIは raw から以下を抽出候補として生成する（確定はしない）：
+  - 顧客名
+  - 住所
+  - 媒体
+  - 依頼内容（任意）
+  - 電話番号等（取得できる場合）
+
+### 市区町村（cityTown）書き出しルール（固定）
+- 住所文字列の先頭から、以下の最小単位を抽出する（番地・号・建物名は含めない）：
+  - 市区：◯◯市◯◯区（例：大阪市中央区、神戸市中央区）
+  - 郡部：◯◯郡◯◯町/村（例：川辺郡猪名川町）
+  - 市内町名含む：◯◯市◯◯町名（例：西宮市小曽根町、西宮市甲子園口、西宮市甲子園口北町）
+
+### タスク名生成（最低限）
+- 最低限：顧客名 + 市区町村 + 媒体
+- 形式（既存契約に揃える）：<顧客名>_<市区町村>_<媒体>_
+- 自由文スロットは保持し、解析/自動確定の根拠にしない。
+
+### 説明欄（description / comment）
+- テンプレートは空でも可。
+- raw から取得可能な情報は可能な限り補完する。
+- [INFO] ブロックのみシステム管理対象とし、--- USER --- 以降は非干渉。
+
+### セクション投入（受注の到達点）
+- AI解析→振り分けタスクへ反映し、セクション1へ投入する。
+- orderStatus 等の確定状態は UI/AI では決定しない。
+
+<!-- END: YORISOIDOU_ORDER_INTAKE_V1 -->
+
+<!-- BEGIN: YORISOIDOU_UF06_V1 -->
+## CARD: UF06_V1（発注/納品：入力→確定→台帳反映） [Draft]
+
+### Scope（固定）
+- 本カードは UF06（発注/納品）に限定する。
+- ORDER / WORK_DONE / INVOICE / RECEIPT / EXPENSE は対象外。
+
+### 入口（固定）
+- UF06 は 2 イベント：
+  - UF06_ORDER（発注）
+  - UF06_DELIVER（納品）
+- UI/コメント/フォームは素材入力のみ。確定は Orchestrator。
+
+### UF06_QUEUE（固定）
+- 直接 Parts_Master を更新しない。
+- 1行=1イベント。
+- Columns：
+  - receivedAt
+  - kind（UF06_ORDER / UF06_DELIVER）
+  - idempotencyKey
+  - status（OPEN / ACCEPTED / PROCESSED / REJECTED）
+  - payloadJson
+
+### 冪等（固定）
+- 同一 idempotencyKey は再観測として吸収。
+- 行の増殖は禁止。
+
+### UF06_ORDER（発注）
+- 採用行のみ確定。
+- PART_ID / OD_ID / AA / PA/MA 発行。
+- STATUS=ORDERED
+- Order_ID 無しは STOCK_ORDERED
+- BP：PRICE 未確定可
+- BM：PRICE=0 固定
+
+### UF06_DELIVER（納品）
+- STATUS=DELIVERED
+- DELIVERED_AT 記録
+- BP：PRICE 未確定は BLOCKER
+- LOCATION 整合必須（在庫戻し対象）
+
+### UI責務（固定）
+- 入力補助／確定意思受付／表示のみ。
+- STATUS / PRICE / ID を確定しない。
+
+### 表示契約
+- AA 最大5個、超過は 納品 x/y。
+- 末尾 _  自由文スロット非干渉。
+
+### BLOCKER / WARNING
+- BLOCKER：
+  - BP PRICE 未確定
+  - LOCATION 不整合
+- WARNING：
+  - 写真不足
+  - 補足情報不足
+
+### Done
+- 冪等処理成立
+- ID再発番なし
+- 推測代入なし
+
+<!-- END: YORISOIDOU_UF06_V1 -->
+
+<!-- BEGIN: YORISOIDOU_WORK_DONE_V1 -->
+## CARD: WORK_DONE_V1（完了報告：素材受付→Ledger根拠→回収→参照投影） [Draft]
+
+### Scope（固定）
+- 本カードは WORK_DONE（完了報告）に限定する。
+- UF06 / INVOICE / RECEIPT / EXPENSE の確定仕様は対象外（参照のみ）。
+
+### 入口（固定）
+- 現場完了（WORK_DONE）の唯一入口は Todoist（現場）とする。
+- 受ける素材（最小）：
+  - workDoneAt（必須）
+  - workDoneComment（必須：全文）
+  - 添付（任意）：photosBefore / photosAfter / photosParts / photosExtra / videoInspection
+  - workSummary（任意：判断を置換しない）
+
+### Ledger 記録（固定）
+- Ledger（台帳）が唯一の正（Authority）。
+- WORK_DONE 受領時に以下を Order へ根拠として記録する：
+  - Order_ID
+  - workDoneAt / workDoneComment（根拠）
+  - receivedAt / sourceId（取得できる場合）
+- UI/AI は STATUS/PRICE/ID 等の確定値を作らない。
+
+### 冪等（固定）
+- eventType = WORK_DONE
+- primaryId = Order_ID
+- eventAt = workDoneAt
+- 同一 idempotencyKey の再到達は「再観測」として吸収し、台帳/タスクを増殖させない。
+
+### 回収（BLOCKER / WARNING：固定）
+- 必須不足：
+  - workDoneAt 欠落 → BLOCKER
+  - workDoneComment 欠落 → BLOCKER
+- Phase-1 分類に従属（本カードで再定義しない）：
+  - BLOCKER：LOCATION 不整合（在庫戻し対象）、BP の PRICE 未確定（経費確定不可）
+  - WARNING：写真不足、抽出不備（在庫戻し対象がある場合は BLOCKER へ昇格し得る）
+- 自動辻褄合わせは禁止。競合・参照不整合・素材不一致は Recovery Queue（OPEN）へ登録する。
+
+### 投影（参照のみ：固定）
+- Ledger → Todoist：
+  - 参照情報として「完了報告受領」を反映してよい（確定を断定しない）。
+  - タスク名（AA群/納品x/y）・末尾 _  自由文スロットは非干渉で保持する。
+  - [INFO] ブロックのみ上書きし、--- USER --- 以降は非干渉。
+- Ledger → ClickUp：
+  - 管理向け参照（Order_ID / STATUS参照 / OPEN回収要点）を更新してよい。
+  - 入力禁止（Ledger確定値を上書きしない）。
+
+### Done（WORK_DONE バンドル v1）
+- 必須2点（workDoneAt/workDoneComment）を根拠として Ledger に記録できる。
+- 冪等：同一イベント再送で増殖しない。
+- BLOCKER/WARNING が Recovery Queue（OPEN）へ落ち、勝手に RESOLVED にしない。
+- 投影は参照のみで、確定値を作らない。
+
+<!-- END: YORISOIDOU_WORK_DONE_V1 -->
 ```
 
 
@@ -4522,8 +4694,8 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/ui_master.md
-- sha256: 8b689660ee5d20a6e0e830ce560a62e8b6eac0e14586a4ee9960db96dd71ea5f
-- bytes: 12284
+- sha256: 74f6ccbfe2371d697e17f9366ffe0a6c239c8468f83d32d5c781a21aca4c55d8
+- bytes: 14632
 
 ```text
 <!--
@@ -4867,6 +5039,59 @@ UI責務（固定）：
 ### Display Rules（最小）
 - 送信中は二重送信防止（UI_PROTOCOL 準拠）
 - 未入力が許容されないのは PRICE/USED_DATE/Order_ID のみ
+
+<!-- BEGIN: YORISOIDOU_ORDER_INTAKE_V1 --> 
+## CARD: ORDER_INTAKE_V1（受注入口: HTML+コメント / raw解析 / タスク名 / セクション1）  [Draft]
+
+### Scope（固定）
+- 本カードは「受注（ORDER）まで」のみ。WORK/PARTS/INVOICE/RECEIPT/EXPENSE は対象外。
+
+### 入口（固定）
+- 入口は 2 系統を許可する：
+  - HTMLフォーム
+  - コメント入口（Todoist/ClickUp 等のタスクコメント）
+
+### コメント入口（固定）
+- トリガー：新規受注
+- 運用：
+  - 1行目：新規受注
+  - 2行目以降：媒体通知本文を raw として自由貼付（ぶつ切り可）
+  - モード中は素材蓄積のみ
+  - 確定は 実行 のみ（実行 以前に受注カード生成を行わない）
+
+### raw（受注素材）
+- raw は「媒体通知の原文全文」を保持する。
+- raw は解析素材であり、確定値ではない。
+
+### AI解析（素材抽出）
+- AIは raw から以下を抽出候補として生成する（確定はしない）：
+  - 顧客名
+  - 住所
+  - 媒体
+  - 依頼内容（任意）
+  - 電話番号等（取得できる場合）
+
+### 市区町村（cityTown）書き出しルール（固定）
+- 住所文字列の先頭から、以下の最小単位を抽出する（番地・号・建物名は含めない）：
+  - 市区：◯◯市◯◯区（例：大阪市中央区、神戸市中央区）
+  - 郡部：◯◯郡◯◯町/村（例：川辺郡猪名川町）
+  - 市内町名含む：◯◯市◯◯町名（例：西宮市小曽根町、西宮市甲子園口、西宮市甲子園口北町）
+
+### タスク名生成（最低限）
+- 最低限：顧客名 + 市区町村 + 媒体
+- 形式（既存契約に揃える）：<顧客名>_<市区町村>_<媒体>_
+- 自由文スロットは保持し、解析/自動確定の根拠にしない。
+
+### 説明欄（description / comment）
+- テンプレートは空でも可。
+- raw から取得可能な情報は可能な限り補完する。
+- [INFO] ブロックのみシステム管理対象とし、--- USER --- 以降は非干渉。
+
+### セクション投入（受注の到達点）
+- AI解析→振り分けタスクへ反映し、セクション1へ投入する。
+- orderStatus 等の確定状態は UI/AI では決定しない。
+
+<!-- END: YORISOIDOU_ORDER_INTAKE_V1 -->
 ```
 
 
