@@ -283,8 +283,8 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 - PR #917 | mergedAt=01/20/2026 04:10:57 | mergeCommit=1e24ba5a142c24fbc08c4d131498616ef0488f64 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/917
 - PR #920 | mergedAt=01/20/2026 04:13:31 | mergeCommit=9bddbd7c329fb59827d1e303215db42e59d4b28e | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/920
 - PR #922 | mergedAt=01/20/2026 04:17:49 | mergeCommit=f860c51d44dbc9c22eb9832e69365e340b763927 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:IN_PROGRESS, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/922
-- PR #931 | mergedAt= | mergeCommit= | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/931
-- PR #932 | mergedAt= | mergeCommit= | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/932
+- PR #931 | mergedAt=01/21/2026 00:01:00 | mergeCommit=1b2dc0c3e60b8ac48c4d3c8884216b04d30af55f | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/931
+- PR #932 | mergedAt=01/21/2026 00:03:14 | mergeCommit=68006390fd2ca658dd75ddf0107525c24e069713 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/932
 ## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
 
 ### 基本
@@ -488,6 +488,7 @@ Bundled 本文に基づき、
 
 以上。
 <!-- END: OFFICIAL_DESCRIPTION (MEP) -->
+
 
 
 
