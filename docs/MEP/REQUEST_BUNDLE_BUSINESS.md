@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 393211
+- included_total_bytes: 393361
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -5572,11 +5572,11 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 6165aba42dbd691a498485050c5b823fa268170b99bab60b418370ac411365ae
-- bytes: 7996
+- sha256: 6b835fe225d52ce5a2b2c88f82ca2cebb5b6a2f95db1ccda05fe0886730edadc
+- bytes: 8146
 
 ```text
-﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
+# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
 - .github/workflows/required_checks_drift_guard_manual.yml
@@ -5715,6 +5715,9 @@ UI 実装は、本書との差分として管理される
 - MEP_MT5_LOG_DUMP_AND_SCAN.ps1
 - platform/MEP/01_CORE/cards/EVIDENCE_SUB_MEP_ROOT.md
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- .gitignore
+- tools/mep_diagnose_writeback.ps1
+- businesses/evidence/TARGETS.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
@@ -5729,6 +5732,22 @@ UI 実装は、本書との差分として管理される
 - 見出し名の変更、箇条書き形式の変更（番号付き等）は禁止。
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Child MEPs
+- EVIDENCE -> docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 ```
 
 
