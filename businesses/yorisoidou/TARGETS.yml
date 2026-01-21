@@ -1,8 +1,9 @@
 # Allowed targets for biz_key=yorisoidou (scope fence)
 allow:
-  - "platform/MEP/03_BUSINESS/よりそい堂/**"
+  - "/**"
   - "business/**"
 deny:
   - ".github/**"
   - "platform/MEP/01_CORE/**"
   - "docs/MEP/MEP_BUNDLE.md"
+

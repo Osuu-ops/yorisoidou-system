@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260121_062022+main_5df7475
+BUNDLE_VERSION = v0.0.0+20260121_160909+main+parent
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
@@ -338,6 +338,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 - PR #1042 | mergedAt=01/21/2026 14:44:22 | mergeCommit=e76c495d2d0cfa81311d7537b00b586ac67c7c53 | BUNDLE_VERSION=v0.0.0+20260121_062022+main_5df7475 | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1042
 - PR #1045 | mergedAt=01/21/2026 14:50:50 | mergeCommit=ede9e35c636cc21b569d6bdaf1c7cb809e4bee51 | BUNDLE_VERSION=v0.0.0+20260121_062022+main_5df7475 | audit=OK,WB0000 | acceptance:IN_PROGRESS, Business Packet Guard (PR):IN_PROGRESS, done_check:IN_PROGRESS, enable_auto_merge:IN_PROGRESS, guard:QUEUED, merge_repair_pr:SKIPPED, self-heal:IN_PROGRESS, semantic-audit-business:IN_PROGRESS, semantic-audit:IN_PROGRESS, suggest:IN_PROGRESS, Text Integrity Guard (PR):IN_PROGRESS, update-state-summary:SKIPPED | https://github.com/Osuu-ops/yorisoidou-system/pull/1045
 - PR #1046 | mergedAt=01/21/2026 14:51:11 | mergeCommit=4997fa34568d1ff2d88ca3d6a8fd24d3cdea9ea1 | BUNDLE_VERSION=v0.0.0+20260121_062022+main_5df7475 | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1046
+- PR #1048 | mergedAt=01/21/2026 15:02:00 | mergeCommit=adf666885beb054fdfa3fae31d0af4b37c78c31f | BUNDLE_VERSION=v0.0.0+20260121_062022+main_5df7475 | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1048
 ## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
 
 ### 基本
@@ -571,7 +572,7 @@ Bundled 本文に基づき、
 
 
 
-## CARD: BUNDLE_EVIDENCE_APPEND (PR_NUMBER / INTEGRATION_INPUTS / BUSINESS_MASTER)  [Draft]
+## CARD: BUNDLE_EVIDENCE_APPEND (PR_NUMBER / INTEGRATION_INPUTS / BUSINESS_MASTER)  [Adopted]
 <!-- BEGIN: BUNDLE_EVIDENCE_APPEND -->
 
 ### writeback inputs.pr_number
@@ -579,17 +580,23 @@ Bundled 本文に基づき、
 - evidence:
   - inputs.pr_number.description = "PR number to write back (optional; 0 = auto latest merged PR)"
   - inputs.pr_number.default = "0"
+- rationale:
+  - 本項は実行ログではなく、source に記載された仕様文字列（description/default）を根拠に確定する。
 
 ### Integration Compiler inputs
 - source: .github/workflows/mep_integration_compiler.yml
 - evidence:
   - paths: platform/MEP/01_CORE/**/*.md
   - find platform/MEP/01_CORE -type f -name "*.md" | sort > inputs.txt
+- rationale:
+  - 本項は実行結果ではなく、source に記載された入力集合・生成手順（paths/find）を根拠に確定する。
 
 ### BUSINESS master canonical
 - source: business/business_master.md
 - evidence:
   - CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
+- rationale:
+  - 本項は運用実績ではなく、source に記載された CANONICAL の参照先文字列を根拠に確定する。
 
 <!-- END: BUNDLE_EVIDENCE_APPEND -->
 
