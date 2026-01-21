@@ -339,3 +339,25 @@ UI責務（固定）：
 ### Display Rules（最小）
 - 送信中は二重送信防止（UI_PROTOCOL 準拠）
 - 未入力が許容されないのは PRICE/USED_DATE/Order_ID のみ
+## TAX_REPORT UI（Phase-1 最小）
+
+### Screens
+- SCREEN_TAX_REPORT_CREATE
+  - 確定申告：年度選択
+- SCREEN_TAX_REPORT_CONFIRM
+  - 確定申告：出力確認
+- SCREEN_TAX_REPORT_DONE
+  - 確定申告：出力受付完了
+
+### Fields
+| field | label | ui | required | rule |
+|---|---|---|---|---|
+| targetYear | 対象年度 | select / number | true | 年度選択のみ。集計内容は決定しない |
+| outputFormat | 出力形式 | select | true | CSV / JSON の選択のみ |
+| includeMonthlyBreakdown | 月次内訳を含める | checkbox | false | 任意。内容生成はMEP側 |
+| runId | 集計実行ID | text / badge（read-only） | false | secondaryKey（集計実行日時）の参照表示のみ |
+
+### Display Rules（TAX_REPORT 専用）
+- UIは「年度選択／出力トリガ／参照表示」のみを扱う
+- 金額・分類・税区分・Ledger/logs 内容を UI/AI が生成・確定しない
+- 二重送信防止（送信中はトリガ無効化）
