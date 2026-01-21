@@ -137,6 +137,7 @@
 - MEP_MT5_LOG_DUMP_AND_SCAN.ps1
 - platform/MEP/01_CORE/cards/EVIDENCE_SUB_MEP_ROOT.md
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- .gitignore
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
