@@ -2305,3 +2305,4 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 
 - orderStatus の遷移・確定責務は business-logic に限定される。
   UI・運用・人手による直接変更は行わない（表示・入力は参照のみ）。
+- 例外系（入力不備／二重登録／取消／差戻し）の扱い：未確定（要：business-logic決定）
