@@ -46,7 +46,7 @@ jobs:
 # strip accidental quotes around filename
 f="${f#\"}"; f="${f%\"}"
 case "$f" in
-                business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*|platform/MEP/03_BUSINESS/*) : ;;
+                business/*|seed/*|docs/MEP/*|docs/MEP_SUB/*|mep/*|.github/workflows/*|tools/*|platform/MEP/03_BUSINESS/*) : ;;
                 *) echo "ERROR: out-of-scope change: $f"; exit 1 ;;
               esac
             done
@@ -70,4 +70,5 @@ case "$f" in
           PY
 
           echo "OK: Gate(min5) passed"
+
 
