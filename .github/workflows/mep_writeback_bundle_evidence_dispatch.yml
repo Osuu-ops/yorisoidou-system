@@ -2,16 +2,31 @@ name: mep_writeback_bundle_evidence_dispatch
 
 on:
   workflow_dispatch:
+    inputs:
+      prNumber:
+        description: "Optional: PR number to record (0 = auto latest merged)"
+        required: false
+        default: "0"
 
 jobs:
   writeback-evidence:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Writeback EVIDENCE child MEP bundle
+      - name: Writeback EVIDENCE child MEP bundle (create PR)
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           ./tools/mep_writeback_bundle.ps1 `
+            -Mode "pr" `
+            -PrNumber ([int]"${{ github.event.inputs.prNumber }}") `
             -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
-            -BundleScope "evidence-child"
+            -BundleScope "evidence-child" `
+            -TargetBranchPrefix "auto/writeback-evidence-bundle"
