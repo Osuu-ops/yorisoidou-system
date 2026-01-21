@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260120_160047+main_52873f8
+﻿BUNDLE_VERSION = v0.0.0+20260120_160047+main_52873f8
 
 本書は Draft（提案）であり、採用確定ではない（採用は PR→main→Bundled の証跡のみ）。
 
