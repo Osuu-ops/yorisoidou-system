@@ -2,7 +2,7 @@
 
 ## 変更対象（Scope-IN）
 - .github/workflows/required_checks_drift_guard_manual.yml
-- /**
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・/**
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/scope_guard_pr.yml
 - .github/workflows/business_packet_guard_pr.yml
@@ -161,6 +161,9 @@
 
 
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> parent of 4c65241 (Merge pull request #1062 from Osuu-ops/fix/yorisoidou-scope-fence-path)
