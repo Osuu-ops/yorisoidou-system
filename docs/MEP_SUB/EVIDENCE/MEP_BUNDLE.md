@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 BUNDLE_VERSION = v0.0.0+20260121_195833+main+evidence-child
+=======
+BUNDLE_VERSION = v0.0.0+20260122_045853+main+child
+>>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
 
 [Adopted]
@@ -16,7 +20,11 @@ BUNDLE_VERSION = v0.0.0+20260121_195833+main+evidence-child
 - PR #1075 | mergedAt=01/21/2026 19:36:14 | mergeCommit=68b86f044bdb54a448f327b11211af7960750536 | BUNDLE_VERSION=v0.0.0+20260122_043845+main+child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1075
 - PR #1077 | mergedAt=01/21/2026 19:42:24 | mergeCommit=d5c2facf70bb93ceee4f3e452b0157fe86ad6db2 | BUNDLE_VERSION=v0.0.0+20260121_194444+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1077
 - PR #1079 | mergedAt=01/21/2026 19:53:07 | mergeCommit=da393defec73777a5ab9f5038f495a464438659d | BUNDLE_VERSION=v0.0.0+20260122_045338+main+child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1079
+<<<<<<< HEAD
 - PR #1081 | mergedAt=01/21/2026 19:58:11 | mergeCommit=fe1ef735bd1cedc57fc81ec6bfa3d72cb469ade7 | BUNDLE_VERSION=v0.0.0+20260121_195833+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1081
+=======
+- PR #1082 | mergedAt=01/21/2026 19:58:51 | mergeCommit=291bd76adc85dd3c7e71d53006374fe77504f372 | BUNDLE_VERSION=v0.0.0+20260122_045853+main+child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1082
+>>>>>>> origin/main
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
@@ -42,3 +50,31 @@ BUNDLE_VERSION = v0.0.0+20260121_195833+main+evidence-child
 2. EVIDENCEのカード（仕様・運用・監査の粒度）を追加していく
 3. 必要があれば「親MEPへ戻す情報」と「子MEPに留める情報」をルール化する
 
+## CARD: EVIDENCE / OPS (TARGETS & WRITEBACK)  [Draft]
+
+### 対象
+- businesses/evidence/TARGETS.yml
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
+### 運用原則
+- 証跡の真実は PR → main → Bundled（BUNDLE_VERSION）のみ
+- 会話・手編集は採用対象外
+
+### TARGETS 更新ルール
+- 追加のみ（既存キーの削除・意味変更は禁止）
+- 不明は unknown として明示し、推測で埋めない
+- 採用は PR 作成をもって成立とする
+
+### writeback 手順（PowerShell完結）
+1) main にマージ済み PR を対象に writeback を実行  
+   - Mode=pr / PrNumber 指定 / BundleScope=child
+2) 生成された運搬PRを main にマージ
+3) Bundled 上で BUNDLE_VERSION と証跡行を確認
+
+### 監査観測点（最小）
+- BUNDLE_VERSION が更新されていること
+- 証跡ログに対象 PR 行が1本のみ存在すること
+- mergedAt / mergeCommit が空でないこと
+
+### 停止条件
+- writeback 失敗、証跡欠損、重複行検出時は DIRTY とし次工程へ進まない
