@@ -224,3 +224,31 @@ UI 実装は、本書との差分として管理される
 - UIは入力受付と表示のみ
 - 生成・判断・確定はMEP側
 - UIが business_spec の意味を変更しない
+## TAX_REPORT UI 導線（最小）
+
+### SCREEN_TAX_REPORT_CREATE
+- 入力：targetYear / outputFormat / includeMonthlyBreakdown（任意）
+- アクション：出力確認へ
+
+### SCREEN_TAX_REPORT_CONFIRM
+- 表示：選択内容の参照表示のみ
+- アクション：出力を実行
+- BLOCKER発生時：送信不可、理由表示、CREATEへ戻す
+- WARNING発生時：警告表示のみ、送信可
+
+### SCREEN_TAX_REPORT_DONE
+- 表示：受付完了（成功/失敗の断定禁止）
+- 表示（任意）：runId（read-only）
+
+### 送信ペイロード上限
+- 送信可：targetYear / outputFormat / includeMonthlyBreakdown
+- 送信不可：Ledger/logs/system 内容、金額、分類、税区分、集計結果、確定値
+
+### 例外表示ルール
+- BLOCKER：出力トリガ送信不可（理由表示）
+- WARNING：警告表示のみ、送信継続
+
+### 責務境界
+- UIは入力受付と表示のみ
+- 生成・判断・確定はMEP側
+- UIが business_spec の意味を変更しない
