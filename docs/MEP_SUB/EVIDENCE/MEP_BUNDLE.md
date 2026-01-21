@@ -1,10 +1,7 @@
 BUNDLE_VERSION = v0.0.0+20260122_043020+main+child
 ## CARD: EVIDENCE / WRITEBACK SPEC
 
-[Adopted]### 証跡ログ（自動貼り戻し）
-# （初回は空。以降は EVIDENCE 子MEP writeback により追記される）
-
-
+[Adopted]
 ### 証跡ログ（自動貼り戻し）
 # （初回は空。以降は EVIDENCE 子MEP writeback により追記される）
 
