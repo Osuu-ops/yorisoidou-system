@@ -1,7 +1,6 @@
 <<<<<<< HEAD
 BUNDLE_VERSION = v0.0.0+20260121_203405+main+evidence-child
 =======
-BUNDLE_VERSION = v0.0.0+20260121_203405+main+evidence-child
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
 
@@ -80,3 +79,4 @@ BUNDLE_VERSION = v0.0.0+20260121_203405+main+evidence-child
 
 ### 停止条件
 - writeback 失敗、証跡欠損、重複行検出時は DIRTY とし次工程へ進まない
+
