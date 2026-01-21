@@ -2300,3 +2300,8 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 
 ### ORDER 注意事項（ADD ONLY）
 - orderStatus は business-logic により確定され、UI や人手で任意に確定しない。
+
+### ORDER 注意事項（ADD ONLY / 補足）
+
+- orderStatus の遷移・確定責務は business-logic に限定される。
+  UI・運用・人手による直接変更は行わない（表示・入力は参照のみ）。
