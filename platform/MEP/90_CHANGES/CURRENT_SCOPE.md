@@ -139,6 +139,7 @@
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - .gitignore
 - tools/mep_diagnose_writeback.ps1
+- businesses/evidence/TARGETS.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
