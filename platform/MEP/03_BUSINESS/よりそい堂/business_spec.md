@@ -2290,3 +2290,13 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 推測・自動補完が存在しない。
 
 <!-- END: YORISOIDOU_TAX_REPORT_V1 -->
+
+## 参照関係（ADD ONLY）
+- INVOICE / RECEIPT / ORDER の入力項目・列挙値（enum）の唯一の正は BUSINESS_MASTER に定義される。
+- BUSINESS_SPEC は業務ルール本文のみを記述し、項目定義・enum は参照する（重複定義しない）。
+
+### 状態・列挙の参照（ADD ONLY）
+- invoiceStatus / receiptStatus / scheduledTimeSlot 等の enum は BUSINESS_MASTER を参照する。
+
+### ORDER 注意事項（ADD ONLY）
+- orderStatus は business-logic により確定され、UI や人手で任意に確定しない。
