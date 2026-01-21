@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-BUNDLE_VERSION = v0.0.0+20260121_204451+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260121_205113+main+evidence-child
 =======
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
@@ -28,6 +28,7 @@ BUNDLE_VERSION = v0.0.0+20260121_204451+main+evidence-child
 - PR #1090 | mergedAt=01/21/2026 20:31:05 | mergeCommit=cc72b6628b1400225d6c2cfccca0589e7710fd1f | BUNDLE_VERSION=v0.0.0+20260121_203405+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1090
 - PR #1094 | mergedAt=01/21/2026 20:41:41 | mergeCommit=7ad6b79e6748f5c274fdab081916f6fffdcb1211 | BUNDLE_VERSION=v0.0.0+20260121_204213+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1094
 - PR #1096 | mergedAt=01/21/2026 20:44:19 | mergeCommit=777be0edb248330acedb840351b6fb42c8f3a92f | BUNDLE_VERSION=v0.0.0+20260121_204451+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1096
+- PR #1098 | mergedAt=01/21/2026 20:50:04 | mergeCommit=fe0a8c003f7295818336eb2b09eb1aa124bc1c75 | BUNDLE_VERSION=v0.0.0+20260121_205113+main+evidence-child | audit=OK,WB0000 | checks:(none) | https://github.com/Osuu-ops/yorisoidou-system/pull/1098
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
