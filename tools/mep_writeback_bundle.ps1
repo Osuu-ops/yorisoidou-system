@@ -3,8 +3,13 @@ param(
   [ValidateSet("update","pr")]
   [string]$Mode = "update",
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
+  [string]$BundleScope = "parent",
   [string]$TargetBranchPrefix = "auto/writeback-bundle"
 )
+
+Write-Host ("MEP writeback scope: " + $BundleScope)
+Write-Host ("Target bundle: " + $BundlePath)
+$bundleFile = $BundlePath
 # BEGIN: SCRUB_BROKEN_EVIDENCE_LINES
 function Scrub-BrokenEvidenceLines([string]$text){
   if([string]::IsNullOrEmpty($text)){ return $text }
@@ -146,7 +151,21 @@ function Run([string]$tag, [scriptblock]$sb) {
   if ($ec -ne 0) { Fail ("{0} failed (exit={1})`n{2}" -f $tag, $ec, $out.TrimEnd()) }
   return $out
 }
-function ReadUtf8([string]$p) { Get-Content -Raw -Encoding UTF8 $p }
+function ReadUtf8([string]$p) {
+  $t = Get-Content -Raw -Encoding UTF8 $p
+  $t = $t -replace "`r`n","`n"
+  $t = $t -replace "`r",""
+  return $t
+}
+function New-BundleVersion {
+  param(
+    [string]$Prefix = "v0.0.0",
+    [string]$Branch = "local",
+    [string]$Scope  = "child"
+  )
+  $ts = Get-Date -Format "yyyyMMdd_HHmmss"
+  return ("{0}+{1}+{2}+{3}" -f $Prefix, $ts, $Branch, $Scope)
+}
 function WriteUtf8([string]$p, [string]$s) { Set-Content -Encoding UTF8 -NoNewline -Path $p -Value $s }
 
 if (-not (Test-Path ".git")) { Fail "repo root (.git) で実行してください。" }
@@ -158,6 +177,18 @@ $repo = (Run "gh repo view" { gh repo view --json nameWithOwner -q .nameWithOwne
 if (-not $repo) { Fail "gh repo view failed to resolve nameWithOwner" }
 
 $bundle = ReadUtf8 $BundlePath
+$bundleOriginal = $bundle
+# --- update BUNDLE_VERSION (per BundlePath) ---
+$branch = (git rev-parse --abbrev-ref HEAD 2>$null)
+if ([string]::IsNullOrEmpty($branch)) { $branch = "local" }
+$bv = New-BundleVersion -Branch $branch -Scope $BundleScope
+
+if ($bundle -match '(?m)^BUNDLE_VERSION\s*=\s*.+$') {
+  $bundle = [regex]::Replace($bundle, '(?m)^BUNDLE_VERSION\s*=\s*.+$', ("BUNDLE_VERSION = " + $bv), 1)
+} else {
+  $bundle = ("BUNDLE_VERSION = " + $bv + "`n`n" + $bundle)
+}
+
 # BEGIN: SCRUB_APPLY_ON_READ
 # Always scrub the loaded bundle to remove any historical corrupted lines before further processing.
 $bundle = Scrub-BrokenEvidenceLines $bundle
@@ -280,7 +311,19 @@ $bundle2 = $pre + $block2 + $post
   # BEGIN: SCRUB_APPLY_ON_BUNDLE2
   $bundle2 = Scrub-BrokenEvidenceLines $bundle2
   # END: SCRUB_APPLY_ON_BUNDLE2
-if ($bundle2 -ne $bundle) { WriteUtf8 $BundlePath $bundle2 }
+# --- FINAL BUNDLE_VERSION APPLY (per BundlePath) ---
+# NOTE: $bv is computed earlier. Ensure it is applied to the final buffer we actually write.
+if ([string]::IsNullOrEmpty($bv)) {
+  $branch2 = (git rev-parse --abbrev-ref HEAD 2>$null)
+  if ([string]::IsNullOrEmpty($branch2)) { $branch2 = "local" }
+  $bv = New-BundleVersion -Branch $branch2 -Scope $BundleScope
+}
+if ($bundle2 -match '(?m)^BUNDLE_VERSION\s*=\s*.+$') {
+  $bundle2 = [regex]::Replace($bundle2, '(?m)^BUNDLE_VERSION\s*=\s*.+$', ("BUNDLE_VERSION = " + $bv), 1)
+} else {
+  $bundle2 = ("BUNDLE_VERSION = " + $bv + "`n`n" + $bundle2)
+}
+if ($bundle2 -ne $bundleOriginal) { WriteUtf8 $BundlePath $bundle2 }
 
 if ($Mode -eq "update") {
   Write-Output ("UPDATED: {0}`n- latestMergedPR: #{1}`n- mergeCommit: {2}`n- BUNDLE_VERSION: {3}" -f $BundlePath, $prNum, $mergeCommit, $bv)
@@ -322,6 +365,17 @@ Notes
 
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
