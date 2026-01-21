@@ -2,3 +2,30 @@
 targets:
   - id: EVIDENCE
     note: "child MEP bootstrap"
+
+# === EVIDENCE 子MEP（実態反映）===
+evidence:
+  pr:
+    description: "PR 単位の証跡（writeback 実績あり）"
+    source: "GitHub Pull Request"
+    includes:
+      - pr_number
+      - merged_at
+      - merge_commit
+      - bundle_version
+      - audit_result
+  bundle:
+    description: "Bundled（唯一の正）"
+    source: "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+    includes:
+      - BUNDLE_VERSION
+      - evidence_log
+  workflow:
+    description: "writeback 実行（workflow_dispatch）"
+    source: ".github/workflows/mep_writeback_bundle_dispatch.yml"
+    includes:
+      - run_id
+      - inputs.pr_number
+  unknown:
+    description: "現時点で未確定の証跡対象"
+    note: "実運用で確認次第、PRで追加する"
