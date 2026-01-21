@@ -43,7 +43,7 @@ jobs:
           changed="$(git diff --name-only "$base"...HEAD || true)"
           if [ -n "$changed" ]; then
             echo "$changed" | while IFS= read -r f; do
-              # strip accidental quotes around filename
+# strip accidental quotes around filename
 f="${f#\"}"; f="${f%\"}"
 case "$f" in
                 business/*|seed/*|docs/MEP/*|mep/*|.github/workflows/*|tools/*|platform/MEP/03_BUSINESS/*) : ;;
