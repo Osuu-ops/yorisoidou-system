@@ -41,3 +41,31 @@ BUNDLE_VERSION = v0.0.0+20260122_045338+main+child
 2. EVIDENCEのカード（仕様・運用・監査の粒度）を追加していく
 3. 必要があれば「親MEPへ戻す情報」と「子MEPに留める情報」をルール化する
 
+## CARD: EVIDENCE / OPS (TARGETS & WRITEBACK)  [Draft]
+
+### 対象
+- businesses/evidence/TARGETS.yml
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
+### 運用原則
+- 証跡の真実は PR → main → Bundled（BUNDLE_VERSION）のみ
+- 会話・手編集は採用対象外
+
+### TARGETS 更新ルール
+- 追加のみ（既存キーの削除・意味変更は禁止）
+- 不明は unknown として明示し、推測で埋めない
+- 採用は PR 作成をもって成立とする
+
+### writeback 手順（PowerShell完結）
+1) main にマージ済み PR を対象に writeback を実行  
+   - Mode=pr / PrNumber 指定 / BundleScope=child
+2) 生成された運搬PRを main にマージ
+3) Bundled 上で BUNDLE_VERSION と証跡行を確認
+
+### 監査観測点（最小）
+- BUNDLE_VERSION が更新されていること
+- 証跡ログに対象 PR 行が1本のみ存在すること
+- mergedAt / mergeCommit が空でないこと
+
+### 停止条件
+- writeback 失敗、証跡欠損、重複行検出時は DIRTY とし次工程へ進まない
