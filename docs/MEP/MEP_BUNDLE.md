@@ -567,3 +567,26 @@ Bundled 本文に基づき、
 
 
 
+
+## CARD: BUNDLE_EVIDENCE_APPEND (PR_NUMBER / INTEGRATION_INPUTS / BUSINESS_MASTER)  [Draft]
+<!-- BEGIN: BUNDLE_EVIDENCE_APPEND -->
+
+### writeback inputs.pr_number
+- source: .github/workflows/mep_writeback_bundle_dispatch.yml
+- evidence:
+  - inputs.pr_number.description = "PR number to write back (optional; 0 = auto latest merged PR)"
+  - inputs.pr_number.default = "0"
+
+### Integration Compiler inputs
+- source: .github/workflows/mep_integration_compiler.yml
+- evidence:
+  - paths: platform/MEP/01_CORE/**/*.md
+  - find platform/MEP/01_CORE -type f -name "*.md" | sort > inputs.txt
+
+### BUSINESS master canonical
+- source: business/business_master.md
+- evidence:
+  - CANONICAL (current): platform/MEP/03_BUSINESS/よりそい堂/master_spec
+
+<!-- END: BUNDLE_EVIDENCE_APPEND -->
+
