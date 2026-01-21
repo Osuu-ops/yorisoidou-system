@@ -1736,3 +1736,58 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 現状は Todoist 前提で運用する。
 - 将来の自作アプリ化で差し替え可能にするため、ドメイン（業務状態/ID/ガード）と運用基盤（Todoist等）を分離して記述する。
 <!-- APP_BOUNDARY_DESIGN_NOTE_END -->
+
+---
+# TAX_REPORT v1 運用 Runbook
+
+## 対象
+- CARD: TAX_REPORT_V1
+- 範囲: 実行・監査・失敗回収（Recovery Queue）
+- 非対象: 集計ロジック変更 / UI変更 / v2拡張
+
+## 実行トリガ
+- 手動実行: 管理者が対象年度（targetYear）を指定して実行
+
+## 再実行（冪等）
+- primaryKey: 対象年度
+- secondaryKey: 集計実行日時（runId）
+- 同一年度の再実行は runId で区別
+- 既存 runId の上書きは禁止
+
+## 観測点（監査）
+- logs/system
+  - start: 実行開始
+  - success: 完了（WARNING有無を含む）
+  - failure: BLOCKER発生
+- 判定
+  - 成功: WARNINGなし
+  - 条件付き成功: WARNINGあり
+  - 失敗: BLOCKER
+
+## 例外運用
+- BLOCKER
+  - 処理: 即時停止
+  - 例: Ledger参照不可 / logs(system)欠損
+  - 必須: Recovery Queue 登録 → 人手解消 → 解消後のみ再実行
+- WARNING
+  - 処理: 集計継続
+  - 例: 一部月データ欠落
+  - 対応: 記録のみ（人手介入不要）
+
+## Recovery Queue 運用
+- 状態遷移: 登録 → 通知 → 解消 → 記録
+- 原則: 自動解消なし / 解消主体は人 / 解消履歴を保存
+
+## 成果物管理
+- 出力形式: CSV / JSON（税理士提出用）
+- 保存先: 監査用ストレージ
+- 命名: tax_report_<year>_<runId>.<ext>
+- 保持: 年度単位（削除は運用判断）
+
+## PII ガード
+- 実行前: 入力/設定値に PII が含まれないこと
+- 実行後: 出力物に PII が含まれないこと（失敗は BLOCKER 扱い）
+
+## 監査再現性
+- 実行条件・例外・解消履歴は logs/system と Recovery Queue に残す
+- 会話ログは監査対象外
