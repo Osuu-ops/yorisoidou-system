@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 393136
+- included_total_bytes: 393087
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: b4a77ceff2be8ac72d54c6280db20c202f088543448e0920117fa6df470ef873
-- bytes: 113285
+- sha256: 4e688dbc2711dc7d33d9d0ede49fcfab700c68077d9dc5791ef800d5f467348d
+- bytes: 113236
 
 ```text
 <!--
