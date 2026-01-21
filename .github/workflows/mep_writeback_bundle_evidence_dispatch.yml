@@ -1,0 +1,17 @@
+name: mep_writeback_bundle_evidence_dispatch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  writeback-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Writeback EVIDENCE child MEP bundle
+        shell: pwsh
+        run: |
+          ./tools/mep_writeback_bundle.ps1 `
+            -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
+            -BundleScope "evidence-child"
