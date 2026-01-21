@@ -7,3 +7,13 @@ dist/
 crash.*.log
 evidence_check.*.log
 run_evidence_check.*.log
+# local debug artifacts
+_MEP_BUNDLE_AFTER_MERGE.md
+_pr*_checkruns.tsv
+_writeback_help.txt
+
+# backups
+tools/*.bak
+tools/*.bvpatch.bak
+tools/*.bvwritefix.bak
+tools/*.calltrace.bak
