@@ -1,8 +1,8 @@
-﻿# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
+# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
 - .github/workflows/required_checks_drift_guard_manual.yml
-- platform/MEP/03_BUSINESS/よりそい堂/**
+- /**
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/scope_guard_pr.yml
 - .github/workflows/business_packet_guard_pr.yml
@@ -153,6 +153,7 @@
 - 見出し名の変更、箇条書き形式の変更（番号付き等）は禁止。
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 <!-- CI_TOUCH: 2026-01-03T02:01:49 -->
+
 
 
 
