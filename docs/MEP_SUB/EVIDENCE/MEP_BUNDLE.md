@@ -1,7 +1,7 @@
 <<<<<<< HEAD
-BUNDLE_VERSION = v0.0.0+20260121_203017+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260121_203405+main+evidence-child
 =======
-BUNDLE_VERSION = v0.0.0+20260121_203017+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260121_203405+main+evidence-child
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
 
@@ -26,6 +26,7 @@ BUNDLE_VERSION = v0.0.0+20260121_203017+main+evidence-child
 - PR #1082 | mergedAt=01/21/2026 19:58:51 | mergeCommit=291bd76adc85dd3c7e71d53006374fe77504f372 | BUNDLE_VERSION=v0.0.0+20260122_045853+main+child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1082
 >>>>>>> origin/main
 - PR #1087 | mergedAt=01/21/2026 20:30:01 | mergeCommit=57d717c7f714d56fef24b6f9f473fcbaba3c1d45 | BUNDLE_VERSION=v0.0.0+20260121_203017+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1087
+- PR #1090 | mergedAt=01/21/2026 20:31:05 | mergeCommit=cc72b6628b1400225d6c2cfccca0589e7710fd1f | BUNDLE_VERSION=v0.0.0+20260121_203405+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1090
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
