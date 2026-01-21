@@ -252,3 +252,20 @@ UI 実装は、本書との差分として管理される
 - UIは入力受付と表示のみ
 - 生成・判断・確定はMEP側
 - UIが business_spec の意味を変更しない
+
+## TAX_REPORT 画面（v2 参照表示追加のみ）
+
+### SCREEN_TAX_REPORT_CONFIRM（追記）
+- 参照表示（read-only）：
+  - 出力仕様：reportVersion（v1/v2）
+  - 欠損月：missingMonths（非空のときのみ表示、WARNING表示）
+
+### SCREEN_TAX_REPORT_DONE（追記）
+- 参照表示（read-only）：
+  - 出力仕様：reportVersion
+  - 欠損月：missingMonths（非空のときのみ表示、WARNING表示）
+
+### 非対象（再掲）
+- 入力項目追加なし
+- 出力トリガ条件変更なし
+- BLOCKER/WARNING 判定ロジック変更なし

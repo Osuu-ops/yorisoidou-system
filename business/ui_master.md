@@ -383,3 +383,18 @@ UI責務（固定）：
 - UIは「年度選択／出力トリガ／参照表示」のみを扱う
 - 金額・分類・税区分・Ledger/logs 内容を UI/AI が生成・確定しない
 - 二重送信防止（送信中はトリガ無効化）
+
+## TAX_REPORT UI（v2 表示拡張・read-only）
+
+### Fields（追加）
+| field | label | ui | required | rule |
+|---|---|---|---|---|
+| reportVersion | 出力仕様 | text / badge（read-only） | false | 出力メタの参照表示のみ（UIが切替・指定しない） |
+| missingMonths | 欠損月 | text（read-only） | false | 出力メタの参照表示のみ（YYYY-MM配列をカンマ区切り表示） |
+
+### Display Rules（追加）
+- reportVersion は CONFIRM / DONE に参照表示（read-only）
+- missingMonths は以下の条件で表示
+  - 空（空配列/未設定）→ 非表示
+  - 非空 → WARNING 表示（集計は継続済み、欠損月の根拠表示のみ）
+- UIは引き続き「年度選択／出力トリガ／参照表示」のみ（確定値生成は禁止）
