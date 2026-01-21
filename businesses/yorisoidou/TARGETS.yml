@@ -1,6 +1,6 @@
 # Allowed targets for biz_key=yorisoidou (scope fence)
 allow:
-  - "platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・/**"
+  - "platform/MEP/03_BUSINESS/よりそい堂/**"
   - "business/**"
 deny:
   - ".github/**"
@@ -12,3 +12,4 @@ deny:
 =======
   - "docs/MEP/MEP_BUNDLE.md"
 >>>>>>> parent of 4c65241 (Merge pull request #1062 from Osuu-ops/fix/yorisoidou-scope-fence-path)
+
