@@ -344,7 +344,11 @@ if ($env:GITHUB_ACTIONS -eq "true") {
 } else {
   Run "git checkout main" { git checkout main }
 }
-Run "git pull main" { git pull --ff-only origin main }
+if ($env:GITHUB_ACTIONS -eq "true") {
+  Write-Host "[SKIP] git pull --ff-only origin main (CI)"
+} else {
+  Run "git pull main" { git pull --ff-only origin main }
+}
 
 $ts = Get-Date -Format "yyyyMMdd_HHmmss"
 $targetBranch = ("{0}_{1}" -f $TargetBranchPrefix, $ts)
@@ -369,6 +373,7 @@ Notes
 
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
+
 
 
 
