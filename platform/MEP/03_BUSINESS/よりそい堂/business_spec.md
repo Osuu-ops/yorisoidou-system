@@ -1637,10 +1637,12 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 重大不整合は Recovery Queue（BLOCKER/OPEN）へ回収（自動で解決しない）。
 
 
+<<<<<<< HEAD
 ## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
 <!-- BEGIN: MOTHERSHIP_SYNC_CONTRACT_YORISOIDOU (MEP) -->
 ### 目的（固定）
 - Ledger（台帳）を唯一の正として、Todoist（現場）と ClickUp（管理）へ安全に投影し、以後の完了報告・コメント・AI補助・書類・部材運用の母艦とする。
+=======
 
 ## CARD: MOTHERSHIP_SYNC_CONTRACT（Todoist×ClickUp×Ledger 母艦同期契約）  [Draft]
 
@@ -1680,6 +1682,7 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - docType=RECEIPT / docName / docDesc / docPrice / docMemo / receiptStatus / receivedDate / paymentMethod
 ### 冪等（固定）
 - RECEIPT_CREATE / RECEIPT_ISSUE は増殖禁止
+=======
 
 ### 投影（Ledger→Todoist）契約（固定）
 - タスク名：
@@ -1901,6 +1904,7 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - BLOCKER は Recovery Queue（OPEN）へ。
 - Todoist / ClickUp に参照投影される。
 
+>>>>>>> origin/main
 <!-- END: RECEIPT_MOTHERSHIP_CONTRACT_YORISOIDOU (MEP) -->
 
 <!-- FIXATE_UF06_QUEUE_CONTRACT_END -->
