@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure git identity (CI)
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Writeback EVIDENCE child MEP bundle (create PR)
         shell: pwsh
         env:
@@ -30,3 +34,4 @@ jobs:
             -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
             -BundleScope "evidence-child" `
             -TargetBranchPrefix "auto/writeback-evidence-bundle"
+
