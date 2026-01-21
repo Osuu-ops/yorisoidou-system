@@ -21,6 +21,8 @@ jobs:
 
       - name: Writeback EVIDENCE child MEP bundle (create PR)
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           ./tools/mep_writeback_bundle.ps1 `
             -Mode "pr" `
