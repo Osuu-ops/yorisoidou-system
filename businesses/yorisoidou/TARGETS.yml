@@ -5,11 +5,8 @@ allow:
 deny:
   - ".github/**"
   - "platform/MEP/01_CORE/**"
-<<<<<<< HEAD
   - "docs/MEP/MEP_BUNDLE.md"
 
 
-=======
   - "docs/MEP/MEP_BUNDLE.md"
->>>>>>> parent of 4c65241 (Merge pull request #1062 from Osuu-ops/fix/yorisoidou-scope-fence-path)
 

@@ -161,10 +161,7 @@
 
 
 
-<<<<<<< HEAD
 
 
 
-=======
->>>>>>> parent of 4c65241 (Merge pull request #1062 from Osuu-ops/fix/yorisoidou-scope-fence-path)
 
