@@ -340,3 +340,16 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
   - 例：`AA00` / `AB00` / `BA00` … は使わない。
 - 目的：00が「未確定・空・仮」に見えて現場判断を誤る事故を防止する。
 <!-- PARTS_AA_NUMBERING_CONTRACT_END -->
+
+---
+# Dictionary (TAX_REPORT)
+
+## reportVersion
+- type: string
+- enum: ["v1","v2"]
+- meaning: 出力仕様バージョン識別子
+
+## missingMonths
+- type: string[]
+- format: YYYY-MM
+- meaning: 対象年度のうち、月次データが欠損している月の一覧（WARNING根拠）

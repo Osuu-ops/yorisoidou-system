@@ -1791,3 +1791,44 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 ## 監査再現性
 - 実行条件・例外・解消履歴は logs/system と Recovery Queue に残す
 - 会話ログは監査対象外
+
+---
+# CARD: TAX_REPORT_V2
+
+## Scope
+- TAX_REPORT_V1 を非破壊で拡張し、出力のバージョニングと欠損月の明示を追加する
+- 入口は V1 と同一（Ledger + logs/system）
+- UI/AI からの直接入力は禁止（年度選択・出力トリガのみ）
+- PII 禁止（入力・出力とも）
+
+## Inputs
+- targetYear (required)
+- outputFormat (required): CSV | JSON
+- includeMonthlyBreakdown (optional)
+
+## Outputs
+- format: CSV | JSON（税理士提出用）
+- meta (v2):
+  - reportVersion: "v2"
+  - runId: secondaryKey（集計実行日時）
+  - missingMonths: string[]  # YYYY-MM、欠損が無い場合は空配列
+- monthly breakdown (optional):
+  - includeMonthlyBreakdown=true の場合のみ出力
+  - month column is fixed: YYYY-MM
+  - 既存の集計定義に従う（新しい勘定科目・分類体系を創設しない）
+
+## Idempotency
+- primaryKey: targetYear
+- secondaryKey: runId（集計実行日時）
+- 既存 runId の上書きは禁止
+
+## Exception policy
+- BLOCKER（停止）
+  - Ledger参照不可
+  - logs/system 欠損
+- WARNING（継続）
+  - 一部月データ欠落
+  - v2では欠損月を missingMonths[] に明示（WARNING根拠の可視化）
+
+## Compatibility
+- v1 出力に reportVersion/missingMonths が無い場合は reportVersion="v1" 相当として読み取る
