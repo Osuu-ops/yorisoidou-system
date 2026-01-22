@@ -143,6 +143,7 @@
 - platform/MEP/03_BUSINESS/q/MEP_SUB/MEP_BUNDLE.md
 - platform/MEP/03_BUSINESS/q/TARGETS.yml
 - platform/MEP/03_BUSINESS/q/business_spec.md
+- platform/MEP/03_BUSINESS/sample_temp/.keep
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
