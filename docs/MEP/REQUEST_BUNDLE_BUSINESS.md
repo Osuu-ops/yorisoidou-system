@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 393361
+- included_total_bytes: 394408
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -2561,8 +2561,8 @@ ROLE: BUSINESS_MASTER (data dictionary / IDs / fields / constraints)
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/business_spec.md
-- sha256: 4e688dbc2711dc7d33d9d0ede49fcfab700c68077d9dc5791ef800d5f467348d
-- bytes: 113236
+- sha256: 9f73e2f6405587891156215198e6b6a14f1e9778a80ae1030d8029b15b9b46a7
+- bytes: 114145
 
 ```text
 <!--
@@ -4857,6 +4857,22 @@ STATUSは Phase-1: PARTS の不変条件に従属し、任意変更はしない�
 - 推測・自動補完が存在しない。
 
 <!-- END: YORISOIDOU_TAX_REPORT_V1 -->
+
+## 参照関係（ADD ONLY）
+- INVOICE / RECEIPT / ORDER の入力項目・列挙値（enum）の唯一の正は BUSINESS_MASTER に定義される。
+- BUSINESS_SPEC は業務ルール本文のみを記述し、項目定義・enum は参照する（重複定義しない）。
+
+### 状態・列挙の参照（ADD ONLY）
+- invoiceStatus / receiptStatus / scheduledTimeSlot 等の enum は BUSINESS_MASTER を参照する。
+
+### ORDER 注意事項（ADD ONLY）
+- orderStatus は business-logic により確定され、UI や人手で任意に確定しない。
+
+### ORDER 注意事項（ADD ONLY / 補足）
+
+- orderStatus の遷移・確定責務は business-logic に限定される。
+  UI・運用・人手による直接変更は行わない（表示・入力は参照のみ）。
+- 例外系（入力不備／二重登録／取消／差戻し）の扱い：未確定（要：business-logic決定）
 ```
 
 
@@ -5572,8 +5588,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 6b835fe225d52ce5a2b2c88f82ca2cebb5b6a2f95db1ccda05fe0886730edadc
-- bytes: 8146
+- sha256: e2e78ad61292ce64ba77c5de6f2eff05f7b40890067bacda5e0a1120a394a672
+- bytes: 8284
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5718,6 +5734,9 @@ UI 実装は、本書との差分として管理される
 - .gitignore
 - tools/mep_diagnose_writeback.ps1
 - businesses/evidence/TARGETS.yml
+- platform/MEP/03_BUSINESS/q/MEP_SUB/MEP_BUNDLE.md
+- platform/MEP/03_BUSINESS/q/TARGETS.yml
+- platform/MEP/03_BUSINESS/q/business_spec.md
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
