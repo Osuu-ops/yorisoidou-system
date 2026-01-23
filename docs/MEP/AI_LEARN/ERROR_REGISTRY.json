@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-01-24 01:47:31",
+  "entries": [
+    {
+      "signature": "SIG-15d9ab4fc7d53396",
+      "reason_code": "SMOKE_TEST",
+      "policy": "STOP",
+      "next_action": "Ignore: this signature is from the orchestrator smoke test. No remediation required.",
+      "created_at": "2026-01-24 01:47:31",
+      "updated_at": "2026-01-24 01:47:31",
+      "packet_ref": "ERROR_PACKET_RUN-20260124-014332_SIG-15d9ab4fc7d53396.txt"
+    }
+  ]
+}
