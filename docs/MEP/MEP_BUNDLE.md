@@ -631,3 +631,19 @@ Bundled 本文に基づき、
   上記共通カードを参照する（例：よりそい堂は master_spec の YORISOIDOU_DONE_DEFINITION が参照カードになっている）。
 
 <!-- END: BUSINESS_DONE_DEFINITION_BUNDLED_REF -->
+
+
+<!-- BEGIN: YORISOIDOU_WORK_ITEM_BUNDLED_REF -->
+## CARD: YORISOIDOU_WORK_ITEM_BUNDLED_REF（よりそい堂：運用完遂WORK_ITEM参照）  [Adopted]
+
+### 目的（固定）
+- 引っ越し監査の入口として「次の一手（WORK_ITEM）」を Bundled本文から一意に辿れる状態に固定する。
+
+### 参照（唯一の正）
+- docs/MEP/WORK_ITEMS/yorisoidou_operationalize.md
+
+### 運用（固定）
+- 未達は WORK_ITEM → 1テーマ=1PR → main → Bundled の順で潰す。
+- 「完遂（運用可能）」の完了条件は BUSINESS_DONE_DEFINITION を参照する。
+
+<!-- END: YORISOIDOU_WORK_ITEM_BUNDLED_REF -->
