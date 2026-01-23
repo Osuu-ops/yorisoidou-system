@@ -6,21 +6,16 @@ on:
       artifact_title:
         description: "Artifact title (short)"
         required: true
-        type: string
       artifact_markdown:
         description: "Artifact body (markdown)"
         required: true
-        type: string
       pr_body:
         description: "PR body"
         required: true
-        type: string
       merge_if_ok:
         description: "Merge automatically if gate OK (true/false)"
         required: true
         default: "true"
-        type: string
-
 permissions:
   contents: write
   pull-requests: write
