@@ -20,6 +20,7 @@
 - docs/MEP/STATE_SUMMARY.md
 - docs/MEP/UPGRADE_GATE.md
 - platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+- platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/KEEP.md
 - platform/MEP/03_BUSINESS/よりそい堂/00_CURRENT_SCOPE_NOTE.md
 - platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
 - platform/MEP/03_BUSINESS/よりそい堂/03_TODO.md
@@ -44,7 +45,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 394982
+- included_total_bytes: 395063
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1566,6 +1567,17 @@ Tell the assistant:
 ## 蜈･蜉・- 陦後→蛻励ｒ謨ｰ蛟､縺ｧ謖・ｮ壹☆繧具ｼ亥推 1縲・・・
 ## 蜃ｺ蜉・- 豈弱ち繝ｼ繝ｳ逶､髱｢繧定｡ｨ遉ｺ
 - 蜍晄風縺ｾ縺溘・蠑輔″蛻・￠繧定｡ｨ遉ｺ
+```
+
+
+---
+
+### FILE: platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/KEEP.md
+- sha256: 5e0338552e0246feafe4be10922c5891502570a0764c104985986dd7c567e367
+- bytes: 15
+
+```text
+# placeholder
 ```
 
 
@@ -5598,8 +5610,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 43947c240dbba4fa4f6e622e27dd2b248aabb1b24a43f6ca49cac8f087a7878c
-- bytes: 8440
+- sha256: cf0ead5b001383e6cefff3493068d3176fbe27f9030741dd4b7a41cbae5c48ed
+- bytes: 8506
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5750,6 +5762,7 @@ UI 実装は、本書との差分として管理される
 - platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
 - platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/.gitkeep
 - tools/mep/New-MEPBusiness.ps1
+- platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/KEEP.md
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
