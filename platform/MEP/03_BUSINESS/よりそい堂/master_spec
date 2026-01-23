@@ -44,3 +44,33 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 - 本カードが PR → main に導入され、Bundled（BUNDLE_VERSION更新）で再現できること。
 
 <!-- END: YORISOIDOU_RUNTIME_SELFTEST_CHECKLIST -->
+
+<!-- BEGIN: YORISOIDOU_RECOVERY_QUEUE_CHECKLIST -->
+## CARD: YORISOIDOU_RECOVERY_QUEUE_CHECKLIST（BLOCKER/WARNING 復旧フロー確認）  [Draft]
+
+### 目的（固定）
+- BLOCKER / WARNING が Recovery Queue に登録され、OPEN → 解消 → 記録 の状態遷移が運用として回ることを確認できる手順と判定基準を固定する。
+
+### 対象（固定）
+- 対象イベント：BLOCKER / WARNING
+- 対象キュー：Recovery Queue
+- 判定観点：状態が飛ばず、記録が残って収束すること。
+
+### 前提（最小）
+- 本カードは「手順・判定基準」の固定のみを対象とし、実行結果の断定は含めない。
+- 状態遷移が観測できない場合は DIRTY 停止し、推測で埋めない。
+
+### 手順（チェックリスト）
+1. 初期状態確認（未存在/OPEN）
+2. BLOCKER / WARNING を 1件 発生（手段未確定なら DIRTY）
+3. 登録確認（OPEN）
+4. 解消操作（手順未確定なら DIRTY）
+5. 状態遷移確認（OPEN → 解消済）
+6. 記録確認（内容/日時/主体、記録先未確定なら DIRTY）
+7. 再実行確認（同種を再度1件、破綻せず回る）
+8. NG時の扱い（状態飛び/記録欠落/観測不能は DIRTY → 別PR）
+
+### 証跡（Bundled固定条件）
+- 本カードが PR → main に導入され、Bundled（BUNDLE_VERSION更新）で再現できること。
+
+<!-- END: YORISOIDOU_RECOVERY_QUEUE_CHECKLIST -->
