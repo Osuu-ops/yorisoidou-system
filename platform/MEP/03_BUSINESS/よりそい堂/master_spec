@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
 CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 -->
@@ -13,3 +13,34 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 - 讌ｭ蜍吶せ繝壹ャ繧ｯ・医ヵ繝ｭ繝ｼ/萓句､・譛蟆丞ｮ夂ｾｩ・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_spec.md
 - UI驕ｩ逕ｨ莉墓ｧ假ｼ亥ｰ守ｷ・陦ｨ遉ｺ縺ｮ縺ｿ繝ｻ諢丞袖螟画峩縺ｪ縺暦ｼ会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_spec.md
 
+
+<!-- BEGIN: YORISOIDOU_RUNTIME_SELFTEST_CHECKLIST -->
+## CARD: YORISOIDOU_RUNTIME_SELFTEST_CHECKLIST（RuntimeSelfTest 一巡・冪等確認）  [Draft]
+
+### 目的（固定）
+- RuntimeSelfTest をテストIDで一巡し、「増殖なし（冪等）」を確認できる手順と判定基準を固定する。
+
+### 対象（固定）
+- テストID：UF01 / UF06 / UF07 / UF08 / WORK_DONE / RESYNC
+- 判定観点：2周目以降で「新規増殖（差分の増え続け）」が発生しないこと。
+
+### 前提（最小）
+- 本カードは「手順・判定基準」の固定のみを対象とし、実行結果の断定は含めない。
+- 不明点が出た場合は DIRTY 停止し、推測で埋めない。
+
+### 手順（チェックリスト）
+1. 事前スナップショット取得
+2. 1周目実行（UF01 → UF06 → UF07 → UF08 → WORK_DONE → RESYNC）
+3. 1周目後スナップショット取得
+4. 2周目再実行（同一順序）
+5. 2周目後スナップショット取得
+6. 差分比較（冪等判定）
+   - OK：2周目で増殖に該当する差分が増えない
+   - NG：回すたびに新規生成が積み上がる
+7. NG時の扱い
+   - 実行を止め DIRTY とし、原因調査は別PRへ切り出す
+
+### 証跡（Bundled固定条件）
+- 本カードが PR → main に導入され、Bundled（BUNDLE_VERSION更新）で再現できること。
+
+<!-- END: YORISOIDOU_RUNTIME_SELFTEST_CHECKLIST -->
