@@ -1,4 +1,4 @@
-﻿name: Chat Packet Update (Schedule)
+name: Chat Packet Update (Schedule)
 
 on:
   schedule:

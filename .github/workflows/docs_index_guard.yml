@@ -1,4 +1,4 @@
-﻿name: Docs Index Guard
+name: Docs Index Guard
 
 on:
   pull_request:

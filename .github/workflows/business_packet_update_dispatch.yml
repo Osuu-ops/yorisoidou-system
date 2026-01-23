@@ -1,4 +1,4 @@
-﻿name: Business Packet Update (Dispatch)
+name: Business Packet Update (Dispatch)
 
 on:
   workflow_dispatch:

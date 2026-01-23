@@ -12,3 +12,4 @@ run_evidence_check.*.log
 docs/MEP/AI_LEARN/ERROR_PACKETS/
 docs/MEP/AI_LEARN/ERROR_PACKETS/**
 
+_tmp_*.yml

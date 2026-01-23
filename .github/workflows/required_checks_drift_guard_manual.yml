@@ -1,4 +1,4 @@
-﻿name: Required Checks Drift Guard (Manual)
+name: Required Checks Drift Guard (Manual)
 
 on:
   workflow_dispatch:

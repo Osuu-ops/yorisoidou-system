@@ -1,4 +1,4 @@
-﻿name: Chat Packet Update (Dispatch)
+name: Chat Packet Update (Dispatch)
 
 on:
   workflow_dispatch:
