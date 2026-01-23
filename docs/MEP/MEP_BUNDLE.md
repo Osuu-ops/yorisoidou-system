@@ -612,3 +612,20 @@ Bundled 本文に基づき、
 
 
 
+
+
+<!-- BEGIN: BUSINESS_DONE_DEFINITION_BUNDLED_REF -->
+## CARD: BUSINESS_DONE_DEFINITION_BUNDLED_REF（完成＝運用可能：全BUSINESS共通の参照）  [Adopted]
+
+### 目的（固定）
+- 「完成＝運用可能」の定義を、Bundled本文から直接参照できる状態に固定する（監査用）。
+- 各BUSINESSは固有DoDを勝手に再定義せず、共通定義を参照し、必要な場合のみ追記（ADD ONLY）する。
+
+### 参照（唯一の正）
+- platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
+
+### 適用（固定）
+- 各BUSINESSの master_spec は、固有の DONE 定義を重複定義せず、
+  上記共通カードを参照する（例：よりそい堂は master_spec の YORISOIDOU_DONE_DEFINITION が参照カードになっている）。
+
+<!-- END: BUSINESS_DONE_DEFINITION_BUNDLED_REF -->
