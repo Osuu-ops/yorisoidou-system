@@ -628,3 +628,6 @@ Bundled 本文に基づき、
 - raw_packets: docs/MEP/AI_LEARN/ERROR_PACKETS/ (not bundled)
 - rationale: Bundled references the adopted registry only. Raw packets remain outside Bundled to avoid growth/contamination.
 
+<!-- BEGIN: HANDOFF_NEXT (MEP) -->
+<!-- (writeback only) -->
+<!-- END: HANDOFF_NEXT (MEP) -->
