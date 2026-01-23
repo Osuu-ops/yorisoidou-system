@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 394883
+- included_total_bytes: 394982
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -5598,8 +5598,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 28c29228f69498248366ca59188914f6041373e18bc51a3c293f34d6722d6cb5
-- bytes: 8341
+- sha256: 43947c240dbba4fa4f6e622e27dd2b248aabb1b24a43f6ca49cac8f087a7878c
+- bytes: 8440
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5748,6 +5748,8 @@ UI 実装は、本書との差分として管理される
 - platform/MEP/03_BUSINESS/q/TARGETS.yml
 - platform/MEP/03_BUSINESS/q/business_spec.md
 - platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
+- platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/.gitkeep
+- tools/mep/New-MEPBusiness.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
