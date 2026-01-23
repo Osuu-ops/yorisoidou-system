@@ -12,7 +12,9 @@ if ([string]::IsNullOrWhiteSpace($RunId)) { $RunId = ("RUN-{0:yyyyMMdd-HHmmss}" 
 if ($null -eq $ScriptArgs) { $ScriptArgs = @() }
 
 function Stop-Now([string]$ReasonCode, [string]$Message) {
-  Write-Host "DECISION: STOP"
+  Write-Host "DECISION: STOP" -ForegroundColor Red
+    try { [console]::Beep(880,200) } catch {}
+    Write-Host "ACTION REQUIRED: run NEXT_SHORT (recommended) or NEXT" -ForegroundColor White -BackgroundColor DarkRed
   Write-Host ("REASON_CODE: {0}" -f $ReasonCode)
   Write-Host ("MESSAGE: {0}" -f $Message)
   exit 1
@@ -148,8 +150,8 @@ try {
     iex $Command
   }
 
-  Write-Host "DECISION: MERGE"
-  Write-Host "REASON_CODE: OK"
+  Write-Host "DECISION: MERGE" -ForegroundColor Green
+  Write-Host "REASON_CODE: OK" -ForegroundColor Green
   Write-Host "MESSAGE: All steps completed without terminating error."
   exit 0
 }
@@ -166,22 +168,28 @@ catch {
     $rc     = [string]$ent.reason_code
     $next   = [string]$ent.next_action
 
-    Write-Host "DECISION: STOP"
+  Write-Host "DECISION: STOP" -ForegroundColor Red
+    try { [console]::Beep(880,200) } catch {}
+    Write-Host "ACTION REQUIRED: run NEXT_SHORT (recommended) or NEXT" -ForegroundColor White -BackgroundColor DarkRed
     Write-Host ("REASON_CODE: {0}" -f $rc)
-    Write-Host ("SIGNATURE: {0}" -f $sig)
-    Write-Host ("POLICY: {0}" -f $policy)
-    Write-Host ("PACKET: {0}" -f $packetFile)
-    Write-Host ("NEXT: {0}" -f $next)
+    Write-Host ("SIGNATURE: {0}" -f $sig) -ForegroundColor Magenta
+    Write-Host ("POLICY: {0}" -f $policy) -ForegroundColor DarkYellow
+    Write-Host ("PACKET: {0}" -f $packetFile) -ForegroundColor Yellow
+    Write-Host ("NEXT: {0}" -f $next) -ForegroundColor Yellow
     exit 1
   } else {
-    Write-Host "DECISION: STOP"
-    Write-Host "REASON_CODE: UNKNOWN"
-    Write-Host ("SIGNATURE: {0}" -f $sig)
-    Write-Host ("PACKET: {0}" -f $packetFile)
-    Write-Host ("NEXT: .\tools\mep_learn_quick.ps1 -PacketPath `"{0}`" -ReasonCode TRIAGE -Policy STOP -NextAction `"Triage later.`"" -f $packetFile)
+  Write-Host "DECISION: STOP" -ForegroundColor Red
+    try { [console]::Beep(880,200) } catch {}
+    Write-Host "ACTION REQUIRED: run NEXT_SHORT (recommended) or NEXT" -ForegroundColor White -BackgroundColor DarkRed
+    Write-Host "REASON_CODE: UNKNOWN" -ForegroundColor Red
+    Write-Host ("SIGNATURE: {0}" -f $sig) -ForegroundColor Magenta
+    Write-Host ("PACKET: {0}" -f $packetFile) -ForegroundColor Yellow
+    Write-Host ("NEXT: .\tools\mep_learn_quick.ps1 -PacketPath `"{0}`" -ReasonCode TRIAGE -Policy STOP -NextAction `"Triage later.`"" -f $packetFile) -ForegroundColor Yellow
+    Write-Host "NEXT_SHORT: .\tools\mep_learn_quick.ps1" -ForegroundColor Cyan
     exit 1
   }
 }
+
 
 
 
