@@ -649,3 +649,11 @@ Bundled 本文に基づき、
 - 「完遂（運用可能）」の完了条件は BUSINESS_DONE_DEFINITION を参照する。
 
 <!-- END: YORISOIDOU_WORK_ITEM_BUNDLED_REF -->
+
+## CARD: AI_LEARN_ERROR_REGISTRY_REF
+- purpose: Persist adopted error learnings (registry) repo-locally and make it discoverable from Bundled.
+- registry: docs/MEP/AI_LEARN/ERROR_REGISTRY.json (entries=1, updated_at=2026-01-24 01:47:31)
+- playbook: docs/MEP/AI_LEARN/ERROR_PLAYBOOK.md
+- raw_packets: docs/MEP/AI_LEARN/ERROR_PACKETS/ (not bundled)
+- rationale: Bundled references the adopted registry only. Raw packets remain outside Bundled to avoid growth/contamination.
+
