@@ -1,4 +1,4 @@
-﻿name: MEP Gate (PR)
+name: MEP Gate (PR)
 
 on:
   pull_request:
