@@ -2,6 +2,8 @@ name: MEP Gate (PR)
 
 on:
   pull_request:
+    paths-ignore:
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
