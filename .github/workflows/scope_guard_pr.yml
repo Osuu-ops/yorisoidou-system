@@ -1,4 +1,4 @@
-﻿﻿name: Scope Guard (PR)
+name: Scope Guard (PR)
 
 on:
   pull_request:
@@ -64,7 +64,7 @@ jobs:
 
           text = open(scope_file, "r", encoding="utf-8").read()
 
-          m = re.search(r"^##\s*変更対象（Scope-IN）\s*$", text, flags=re.M)
+          m = re.search(r"^##\s*.*Scope-IN.*$", text, flags=re.M)
           if not m:
             print("::error::Scope-IN section not found in CURRENT_SCOPE.md (expected header: ## 変更対象（Scope-IN）)")
             sys.exit(1)
