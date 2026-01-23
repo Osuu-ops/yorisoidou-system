@@ -419,8 +419,6 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 <!-- END: SINGLE_ARTIFACT_FORMAT (MEP) -->
 
-
-
 <!-- BEGIN: OFFICIAL_DESCRIPTION (MEP) -->
 ## CARD: OFFICIAL_DESCRIPTION（MEP公式説明文書）  [Draft]
 # MEP 公式説明文書（Bundled記録ベース／到達点整理版）
@@ -561,35 +559,6 @@ Bundled 本文に基づき、
 以上。
 <!-- END: OFFICIAL_DESCRIPTION (MEP) -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## CARD: BUNDLE_EVIDENCE_APPEND (PR_NUMBER / INTEGRATION_INPUTS / BUSINESS_MASTER)  [Adopted]
 <!-- BEGIN: BUNDLE_EVIDENCE_APPEND -->
 
@@ -617,10 +586,6 @@ Bundled 本文に基づき、
   - 本項は運用実績ではなく、source に記載された CANONICAL の参照先文字列を根拠に確定する。
 
 <!-- END: BUNDLE_EVIDENCE_APPEND -->
-
-
-
-
 
 <!-- BEGIN: BUSINESS_DONE_DEFINITION_BUNDLED_REF -->
 ## CARD: BUSINESS_DONE_DEFINITION_BUNDLED_REF（完成＝運用可能：全BUSINESS共通の参照）  [Adopted]
