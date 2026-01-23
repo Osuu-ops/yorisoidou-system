@@ -7,6 +7,11 @@ on:
         description: 'PR number to write back (optional; 0 = auto latest merged PR)'
         required: false
         default: '0'
+      write_handoff:
+        description: 'Generate+Guard+Writeback HANDOFF_NEXT into Bundled'
+        required: false
+        default: 'false'
+
 permissions:
   contents: write
   pull-requests: write
@@ -23,6 +28,13 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Writeback HANDOFF_NEXT -> PR
+        if: ${{ inputs.write_handoff == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
       - name: Writeback evidence -> PR
         shell: pwsh
         env:
