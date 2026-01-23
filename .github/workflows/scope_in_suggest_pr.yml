@@ -1,4 +1,4 @@
-﻿name: Scope-IN Suggest (PR)
+name: Scope-IN Suggest (PR)
 
 on:
   pull_request:

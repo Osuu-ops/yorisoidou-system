@@ -1,4 +1,4 @@
-﻿name: MEP Dispatch (from Issue)
+name: MEP Dispatch (from Issue)
 
 on:
   issues:

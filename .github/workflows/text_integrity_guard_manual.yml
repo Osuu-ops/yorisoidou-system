@@ -1,4 +1,4 @@
-﻿name: Text Integrity Guard (Manual)
+name: Text Integrity Guard (Manual)
 
 on:
   workflow_dispatch:

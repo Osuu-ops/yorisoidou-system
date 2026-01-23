@@ -1,4 +1,4 @@
-﻿name: Text Integrity Guard (PR)
+name: Text Integrity Guard (PR)
 
 on:
   pull_request:

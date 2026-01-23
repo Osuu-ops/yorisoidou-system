@@ -1,4 +1,4 @@
-﻿name: State Summary Update (Schedule)
+name: State Summary Update (Schedule)
 
 on:
   schedule:

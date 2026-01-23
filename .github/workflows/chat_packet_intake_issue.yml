@@ -1,4 +1,4 @@
-﻿name: Chat Packet Intake (Issue)
+name: Chat Packet Intake (Issue)
 
 on:
   issues:

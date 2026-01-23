@@ -1,4 +1,4 @@
-﻿name: Self-Heal Auto PRs (no-checks / behind)
+name: Self-Heal Auto PRs (no-checks / behind)
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-﻿name: Upgrade Orchestrator (Manual/Schedule)
+name: Upgrade Orchestrator (Manual/Schedule)
 
 on:
   workflow_dispatch:

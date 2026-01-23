@@ -1,4 +1,4 @@
-﻿name: Chat Packet Self-Heal (PR)
+name: Chat Packet Self-Heal (PR)
 
 on:
   pull_request:
