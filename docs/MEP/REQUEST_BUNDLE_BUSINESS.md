@@ -44,7 +44,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 394408
+- included_total_bytes: 394883
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -4896,11 +4896,11 @@ This directory is the canonical entry point for business-side code/assets for �
 ---
 
 ### FILE: platform/MEP/03_BUSINESS/よりそい堂/master_spec.md
-- sha256: 1d96b95f0cbe02b05221dee4ee26d0ca6c8e896985734605a6b6bb14d5969f12
-- bytes: 1342
+- sha256: 2ce8d7a6c2d77d1b2f877582953e1ec6b8e833e9a55153bb95ef49cf40e66769
+- bytes: 1760
 
 ```text
-﻿<!--
+<!--
 ENTRY GUIDE ONLY (DO NOT PUT THE FULL SPEC HERE)
 CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 -->
@@ -4914,6 +4914,16 @@ CANONICAL CONTENT: platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
 - INDEX・亥・蜿｣繝ｻ隱ｭ繧鬆・分・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・INDEX.md
 - 讌ｭ蜍吶せ繝壹ャ繧ｯ・医ヵ繝ｭ繝ｼ/萓句､・譛蟆丞ｮ夂ｾｩ・会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_spec.md
 - UI驕ｩ逕ｨ莉墓ｧ假ｼ亥ｰ守ｷ・陦ｨ遉ｺ縺ｮ縺ｿ繝ｻ諢丞袖螟画峩縺ｪ縺暦ｼ会ｼ嗔latform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_spec.md
+
+
+
+<!-- BEGIN: YORISOIDOU_DONE_DEFINITION -->
+## CARD: YORISOIDOU_DONE_DEFINITION（完成＝運用可能の定義：参照）  [Draft]
+
+- 共通定義：platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md を参照する（重複定義しない）。
+- よりそい堂固有の追加条件が必要になった場合のみ、本カードへ「追記（ADD ONLY）」する。
+
+<!-- END: YORISOIDOU_DONE_DEFINITION -->
 ```
 
 
@@ -5588,8 +5598,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: e2e78ad61292ce64ba77c5de6f2eff05f7b40890067bacda5e0a1120a394a672
-- bytes: 8284
+- sha256: 28c29228f69498248366ca59188914f6041373e18bc51a3c293f34d6722d6cb5
+- bytes: 8341
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5737,6 +5747,7 @@ UI 実装は、本書との差分として管理される
 - platform/MEP/03_BUSINESS/q/MEP_SUB/MEP_BUNDLE.md
 - platform/MEP/03_BUSINESS/q/TARGETS.yml
 - platform/MEP/03_BUSINESS/q/business_spec.md
+- platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
