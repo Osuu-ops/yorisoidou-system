@@ -178,9 +178,10 @@ catch {
     Write-Host "REASON_CODE: UNKNOWN"
     Write-Host ("SIGNATURE: {0}" -f $sig)
     Write-Host ("PACKET: {0}" -f $packetFile)
-    Write-Host ("NEXT: .\tools\mep_learn_register.ps1 -PacketPath `"{0}`" -ReasonCode UNKNOWN -Policy STOP -NextAction `"Classify this signature, then update ReasonCode/Policy/NextAction.`"" -f $packetFile)
+    Write-Host ("NEXT: .\tools\mep_learn_quick.ps1 -PacketPath `"{0}`" -ReasonCode TRIAGE -Policy STOP -NextAction `"Triage later.`"" -f $packetFile)
     exit 1
   }
 }
+
 
 
