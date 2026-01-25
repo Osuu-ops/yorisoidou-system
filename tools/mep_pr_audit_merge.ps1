@@ -1,10 +1,10 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-
 param(
   [Parameter(Mandatory=$true)][int]$PrNumber,
   [Parameter()][switch]$DoMerge
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 function Normalize([string]$val){
   if ([string]::IsNullOrWhiteSpace($val)) { return "(RUNNING/UNKNOWN)" }
@@ -15,14 +15,14 @@ function Block([string]$msg){
   Write-Host ""
   Write-Host ("RESULT: AUDIT_BLOCKED - {0}" -f $msg)
   Write-Host ""
-  return $false
+  return
 }
 
 function Ok([string]$msg){
   Write-Host ""
   Write-Host ("RESULT: {0}" -f $msg)
   Write-Host ""
-  return $true
+  return
 }
 
 git rev-parse --show-toplevel | Out-Null
@@ -45,23 +45,16 @@ if ($j.mergedAt) { Write-Host ("MERGEDAT  : {0}" -f $j.mergedAt) }
 if ($j.mergeCommit -and $j.mergeCommit.oid) { Write-Host ("MERGECOM  : {0}" -f $j.mergeCommit.oid) }
 Write-Host ""
 
-# State split
+# MERGED => post-merge audit only
 if ($j.state -eq "MERGED") {
   git fetch origin | Out-Null
   git switch $base | Out-Null
   git pull --ff-only origin $base | Out-Null
-
-  # best-effort cleanup for head branch (if still exists)
-  $head = $j.headRefName
-  if (-not [string]::IsNullOrWhiteSpace($head)) {
-    try { gh api "repos/Osuu-ops/yorisoidou-system/git/refs/heads/$head" | Out-Null; gh api -X DELETE "repos/Osuu-ops/yorisoidou-system/git/refs/heads/$head" | Out-Null } catch { }
-    try { if ((git branch --list $head)) { git branch -D $head | Out-Null } } catch { }
-  }
-
   Ok "POST_MERGE_AUDIT_DONE"
   return
 }
 
+# OPEN only
 if ($j.state -ne "OPEN") { Block "PR is not OPEN/MERGED."; return }
 
 # Hard gates
