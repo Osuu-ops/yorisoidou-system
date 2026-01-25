@@ -1,0 +1,4 @@
+rqKey,orderId,partId,category,reason,detectedBy,detectedAt,details,status,resolvedAt,resolvedBy,resolutionNote,taskIdTodoist,taskIdClickUp,taskUrl,requestRef
+8d6443fda35b84fe668ec8a4e7d491cd0b6c36f43100ba6167a01f63101cbdbd,ORDER-20260105-00001-UP-AA001-0001,BP-202601-AA01-PA01,BLOCKER,PRICE未確定,WORK_DONE,2026-01-05T10:31:00Z,"BPのPRICE未確定。経費確定不可。
+---
+再観測: まだPRICE未確定。",RESOLVED,2026-01-05T10:40:00Z,manager,UF07で価格確定済み,,,,

@@ -29,7 +29,17 @@ function Write-Log([string]$path, [string]$msg) {
 
 function Run-TestId([string]$testId, [string]$logPath) {
   Write-Log $logPath "START testId=$testId ledger=$LedgerPath"
-  Write-Log $logPath "TODO: Wire actual runner for testId=$testId"
+
+  if ($testId -eq "UF01") {
+    & python -m tools.mep_integration_compiler.runtime.tests.b4_csv_e2e 2>&1 | Tee-Object -FilePath $logPath -Append
+  }
+  elseif ($testId -eq "UF06") {
+    & python -m tools.mep_integration_compiler.runtime.tests.b7_adapter_e2e 2>&1 | Tee-Object -FilePath $logPath -Append
+  }
+  else {
+    Write-Log $logPath "SKIP no dedicated runner for testId=$testId (covered by e2e)"
+  }
+
   Write-Log $logPath "END   testId=$testId"
 }
 
@@ -57,3 +67,4 @@ if (-not $SecondPass) {
   Write-Host "Tip: run a second pass to check idempotency:"
   Write-Host ("  pwsh {0} -OutDir {1} -LedgerPath {2} -SecondPass" -f $PSCommandPath, $OutDir, $(if ($LedgerPath -ne "") { $LedgerPath } else { "<ledger>" }))
 }
+
