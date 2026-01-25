@@ -149,6 +149,7 @@
 - platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/KEEP.md
 - tools/mep_orchestrator.ps1
 - tools/yorisoidou/run-runtime-selftest.ps1
+- tools/yorisoidou/**
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
@@ -179,4 +180,5 @@
 
 ## Child MEPs
 - EVIDENCE -> docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
 
