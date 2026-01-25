@@ -1,0 +1,33 @@
+[2026-01-25T19:30:57.818+09:00] RUN_BEGIN outDir=.\.mep-selftest secondPass=True
+[2026-01-25T19:30:57.822+09:00] LedgerPath=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+[2026-01-25T19:30:57.832+09:00] START testId=UF01 ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+{
+  "ok": true,
+  "paths": {
+    "recovery_queue_csv": ".mep\\tmp\\b4_e2e\\recovery_queue.csv",
+    "request_csv": ".mep\\tmp\\b4_e2e\\request.csv"
+  }
+}
+[2026-01-25T19:30:57.996+09:00] END   testId=UF01
+[2026-01-25T19:30:58.004+09:00] START testId=UF06 ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+{
+  "ok": true,
+  "paths": {
+    "recovery_queue_csv": ".mep\\tmp\\b7_adapter_e2e\\recovery_queue.csv",
+    "request_csv": ".mep\\tmp\\b7_adapter_e2e\\request.csv"
+  }
+}
+[2026-01-25T19:30:58.190+09:00] END   testId=UF06
+[2026-01-25T19:30:58.199+09:00] START testId=UF07 ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+[2026-01-25T19:30:58.208+09:00] SKIP no dedicated runner for testId=UF07 (covered by e2e)
+[2026-01-25T19:30:58.218+09:00] END   testId=UF07
+[2026-01-25T19:30:58.229+09:00] START testId=UF08 ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+[2026-01-25T19:30:58.239+09:00] SKIP no dedicated runner for testId=UF08 (covered by e2e)
+[2026-01-25T19:30:58.250+09:00] END   testId=UF08
+[2026-01-25T19:30:58.261+09:00] START testId=WORK_DONE ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+[2026-01-25T19:30:58.270+09:00] SKIP no dedicated runner for testId=WORK_DONE (covered by e2e)
+[2026-01-25T19:30:58.278+09:00] END   testId=WORK_DONE
+[2026-01-25T19:30:58.287+09:00] START testId=RESYNC ledger=C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\platform\MEP\01_CORE\system\code\input_full.json
+[2026-01-25T19:30:58.297+09:00] SKIP no dedicated runner for testId=RESYNC (covered by e2e)
+[2026-01-25T19:30:58.306+09:00] END   testId=RESYNC
+[2026-01-25T19:30:58.314+09:00] RUN_END

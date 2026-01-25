@@ -1,4 +1,0 @@
-requestKey,timestamp,category,targetType,targetId,payloadJson,requester,memo,requestStatus,resolvedAt,resolvedBy,resolutionNote,recoveryRqKey,externalRef
-9253e58a4dd54afb3ec10b6f3ac33e025cf5ab45f411a5e47e86fc97ea089589,2026-01-25T10:26:46Z,UF07,PART_ID,BP-202601-AA01-PA01,"{""category"":""UF07"",""memo"":""価格確定入力を依頼"",""partId"":""BP-202601-AA01-PA01"",""payloadVersion"":""1.0"",""targetId"":""BP-202601-AA01-PA01"",""targetType"":""PART_ID""}",system,"auto
----
-追記メモ",OPEN,,,,8d6443fda35b84fe668ec8a4e7d491cd0b6c36f43100ba6167a01f63101cbdbd,
