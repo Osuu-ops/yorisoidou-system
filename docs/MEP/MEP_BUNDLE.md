@@ -635,12 +635,11 @@ Bundled 本文に基づき、
 
 基準点：
 
-* BUNDLE_VERSION = v0.0.0+20260125_100656+auto/writeback-handoff_20260125_100650+parent
+* BUNDLE_VERSION = v0.0.0+20260125_101013+auto/writeback-handoff_20260125_101007+parent
 
 進捗台帳（機械生成）：
 
 * OK（audit=OK,WB0000）
-  * - PR #910 | mergedAt=01/20/2026 03:57:22 | mergeCommit=fa5e46c97ae96f156f7c1c7b100ca7db3bf93144 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:IN_PROGRESS, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/910
   * - PR #911 | mergedAt=01/20/2026 04:00:45 | mergeCommit=9f2838dceaf03f2db0a4a579ccb6dbdd93bbed5a | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/911
   * - PR #883 | mergedAt=01/20/2026 03:03:55 | mergeCommit=2c42f74e8ef8387489356bcfb2ee5970fb745103 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:FAILURE, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS, update-state-summary:SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/883
   * - PR #917 | mergedAt=01/20/2026 04:10:57 | mergeCommit=1e24ba5a142c24fbc08c4d131498616ef0488f64 | BUNDLE_VERSION=v0.0.0+20260120_014500+main_e06693d | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/917
@@ -716,6 +715,7 @@ Bundled 本文に基づき、
   * - PR #1139 | mergedAt=01/23/2026 17:10:35 | mergeCommit=52a19cdc3d83ca5ad5d0e731ed50bbca8ce00aa9 | BUNDLE_VERSION=v0.0.0+20260123_171051+main+parent | audit=OK,WB0000 | acceptance:IN_PROGRESS, acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS, update-state-summary:IN_PROGRESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1139
   * - PR #1148 | mergedAt=01/23/2026 17:36:15 | mergeCommit=94ea5f0cc9a01f850f0244b38af82c601ab6604a | BUNDLE_VERSION=v0.0.0+20260123_173633+main+parent | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1148
   * - PR #1158 | mergedAt=01/23/2026 18:57:19 | mergeCommit=2cc280f4270a6151ca4c5763730e208951ee1df8 | BUNDLE_VERSION=v0.0.0+20260125_100656+auto/writeback-handoff_20260125_100650+parent | audit=OK,WB0000 | acceptance:SUCCESS, bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1158
+  * - PR #1160 | mergedAt=01/25/2026 10:07:09 | mergeCommit=d79a19d3d2eb138c4ae2e663d57c5c872c74bd03 | BUNDLE_VERSION=v0.0.0+20260125_101013+auto/writeback-handoff_20260125_101007+parent | audit=OK,WB0000 | acceptance:SUCCESS, bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1160
 
 * NG（audit=NG）
   * - PR #947 | mergedAt=01/20/2026 18:08:41 | mergeCommit=793dcfb45a9582ca5317f33937004d5461d09447 | BUNDLE_VERSION=v0.0.0+20260120_160047+main_52873f8 | audit=NG,WB2001 | acceptance:FAILURE, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, gate:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/947
@@ -735,5 +735,6 @@ Bundled 本文に基づき、
 - NG回収：semantic-audit-business を SUCCESS に戻す（監査OK収束）
 - NG回収：WB2001 の FAILURE/NG を解消し audit=OK に収束
 <!-- END: HANDOFF_NEXT (MEP) -->
+
 
 
