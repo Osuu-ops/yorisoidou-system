@@ -150,6 +150,10 @@
 - tools/mep_orchestrator.ps1
 - tools/yorisoidou/run-runtime-selftest.ps1
 - tools/yorisoidou/**
+- .mep/tmp/b4_e2e/recovery_queue.csv
+- .mep/tmp/b4_e2e/request.csv
+- .mep/tmp/b7_adapter_e2e/recovery_queue.csv
+- .mep/tmp/b7_adapter_e2e/request.csv
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
