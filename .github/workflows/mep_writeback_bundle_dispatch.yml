@@ -28,6 +28,12 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Writeback evidence -> PR
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
       - name: Writeback HANDOFF_NEXT -> PR
         if: ${{ inputs.write_handoff == 'true' }}
         env:
@@ -35,12 +41,6 @@ jobs:
         run: |
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
-      - name: Writeback evidence -> PR
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
         shell: pwsh
         env:
