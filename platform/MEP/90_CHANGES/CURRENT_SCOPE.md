@@ -156,6 +156,7 @@
 - .mep/tmp/b7_adapter_e2e/request.csv
 - .mep-selftest/runtime-selftest_20260125_193056.log
 - .mep-selftest/runtime-selftest_20260125_193057_second.log
+- tools/mep_pr_audit_merge.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
