@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260123_173633+main+parent
+BUNDLE_VERSION = v0.0.0+20260125_100656+auto/writeback-handoff_20260125_100650+parent
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
@@ -359,6 +359,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 - PR #1136 | mergedAt=01/23/2026 17:03:37 | mergeCommit=cbace53d274be42fa69ad54bfac47ab050bc910f | BUNDLE_VERSION=v0.0.0+20260123_170814+main+parent | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1136
 - PR #1139 | mergedAt=01/23/2026 17:10:35 | mergeCommit=52a19cdc3d83ca5ad5d0e731ed50bbca8ce00aa9 | BUNDLE_VERSION=v0.0.0+20260123_171051+main+parent | audit=OK,WB0000 | acceptance:IN_PROGRESS, acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS, update-state-summary:IN_PROGRESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1139
 - PR #1148 | mergedAt=01/23/2026 17:36:15 | mergeCommit=94ea5f0cc9a01f850f0244b38af82c601ab6604a | BUNDLE_VERSION=v0.0.0+20260123_173633+main+parent | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1148
+- PR #1158 | mergedAt=01/23/2026 18:57:19 | mergeCommit=2cc280f4270a6151ca4c5763730e208951ee1df8 | BUNDLE_VERSION=v0.0.0+20260125_100656+auto/writeback-handoff_20260125_100650+parent | audit=OK,WB0000 | acceptance:SUCCESS, bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1158
 ## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
 
 ### 基本
