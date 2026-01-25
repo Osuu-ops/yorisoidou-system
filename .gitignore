@@ -13,3 +13,9 @@ docs/MEP/AI_LEARN/ERROR_PACKETS/
 docs/MEP/AI_LEARN/ERROR_PACKETS/**
 
 _tmp_*.yml
+
+__pycache__/
+
+
+*.pyc
+
