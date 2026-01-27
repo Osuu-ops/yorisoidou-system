@@ -187,6 +187,7 @@
 - tools/mep_auto.ps1
 - tools/mep_current_stage.ps1
 - tools/pre_gate.ps1
+- .mep/CURRENT_STAGE.txt
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
