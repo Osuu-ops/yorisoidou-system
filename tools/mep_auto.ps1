@@ -1,9 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-param(
-  [switch]$Once
-)
+param([switch]$Once)
 
 function Fail([string]$m){ throw $m }
 function Info([string]$m){ Write-Host "[AUTO] $m" -ForegroundColor Cyan }
@@ -30,6 +28,24 @@ function RunPreGate() {
   if ($code -ne 0) { Fail "Pre-Gate failed (exit=$code)" }
 }
 
+function RunReadOnlySuite() {
+  # Recommended minimal read-only checks (run if present; fail-fast)
+  $cands = @(
+    (Join-Path $root "scripts/evidence_check.ps1"),
+    (Join-Path $root "tools/acceptance_tests.ps1"),
+    (Join-Path $root "tools/mep_handoff_guard.ps1")
+  )
+
+  foreach ($p in $cands) {
+    if (Test-Path -LiteralPath $p) {
+      Info ("Run read-only: " + (Split-Path $p -Leaf))
+      & $p
+      $code = $LASTEXITCODE
+      if ($code -ne 0) { Fail ("Read-only check failed (exit=" + $code + "): " + (Split-Path $p -Leaf)) }
+    }
+  }
+}
+
 function RunStage([string]$stage) {
   switch ($stage) {
     "PRE_GATE" {
@@ -38,16 +54,8 @@ function RunStage([string]$stage) {
       return
     }
     "MEP_AUTO" {
-      # If autopilot exists, run it. Otherwise just advance to DONE.
-      $autopilot = Join-Path $root "tools/mep_autopilot.ps1"
-      if (Test-Path -LiteralPath $autopilot) {
-        Info "Run tools/mep_autopilot.ps1"
-        & $autopilot
-        $code = $LASTEXITCODE
-        if ($code -ne 0) { Fail "mep_autopilot failed (exit=$code)" }
-      } else {
-        Info "No mep_autopilot.ps1 found; skipping."
-      }
+      # Recommended: read-only suite only (safe side)
+      RunReadOnlySuite
       & $stageTool -op advance | Out-Null
       return
     }
