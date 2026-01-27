@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-BUNDLE_VERSION = v0.0.0+20260121_210141+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260127_185017+main+evidence-child
 =======
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
@@ -30,6 +30,7 @@ BUNDLE_VERSION = v0.0.0+20260121_210141+main+evidence-child
 - PR #1096 | mergedAt=01/21/2026 20:44:19 | mergeCommit=777be0edb248330acedb840351b6fb42c8f3a92f | BUNDLE_VERSION=v0.0.0+20260121_204451+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1096
 - PR #1098 | mergedAt=01/21/2026 20:50:04 | mergeCommit=fe0a8c003f7295818336eb2b09eb1aa124bc1c75 | BUNDLE_VERSION=v0.0.0+20260121_205113+main+evidence-child | audit=OK,WB0000 | checks:(none) | https://github.com/Osuu-ops/yorisoidou-system/pull/1098
 - PR #1086 | mergedAt=01/21/2026 20:29:27 | mergeCommit=9eb1e3566bd3a74b700aa34c5de4133fcc60b840 | BUNDLE_VERSION=v0.0.0+20260121_210141+main+evidence-child | audit=OK,WB0000 | acceptance:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1086
+- PR #1204 | mergedAt=01/27/2026 18:33:31 | mergeCommit=14e8dc6661f69a43a2b7b4e1cd3df48d88198851 | BUNDLE_VERSION=v0.0.0+20260127_185017+main+evidence-child | audit=NG,WB2001 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):FAILURE, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1204
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
