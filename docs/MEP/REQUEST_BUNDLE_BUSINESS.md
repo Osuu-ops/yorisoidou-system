@@ -45,7 +45,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 395511
+- included_total_bytes: 396474
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -5610,8 +5610,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 5ea3b136eb4a0de4896368c730d5ec45a75befc99211e88aa435ac22dce69b04
-- bytes: 8954
+- sha256: f812bb42575a11cdb3c2fb5bdc0b2f6d1e14eab700ea251f6c18aa221b0d2dfc
+- bytes: 9917
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5774,6 +5774,32 @@ UI 実装は、本書との差分として管理される
 - .mep-selftest/runtime-selftest_20260125_193057_second.log
 - tools/mep_pr_audit_merge.ps1
 - .github/workflows/mep_writeback_bundle_dispatch.yml.bak
+- .editorconfig
+- .gitattributes
+- .github/ISSUE_TEMPLATE/mep_dispatch.yml
+- .github/workflows/dispatch_smoke.yml.bak.20260113-021811
+- .github/workflows/ux_rooftop_full_auto_dispatch.yml.bak.20260113-021811
+- .github/workflows/ux_rooftop_full_auto_dispatch_v2.yml.bak.20260113-021811
+- .mep/artifacts/artifact_20260112-180343.md
+- .mep/artifacts/artifact_20260112-182405.md
+- gas/clasp_webapp/src/A1_WriteEndpoint_LedgerApply.js
+- gas/uf06/README_UF06.md
+- gas/uf06/parts_dict.gs
+- gas/uf06/task_title_projector.gs
+- handoff_yorisoidou_business.md
+- platform/MEP/03_BUSINESS/tictactoe/master_spec.md
+- scripts/evidence_check.ps1
+- tools/mep.ps1
+- tools/mep_bundle_update_ai_learn_ref.ps1
+- tools/mep_entry.ps1
+- tools/mep_gate_doctor.ps1
+- tools/mep_handoff.ps1.bak.20260107-013624
+- tools/mep_handoff_generate.ps1
+- tools/mep_handoff_guard.ps1
+- tools/mep_learn_quick.ps1
+- tools/mep_learn_register.ps1
+- tools/mep_pregate.ps1
+- tools/mep_writeback_handoff.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
