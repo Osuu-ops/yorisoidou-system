@@ -184,6 +184,9 @@
 - tools/mep_learn_register.ps1
 - tools/mep_pregate.ps1
 - tools/mep_writeback_handoff.ps1
+- tools/mep_auto.ps1
+- tools/mep_current_stage.ps1
+- tools/pre_gate.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
