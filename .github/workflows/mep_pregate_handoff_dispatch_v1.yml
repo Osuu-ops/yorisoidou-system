@@ -29,9 +29,7 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
-
           function Fail([string]$m){ throw $m }
-          function Info([string]$m){ Write-Host "[INFO] $m" }
 
           $ctx = "${{ inputs.context }}"
           if ([string]::IsNullOrWhiteSpace($ctx)) { $ctx = "CORE" }
@@ -42,7 +40,7 @@ jobs:
           $bundled = "docs/MEP/MEP_BUNDLE.md"
           if (!(Test-Path $bundled)) { Fail "Bundled not found: $bundled" }
 
-          $bvLine = Select-String -Path $bundled -Pattern "^\s*BUNDLE_VERSION\s*=" -SimpleMatch -ErrorAction Stop | Select-Object -First 1
+          $bvLine = Select-String -Path $bundled -Pattern "^\s*BUNDLE_VERSION\s*=" -ErrorAction Stop | Select-Object -First 1
           if (-not $bvLine) { Fail "BUNDLE_VERSION not found in $bundled" }
 
           $bv = ($bvLine.Line -replace "^\s*BUNDLE_VERSION\s*=\s*","").Trim()
@@ -58,7 +56,6 @@ jobs:
           $outTmp = Join-Path $outDir "handoff.tmp.md"
           $out    = Join-Path $outDir "handoff.md"
 
-          # Build minimal packet first (META only). Sections are placeholders intentionally.
           @"
 # HANDOFF
 
@@ -75,30 +72,23 @@ PRE_GATE_MISSING = []
 STATUS = $status
 
 ## 1. CONFIRMED (Bundled-only facts)
-- (to be filled by Gate/meaning phase; keep Bundled references only)
+- (to be filled later; Bundled references only)
 
 ## 2. UNCONFIRMED / DRAFT
-- (to be filled explicitly as unconfirmed; never assert as confirmed)
+- (explicitly unconfirmed)
 
 ## 3. NEXT
-- (single-thread continuation steps)
+- (single thread)
 "@ | Set-Content -Encoding UTF8 $outTmp
 
-          # Mechanical Pre-Gate checks (EXPECTED=10)
           $expected = 10
           $missing = New-Object System.Collections.Generic.List[string]
-          $ng = New-Object System.Collections.Generic.List[string]
-
-          # helpers
           function HasLine([string]$path, [string]$pattern){
             return [bool](Select-String -Path $path -Pattern $pattern -ErrorAction SilentlyContinue | Select-Object -First 1)
           }
 
-          # PG-01
           if (-not (HasLine $bundled "^\s*BUNDLE_VERSION\s*=")) { $missing.Add("PG-01") }
-          # PG-02
           if (-not (Test-Path $bundled)) { $missing.Add("PG-02") }
-          # PG-03..PG-10 check in handoff.tmp.md
           if (-not (HasLine $outTmp "^\s*HANDOFF_ID\s*=")) { $missing.Add("PG-03") }
           if (-not (HasLine $outTmp "^\s*CONTEXT\s*=")) { $missing.Add("PG-04") }
           if (-not (HasLine $outTmp "^\s*GENERATED_AT\s*=")) { $missing.Add("PG-05") }
@@ -114,22 +104,13 @@ STATUS = $status
           $missingJson = ($missing | ConvertTo-Json -Compress)
           if (-not $missingJson) { $missingJson = "[]" }
 
-          # Patch counts into file
           $txt = Get-Content -Raw -Encoding UTF8 $outTmp
           $txt = $txt -replace "PRE_GATE_FOUND_OK\s*=\s*\d+","PRE_GATE_FOUND_OK = $foundOk"
           $txt = $txt -replace "PRE_GATE_FOUND_NG\s*=\s*\d+","PRE_GATE_FOUND_NG = 0"
           $txt = $txt -replace "PRE_GATE_MISSING\s*=\s*\[[^\]]*\]","PRE_GATE_MISSING = $missingJson"
           Set-Content -Encoding UTF8 -Path $outTmp -Value $txt
 
-          # Atomic replace
           Move-Item -Force $outTmp $out
-
-          # Emit summary
-          "PRE_GATE_EXPECTED=$expected" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
-          "PRE_GATE_FOUND_OK=$foundOk" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
-          "PRE_GATE_MISSING=$missingJson" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
-          "BUNDLE_VERSION=$bv" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
-          "HANDOFF_ID=$handoffId" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
 
           if ($foundOk -ne $expected) {
             Fail "Pre-Gate failed: FOUND_OK($foundOk) != EXPECTED($expected). MISSING=$missingJson"

@@ -23,7 +23,7 @@ PG-06 | Handoff meta has STATUS | handoff.md contains `^STATUS\s*=`
 PG-07 | Handoff meta has PRE_GATE_EXPECTED | handoff.md contains `^PRE_GATE_EXPECTED\s*=`
 PG-08 | Handoff meta has PRE_GATE_FOUND_OK | handoff.md contains `^PRE_GATE_FOUND_OK\s*=`
 PG-09 | Handoff meta has PRE_GATE_MISSING | handoff.md contains `^PRE_GATE_MISSING\s*=`
-PG-10 | Handoff declares SOURCE (Bundled path) | handoff.md contains `^SOURCE\s*=`
+PG-10 | Handoff declares SOURCE (Bundled path) | handoff.md contains `^SOURCE\s*=\s*docs/MEP/MEP_BUNDLE\.md`
 
 ## Notes
 - This checklist intentionally avoids semantic judgement.
