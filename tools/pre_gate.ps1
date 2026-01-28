@@ -22,6 +22,12 @@ try {
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
   $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -56,6 +62,12 @@ try {
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
   $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -113,6 +125,12 @@ try {
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
   $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -168,6 +186,12 @@ try {
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
   $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
