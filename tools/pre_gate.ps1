@@ -67,6 +67,8 @@ try {
     $candidates += Get-ChildItem -Path $toolsDir -File -Filter "*.ps1" |
       Where-Object { $_.Name -match "mep_.*(audit|readonly)" -and $_.Name -notmatch "entry|pregate" } |
       Sort-Object Name
+  $candidates = @($candidates | Where-Object { $_.Name -ne 'mep_pr_audit_merge.ps1' })
+
   }
 
   if ($candidates.Count -gt 0) {
