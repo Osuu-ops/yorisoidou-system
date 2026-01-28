@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-BUNDLE_VERSION = v0.0.0+20260128_171954+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260128_173801+main+evidence-child
 =======
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
@@ -35,6 +35,7 @@ BUNDLE_VERSION = v0.0.0+20260128_171954+main+evidence-child
 - PR #1214 | mergedAt=01/27/2026 19:29:26 | mergeCommit=ca68bbbec2b56628f0a0ffa3950b4bd2feb6a312 | BUNDLE_VERSION=v0.0.0+20260127_192941+main+evidence-child | audit=NG,WB2001 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):FAILURE, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1214
 - PR #1218 | mergedAt=01/28/2026 14:41:05 | mergeCommit=5095acbebcb7d07e6f23350345e0341bc500843f | BUNDLE_VERSION=v0.0.0+20260128_144119+main+evidence-child | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1218
 - PR #1244 | mergedAt=01/28/2026 17:16:53 | mergeCommit=5682c6af0ed272d779a6ac3e50313abd6e3e3f14 | BUNDLE_VERSION=v0.0.0+20260128_171954+main+evidence-child | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1244
+- PR #1245 | mergedAt=01/28/2026 17:33:12 | mergeCommit=e4f3c020a2bbfce7367a1d7d3a8e04af4b32d340 | BUNDLE_VERSION=v0.0.0+20260128_173801+main+evidence-child | audit=OK,WB0000 | checks:(none) | https://github.com/Osuu-ops/yorisoidou-system/pull/1245
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
