@@ -15,6 +15,9 @@ if (!(Test-Path -LiteralPath $preGate)) { Fail "Missing single-truth Pre-Gate: t
 $stageTool = Join-Path $root "tools/mep_current_stage.ps1"
 if (!(Test-Path -LiteralPath $stageTool)) { Fail "Missing: tools/mep_current_stage.ps1" }
 
+$onceFlag = $false
+if ($PSBoundParameters.ContainsKey('Once')) { $onceFlag = [bool]$Once }
+
 function ReadStage() {
   $p = Join-Path $root ".mep/CURRENT_STAGE.txt"
   if (!(Test-Path -LiteralPath $p)) { Set-Content -LiteralPath $p -Value "PRE_GATE" -Encoding UTF8 -NoNewline }
@@ -29,13 +32,11 @@ function RunPreGate() {
 }
 
 function RunReadOnlySuite() {
-  # Recommended minimal read-only checks (run if present; fail-fast)
   $cands = @(
     (Join-Path $root "scripts/evidence_check.ps1"),
     (Join-Path $root "tools/acceptance_tests.ps1"),
     (Join-Path $root "tools/mep_handoff_guard.ps1")
   )
-
   foreach ($p in $cands) {
     if (Test-Path -LiteralPath $p) {
       Info ("Run read-only: " + (Split-Path $p -Leaf))
@@ -48,24 +49,10 @@ function RunReadOnlySuite() {
 
 function RunStage([string]$stage) {
   switch ($stage) {
-    "PRE_GATE" {
-      RunPreGate
-      & $stageTool -op advance | Out-Null
-      return
-    }
-    "MEP_AUTO" {
-      # Recommended: read-only suite only (safe side)
-      RunReadOnlySuite
-      & $stageTool -op advance | Out-Null
-      return
-    }
-    "DONE" {
-      Info "CURRENT_STAGE=DONE"
-      return
-    }
-    default {
-      Fail "Unknown CURRENT_STAGE: $stage"
-    }
+    "PRE_GATE" { RunPreGate; & $stageTool -op advance | Out-Null; return }
+    "MEP_AUTO" { RunReadOnlySuite; & $stageTool -op advance | Out-Null; return }
+    "DONE"     { Info "CURRENT_STAGE=DONE"; return }
+    default    { Fail "Unknown CURRENT_STAGE: $stage" }
   }
 }
 
@@ -73,7 +60,7 @@ while ($true) {
   $stage = ReadStage
   Info "CURRENT_STAGE=$stage"
   RunStage $stage
-  if ($Once) { break }
+  if ($onceFlag) { break }
   if ((ReadStage) -eq "DONE") { break }
 }
 Info "AUTO finished (stage=$(ReadStage))"
