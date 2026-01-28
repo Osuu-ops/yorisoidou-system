@@ -11,6 +11,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -51,6 +65,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -114,6 +142,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -175,6 +217,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -245,3 +301,4 @@ catch {
 catch {
   Boom $_.Exception.Message
 }
+
