@@ -12,6 +12,9 @@ if (!(Test-Path -LiteralPath (Join-Path $root ".git"))) { Fail "Not a git repo r
 $auto = Join-Path $root "tools/mep_auto.ps1"
 if (!(Test-Path -LiteralPath $auto)) { Fail "Missing: tools/mep_auto.ps1" }
 
-Info "Delegating to tools/mep_auto.ps1"
-& $auto -Once:$Once
+$onceFlag = $false
+if ($PSBoundParameters.ContainsKey('Once')) { $onceFlag = [bool]$Once }
+
+Info ("Delegating to tools/mep_auto.ps1 (Once=" + $onceFlag + ")")
+if ($onceFlag) { & $auto -Once } else { & $auto }
 exit $LASTEXITCODE
