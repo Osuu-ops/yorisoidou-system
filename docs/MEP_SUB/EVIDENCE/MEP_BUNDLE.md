@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-BUNDLE_VERSION = v0.0.0+20260128_144119+main+evidence-child
+BUNDLE_VERSION = v0.0.0+20260128_160223+main+evidence-child
 =======
 >>>>>>> origin/main
 ## CARD: EVIDENCE / WRITEBACK SPEC
@@ -34,6 +34,7 @@ BUNDLE_VERSION = v0.0.0+20260128_144119+main+evidence-child
 - PR #1210 | mergedAt=01/27/2026 19:14:23 | mergeCommit=2afcaaf9de704b0eb8c0f5b8a173b8f0082985b1 | BUNDLE_VERSION=v0.0.0+20260127_191444+main+evidence-child | audit=OK,WB0000 | bom-check:QUEUED, Business Packet Guard (PR):IN_PROGRESS, done_check:QUEUED, enable_auto_merge:QUEUED, merge_repair_pr:SKIPPED, Scope Guard (PR):QUEUED, semantic-audit-business:QUEUED, semantic-audit:QUEUED, suggest:IN_PROGRESS, Text Integrity Guard (PR):QUEUED | https://github.com/Osuu-ops/yorisoidou-system/pull/1210
 - PR #1214 | mergedAt=01/27/2026 19:29:26 | mergeCommit=ca68bbbec2b56628f0a0ffa3950b4bd2feb6a312 | BUNDLE_VERSION=v0.0.0+20260127_192941+main+evidence-child | audit=NG,WB2001 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):FAILURE, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1214
 - PR #1218 | mergedAt=01/28/2026 14:41:05 | mergeCommit=5095acbebcb7d07e6f23350345e0341bc500843f | BUNDLE_VERSION=v0.0.0+20260128_144119+main+evidence-child | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1218
+- PR #1235 | mergedAt=01/28/2026 16:02:04 | mergeCommit=02f51ea25989e6e2ff29a1a011432e527e3f075a | BUNDLE_VERSION=v0.0.0+20260128_160223+main+evidence-child | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1235
 ## CARD: EVIDENCE / CHILD MEP / COMPLETION
 
 ### 目的（この子MEPで何を独立させるか）
