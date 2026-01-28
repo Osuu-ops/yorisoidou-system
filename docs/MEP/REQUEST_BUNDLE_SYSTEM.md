@@ -23,6 +23,8 @@
 - platform/MEP/01_CORE/99__ci_trigger_cleanup.md
 - platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
 - platform/MEP/01_CORE/cards/EVIDENCE_SUB_MEP_ROOT.md
+- platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
+- platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
 - platform/MEP/01_CORE/definitions/SYMBOLS.md
 - platform/MEP/01_CORE/foundation/API_IO_BOUNDARY_CANON.md
 - platform/MEP/01_CORE/foundation/CI_GUARD_CANON.md
@@ -55,7 +57,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 136425
+- included_total_bytes: 138864
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1652,6 +1654,84 @@ EVIDENCE（証跡貼り戻し）領域を、親MEPから独立運用できる �
 - 子MEP Bundled の生成物パスを決める（別カードで固定）
 - 親MEP側に参照カード（EVIDENCE Sub MEP を参照するだけ）を追加する
 <!-- END: EVIDENCE_SUB_MEP_ROOT (MEP) -->
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
+- sha256: 92be5f1fdeebcff4ab660e9d20963e6ef312d5313ccf404697eb25bca2f07ee0
+- bytes: 976
+
+```text
+# CARD: HANDOFF_PACKET_SPEC [Draft]
+
+## Purpose
+handoff.md is a self-contained transfer packet.
+It must be the only input to the next chat (no ID typing, no prose instructions outside the file).
+
+## File: HANDOFF/ACTIVE/handoff.md (fixed path, overwrite)
+### 0. META (must be first)
+- HANDOFF_ID = <auto>
+- CONTEXT = <auto> (e.g., CORE / BUSINESS/yorisoidou / SUBMEP/...)
+- GENERATED_AT = <auto ISO8601>
+- SOURCE = docs/MEP/MEP_BUNDLE.md
+- BUNDLE_VERSION = <from Bundled header>
+- PRE_GATE_EXPECTED = 10
+- PRE_GATE_FOUND_OK = <auto>
+- PRE_GATE_FOUND_NG = <auto>
+- PRE_GATE_MISSING = <auto JSON array>
+- STATUS = DRAFT | ACTIVE | COMPLETED | ABANDONED
+
+### 1. CONFIRMED (Bundled-only facts)
+- list of confirmed facts with Bundled references
+
+### 2. UNCONFIRMED / DRAFT (explicitly not confirmed)
+- list of drafts / pending decisions
+- must not contain assertive language as confirmed facts
+
+### 3. NEXT (single-thread continuation)
+- next mechanical steps (no branching prose)
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
+- sha256: 53f2175ebacaf5700b5a3ef7de85a4f1b8084857a1828c3ec7a8fbe1ed5f33b9
+- bytes: 1463
+
+```text
+# CARD: PRE_GATE_CHECKLIST [Draft]
+
+## Purpose
+Pre-Gate is a *mechanical* gate. It does NOT judge meaning. It only verifies that required slots exist and are countable.
+If EXPECTED != FOUND_OK, processing must stop.
+
+## Output Contract (machine summary)
+- PRE_GATE_EXPECTED: integer
+- PRE_GATE_FOUND_OK: integer
+- PRE_GATE_FOUND_NG: integer
+- PRE_GATE_MISSING: JSON array of IDs
+- STOP_RULE: FOUND_OK == EXPECTED only
+
+## Checklist (EXPECTED=10)
+ID | Description | How to detect (machine)
+---|-------------|-------------------------
+PG-01 | BUNDLE_VERSION present in docs/MEP/MEP_BUNDLE.md | regex `^BUNDLE_VERSION\s*=`
+PG-02 | Bundled file exists | Test-Path docs/MEP/MEP_BUNDLE.md
+PG-03 | Handoff meta has HANDOFF_ID | handoff.md contains `^HANDOFF_ID\s*=`
+PG-04 | Handoff meta has CONTEXT | handoff.md contains `^CONTEXT\s*=`
+PG-05 | Handoff meta has GENERATED_AT | handoff.md contains `^GENERATED_AT\s*=`
+PG-06 | Handoff meta has STATUS | handoff.md contains `^STATUS\s*=`
+PG-07 | Handoff meta has PRE_GATE_EXPECTED | handoff.md contains `^PRE_GATE_EXPECTED\s*=`
+PG-08 | Handoff meta has PRE_GATE_FOUND_OK | handoff.md contains `^PRE_GATE_FOUND_OK\s*=`
+PG-09 | Handoff meta has PRE_GATE_MISSING | handoff.md contains `^PRE_GATE_MISSING\s*=`
+PG-10 | Handoff declares SOURCE (Bundled path) | handoff.md contains `^SOURCE\s*=\s*docs/MEP/MEP_BUNDLE\.md`
+
+## Notes
+- This checklist intentionally avoids semantic judgement.
+- Semantic judgement is Gate-phase only.
 ```
 
 

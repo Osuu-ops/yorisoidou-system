@@ -21,6 +21,7 @@
 - docs/MEP/UPGRADE_GATE.md
 - platform/MEP/03_BUSINESS/tictactoe/master_spec.md
 - platform/MEP/03_BUSINESS/yorisoidou/CMEP/02_MEP_SCRIPTS/KEEP.md
+- platform/MEP/03_BUSINESS/yorisoidou/README.md
 - platform/MEP/03_BUSINESS/よりそい堂/00_CURRENT_SCOPE_NOTE.md
 - platform/MEP/03_BUSINESS/よりそい堂/01_INDEX.md
 - platform/MEP/03_BUSINESS/よりそい堂/03_TODO.md
@@ -45,7 +46,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 396571
+- included_total_bytes: 397756
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1578,6 +1579,36 @@ Tell the assistant:
 
 ```text
 # placeholder
+```
+
+
+---
+
+### FILE: platform/MEP/03_BUSINESS/yorisoidou/README.md
+- sha256: 864585371f6e7fba819ba221f59b98ae23587906da17c7733b96edc1bc4223d1
+- bytes: 726
+
+```text
+# 03_BUSINESS / yorisoidou（テスト入口）
+
+## 目的
+このフォルダは **テスト走行用の入口（Entry）** です。
+本番の業務資産（ビジネスマスタ等）は **日本語フォルダ側**にあります。
+
+## キー（今回の「キー」）
+- biz_key: yorisoidou
+- display_name: よりそい堂
+
+## 本体（変更対象外の想定）
+- canonical_root: platform/MEP/03_BUSINESS/よりそい堂/
+
+## 使い方（最小）
+- 「キーはどこ？」→ まずここ（03_BUSINESS/yorisoidou）を見る
+- 実体の仕様・資産は canonical_root を辿る
+
+## 注意
+- この入口は “薄く” 保つ（参照点固定が目的）
+- 削除・統合は「全体完成後」に実施する
 ```
 
 
@@ -5610,8 +5641,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 771466cdf1b44d0dfea86075720e3aa5b18793371b21423eae2082973e1b945d
-- bytes: 10014
+- sha256: 10d2f4c53fa1ca88be0f4975a4aede950042d40c358bb4dd9f3877197eeb1c48
+- bytes: 10473
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5804,6 +5835,15 @@ UI 実装は、本書との差分として管理される
 - tools/mep_current_stage.ps1
 - tools/pre_gate.ps1
 - .mep/CURRENT_STAGE.txt
+- platform/MEP/03_BUSINESS/yorisoidou/README.md
+- platform/MEP/03_BUSINESS/yorisoidou/master_spec
+- platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
+- platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
+- tools/mep_audit_readonly.ps1
+- tools/mep_current_stage.ps1.bak_fix_args.20260129_005029
+- tools/mep_auto.ps1.bak_postpregate_20260129_023646
+- tools/mep_current_stage.ps1.bak_opshim2_20260129_023514
+- tools/mep_current_stage.ps1.bak_opshim_20260129_023357
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
