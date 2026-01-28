@@ -35,7 +35,7 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
 # === PREGATE_PROBE ===
 Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
 Info ("[PROBE] root=" + $root)
@@ -89,7 +89,7 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
 # === PREGATE_PROBE ===
 Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
 Info ("[PROBE] root=" + $root)
@@ -166,7 +166,7 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
 # === PREGATE_PROBE ===
 Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
 Info ("[PROBE] root=" + $root)
@@ -241,7 +241,7 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
 # === PREGATE_PROBE ===
 Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
 Info ("[PROBE] root=" + $root)
@@ -301,4 +301,5 @@ catch {
 catch {
   Boom $_.Exception.Message
 }
+
 
