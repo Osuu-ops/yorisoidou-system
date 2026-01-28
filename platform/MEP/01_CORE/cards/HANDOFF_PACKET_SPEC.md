@@ -15,6 +15,7 @@ It must be the only input to the next chat (no ID typing, no prose instructions 
 - PRE_GATE_FOUND_OK = <auto>
 - PRE_GATE_FOUND_NG = <auto>
 - PRE_GATE_MISSING = <auto JSON array>
+- STATUS = DRAFT | ACTIVE | COMPLETED | ABANDONED
 
 ### 1. CONFIRMED (Bundled-only facts)
 - list of confirmed facts with Bundled references
@@ -25,6 +26,3 @@ It must be the only input to the next chat (no ID typing, no prose instructions 
 
 ### 3. NEXT (single-thread continuation)
 - next mechanical steps (no branching prose)
-
-## Status
-- STATUS = DRAFT | ACTIVE | COMPLETED | ABANDONED
