@@ -190,6 +190,8 @@
 - .mep/CURRENT_STAGE.txt
 - platform/MEP/03_BUSINESS/yorisoidou/README.md
 - platform/MEP/03_BUSINESS/yorisoidou/master_spec
+- platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
+- platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
