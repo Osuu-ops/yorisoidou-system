@@ -4,10 +4,10 @@ $ErrorActionPreference = "Stop"
 function Fail([string]$m){ throw $m }
 function Info([string]$m){ Write-Host "[STAGE] $m" -ForegroundColor Cyan }
 
-# Args-based protocol (no param block):
-#   .\tools\mep_current_stage.ps1 get
-#   .\tools\mep_current_stage.ps1 set <VALUE>
-#   .\tools\mep_current_stage.ps1 advance
+# Args-based protocol (no param):
+#   tools\mep_current_stage.ps1 get
+#   tools\mep_current_stage.ps1 set <VALUE>
+#   tools\mep_current_stage.ps1 advance
 $op = "get"
 $value = ""
 if ($args -and $args.Count -ge 1) { $op = [string]$args[0] }
