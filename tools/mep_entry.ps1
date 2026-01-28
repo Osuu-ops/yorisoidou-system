@@ -12,6 +12,7 @@ if (!(Test-Path -LiteralPath (Join-Path $root ".git"))) { Fail "Not a git repo r
 $auto = Join-Path $root "tools/mep_auto.ps1"
 if (!(Test-Path -LiteralPath $auto)) { Fail "Missing: tools/mep_auto.ps1" }
 
+# StrictMode-safe: do not read $Once unless caller passed it
 $onceFlag = $false
 if ($PSBoundParameters.ContainsKey('Once')) { $onceFlag = [bool]$Once }
 
