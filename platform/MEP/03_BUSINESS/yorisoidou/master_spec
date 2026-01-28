@@ -1,0 +1,7 @@
+# master_spec（テスト入口：参照点固定）
+
+biz_key: yorisoidou
+display_name: よりそい堂
+
+# 本体（変更対象外の想定）
+canonical_root: platform/MEP/03_BUSINESS/よりそい堂/
