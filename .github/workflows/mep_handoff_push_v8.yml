@@ -1,0 +1,51 @@
+name: mep_handoff_push_v8
+
+on:
+  push:
+    branches:
+      - handoff-trigger
+
+permissions:
+  contents: read
+
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate handoff.md
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Fail([string]$m){ throw $m }
+
+          $bundled = "docs/MEP/MEP_BUNDLE.md"
+          if (!(Test-Path $bundled)) { Fail "Bundled not found: $bundled" }
+
+          $bvLine = Select-String -Path $bundled -Pattern "^\s*BUNDLE_VERSION\s*=" -ErrorAction Stop | Select-Object -First 1
+          if (-not $bvLine) { Fail "BUNDLE_VERSION not found in $bundled" }
+
+          $bv = ($bvLine.Line -replace "^\s*BUNDLE_VERSION\s*=\s*","").Trim()
+          if ([string]::IsNullOrWhiteSpace($bv)) { Fail "BUNDLE_VERSION empty" }
+
+          $genAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          $handoffId = "$(Get-Date -Format yyyyMMdd)-CORE-$($bv -replace '\s+','')"
+
+          New-Item -ItemType Directory -Force -Path "HANDOFF/ACTIVE" | Out-Null
+          @"
+# HANDOFF
+
+## 0. META
+HANDOFF_ID = $handoffId
+CONTEXT = CORE
+GENERATED_AT = $genAt
+SOURCE = docs/MEP/MEP_BUNDLE.md
+BUNDLE_VERSION = $bv
+STATUS = DRAFT
+"@ | Set-Content -Encoding UTF8 "HANDOFF/ACTIVE/handoff.md"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: handoff_md
+          path: HANDOFF/ACTIVE/handoff.md
