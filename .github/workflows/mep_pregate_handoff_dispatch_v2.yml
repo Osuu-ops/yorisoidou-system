@@ -1,4 +1,4 @@
-name: mep_pregate_handoff_dispatch_v1
+name: mep_pregate_handoff_dispatch_v2
 
 on:
   workflow_dispatch:
@@ -111,6 +111,12 @@ STATUS = $status
           Set-Content -Encoding UTF8 -Path $outTmp -Value $txt
 
           Move-Item -Force $outTmp $out
+
+          "PRE_GATE_EXPECTED=$expected" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "PRE_GATE_FOUND_OK=$foundOk" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "PRE_GATE_MISSING=$missingJson" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "BUNDLE_VERSION=$bv" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "HANDOFF_ID=$handoffId" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
 
           if ($foundOk -ne $expected) {
             Fail "Pre-Gate failed: FOUND_OK($foundOk) != EXPECTED($expected). MISSING=$missingJson"

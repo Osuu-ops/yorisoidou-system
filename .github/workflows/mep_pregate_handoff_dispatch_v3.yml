@@ -1,16 +1,7 @@
-name: mep_pregate_handoff_dispatch_v1
+name: mep_pregate_handoff_dispatch_v3
 
 on:
-  workflow_dispatch:
-    inputs:
-      context:
-        description: "Context label (e.g., CORE / BUSINESS/yorisoidou). Default: CORE"
-        required: false
-        default: "CORE"
-      status:
-        description: "handoff STATUS (DRAFT/ACTIVE/COMPLETED/ABANDONED). Default: DRAFT"
-        required: false
-        default: "DRAFT"
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -31,11 +22,8 @@ jobs:
           $ErrorActionPreference = "Stop"
           function Fail([string]$m){ throw $m }
 
-          $ctx = "${{ inputs.context }}"
-          if ([string]::IsNullOrWhiteSpace($ctx)) { $ctx = "CORE" }
-
-          $status = "${{ inputs.status }}"
-          if ([string]::IsNullOrWhiteSpace($status)) { $status = "DRAFT" }
+          $ctx    = "CORE"
+          $status = "DRAFT"
 
           $bundled = "docs/MEP/MEP_BUNDLE.md"
           if (!(Test-Path $bundled)) { Fail "Bundled not found: $bundled" }
@@ -49,7 +37,7 @@ jobs:
           $genAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
           $short = ($bv -replace "^v","") -replace "[^0-9A-Za-z]+",""
           if ($short.Length -gt 24) { $short = $short.Substring(0,24) }
-          $handoffId = "$(Get-Date -Format yyyyMMdd)-$($ctx -replace '[^0-9A-Za-z/_-]','')-$short"
+          $handoffId = "$(Get-Date -Format yyyyMMdd)-$($ctx)-$short"
 
           $outDir = "HANDOFF/ACTIVE"
           New-Item -ItemType Directory -Force -Path $outDir | Out-Null
@@ -111,6 +99,12 @@ STATUS = $status
           Set-Content -Encoding UTF8 -Path $outTmp -Value $txt
 
           Move-Item -Force $outTmp $out
+
+          "PRE_GATE_EXPECTED=$expected" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "PRE_GATE_FOUND_OK=$foundOk" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "PRE_GATE_MISSING=$missingJson" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "BUNDLE_VERSION=$bv" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          "HANDOFF_ID=$handoffId" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
 
           if ($foundOk -ne $expected) {
             Fail "Pre-Gate failed: FOUND_OK($foundOk) != EXPECTED($expected). MISSING=$missingJson"
