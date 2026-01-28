@@ -11,6 +11,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -21,7 +35,13 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -45,6 +65,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -55,7 +89,13 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -102,6 +142,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -112,7 +166,13 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -157,6 +217,20 @@ MEP Pre-Gate (入口の手前)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+
+# === ROOT_FIXED_BY_PSSCRIPTROOT ===
+# Stable repo root resolution (StrictMode-safe):
+$scriptDir = $PSScriptRoot
+$repoRoot  = Split-Path -Parent $scriptDir
+$root      = $repoRoot
+
+# Force git context to repoRoot (avoid CWD-dependent failures)
+$env:GIT_DIR = Join-Path $repoRoot ".git"
+$env:GIT_WORK_TREE = $repoRoot
+$env:GIT_CEILING_DIRECTORIES = $repoRoot
+
+Set-Location $repoRoot
+# === /ROOT_FIXED_BY_PSSCRIPTROOT ===
 function Fail([string]$m){ Write-Error $m; exit 2 }
 function Boom([string]$m){ Write-Error $m; exit 1 }
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
@@ -167,7 +241,13 @@ try {
   Set-Location $root
 
   # Pre-GateはBundledに依存しない運用も可能だが、ここでは「MEP投入前の最低条件」として存在確認だけ行う
-  $bundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+$bundled = Join-Path (Split-Path -Parent $PSScriptRoot) "docs/MEP/MEP_BUNDLE.md"
+# === PREGATE_PROBE ===
+Info ("[PROBE] PSScriptRoot=" + $PSScriptRoot)
+Info ("[PROBE] root=" + $root)
+Info ("[PROBE] bundled=" + $bundled)
+Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
+# === /PREGATE_PROBE ===
   if (!(Test-Path $bundled)) { Info "Bundled not found (docs/MEP/MEP_BUNDLE.md). Continuing with minimal checks." }
 
   $status = (git status --porcelain)
@@ -221,3 +301,5 @@ catch {
 catch {
   Boom $_.Exception.Message
 }
+
+
