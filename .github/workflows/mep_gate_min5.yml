@@ -37,6 +37,7 @@ jobs:
           PY
 
           echo "=== G3: scope guard (changed files) ==="
+git config --global core.quotepath false
           base_ref="${GITHUB_BASE_REF:-main}"
           git fetch origin "$base_ref" --depth=1 || true
           base="origin/$base_ref"
