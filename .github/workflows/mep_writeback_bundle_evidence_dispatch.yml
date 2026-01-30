@@ -37,13 +37,14 @@ jobs:
           else
             echo "pr_number=${{ github.event.inputs.pr_number }}" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Append evidence line into EVIDENCE bundle
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
-          pwsh -NoProfile -File tools/mep_append_evidence_line.ps1 `
-            -PrNumber ([int]"${{ steps.pr.outputs.pr_number }}") `
-            -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          pwsh -NoProfile -File tools/mep_append_evidence_line.ps1 -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
       - name: Create PR (auto/writeback-evidence-bundle_*)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

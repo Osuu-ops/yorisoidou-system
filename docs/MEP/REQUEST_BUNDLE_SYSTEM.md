@@ -25,6 +25,8 @@
 - platform/MEP/01_CORE/cards/EVIDENCE_SUB_MEP_ROOT.md
 - platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
 - platform/MEP/01_CORE/cards/HANDOFF_TWO_LAYER_SPEC.md
+- platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_DOD.md
+- platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_SCOPE_IN.md
 - platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
 - platform/MEP/01_CORE/definitions/SYMBOLS.md
 - platform/MEP/01_CORE/foundation/API_IO_BOUNDARY_CANON.md
@@ -58,7 +60,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 140148
+- included_total_bytes: 142174
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1739,6 +1741,64 @@ Prevent audit contamination by strictly separating:
 
 ## Error code
 - WB0001: Input contamination (missing layer / mixed content / audit layer contains non-evidence)
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_DOD.md
+- sha256: 39fe590529aeb089fe066e9af62e698b25717308b61498f5fd03f54d0477ac05
+- bytes: 834
+
+```text
+# PRE-GATE完全自動化：DoD（完成定義）
+
+## 1. Done（成立条件：必須）
+- PRが main にマージされ、Bundled（MEP_BUNDLE.md）の先頭 `BUNDLE_VERSION = ...` が更新されている
+- Bundled内に、対象PRの証跡行として以下を含む行が存在する
+  - `audit=OK,WB0000`
+  - `acceptance:SUCCESS`
+  - `guard:SUCCESS`
+  - `Scope Guard (PR):SUCCESS`
+  - `Text Integrity Guard (PR):SUCCESS`
+
+## 2. 例外（SKIPPED許容の条件）
+- `merge_repair_pr:SKIPPED` は既存運用上の発生があり得るため、他の必須がSUCCESSなら許容
+- その他のSKIPPED許容は、ここへ追記してからのみ許容（追記もPR→main→Bundledが前提）
+
+## 3. 監査一次根拠
+- 会話やメモは確定根拠にしない
+- 確定は **PR → main → Bundled** の証跡でのみ成立
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_SCOPE_IN.md
+- sha256: 552a02cd26811a19ce0c0ceb759041fde7b7c2d2f54ecd96739af186feaad512
+- bytes: 1192
+
+```text
+# PRE-GATE完全自動化：Scope-IN（対象固定）
+
+## 1. IN（対象）
+- MEPの **pre-gate / read-only suite** を「毎回ブレずに回す」ために必要な更新
+  - 運用ドキュメント（ガード仕様・証跡仕様・実行ルール）
+  - それらに付随する workflow / script の **最小修正**（チェックが安定して回る範囲）
+- PR→main→Bundled（BUNDLE_VERSION更新）で **証跡を残せる**変更のみ
+
+## 2. OUT（対象外：当面）
+- BUSINESSの大規模再編・大量生成・ディレクトリ移動
+- Required checks（B運用）への全面移行（別スコープで扱う）
+- UI/UX屋上のFULLAUTO拡張（別スコープで扱う）
+
+## 3. 境界・例外
+- 既存チェックが SKIPPED になり得る項目は、DoD側で「許容条件」を明文化した場合のみ許容
+- 監査一次根拠（Bundled）に載らない状態の主張は確定扱いしない
+
+## 4. 検証（このScopeを担保する方法）
+- PR checks が SUCCESS で揃うこと（最低限：acceptance / guard / Scope Guard / Text Integrity Guard）
+- Bundledに `audit=OK,WB0000` を含む証跡行が残ること（PR→main→Bundled）
 ```
 
 
