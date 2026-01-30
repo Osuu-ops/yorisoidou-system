@@ -14,6 +14,8 @@
 - tools/mep_handoff_audit.ps1
 - .github/workflows/mep_bundle_autofix.yml
 - .mep/allowlists/business.sha256
+- .github/workflows/mep_gate_min5.yml
+- .github/workflows/mep_semantic_audit.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
