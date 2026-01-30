@@ -103,8 +103,9 @@ jobs:
         run: |
           set -euo pipefail
           if git diff --name-only | grep -q '^docs/MEP/MEP_BUNDLE\.md$'; then
-            echo "ERROR: HANDOFF_NEXT must not modify docs/MEP/MEP_BUNDLE.md (parent Bundled)."
+            echo "ERROR: HANDOFF_NEXT must not modify ${{ env.BUNDLE_OUT }} (parent Bundled)."
             echo "This prevents writeback-order rollback. Write to docs/MEP_SUB/HANDOFF/MEP_BUNDLE.md instead."
-            git diff -- docs/MEP/MEP_BUNDLE.md || true
+            git diff -- ${{ env.BUNDLE_OUT }} || true
             exit 1
           fi
+
