@@ -1,21 +1,20 @@
-name: MEP Writeback Bundle (Entry)
+name: MEP Writeback Bundle Entry (Dispatch)
 
 on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: '0 = auto latest merged PR'
+        description: "0 = auto latest merged PR"
         required: false
-        default: '0'
-      write_handoff:
-        description: 'Generate+Guard+Writeback HANDOFF_NEXT into Bundled'
-        required: false
-        default: 'false'
+        default: "0"
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  call:
+  writeback:
     uses: ./.github/workflows/mep_writeback_bundle_dispatch.yml
     secrets: inherit
     with:
       pr_number: ${{ inputs.pr_number }}
-      write_handoff: ${{ inputs.write_handoff }}
