@@ -29,6 +29,8 @@
 - platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_DOD.md
 - platform/MEP/01_CORE/cards/PRE_GATE_AUTOMATION_SCOPE_IN.md
 - docs/MEP_SUB/HANDOFF/.gitkeep
+- .github/workflows/mep_sync_evidence_to_parent_dispatch.yml
+- tools/mep_sync_evidence_to_parent.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
