@@ -14,7 +14,7 @@ function Assert-NoConflictMarkersInBundled {
 }
 
 param(
-  [int]$PrNumber = 0,
+  [int]$PrNumber = 0
   [ValidateSet("update","pr")]
   [string]$Mode = "update",
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
@@ -391,4 +391,5 @@ Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headR
 
 # CONFLICT_MARKER_GUARD: stop if Bundled contains unresolved merge markers
 Assert-NoConflictMarkersInBundled -BundledPath (Join-Path (git rev-parse --show-toplevel) "docs/MEP/MEP_BUNDLE.md")
+
 
