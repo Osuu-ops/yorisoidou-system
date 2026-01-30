@@ -765,3 +765,5 @@ Bundled 本文に基づき、
 
 
 
+PR #1353 | audit=OK,WB0000 | appended_at=2026-01-30T19:00:58Z | via=mep_append_evidence_line.ps1
+PR #1382 | audit=OK,WB0000 | appended_at=2026-01-30T19:00:58Z | via=mep_append_evidence_line.ps1
