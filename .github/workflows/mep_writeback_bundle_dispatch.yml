@@ -627,153 +627,23 @@ jobs:
           fi
 
 
-.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
           if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
           Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
-          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
-      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = "Stop"
-
-          function Info([string]$m){ Write-Host "[INFO] $m" }
-          function Warn([string]$m){ Write-Host "[WARN] $m" }
-
-          # 1) If Evidence Log changed, create a repair PR (NO auto-merge here; approval is human)
-          $diff = git status --porcelain
-          if ($diff) {
-            Info "diff detected; creating repair PR"
-            $runId = "${{ github.run_id }}"
-            $br = "auto/repair-evidence-log_${runId}_1"
-            git checkout -b $br | Out-Null
-            git add docs/MEP/MEP_BUNDLE.md
-            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)" | Out-Null
-            git push -u origin $br | Out-Null
-
-            $prUrl = (gh pr create `
-              --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" `
-              --body  "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." `
-              --base  "${{ github.ref_name }}" `
-              --head  $br)
-            if ($prUrl) {
-              Info "repair PR=$prUrl"
-              Warn "NOTE: merge is NOT performed automatically (Approval1 is human)."
-            }
-          } else {
-            Info "no diff; skip repair PR"
-          }
-
-          # 2) Find the latest open auto/writeback-bundle_* PR and run HANDOFF writeback on it
-          $prsJson = gh pr list --state open --limit 200 --json number,headRefName,createdAt
-          $prs = $prsJson | ConvertFrom-Json
-          $b = $prs | Where-Object { name: MEP Writeback Bundle (Evidence)
-on:
-  workflow_call:
-    inputs:
-      pr_number:
-        description: 'PR number (0 = auto latest merged PR)'
-        required: false
-        type: string
-        default: '0'
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'PR number to write back (optional; 0 = auto latest merged PR)'
-        required: false
-        default: '0'
-      write_handoff:
-        description: 'Generate+Guard+Writeback HANDOFF_NEXT into Bundled'
-        required: false
-        default: 'false'
-
-permissions:
-  contents: write
-  pull-requests: write
-
-jobs:
-  writeback:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure git identity
-        shell: bash
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Writeback evidence -> PR
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
-      - name: Writeback HANDOFF_NEXT -> PR
-        if: ${{ inputs.write_handoff == 'true' }}
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-
-          # Pick latest open auto/writeback-bundle_* PR (created by this run)
-          $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
-            ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
-
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
-
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
-          git fetch origin $b.headRefName | Out-Null
-          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
-          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-      - name: Configure git identity
-        shell: bash
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Writeback evidence -> PR
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }}
-      - name: Writeback HANDOFF_NEXT -> PR
-        if: ${{ inputs.write_handoff == 'true' }}
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          # Pick latest open auto/writeback-bundle_* PR (created by this run)
-          $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
-            ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
-
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
-
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
-          git fetch origin $b.headRefName | Out-Null
-          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
