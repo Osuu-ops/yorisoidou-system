@@ -49,19 +49,25 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
       - name: Configure git identity
         shell: bash
         run: |
@@ -81,18 +87,23 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
@@ -190,19 +201,25 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
       - name: Configure git identity
         shell: bash
         run: |
@@ -222,18 +239,23 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
@@ -268,16 +290,24 @@ jobs:
             | Sort-Object createdAt -Descending `
             | Select-Object -First 1
 
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
           if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
         shell: pwsh
@@ -368,19 +398,25 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
       - name: Configure git identity
         shell: bash
         run: |
@@ -400,18 +436,23 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
@@ -509,19 +550,25 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
       - name: Configure git identity
         shell: bash
         run: |
@@ -541,18 +588,23 @@ jobs:
           # Pick latest open auto/writeback-bundle_* PR (created by this run)
           $b = gh pr list --state open --limit 50 --json number,headRefName,createdAt |
             ConvertFrom-Json |
-            Where-Object { $_.headRefName -like 'auto/writeback-bundle_*' } |
-            Sort-Object createdAt -Descending |
-            Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          if (-not $b) { throw 'No open auto/writeback-bundle_* PR found.' }
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
@@ -587,16 +639,135 @@ jobs:
             | Sort-Object createdAt -Descending `
             | Select-Object -First 1
 
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
           if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
+      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
+      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "diff detected; creating repair PR"
+            BR="auto/repair-evidence-log_${{ github.run_id }}_${{ github.run_attempt }}"
+            git checkout -b "$BR"
+            git add docs/MEP/MEP_BUNDLE.md
+            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
+            git push -u origin "$BR"
+            PRURL=$(gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "${{ github.ref_name }}" --head "$BR" || true)
+            if [ -n "${PRURL:-}" ]; then
+              echo "repair PR=$PRURL"
+              gh pr merge --auto --merge "$PRURL" || true
+            fi
+          else
+            echo "no diff; skip repair PR"
+          fi
+
+
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
+
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
+          git fetch origin $b.headRefName | Out-Null
+          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
+          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
+      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
+      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "diff detected; creating repair PR"
+            BR="auto/repair-evidence-log_${{ github.run_id }}_${{ github.run_attempt }}"
+            git checkout -b "$BR"
+            git add docs/MEP/MEP_BUNDLE.md
+            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
+            git push -u origin "$BR"
+            PRURL=$(gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "${{ github.ref_name }}" --head "$BR" || true)
+            if [ -n "${PRURL:-}" ]; then
+              echo "repair PR=$PRURL"
+              gh pr merge --auto --merge "$PRURL" || true
+            fi
+          else
+            echo "no diff; skip repair PR"
+          fi
+
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } `
+            | Sort-Object createdAt -Descending `
+            | Select-Object -First 1
+
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
+
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
+          git fetch origin $b.headRefName | Out-Null
+          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
+          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
         shell: pwsh
@@ -678,16 +849,24 @@ jobs:
             | Sort-Object createdAt -Descending `
             | Select-Object -First 1
 
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
+
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
           if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
+          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-
 
       - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
         shell: pwsh
@@ -718,105 +897,22 @@ jobs:
           fi
 
 
-.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
-          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
-
-          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-          git fetch origin $b.headRefName | Out-Null
-          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
-          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-
-.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
-          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
-
-          Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
-          git fetch origin $b.headRefName | Out-Null
-          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-
-          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
+      - name: Select latest auto/writeback-bundle PR and run handoff writeback
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
-          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
-      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "diff detected; creating repair PR"
-            BR="auto/repair-evidence-log_${{ github.run_id }}_${{ github.run_attempt }}"
-            git checkout -b "$BR"
-            git add docs/MEP/MEP_BUNDLE.md
-            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
-            git push -u origin "$BR"
-            PRURL=$(gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "${{ github.ref_name }}" --head "$BR" || true)
-            if [ -n "${PRURL:-}" ]; then
-              echo "repair PR=$PRURL"
-              gh pr merge --auto --merge "$PRURL" || true
-            fi
-          else
-            echo "no diff; skip repair PR"
-          fi
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host "[INFO] $m" }
 
-          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } `
-            | Sort-Object createdAt -Descending `
-            | Select-Object -First 1
-
-          if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
-
-          Write-Output ("[INFO] bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
-
-          git fetch origin $b.headRefName | Out-Null
-          git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
-          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-
-
-      - name: Repair Evidence Log (fill/remove empty mergedAt/mergeCommit)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          pwsh -NoProfile -File tools/mep_repair_evidence_log.ps1
-      - name: AUTO_REPAIR_PR_STEP (commit repaired Evidence Log if diff)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "diff detected; creating repair PR"
-            BR="auto/repair-evidence-log_${{ github.run_id }}_${{ github.run_attempt }}"
-            git checkout -b "$BR"
-            git add docs/MEP/MEP_BUNDLE.md
-            git commit -m "Fix: repair Evidence Log (fill empty mergedAt/mergeCommit)"
-            git push -u origin "$BR"
-            PRURL=$(gh pr create --title "Fix Evidence Log: fill empty mergedAt/mergeCommit" --body "Automated repair after writeback: fill/remove empty mergedAt/mergeCommit in Evidence Log." --base "${{ github.ref_name }}" --head "$BR" || true)
-            if [ -n "${PRURL:-}" ]; then
-              echo "repair PR=$PRURL"
-              gh pr merge --auto --merge "$PRURL" || true
-            fi
-          else
-            echo "no diff; skip repair PR"
-          fi
-
-
-.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
+          $base = "${{ github.ref_name }}"
+          $prs = gh pr list --state open --base $base --json number,headRefName,createdAt | ConvertFrom-Json
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1
           if (-not $b) { throw "No open auto/writeback-bundle_* PR found. evidence step may not have created one." }
 
           Info ("bundle PR #{0} head={1}" -f $b.number, $b.headRefName)
           git fetch origin $b.headRefName | Out-Null
           git checkout -B $b.headRefName ("origin/" + $b.headRefName) | Out-Null
-          git rev-parse --abbrev-ref HEAD
-
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
-
 
