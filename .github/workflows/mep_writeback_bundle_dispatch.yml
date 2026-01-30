@@ -213,7 +213,7 @@ jobs:
           $prsJson = gh pr list --state open --limit 200 --json number,headRefName,createdAt
           $prs = $prsJson | ConvertFrom-Json
           $b = $prs | Where-Object { name: MEP Writeback Bundle (Evidence)
-.headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1)
+          .headRefName -like "auto/writeback-bundle_*" } | Sort-Object createdAt -Descending | Select-Object -First 1)
           }
 
           $b = FindBundlePr
