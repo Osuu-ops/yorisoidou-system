@@ -116,7 +116,7 @@ jobs:
             echo "no diff; skip repair PR"
           fi
 
-.headRefName -like "auto/writeback-bundle_*" } `
+          $b = $prs | Where-Object { $_.headRefName -like "auto/writeback-bundle_*" } `
             | Sort-Object createdAt -Descending `
             | Select-Object -First 1
 
