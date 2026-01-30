@@ -46,7 +46,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 388585
+- included_total_bytes: 388615
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -5641,8 +5641,8 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: b1e46ff7082b3ee8a3237ec49f96794d483cb473f8ee29af36bb9dbcc046e278
-- bytes: 1302
+- sha256: ab2c329501f7f3e2f62c96c793b672d0f39574b0b3e72896f14cba4be8038304
+- bytes: 1332
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
@@ -5658,6 +5658,7 @@ UI 実装は、本書との差分として管理される
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/mep_writeback_bundle_dispatch_v3.yml
+- tools/mep_handoff_audit.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
