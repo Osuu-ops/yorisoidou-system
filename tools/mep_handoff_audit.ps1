@@ -1,4 +1,4 @@
-Set-StrictMode -Version Latest
+﻿Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
@@ -30,7 +30,7 @@ $evidenceBundled = Join-Path $root "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md"
 if (!(Test-Path $parentBundled))   { Fail "Not found: docs/MEP/MEP_BUNDLE.md" }
 if (!(Test-Path $evidenceBundled)) { Fail "Not found: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" }
 
-# --- parent BUNDLE_VERSION (single source for baseline) ---
+# --- parent BUNDLE_VERSION ---
 $bvHit = Select-String -LiteralPath $parentBundled -Pattern '^\s*BUNDLE_VERSION\s*=' -Encoding UTF8 | Select-Object -First 1
 if (-not $bvHit) { Fail "BUNDLE_VERSION not found in parent bundled" }
 $bundleVersionLine = $bvHit.Line.TrimEnd()
@@ -38,12 +38,9 @@ $bundleVersionLine = $bvHit.Line.TrimEnd()
 # --- choose PR line ---
 $targetPr = $PrNumber
 if ($targetPr -le 0) {
-  # Prefer latest merged PR line in EVIDENCE_BUNDLE that has audit=OK,WB0000
-  # (This is a heuristic; explicit -PrNumber is always preferred for audits.)
   $okLines = Select-String -LiteralPath $evidenceBundled -Pattern '(?i)\baudit=OK,WB0000\b' -Encoding UTF8
   if (-not $okLines) { Fail "No audit=OK,WB0000 lines found in EVIDENCE_BUNDLE" }
 
-  # Extract PR # from each candidate line; take last (file order assumes append-only evidence)
   $candidates = @()
   foreach ($h in $okLines) {
     if ($h.Line -match '(?i)\bPR\s*#\s*(\d+)\b') {
@@ -61,7 +58,7 @@ $eviOk = $eviHits | Where-Object { $_.Line -match "(?i)audit=OK,WB0000" } | Sele
 if (-not $eviOk) { Fail ("PR line found but audit=OK,WB0000 not detected: PR #{0}" -f $targetPr) }
 $evidenceLine = $eviOk.Line.TrimEnd()
 
-# --- build HANDOFF text (audit-safe: no 'updated' claims, only 'baseline is confirmed') ---
+# --- build HANDOFF text (audit-safe) ---
 $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine("【HANDOFF｜次チャット冒頭に貼る本文（監査用・一次根拠のみ）】")
 [void]$sb.AppendLine("")
