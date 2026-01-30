@@ -19,6 +19,9 @@
 - tools/mep_writeback_bundle.ps1
 - .github/workflows/mep_writeback_bundle_dispatch.yml
 - .github/workflows/mep_writeback_bundle_dispatch_manual.yml
+- platform/MEP/01_CORE/cards/HANDOFF_TWO_LAYER_SPEC.md
+- tools/mep_handoff_two_layer_template.ps1
+- tools/mep_handoff_two_layer_validate.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
