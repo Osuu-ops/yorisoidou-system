@@ -1,3 +1,18 @@
+# CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
+function Assert-NoConflictMarkersInBundled {
+  param(
+    [Parameter(Mandatory=$true)][string]$BundledPath
+  )
+  if (-not (Test-Path -LiteralPath $BundledPath)) {
+    throw "Bundled not found: $BundledPath"
+  }
+  $bad = Select-String -LiteralPath $BundledPath -Pattern '<<<<<<<|=======|>>>>>>>' -AllMatches -ErrorAction SilentlyContinue
+  if ($bad) {
+    $first = $bad | Select-Object -First 12 | ForEach-Object { "line=$($_.LineNumber) text=$($_.Line.Trim())" } | Out-String
+    throw "CONFLICT_MARKER_GUARD_NG: conflict markers detected in Bundled: $BundledPath`n$first"
+  }
+}
+
 param(
   [int]$PrNumber = 0,
   [ValidateSet("update","pr")]
@@ -374,19 +389,6 @@ Notes
 Run "gh pr create" { gh pr create --repo $repo --base main --head $targetBranch --title ("chore(mep): writeback evidence to Bundled (PR #{0})" -f $prNum) --body $body }
 Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headRefName,state -q '{number,url,headRefName,state}' }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# CONFLICT_MARKER_GUARD: stop if Bundled contains unresolved merge markers
+Assert-NoConflictMarkersInBundled -BundledPath (Join-Path (git rev-parse --show-toplevel) "docs/MEP/MEP_BUNDLE.md")
 
