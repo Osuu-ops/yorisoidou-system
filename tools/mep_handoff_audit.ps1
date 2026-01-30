@@ -16,7 +16,7 @@ $ProgressPreference = "SilentlyContinue"
 $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"
 
-# Defaults (set here; NEVER in param block)
+# Defaults (NEVER in param block)
 if (-not $PSBoundParameters.ContainsKey('PrNumber'))   { $PrNumber   = 0 }
 if (-not $PSBoundParameters.ContainsKey('RepoOrigin')) { $RepoOrigin = "https://github.com/Osuu-ops/yorisoidou-system.git" }
 
@@ -70,7 +70,7 @@ foreach ($ln in $evidenceLines) {
 }
 if (-not $hit) { Fail ("PR line not found or not OK (audit=OK,WB0000) in EVIDENCE_BUNDLE (origin/main): PR #{0}" -f $targetPr) }
 
-# normalize "- PR ..." -> "PR ..."
+# normalize "- PR ..." / "* PR ..." -> "PR ..."
 $evidenceLine = ($hit -replace '^\s*[-*]\s+', '')
 
 # --- build HANDOFF text (audit-safe) ---
