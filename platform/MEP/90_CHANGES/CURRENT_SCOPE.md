@@ -16,6 +16,7 @@
 - .mep/allowlists/business.sha256
 - .github/workflows/mep_gate_min5.yml
 - .github/workflows/mep_semantic_audit.yml
+- tools/mep_writeback_bundle.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
