@@ -11,6 +11,7 @@
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/mep_writeback_bundle_dispatch_v3.yml
+- tools/mep_handoff_audit.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
