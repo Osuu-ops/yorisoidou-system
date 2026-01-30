@@ -1,15 +1,9 @@
 param(
-  [int]$PrNumber = 0,
-  [ValidateSet("pr","update")# --- GUARANTEE: BundlePath must never be null (CI writeback dispatch safety) ---
-# If upstream selection logic fails to set $BundlePath, force default to parent Bundled.
-$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-if (-not (Get-Variable -Name BundlePath -ErrorAction SilentlyContinue)) { $BundlePath = $null }
-if ([string]::IsNullOrWhiteSpace([string]$BundlePath)) {
-  $BundlePath = Join-Path $RepoRoot "docs/MEP/MEP_BUNDLE.md"
-}
-# ---------------------------------------------------------------------------][string]$Mode = "pr",
-  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
-  [string]$BundleScope = "parent"
+  [int]$PrNumber = 0
+  ,[ValidateSet("pr","update")][string]$Mode = "pr"
+  ,[string]$BundlePath = "docs/MEP/MEP_BUNDLE.md"
+  ,[string]$BundleScope = "parent"
+  ,[string]$TargetBranchPrefix = "auto/writeback-bundle"
 )
 
 Set-StrictMode -Version Latest
@@ -18,48 +12,54 @@ $ErrorActionPreference = "Stop"
 function Info([string]$m){ Write-Host "[INFO] $m" }
 function Warn([string]$m){ Write-Host "[WARN] $m" }
 
-# repo root
+# NOTE:
+# This is a minimal “unblocker” for writeback workflows.
+# Contract: (1) parse OK, (2) if bundle file changed -> create PR branch, else exit 0.
+
 $root = git rev-parse --show-toplevel 2>$null
 if (-not $root) { throw "Not a git repository." }
 Set-Location $root
 
-# Ensure base refs exist
 git fetch --prune origin | Out-Null
 
-# Sanity: target file exists
-$bundled = Join-Path $root $BundlePath
-if (-not (Test-Path $bundled)) { throw "Bundled not found: $BundlePath" }
+$bundleAbs = Join-Path $root $BundlePath
+if (-not (Test-Path -LiteralPath $bundleAbs)) { throw "Bundle not found: $BundlePath" }
 
-# NOTE:
-# This script is a minimal “unblocker” to restore workflow execution.
-# It intentionally avoids complex MEP logic; its only contract is: parse OK + create PR when bundle changes.
+Info ("Mode={0} PrNumber={1} BundleScope={2}" -f $Mode,$PrNumber,$BundleScope)
+Info ("BundlePath={0}" -f $BundlePath)
+Info ("TargetBranchPrefix={0}" -f $TargetBranchPrefix)
 
-# If you have a generator step elsewhere, it should have already updated $BundlePath before calling us.
-# We just detect diff and open PR.
-$diff = git status --porcelain -- $BundlePath
+# detect diff only for target bundle file
+$diff = (git status --porcelain -- $BundlePath)
 if (-not $diff) {
-  Info "No diff in $BundlePath. Nothing to write back. Exit 0."
+  Info "No diff for bundle. Exit 0."
   exit 0
 }
 
-$runId = $env:GITHUB_RUN_ID
+# branch name
+$runId  = $env:GITHUB_RUN_ID
+$attempt = $env:GITHUB_RUN_ATTEMPT
 if (-not $runId) { $runId = "local" }
-$stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$branch = "auto/writeback-bundle_${runId}_${stamp}"
+if (-not $attempt) { $attempt = "1" }
+$stamp = (Get-Date -Format "yyyyMMdd_HHmmss")
+$branch = "{0}_{1}_{2}_{3}" -f $TargetBranchPrefix,$runId,$attempt,$stamp
 
-Info "Diff detected in $BundlePath -> create writeback PR branch: $branch"
+Info ("Diff detected -> create branch: {0}" -f $branch)
+
 git checkout -b $branch | Out-Null
 git add -- $BundlePath | Out-Null
-git commit -m "chore(mep): writeback bundle update ($BundleScope)" | Out-Null
+
+# commit (keep deterministic message)
+git commit -m ("chore(mep): writeback bundle ({0})" -f $BundleScope) | Out-Null
 git push -u origin $branch | Out-Null
 
-# Create PR (best-effort; do not fail if PR already exists)
+# create PR (best-effort)
 $base = $env:GITHUB_REF_NAME
 if (-not $base) { $base = "main" }
 
 try {
-  $prUrl = (gh pr create --title "chore(mep): writeback bundle update ($BundleScope)" --body "Automated writeback: $BundlePath" --base $base --head $branch 2>$null)
-  if ($prUrl) { Info "PR created: $prUrl" } else { Warn "PR create returned empty (maybe already exists)." }
+  $prUrl = (gh pr create --title ("chore(mep): writeback bundle ({0})" -f $BundleScope) --body ("Automated writeback: {0}" -f $BundlePath) --base $base --head $branch 2>$null)
+  if ($prUrl) { Info ("PR created: {0}" -f $prUrl) } else { Warn "PR create returned empty (maybe already exists)." }
 } catch {
   Warn ("PR create failed (continuing): " + $_.Exception.Message)
 }
