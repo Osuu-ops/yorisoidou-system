@@ -1,8 +1,11 @@
 # CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
 function Assert-NoConflictMarkersInBundled {
-  param(
-    [Parameter(Mandatory=$true)][string]$BundledPath
-  )
+param(
+  [int]$PrNumber = 0
+  ,[string]$Mode = "update"
+  ,[string]$BundlePath = "docs/MEP/MEP_BUNDLE.md"
+  ,[string]$BundleScope = "parent"
+)
   if (-not (Test-Path -LiteralPath $BundledPath)) {
     throw "Bundled not found: $BundledPath"
   }
