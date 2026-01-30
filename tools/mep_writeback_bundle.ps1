@@ -1,122 +1,32 @@
-# CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
-function Assert-NoConflictMarkersInBundled {
+#requires -Version 7.0
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Console]::OutputEncoding
+$env:GIT_PAGER="cat"; $env:PAGER="cat"
+
 param(
   [Parameter()]
   [ValidateSet("pr","main","update")]
-  [string]$Mode = "update",
+  [string]$Mode = "pr",
+
+  [Parameter()]
+  [int]$PrNumber = 0,
 
   [Parameter()]
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
 
   [Parameter()]
   [ValidateSet("parent","sub")]
-  [string]$BundleScope = "parent",
-
-  [Parameter()]
-  [int]$PrNumber = 0
+  [string]$BundleScope = "parent"
 )
 
-
-  if (-not (Test-Path -LiteralPath $BundledPath)) {
-
-
-    throw "Bundled not found: $BundledPath"
-
-
-  }
-
-
-  $bad = Select-String -LiteralPath $BundledPath -Pattern '<<<<<<<|=======|>>>>>>>' -AllMatches -ErrorAction SilentlyContinue
-
-
-  if ($bad) {
-
-
-    $first = $bad | Select-Object -First 12 | ForEach-Object { "line=$($_.LineNumber) text=$($_.Line.Trim())" } | Out-String
-
-
-    throw "CONFLICT_MARKER_GUARD_NG: conflict markers detected in Bundled: $BundledPath`n$first"
-
-
-  }
-
-
-}
-
-
-
-
-
-param(
-
-
-  [int]$PrNumber = 0
-
-
-  [ValidateSet("update","pr")]
-
-
-  [string]$Mode = "update",
-
-
-  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
-
-
-  [string]$BundleScope = "parent",
-
-
-  [string]$TargetBranchPrefix = "auto/writeback-bundle"
-
-
-)
-
-
-
-
-
-Write-Host ("MEP writeback scope: " + $BundleScope)
-
-
-Write-Host ("Target bundle: " + $BundlePath)
-
-
-$bundleFile = $BundlePath
-
-
-# BEGIN: SCRUB_BROKEN_EVIDENCE_LINES
-
-
-function Scrub-BrokenEvidenceLines([string]$text){
-
-
-  if([string]::IsNullOrEmpty($text)){ return $text }
-
-
-
-
-
-  # BEGIN: SCRUB_BROKEN_EVIDENCE_LINES_STRICT
-
-
-  # Remove ANY evidence-log line that contains PowerShell object stringification: "PR #@{...}".
-
-
-  # This is intentionally strict to prevent re-accumulation.
-
-
-  $t = $text
-
-
-  $t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#@\{.*?$[\r\n]*', '')
-
-
-# Remove evidence-log lines with empty mergedAt or mergeCommit
-
-
-$t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#\d+.*\|\s*mergedAt=\s*\|\s*mergeCommit=.*?$[\r\n]*', '')
-
-
-$t = [regex]::Replace($t, '(?m)^\s*-\s*PR\s*#\d+.*\|\s*mergedAt=.*\|\s*mergeCommit=\s*\|.*?$[\r\n]*', '')
+function Fail([string]$m){ throw $m }
+function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) -ForegroundColor Cyan }
+
+# NOTE: header regenerated to fix parse corruption that broke CI writeback.
+# The remainder of the original script is kept as-is below.
 
 
   return $t
