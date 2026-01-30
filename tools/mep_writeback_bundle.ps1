@@ -65,6 +65,31 @@ git add -- $BundlePath | Out-Null
 # commit (keep deterministic message)
 git commit -m ("chore(mep): writeback bundle ({0})" -f $BundleScope) | Out-Null
 git push -u origin $branch | Out-Null
+# --- create PR for the writeback branch (Mode=pr) ---
+try {
+  $prTitle = ("Writeback bundle evidence (PrNumber={0})" -f $PrNumber)
+  $prBody  = ("Automated writeback bundle evidence. Mode={0} PrNumber={1} BundleScope={2} BundlePath={3}" -f $Mode,$PrNumber,$BundleScope,$BundlePath)
+  # NOTE: create PR against main; head is the current writeback branch variable used in this script
+  # Try common variable names; fall back to current branch name.
+  $head = $null
+  foreach ($v in @("br","BR","Branch","branch","TargetBranch","targetBranch")) {
+    try {
+      $val = Get-Variable -Name $v -ValueOnly -ErrorAction SilentlyContinue
+      if ($val) { $head = [string]$val; break }
+    } catch {}
+  }
+  if (-not $head) { $head = (git rev-parse --abbrev-ref HEAD) }
+
+  $prUrl = (gh pr create --title $prTitle --body $prBody --base "main" --head $head)
+  if ($prUrl) {
+    Write-Host ("[INFO] Created PR: {0}" -f $prUrl)
+  } else {
+    Write-Host "[WARN] gh pr create returned empty. A PR may already exist."
+  }
+} catch {
+  Write-Host ("[WARN] gh pr create failed: {0}" -f $_.Exception.Message)
+}
+
 
 # create PR (best-effort)
 $base = $env:GITHUB_REF_NAME
@@ -78,3 +103,4 @@ try {
 }
 
 exit 0
+
