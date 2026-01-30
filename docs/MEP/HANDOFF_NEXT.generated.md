@@ -2,7 +2,7 @@
 
 基準点：
 
-* BUNDLE_VERSION = v0.0.0+20260130_173235+main_25e42c8
+* BUNDLE_VERSION = v0.0.0+20260130_171455+main_5151f2d
 
 進捗台帳（機械生成）：
 
