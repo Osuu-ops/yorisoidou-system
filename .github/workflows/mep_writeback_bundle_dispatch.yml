@@ -1,3 +1,4 @@
+# PATCH_MARKER: gen-runstep 20260131_021740
 # PATCH_MARKER: generate-via-compiler 20260131_021532
 name: MEP Writeback Bundle (Evidence)
 
@@ -43,8 +44,16 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Generate Bundled (update docs/MEP/MEP_BUNDLE.md)
-        uses: ./.github/workflows/mep_integration_compiler.yml
-        secrets: inherit
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+
+          # (re)generate Bundled so diff can exist BEFORE writeback
+          pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
+          # evidence (non-fatal)
+          git status --porcelain -- docs/MEP/MEP_BUNDLE.md || true
       - name: Writeback evidence -> PR (slim)
         shell: pwsh
         env:
