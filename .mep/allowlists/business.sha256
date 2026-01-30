@@ -2,3 +2,4 @@
 # Format: "<sha256>  <path>"
 # Example:
 # e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  platform/MEP/03_BUSINESS/path/to/asset.pdf
+jobs:
