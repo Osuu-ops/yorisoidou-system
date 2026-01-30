@@ -2,8 +2,15 @@
 function Assert-NoConflictMarkersInBundled {
 param(
   [Parameter()]
-  [ValidateSet("pr","main")]
-  [string]$Mode = "pr",
+  [ValidateSet("pr","main","update")]
+  [string]$Mode = "update",
+
+  [Parameter()]
+  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
+
+  [Parameter()]
+  [ValidateSet("parent","sub")]
+  [string]$BundleScope = "parent",
 
   [Parameter()]
   [int]$PrNumber = 0
