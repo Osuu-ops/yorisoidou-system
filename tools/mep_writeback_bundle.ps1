@@ -41,26 +41,10 @@ param(
 
 
 param(
-
-
   [int]$PrNumber = 0
-
-
-  [ValidateSet("update","pr")]
-
-
-  [string]$Mode = "update",
-
-
-  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
-
-
-  [string]$BundleScope = "parent",
-
-
-  [string]$TargetBranchPrefix = "auto/writeback-bundle"
-
-
+  ,[string]$Mode = "update"
+  ,[string]$BundlePath = "docs/MEP/MEP_BUNDLE.md"
+  ,[string]$BundleScope = "parent"
 )
 
 
