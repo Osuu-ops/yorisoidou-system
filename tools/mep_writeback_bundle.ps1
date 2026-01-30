@@ -1,6 +1,13 @@
 param(
   [int]$PrNumber = 0,
-  [ValidateSet("pr","update")][string]$Mode = "pr",
+  [ValidateSet("pr","update")# --- GUARANTEE: BundlePath must never be null (CI writeback dispatch safety) ---
+# If upstream selection logic fails to set $BundlePath, force default to parent Bundled.
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+if (-not (Get-Variable -Name BundlePath -ErrorAction SilentlyContinue)) { $BundlePath = $null }
+if ([string]::IsNullOrWhiteSpace([string]$BundlePath)) {
+  $BundlePath = Join-Path $RepoRoot "docs/MEP/MEP_BUNDLE.md"
+}
+# ---------------------------------------------------------------------------][string]$Mode = "pr",
   [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
   [string]$BundleScope = "parent"
 )
