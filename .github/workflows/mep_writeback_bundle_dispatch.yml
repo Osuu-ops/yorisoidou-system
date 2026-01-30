@@ -109,3 +109,13 @@ jobs:
             exit 1
           fi
 
+      - name: SET_BUNDLE_OUT_FOR_HANDOFF_NEXT
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/MEP_SUB/HANDOFF
+          if [ "${{ inputs.write_handoff }}" = "HANDOFF_NEXT" ]; then
+            echo "BUNDLE_OUT=docs/MEP_SUB/HANDOFF/MEP_BUNDLE.md" >> "$GITHUB_ENV"
+          else
+            echo "BUNDLE_OUT=${{ env.BUNDLE_OUT }}" >> "$GITHUB_ENV"
+          fi
