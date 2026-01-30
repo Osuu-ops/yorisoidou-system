@@ -13,6 +13,7 @@
 - .github/workflows/mep_writeback_bundle_dispatch_v3.yml
 - tools/mep_handoff_audit.ps1
 - .github/workflows/mep_bundle_autofix.yml
+- .mep/allowlists/business.sha256
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
