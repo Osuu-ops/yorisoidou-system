@@ -2,8 +2,8 @@ name: MEP Bundle AutoFix (Allowlist)
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "13 */2 * * *"
+  # schedule: (disabled)
+    # - cron: "13 */2 * * *" (disabled)
 
 permissions:
   contents: write
@@ -22,3 +22,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           pwsh -NoProfile -File tools/mep_bundle_autofix.ps1 -Mode pr -AutoMerge
+
