@@ -1,19 +1,9 @@
 param(
-  [Parameter()]
-  [int]$PrNumber = 0,
+  [ValidateSet("pr","latest")]
+  [string]$Mode = "pr",
 
-  [Parameter()]
-  [ValidateSet("pr","main","update")]
-  [string]$Mode = "update",
-
-  [Parameter()]
-  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
-
-  [Parameter()]
-  [ValidateSet("parent","sub")]
-  [string]$BundleScope = "parent"
+  [int]$PrNumber = 0
 )
-
 # normalize variable used by guards (if referenced later)
 $BundledPath = $BundlePath
 
