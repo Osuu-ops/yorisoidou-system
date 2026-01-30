@@ -109,3 +109,19 @@ jobs:
             exit 1
           fi
 
+      - name: PREP_HANDOFF_BUNDLE_IF_MISSING
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Only for HANDOFF_NEXT mode
+          if [ "${{ inputs.write_handoff }}" = "HANDOFF_NEXT" ]; then
+            mkdir -p docs/MEP_SUB/HANDOFF
+            if [ ! -f "docs/MEP_SUB/HANDOFF/MEP_BUNDLE.md" ]; then
+              if [ -f "docs/MEP/MEP_BUNDLE.md" ]; then
+                cp -f docs/MEP/MEP_BUNDLE.md docs/MEP_SUB/HANDOFF/MEP_BUNDLE.md
+              else
+                echo "ERROR: parent bundle missing: docs/MEP/MEP_BUNDLE.md"
+                exit 1
+              fi
+            fi
+          fi
