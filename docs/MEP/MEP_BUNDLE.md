@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260130_141506+main+parent
+BUNDLE_VERSION = +20260130_160856+main+
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
@@ -368,6 +368,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 - PR #1277 | mergedAt=01/30/2026 13:29:13 | mergeCommit=b1e61da91eff91956025295455751d3111d88f1f | BUNDLE_VERSION=v0.0.0+20260130_133030+main+parent | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1277
 - PR #1280 | mergedAt=01/30/2026 13:30:48 | mergeCommit=89b62192d359dcf03841fcf95c9b1f0eca63f099 | BUNDLE_VERSION=v0.0.0+20260130_133843+main+parent | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, guard:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, self-heal:SUCCESS, semantic-audit-business:SUCCESS, semantic-audit:SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS, update-state-summary:SKIPPED | https://github.com/Osuu-ops/yorisoidou-system/pull/1280
 - PR #1286 | mergedAt=01/30/2026 14:12:20 | mergeCommit=e7bab50724fdd4e9f1edd21ecfea43103b15fe86 | BUNDLE_VERSION=v0.0.0+20260130_141500+main+parent | audit=OK,WB0000 | checks:(none) | https://github.com/Osuu-ops/yorisoidou-system/pull/1286
+- PR #1317 | mergedAt=01/30/2026 16:07:39 | mergeCommit=7b9de24a0d753d22d8da4f3fce59cb89c94db1f5 | BUNDLE_VERSION=+20260130_160856+main+ | audit=OK,WB0000 | bom-check:SUCCESS, Business Packet Guard (PR):SUCCESS, done_check:SUCCESS, enable_auto_merge:SUCCESS, merge_repair_pr:SKIPPED, Scope Guard (PR):SUCCESS, suggest:SUCCESS, Text Integrity Guard (PR):SUCCESS | https://github.com/Osuu-ops/yorisoidou-system/pull/1317
 ## CARD: DIFF_POLICY / BOUNDARY AUDIT（差分運用・境界監査）  [Draft]
 
 ### 基本
