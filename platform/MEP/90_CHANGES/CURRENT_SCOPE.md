@@ -1,6 +1,7 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
+- platform/MEP/01_CORE/cards/**
 - START_HERE.md
 - .mep/CURRENT_STAGE.txt
 - .github/ISSUE_TEMPLATE/mep_dispatch.yml
