@@ -1,21 +1,23 @@
-name: mep_writeback_bundle_evidence_dispatch
+name: MEP Writeback Bundle (Evidence)
 
 on:
   workflow_dispatch:
     inputs:
-      prNumber:
-        description: "Optional: PR number to record (0 = auto latest merged)"
+      pr_number:
+        description: 'PR number to append evidence for (0 = latest merged PR)'
         required: false
-        default: "0"
+        default: '0'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   writeback-evidence:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -23,96 +25,34 @@ jobs:
         run: |
           git config --global user.name  "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Writeback EVIDENCE child MEP bundle (create PR)
+
+      - name: Resolve target PR number (0 -> latest merged)
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.pr_number }}" = "0" ]; then
+            n=$(gh pr list --state merged --base main --limit 1 --json number -q '.[0].number')
+            echo "pr_number=$n" >> "$GITHUB_OUTPUT"
+          else
+            echo "pr_number=${{ github.event.inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Append evidence line into EVIDENCE bundle
         shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
-          ./tools/mep_writeback_bundle.ps1 `
-            -Mode "pr" `
-            -PrNumber ([int]"${{ github.event.inputs.prNumber }}") `
-            -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
-            -BundleScope "evidence-child" `
-            -TargetBranchPrefix "auto/writeback-evidence-bundle"
-
-
-name: mep_writeback_bundle_evidence_dispatch
-
-on:
-  workflow_dispatch:
-    inputs:
-      prNumber:
-        description: "Optional: PR number to record (0 = auto latest merged)"
-        required: false
-        default: "0"
-
-jobs:
-  writeback-evidence:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure git identity (CI)
-        run: |
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Writeback EVIDENCE child MEP bundle (create PR)
-        shell: pwsh
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          pwsh -NoProfile -File tools/mep_append_evidence_line.ps1 -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+      - name: Create PR (auto/writeback-evidence-bundle_*)
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./tools/mep_writeback_bundle.ps1 `
-            -Mode "pr" `
-            -PrNumber ([int]"${{ github.event.inputs.prNumber }}") `
-            -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
-            -BundleScope "evidence-child" `
-            -TargetBranchPrefix "auto/writeback-evidence-bundle"
-
-
-  inputs:
-    pr_number:
-      description: 'PR number to writeback (0 = latest)'
-      required: false
-      default: '0'
-name: mep_writeback_bundle_evidence_dispatch
-
-on:
-  workflow_dispatch:
-    inputs:
-      prNumber:
-        description: "Optional: PR number to record (0 = auto latest merged)"
-        required: false
-        default: "0"
-
-jobs:
-  writeback-evidence:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure git identity (CI)
-        run: |
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Writeback EVIDENCE child MEP bundle (create PR)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          ./tools/mep_writeback_bundle.ps1 `
-            -Mode "pr" `
-            -PrNumber ([int]"${{ github.event.inputs.prNumber }}") `
-            -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" `
-            -BundleScope "evidence-child" `
-            -TargetBranchPrefix "auto/writeback-evidence-bundle"
-
+          ts=$(date -u +"%Y%m%d_%H%M%S")
+          head="auto/writeback-evidence-bundle_${ts}"
+          git checkout -b "$head"
+          git add docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+          git commit -m "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})"
+          git push -u origin "$head"
+          gh pr create --base main --head "$head" --title "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})" --body "Append evidence line for PR #${{ steps.pr.outputs.pr_number }} to docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"

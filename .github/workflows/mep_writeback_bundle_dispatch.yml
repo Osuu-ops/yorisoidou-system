@@ -1,3 +1,5 @@
+# PATCH_MARKER: gen-runstep 20260131_021740
+# PATCH_MARKER: generate-via-compiler 20260131_021532
 name: MEP Writeback Bundle (Evidence)
 
 on:
@@ -47,12 +49,11 @@ jobs:
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
 
-          # Generate/update Bundled BEFORE writeback diff-check
+          # (re)generate Bundled so diff can exist BEFORE writeback
           pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
 
-          # Show diff status for evidence (non-fatal)
+          # evidence (non-fatal)
           git status --porcelain -- docs/MEP/MEP_BUNDLE.md || true
-
       - name: Writeback evidence -> PR (slim)
         shell: pwsh
         env:
@@ -60,6 +61,35 @@ jobs:
         run: |
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP/MEP_BUNDLE.md" -BundleScope "parent"
 
+      - name: Create PR for writeback branch
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
+          function Warn([string]$m){ Write-Host ('[WARN] {0}' -f $m) }
+          
+          # If current branch is auto/writeback-bundle_*, create PR (if not exists)
+          $head = (git rev-parse --abbrev-ref HEAD).Trim()
+          Info ('HEAD=' + $head)
+          if ($head -notlike 'auto/writeback-bundle_*') {
+            Warn 'Not on auto/writeback-bundle_* branch; skip PR create.'
+            exit 0
+          }
+          
+          # if PR already exists for this head, skip
+          $exists = gh pr list --state open --head $head --json number --jq '.[0].number' 2>$null
+          if ($exists) {
+            Info ('PR already exists for head ' + $head + ': #' + $exists)
+            exit 0
+          }
+          
+          $title = ('Writeback bundle evidence ({0})' -f $head)
+          $body  = ('Automated writeback: created from branch {0} (run_id=' + ${{ github.run_id }} + ')' -f $head)
+          $url = gh pr create --title $title --body $body --base 'main' --head $head
+          Info ('Created PR: ' + $url)
       - name: Writeback HANDOFF_NEXT -> PR (slim)
         if: ${{ inputs.write_handoff == 'true' }}
         shell: pwsh
@@ -67,3 +97,4 @@ jobs:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+
