@@ -1,14 +1,14 @@
-# CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
-function Assert-NoConflictMarkersInBundled {
 param(
   [Parameter()]
   [ValidateSet("pr","main")]
-  [string]$Mode = "pr",
+  [string]$Mode = "pr"
 
   [Parameter()]
   [int]$PrNumber = 0
 )
 
+# CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
+function Assert-NoConflictMarkersInBundled {
 
   if (-not (Test-Path -LiteralPath $BundledPath)) {
 
@@ -35,21 +35,6 @@ param(
 
 
 }
-
-
-
-
-
-param(
-  [int]$PrNumber = 0
-  ,[string]$Mode = "update"
-  ,[string]$BundlePath = "docs/MEP/MEP_BUNDLE.md"
-  ,[string]$BundleScope = "parent"
-)
-
-
-
-
 
 Write-Host ("MEP writeback scope: " + $BundleScope)
 
@@ -502,22 +487,6 @@ function ReadUtf8([string]$p) {
 
 
 function New-BundleVersion {
-
-
-  param(
-
-
-    [string]$Prefix = "v0.0.0",
-
-
-    [string]$Branch = "local",
-
-
-    [string]$Scope  = "child"
-
-
-  )
-
 
   $ts = Get-Date -Format "yyyyMMdd_HHmmss"
 
@@ -1156,6 +1125,7 @@ Run "gh pr view" { gh pr view $targetBranch --repo $repo --json number,url,headR
 
 
 Assert-NoConflictMarkersInBundled -BundledPath (Join-Path (git rev-parse --show-toplevel) "docs/MEP/MEP_BUNDLE.md")
+
 
 
 
