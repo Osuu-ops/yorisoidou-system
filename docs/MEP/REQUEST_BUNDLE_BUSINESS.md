@@ -46,7 +46,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 389339
+- included_total_bytes: 389371
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -5641,13 +5641,14 @@ UI 実装は、本書との差分として管理される
 ---
 
 ### FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- sha256: 66ab2090c11f3a3a5949a5b5fe6f0c53a3345b090f7c54f3b1587fa435959136
-- bytes: 2056
+- sha256: 788be986c708667d53d57866535adf17be0fa8e64b86c54e6e40353f0400e78c
+- bytes: 2088
 
 ```text
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
+- platform/MEP/01_CORE/cards/**
 - START_HERE.md
 - .mep/CURRENT_STAGE.txt
 - .github/ISSUE_TEMPLATE/mep_dispatch.yml
