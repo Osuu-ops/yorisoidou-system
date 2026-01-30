@@ -95,3 +95,4 @@ BUNDLE_VERSION = v0.0.0+20260130_141541+main+evidence-child
 ### 停止条件
 - writeback 失敗、証跡欠損、重複行検出時は DIRTY とし次工程へ進まない
 
+PR #1353 | audit=OK,WB0000 | appended_at=2026-01-30T18:46:42Z | via=mep_append_evidence_line.ps1
