@@ -1,10 +1,4 @@
 #requires -Version 7.0
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-$ProgressPreference = "SilentlyContinue"
-[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
-$OutputEncoding = [Console]::OutputEncoding
-$env:GIT_PAGER="cat"; $env:PAGER="cat"
 
 param(
   [Parameter()]
@@ -22,13 +16,19 @@ param(
   [string]$BundleScope = "parent"
 )
 
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Console]::OutputEncoding
+$env:GIT_PAGER="cat"; $env:PAGER="cat"
+
 function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) -ForegroundColor Cyan }
 function Fail([string]$m){ throw $m }
 
 Info "mep_writeback_bundle.ps1 (minimal wrapper) starting..."
 Info ("Mode={0} PrNumber={1} BundlePath={2} BundleScope={3}" -f $Mode,$PrNumber,$BundlePath,$BundleScope)
 
-# Prefer an existing implementation file if it exists
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $candidates = @(
   (Join-Path $here "mep_writeback_bundle_core.ps1"),
