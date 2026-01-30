@@ -1,0 +1,16 @@
+name: mep_writeback_bundle_dispatch_manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number (0 = auto latest merged PR)'
+        required: false
+        default: '0'
+
+jobs:
+  call:
+    uses: ./.github/workflows/mep_writeback_bundle_dispatch_v3.yml
+    with:
+      pr_number: ${{ inputs.pr_number }}
+    secrets: inherit
