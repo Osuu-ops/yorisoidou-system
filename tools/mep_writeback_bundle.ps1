@@ -1,80 +1,86 @@
+#requires -Version 7.0
 
-# --- create PR for the writeback branch (Mode=pr) ---
-try {
-  $prTitle = ("Writeback bundle evidence (PrNumber={0})" -f $PrNumber)
-  $prBody  = ("Automated writeback bundle evidence. Mode={0} PrNumber={1} BundleScope={2} BundlePath={3}" -f $Mode,$PrNumber,$BundleScope,$BundlePath)
-  $prUrl = (gh pr create --title $prTitle --body $prBody --base "main" --head $br)
-  if ($prUrl) {
-    Write-Host ("[INFO] Created PR: {0}" -f $prUrl)
-  } else {
-    Write-Host "[WARN] gh pr create returned empty. A PR may already exist."
-  }
-} catch {
-  Write-Host ("[WARN] gh pr create failed: {0}" -f $_.Exception.Message)
-}param(
-  [int]$PrNumber = 0
-  ,[ValidateSet("pr","update")][string]$Mode = "pr"
-  ,[string]$BundlePath = "docs/MEP/MEP_BUNDLE.md"
-  ,[string]$BundleScope = "parent"
-  ,[string]$TargetBranchPrefix = "auto/writeback-bundle"
+param(
+  [Parameter()]
+  [ValidateSet("pr","main")]
+  [string]$Mode = "pr",
+
+  [Parameter()]
+  [int]$PrNumber = 0,
+
+  [Parameter()]
+  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
+
+  [Parameter()]
+  [ValidateSet("parent","sub")]
+  [string]$BundleScope = "parent"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$OutputEncoding = [Console]::OutputEncoding
+$env:GIT_PAGER="cat"; $env:PAGER="cat"
 
-function Info([string]$m){ Write-Host "[INFO] $m" }
-function Warn([string]$m){ Write-Host "[WARN] $m" }
-
-# NOTE:
-# This is a minimal “unblocker” for writeback workflows.
-# Contract: (1) parse OK, (2) if bundle file changed -> create PR branch, else exit 0.
-
-$root = git rev-parse --show-toplevel 2>$null
-if (-not $root) { throw "Not a git repository." }
-Set-Location $root
-
-git fetch --prune origin | Out-Null
-
-$bundleAbs = Join-Path $root $BundlePath
-if (-not (Test-Path -LiteralPath $bundleAbs)) { throw "Bundle not found: $BundlePath" }
+function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
+function Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }
+function Fail([string]$m){ throw $m }
 
 Info ("Mode={0} PrNumber={1} BundleScope={2}" -f $Mode,$PrNumber,$BundleScope)
 Info ("BundlePath={0}" -f $BundlePath)
-Info ("TargetBranchPrefix={0}" -f $TargetBranchPrefix)
 
-# detect diff only for target bundle file
+if (-not (Test-Path -LiteralPath $BundlePath)) { Fail ("Bundled not found: {0}" -f $BundlePath) }
+
+# guard: conflict markers
+$bad = Select-String -LiteralPath $BundlePath -Pattern '<<<<<<<|=======|>>>>>>>' -AllMatches -ErrorAction SilentlyContinue
+if ($bad) { Fail ("CONFLICT_MARKER_GUARD_NG: conflict markers detected in {0}" -f $BundlePath) }
+
+# resolve target PR number when 0 (auto latest merged PR on main)
+if ($PrNumber -eq 0) {
+  try {
+    $repoUrl = (git remote get-url origin)
+    $m = [regex]::Match($repoUrl, "(?i)github\.com[:/](?<o>[^/]+)/(?<r>[^/.]+)(?:\.git)?$")
+    if ($m.Success) {
+      $fullRepo = ("{0}/{1}" -f $m.Groups["o"].Value, $m.Groups["r"].Value)
+      $n = (gh pr list -R $fullRepo --state merged --limit 1 --json number --jq ".[0].number")
+      if ($n) { $PrNumber = [int]$n }
+    }
+  } catch {}
+  Info ("Auto selected PrNumber={0}" -f $PrNumber)
+}
+
+# if no diff, do nothing (workflow should have produced diff, but we stay safe)
 $diff = (git status --porcelain -- $BundlePath)
 if (-not $diff) {
-  Info "No diff for bundle. Exit 0."
+  Warn "No diff for bundle file; skip writeback."
   exit 0
 }
 
-# branch name
-$runId  = $env:GITHUB_RUN_ID
-$attempt = $env:GITHUB_RUN_ATTEMPT
+# create branch name
+$runId = $env:GITHUB_RUN_ID
 if (-not $runId) { $runId = "local" }
-if (-not $attempt) { $attempt = "1" }
-$stamp = (Get-Date -Format "yyyyMMdd_HHmmss")
-$branch = "{0}_{1}_{2}_{3}" -f $TargetBranchPrefix,$runId,$attempt,$stamp
-
-Info ("Diff detected -> create branch: {0}" -f $branch)
+$ts = (Get-Date -Format "yyyyMMdd_HHmmss")
+$branch = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $PrNumber, $ts)
+Info ("Create branch: {0}" -f $branch)
 
 git checkout -b $branch | Out-Null
-git add -- $BundlePath | Out-Null
-
-# commit (keep deterministic message)
-git commit -m ("chore(mep): writeback bundle ({0})" -f $BundleScope) | Out-Null
+git add $BundlePath | Out-Null
+git commit -m ("chore(mep): writeback bundle evidence (PrNumber={0})" -f $PrNumber) | Out-Null
 git push -u origin $branch | Out-Null
 
-# create PR (best-effort)
-$base = $env:GITHUB_REF_NAME
-if (-not $base) { $base = "main" }
-
+# create PR (idempotent: if already exists, skip)
 try {
-  $prUrl = (gh pr create --title ("chore(mep): writeback bundle ({0})" -f $BundleScope) --body ("Automated writeback: {0}" -f $BundlePath) --base $base --head $branch 2>$null)
-  if ($prUrl) { Info ("PR created: {0}" -f $prUrl) } else { Warn "PR create returned empty (maybe already exists)." }
-} catch {
-  Warn ("PR create failed (continuing): " + $_.Exception.Message)
-}
+  $exists = gh pr list --state open --head $branch --json number --jq '.[0].number' 2>$null
+  if ($exists) {
+    Info ("PR already exists for head {0}: #{1}" -f $branch,$exists)
+    exit 0
+  }
+} catch {}
+
+$prTitle = ("Writeback bundle evidence (PrNumber={0})" -f $PrNumber)
+$prBody  = ("Automated writeback bundle evidence. Mode={0} PrNumber={1} BundleScope={2} BundlePath={3}" -f $Mode,$PrNumber,$BundleScope,$BundlePath)
+$prUrl = (gh pr create --title $prTitle --body $prBody --base "main" --head $branch)
+Info ("Created PR: {0}" -f $prUrl)
 
 exit 0
