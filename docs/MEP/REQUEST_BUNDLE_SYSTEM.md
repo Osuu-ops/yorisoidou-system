@@ -24,6 +24,7 @@
 - platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
 - platform/MEP/01_CORE/cards/EVIDENCE_SUB_MEP_ROOT.md
 - platform/MEP/01_CORE/cards/HANDOFF_PACKET_SPEC.md
+- platform/MEP/01_CORE/cards/HANDOFF_TWO_LAYER_SPEC.md
 - platform/MEP/01_CORE/cards/PRE_GATE_CHECKLIST.md
 - platform/MEP/01_CORE/definitions/SYMBOLS.md
 - platform/MEP/01_CORE/foundation/API_IO_BOUNDARY_CANON.md
@@ -57,7 +58,7 @@
 - MAX_FILES: 300
 - MAX_TOTAL_BYTES: 2000000
 - MAX_FILE_BYTES: 250000
-- included_total_bytes: 138864
+- included_total_bytes: 140148
 
 ## 欠落（指定されたが存在しない）
 - ﻿# One path per line. Lines starting with # are comments.
@@ -1692,6 +1693,52 @@ It must be the only input to the next chat (no ID typing, no prose instructions 
 
 ### 3. NEXT (single-thread continuation)
 - next mechanical steps (no branching prose)
+```
+
+
+---
+
+### FILE: platform/MEP/01_CORE/cards/HANDOFF_TWO_LAYER_SPEC.md
+- sha256: 2fccb9c221ddc943896a1155262649b8ee539967819ff8751ff8f34cf779421f
+- bytes: 1284
+
+```text
+# HANDOFF TWO-LAYER INPUT SPEC (Fixed)
+
+## Purpose
+Prevent audit contamination by strictly separating:
+- Audit-truth (Bundled/EVIDENCE only)
+- Work-continuation (unfinished tasks / next steps)
+
+## Non-negotiable principles
+1. Truth source is Bundled/EVIDENCE only (PR→main→Bundled).
+2. Conversation logs are NOT primary evidence.
+3. Unfinished tasks must be preserved as "unfinished" (not silently dropped).
+4. Confirmation is allowed ONLY at exit points:
+   - Approval 1: merge implementation PR to main
+   - Approval 2: confirm evidence is appended to Bundled (Evidence Log)
+
+## Required two-layer format (new chat first message)
+
+[監査用引継ぎ]（一次根拠・確定事実）
+- BUNDLE_VERSION = <value>
+- PR #<number> | audit=OK,WB0000 | <optional fields>
+
+[作業用引継ぎ]（監査外・未確定）
+- 未完タスク:
+  - ...
+- 次工程候補:
+  - ...
+- 注意点:
+  - ...
+
+## Interpretation rules (system behavior)
+- Only [監査用引継ぎ] is treated as confirmed facts.
+- [作業用引継ぎ] is NEVER treated as confirmed facts; it is a work memo only.
+- Mixing layers or missing a layer is WB0001 input contamination and must stop processing.
+
+## Error code
+- WB0001: Input contamination (missing layer / mixed content / audit layer contains non-evidence)
 ```
 
 
