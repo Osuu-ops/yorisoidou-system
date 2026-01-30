@@ -1,11 +1,22 @@
 param(
   [Parameter()]
-  [ValidateSet("pr","main")]
-  [string]$Mode = "pr"
+  [int]$PrNumber = 0,
 
   [Parameter()]
-  [int]$PrNumber = 0
+  [ValidateSet("pr","main","update")]
+  [string]$Mode = "update",
+
+  [Parameter()]
+  [string]$BundlePath = "docs/MEP/MEP_BUNDLE.md",
+
+  [Parameter()]
+  [ValidateSet("parent","sub")]
+  [string]$BundleScope = "parent"
 )
+
+# normalize variable used by guards (if referenced later)
+$BundledPath = $BundlePath
+
 
 # CONFLICT_MARKER_GUARD: prevent committing Bundled with unresolved merge markers
 function Assert-NoConflictMarkersInBundled {
