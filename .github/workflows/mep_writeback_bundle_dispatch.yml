@@ -41,6 +41,17 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Generate Bundled (update docs/MEP/MEP_BUNDLE.md)
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+
+          # Generate/update Bundled BEFORE writeback diff-check
+          pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
+          # Show diff status for evidence (non-fatal)
+          git status --porcelain -- docs/MEP/MEP_BUNDLE.md || true
 
       - name: Writeback evidence -> PR (slim)
         shell: pwsh
