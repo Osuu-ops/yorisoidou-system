@@ -1,0 +1,43 @@
+name: mep_sync_evidence_to_parent_dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "0 = auto (latest OK line in evidence bundled), or specify PR number"
+        required: true
+        default: "0"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run sync (pwsh)
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          $pr = [int]"${{ inputs.pr_number }}"
+          pwsh -NoProfile -File tools/mep_sync_evidence_to_parent.ps1 -PrNumber $pr
+
+      - name: Commit if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "[INFO] no changes"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/MEP/MEP_BUNDLE.md
+          git commit -m "chore(mep): sync evidence OK line into parent bundled"
+          git push
