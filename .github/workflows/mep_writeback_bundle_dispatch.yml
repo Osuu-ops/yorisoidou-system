@@ -15,7 +15,6 @@ name: MEP Writeback Bundle (Evidence)
         required: false
         type: string
         default: 'false'
-  workflow_dispatch:
     inputs:
       pr_number:
         description: 'PR number (0 = auto latest merged PR)'
