@@ -1,7 +1,7 @@
 # PATCH_MARKER: gen-runstep 20260131_021740
 # PATCH_MARKER: generate-via-compiler 20260131_021532
 name: MEP Writeback Bundle (Evidence)
-on:
+"on":
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -116,6 +116,7 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
