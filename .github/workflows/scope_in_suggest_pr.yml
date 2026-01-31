@@ -24,8 +24,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          token: ${{ secrets.MEP_BOT_PAT }}
           fetch-depth: 0
-          token: ${{ secrets.MEP_PR_TOKEN }}
 
       - name: Force origin auth (token URL)
         shell: bash
