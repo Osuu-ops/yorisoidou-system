@@ -1,0 +1,22 @@
+name: MEP Writeback Bundle (Manual Dispatcher)
+
+"on":
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "0 = latest merged PR"
+        required: false
+        default: "0"
+        type: string
+      write_handoff:
+        description: "write HANDOFF_NEXT too (true/false)"
+        required: false
+        default: "false"
+        type: string
+
+jobs:
+  call-writeback:
+    uses: ./.github/workflows/mep_writeback_bundle_dispatch.yml
+    with:
+      pr_number: ${{ inputs.pr_number }}
+      write_handoff: ${{ inputs.write_handoff }}
