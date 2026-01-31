@@ -91,7 +91,7 @@ jobs:
           if [ -s biz_inputs.txt ]; then
           # FILTER_MISSING_BIZ_INPUTS: remove paths that no longer exist (deleted/moved) to avoid REF_AUDIT_NG
           if [ -f biz_inputs.txt ]; then
-  python - <<'PY'
+          python - <<'PY'
           import pathlib
           p = pathlib.Path("biz_inputs.txt")
           lines = [ln.strip().strip('"') for ln in p.read_text(encoding="utf-8").splitlines() if ln.strip()]
@@ -104,5 +104,6 @@ jobs:
           else
             echo "BUSINESS audit: SKIP"
           fi
+
 
 
