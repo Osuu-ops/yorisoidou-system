@@ -56,7 +56,7 @@ jobs:
           git status --porcelain -- docs/MEP/MEP_BUNDLE.md || true
       - name: Writeback evidence -> PR (full)
         shell: pwsh
-  env:
+        env:
     GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ inputs.pr_number }}
