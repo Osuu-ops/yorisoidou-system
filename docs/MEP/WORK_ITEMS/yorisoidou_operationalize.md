@@ -1,5 +1,9 @@
 # WORK_ITEM: よりそい堂 BUSINESS / 完成（運用可能）へ
 
+## 運用固定化
+- 手動実行は **.github/workflows/mep_writeback_bundle_manual.yml** のみを正規経路とする。
+- 旧経路（dispatcher 直叩き等、422 を出していた経路）は **運用対象外**（禁止）。
+- reusable workflow **.github/workflows/mep_writeback_bundle_dispatch.yml** は manual dispatcher からのみ呼ぶ。
 ## 根拠（Bundled）
 - 完成定義（全BUSINESS共通）：platform/MEP/01_CORE/cards/BUSINESS_DONE_DEFINITION.md
 - Bundled参照カード：BUSINESS_DONE_DEFINITION_BUNDLED_REF（Adopted）

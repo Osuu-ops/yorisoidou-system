@@ -32,6 +32,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard: mergeable & leftover branches
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "[guard] check leftover remote branches: auto/writeback-bundle_*"
+          if git ls-remote --heads origin "auto/writeback-bundle_*" | grep -q . ; then
+            echo "[NG] leftover remote branches exist (auto/writeback-bundle_*). Clean them before writeback."
+            git ls-remote --heads origin "auto/writeback-bundle_*" || true
+            exit 2
+          fi
+          echo "[OK] no leftover remote branches."
+          # PR number must be provided by earlier steps (export to env). We refuse to guess.
+          PR_NUMBER="${PR_NUMBER:-${pr_number:-${PR:-}}}"
+          if [ -z "${PR_NUMBER}" ]; then
+            echo "[NG] PR number is not available in env (PR_NUMBER/pr_number/PR). Ensure reusable workflow exports PR number before merge."
+            exit 2
+          fi
+          echo "[guard] polling mergeable state for PR #${PR_NUMBER}"
+          mergeable=""
+          mergeable_state=""
+          for i in $(seq 1 30); do
+            mergeable="$(gh api repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER} --jq '.mergeable' || true)"
+            mergeable_state="$(gh api repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER} --jq '.mergeable_state' || true)"
+            if [ "${mergeable}" != "null" ] && [ -n "${mergeable}" ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "[guard] mergeable=${mergeable} mergeable_state=${mergeable_state}"
+          if [ "${mergeable}" != "true" ] || [ "${mergeable_state}" != "clean" ]; then
+            echo "[NG] merge is not allowed by guard (mergeable must be true and mergeable_state must be clean)."
+            exit 2
+          fi
+          echo "[OK] mergeable guard passed."
         with:
           fetch-depth: 0
 
@@ -113,6 +149,7 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
