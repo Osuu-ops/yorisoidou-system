@@ -1,8 +1,7 @@
 name: MEP Bump BUNDLE_VERSION (Dispatch)
 
 on:
-  workflow_dispatch: {}
-
+  workflow_dispatch:
 permissions:
   contents: write
   pull-requests: write

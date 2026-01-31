@@ -2,12 +2,6 @@ name: MEP Semantic Audit (Manual)
 
 on:
   workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "Pull Request number (e.g. 41)"
-        required: true
-        type: string
-
 permissions:
   contents: read
   pull-requests: write

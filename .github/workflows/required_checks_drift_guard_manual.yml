@@ -2,7 +2,6 @@ name: Required Checks Drift Guard (Manual)
 
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
   pull-requests: read

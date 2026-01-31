@@ -2,12 +2,6 @@ name: UX Rooftop Full Auto Dispatch v2
 
 on:
   workflow_dispatch:
-    inputs:
-      biz_key:
-        description: "Business key (must exist in businesses/REGISTRY.yml). Default=yorisoidou"
-        required: false
-        default: "yorisoidou"
-      artifact_title:
 description: "Artifact title (short)"
         required: true
       artifact_markdown:

@@ -1,10 +1,7 @@
 name: mep_handoff_push_v8
 
 on:
-  push:
-    branches:
-      - handoff-trigger
-
+  workflow_dispatch:
 permissions:
   contents: read
 
