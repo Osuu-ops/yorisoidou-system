@@ -1,8 +1,14 @@
-BUNDLE_VERSION = v0.0.0+20260131_165355+main_1b7b1e3
+BUNDLE_VERSION = v0.0.0+20260131_202348+main_1ee5778
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
+<!-- BEGIN: PREGATE_DRAFT_VAULT (MEP) -->
+## CARD: PREGATE_DRAFT_VAULT（Pre-Gate草案の置き場）  [Adopted]
+- 草案置き場: docs/MEP_SUB/DRAFT/
+- 一覧: docs/MEP_SUB/DRAFT/DRAFT_INDEX.md
+- 注意: ここにあるものは「採用前」。確定は別PRで main へ反映する。
+<!-- END: PREGATE_DRAFT_VAULT (MEP) -->
 <!-- BEGIN: GATE_CONNECTIVITY_SPEC (MEP) -->
 ## CARD: GATE_CONNECTIVITY_SPEC（Pre-Gate→Gate1-10接続）  [Adopted]
 ### 目的
@@ -815,4 +821,5 @@ PR #1503 | mergedAt=2026-02-01 02:22:59 | mergeCommit=1e9a3a29 | BUNDLE_VERSION=
 
 * - PR #1507 | mergedAt=01/31/2026 17:46:03 | mergeCommit=e46ba1163202354647049b668e78e641fee1a744 | BUNDLE_VERSION=v0.0.0+20260131_165355+main_1b7b1e3 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1507
 PR #1507 | audit=OK,WB0000 | appended_at=2026-02-01T04:10:47.5259897+09:00 | via=mep_append_evidence_line_full.ps1
+
 
