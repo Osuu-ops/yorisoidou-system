@@ -23,9 +23,9 @@ jobs:
       - name: Checkout (full history, PAT)
         uses: actions/checkout@v4
         with:
+          fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.MEP_BOT_PAT }}
-          fetch-depth: 0
 
       - name: Force origin auth (token URL)
         shell: bash
