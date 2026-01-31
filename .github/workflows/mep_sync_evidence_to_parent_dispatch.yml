@@ -40,6 +40,8 @@ jobs:
           echo "GH_TOKEN=$tok" >> "$GITHUB_ENV"
           echo "[INFO] prepared GH_TOKEN (sanitized)"
       - name: Create PR if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
