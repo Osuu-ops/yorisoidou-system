@@ -30,9 +30,16 @@ jobs:
           $pr = [int]"${{ inputs.pr_number }}"
           pwsh -NoProfile -File tools/mep_sync_evidence_to_parent.ps1 -PrNumber $pr
 
-      - name: Create PR if changed
+      - name: Prepare GH_TOKEN
+        shell: bash
         env:
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          MEP_BOT_PAT: ${{ secrets.MEP_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          tok="$(printf "%s" "$MEP_BOT_PAT" | tr -d '\r\n')"
+          echo "GH_TOKEN=$tok" >> "$GITHUB_ENV"
+          echo "[INFO] prepared GH_TOKEN (sanitized)"
+      - name: Create PR if changed
         shell: bash
         run: |
           set -euo pipefail
