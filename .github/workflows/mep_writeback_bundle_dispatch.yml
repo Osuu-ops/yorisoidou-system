@@ -58,7 +58,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
-          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP/MEP_BUNDLE.md" -BundleScope "parent"
+          $pr = '${{ inputs.pr_number }}'
+          if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
+          pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber $pr -BundlePath "docs/MEP/MEP_BUNDLE.md" -BundleScope "parent"
 
       - name: Create PR for writeback branch
         shell: pwsh
@@ -107,6 +109,7 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
