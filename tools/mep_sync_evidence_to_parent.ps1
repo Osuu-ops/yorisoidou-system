@@ -1,12 +1,12 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-
 param(
   [int]$PrNumber = 0,
   [string]$EvidenceBundledPath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
   [string]$ParentBundledPath   = "docs/MEP/MEP_BUNDLE.md",
   [switch]$NoAppendScriptFallback
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 
 function Fail([string]$m){ throw $m }
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
