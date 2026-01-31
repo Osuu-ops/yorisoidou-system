@@ -1,53 +1,42 @@
-name: MEP Writeback Bundle (Evidence)
-
+name: MEP Writeback Bundle (Evidence Dispatch)
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number (0 = auto latest merged PR into main)"
+        required: false
+        default: "0"
+        type: string
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
-  writeback-evidence:
+  writeback_evidence:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Configure git identity (CI)
-        run: |
-          git config --global user.name  "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Resolve target PR number (0 -> latest merged)
-        id: pr
+      - name: Resolve PR number (0 => latest merged into main)
+        shell: bash
         env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ github.event.inputs.pr_number }}" = "0" ]; then
-            n=$(gh pr list --state merged --base main --limit 1 --json number -q '.[0].number')
-            echo "pr_number=$n" >> "$GITHUB_OUTPUT"
-          else
-            echo "pr_number=${{ github.event.inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          PR_IN="${{ inputs.pr_number }}"
+          if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
+          if [ "${PR_IN}" = "0" ]; then
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
           fi
-      - name: Append evidence line into EVIDENCE bundle
+          if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
+            echo "[NG] failed to resolve PR number"
+            exit 2
+          fi
+          echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "[OK] PR_NUMBER=${PR_IN}"
+      - name: Append full evidence line into EVIDENCE Bundled (child)
         shell: pwsh
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = "Stop"
-          pwsh -NoProfile -File tools/mep_append_evidence_line.ps1 -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-      - name: Create PR (auto/writeback-evidence-bundle_*)
-        env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
-        run: |
-          ts=$(date -u +"%Y%m%d_%H%M%S")
-          head="auto/writeback-evidence-bundle_${ts}"
-          git checkout -b "$head"
-          git add docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
-          git commit -m "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})"
-          git push -u origin "$head"
-          gh pr create --base main --head "$head" --title "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})" --body "Append evidence line for PR #${{ steps.pr.outputs.pr_number }} to docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"

@@ -3,6 +3,34 @@ OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_d
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
+<!-- BEGIN: GATE_CONNECTIVITY_SPEC (MEP) -->
+## CARD: GATE_CONNECTIVITY_SPEC（Pre-Gate→Gate1-10接続）  [Adopted]
+### 目的
+Pre-Gate → Gate1〜10 の進行が「PR→main→Bundled（唯一の正）」で一貫し、運用上の承認が **0を2回**で完了することを、Bundled根拠として固定する。
+### 前提（Bundled根拠）
+- 本ファイルは「手編集禁止」「更新は PR→main→Bundled」で行う（SOURCE_CONTEXT 参照）。
+- 受入テスト仕様（ACCEPTANCE_TESTS_SPEC）と、証跡貼り戻し仕様（EVIDENCE_WRITEBACK_SPEC）が Bundled 内に存在する。
+### Pre-Gate（入口）
+- Pre-Gate は “事前監査/材料出し/hand-off生成” の段階であり、以下の dispatch 系で入口を提供する（workflow 名/パスは実体に合わせる）。
+  - .github/workflows/mep_pregate_handoff_dispatch_v1.yml
+  - .github/workflows/mep_pregate_handoff_dispatch_v2.yml
+  - .github/workflows/mep_pregate_handoff_dispatch_v3.yml
+  - .github/workflows/mep_pregate_handoff_dispatch_v4.yml
+### Gate（進行）
+- Gate の進行は Gate Runner / Gate PR / Auto PR Gate のいずれかで実行され、結果は PR→main→Bundled に反映される。
+  - .github/workflows/mep_gate_runner_manual.yml
+  - .github/workflows/mep_gate_pr.yml
+  - .github/workflows/mep_auto_pr_gate_dispatch.yml
+  - .github/workflows/mep_auto_pr_gate_min_dispatch.yml
+### 承認2回（0×2）
+- 運用上の承認は **2回**とし、両方とも入力は **0**（承認）で統一する。
+  - 1回目（0）：採用/FIXATE（次工程へ進める意思決定）
+  - 2回目（0）：証跡確定（PR→main→Bundled 反映を確認して確定）
+- これにより “承認2回で一貫して進む” を運用規約として固定する。
+### 既存Bundled記録との整合
+- Gate 9 完了時点の事実（Bundled記録ベース）が Bundled 内に存在する（Gate 9 章）。
+- 受入テスト仕様（Draft）と証跡貼り戻し仕様（Adopted）が Bundled 内に存在する。
+<!-- END: GATE_CONNECTIVITY_SPEC (MEP) -->
 ## CARD: Response Behavior & Display Rules（応答挙動・表示規約）  [Adopted]
 
 ### 規約（最優先）
@@ -787,3 +815,4 @@ PR #1503 | mergedAt=2026-02-01 02:22:59 | mergeCommit=1e9a3a29 | BUNDLE_VERSION=
 
 * - PR #1507 | mergedAt=01/31/2026 17:46:03 | mergeCommit=e46ba1163202354647049b668e78e641fee1a744 | BUNDLE_VERSION=v0.0.0+20260131_165355+main_1b7b1e3 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1507
 PR #1507 | audit=OK,WB0000 | appended_at=2026-02-01T04:10:47.5259897+09:00 | via=mep_append_evidence_line_full.ps1
+
