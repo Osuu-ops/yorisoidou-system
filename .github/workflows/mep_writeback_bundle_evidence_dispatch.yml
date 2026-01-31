@@ -29,7 +29,7 @@ jobs:
       - name: Resolve target PR number (0 -> latest merged)
         id: pr
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           if [ "${{ github.event.inputs.pr_number }}" = "0" ]; then
             n=$(gh pr list --state merged --base main --limit 1 --json number -q '.[0].number')
@@ -47,7 +47,7 @@ jobs:
           pwsh -NoProfile -File tools/mep_append_evidence_line.ps1 -PrNumber ${{ inputs.pr_number }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
       - name: Create PR (auto/writeback-evidence-bundle_*)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           ts=$(date -u +"%Y%m%d_%H%M%S")
           head="auto/writeback-evidence-bundle_${ts}"
@@ -56,3 +56,4 @@ jobs:
           git commit -m "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})"
           git push -u origin "$head"
           gh pr create --base main --head "$head" --title "chore(mep): writeback evidence to Bundled (PR #${{ steps.pr.outputs.pr_number }})" --body "Append evidence line for PR #${{ steps.pr.outputs.pr_number }} to docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+

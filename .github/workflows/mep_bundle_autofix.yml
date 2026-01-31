@@ -19,7 +19,8 @@ jobs:
       - name: Bundle allowlist audit+autofix -> PR
         shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           pwsh -NoProfile -File tools/mep_bundle_autofix.ps1 -Mode pr -AutoMerge
+
 

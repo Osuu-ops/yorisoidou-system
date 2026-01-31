@@ -36,7 +36,7 @@ jobs:
       - name: Create PR if changed
         if: steps.diff.outputs.changed == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -48,3 +48,4 @@ jobs:
           git commit -m "docs(MEP): update CHAT_PACKET"
           git push origin "$b"
           gh pr create --title "docs(MEP): update CHAT_PACKET" --body "Regenerated CHAT_PACKET.md from canonical docs." --base main --head "$b"
+

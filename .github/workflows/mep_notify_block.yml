@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Resolve PR + comment (STOP notice)
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -44,3 +44,4 @@ jobs:
           body+=$'※範囲外変更（OUT_OF_SCOPE）や外部ブロックの場合は、Self-Healのコメントが別途付きます。\n'
 
           gh pr comment "$pr_number" --repo "$REPO" --body "$body" || true
+

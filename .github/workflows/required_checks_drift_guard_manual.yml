@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check required contexts vs latest merged PR checks
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
@@ -49,3 +49,4 @@ jobs:
           fi
 
           echo "OK: no drift"
+

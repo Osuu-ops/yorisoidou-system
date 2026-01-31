@@ -23,7 +23,7 @@ jobs:
 
       - name: Resolve PR SHAs
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           set -e
           PR="${{ inputs.pr_number }}"
@@ -103,3 +103,4 @@ jobs:
               issue_number: parseInt(process.env.PR_NUMBER, 10),
               body
             });
+

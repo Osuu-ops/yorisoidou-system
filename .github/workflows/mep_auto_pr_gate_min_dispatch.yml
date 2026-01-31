@@ -95,7 +95,7 @@ jobs:
       - name: Create PR
         id: pr
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -109,7 +109,7 @@ jobs:
       - name: Gate (minimal scope check)
         id: gate
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -124,7 +124,7 @@ jobs:
 
       - name: Comment result (safe)
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,9 +140,10 @@ EOF
       - name: Merge if OK
         if: steps.gate.outputs.result == 'OK' && inputs.merge_if_ok == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
           PR="${{ steps.pr.outputs.pr_number }}"
           gh pr merge "$PR" --repo "${{ github.repository }}" --merge --delete-branch
+
