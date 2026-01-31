@@ -32,7 +32,7 @@ function Resolve-RealPrNumber_V2 {
   # (a) evidence bundles
   foreach ($p in $cands) {
     try {
-      $hits = @(Select-String -LiteralPath $p -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
+      $hits = @(Select-String -LiteralPath $p -Pattern 'PR #(\d+).*?\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
       if ($hits.Count -gt 0) {
         $n = [int]$hits[$hits.Count-1].Matches[0].Groups[1].Value
         if ($n -gt 0) { return $n }
@@ -42,7 +42,7 @@ function Resolve-RealPrNumber_V2 {
   # (b) parent bundled fallback
   $parent = Join-Path $rt 'docs/MEP/MEP_BUNDLE.md'
   if (Test-Path $parent) {
-    $ph = @(Select-String -LiteralPath $parent -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
+    $ph = @(Select-String -LiteralPath $parent -Pattern 'PR #(\d+).*?\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
     if ($ph.Count -gt 0) {
       $m = [int]$ph[$ph.Count-1].Matches[0].Groups[1].Value
       if ($m -gt 0) { return $m }
@@ -234,4 +234,5 @@ Set-Content -LiteralPath $ParentBundledPath -Value $parent -NoNewline -Encoding 
 
 Info "Appended: $line"
 exit 0
+
 
