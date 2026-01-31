@@ -55,7 +55,7 @@ jobs:
           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
           echo "[OK] PR_NUMBER=${PR_IN}"
 
-      - name: Guard: leftover remote branches auto/writeback-bundle_*
+      - name: "Guard: leftover remote branches auto/writeback-bundle_*"
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
