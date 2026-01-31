@@ -6,6 +6,70 @@ param(
 )
 
 Set-StrictMode -Version Latest
+
+### PR0_GUARD_RESOLVE_AND_FORBID (AUTO) ###
+# Policy:
+#   - "0" は内部表現（auto-latest）のみ。Bundled/ Evidence へ "PR #0" を書くことを禁止。
+#   - 0 を受け取った場合は evidence bundle から最新の実PR番号（PR #<n> | audit=OK,WB0000）へ解決して置換。
+#   - 解決できない場合は NG で停止（PR #0 を生成しない）。
+function Resolve-RealPrNumber_FromEvidence {
+  param(
+    [int]$InputPr,
+    [string[]]$EvidenceBundleCandidates
+  )
+  if ($InputPr -ne 0) { return $InputPr }
+  $cands = @()
+  foreach ($p in ($EvidenceBundleCandidates | Where-Object { $_ -and (Test-Path $_) })) {
+    try { $cands += (Resolve-Path $p).Path } catch { }
+  }
+  # 既定候補（存在すれば追加）
+  try {
+    $rt = (git rev-parse --show-toplevel)
+    $preferred = Join-Path $rt 'docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md'
+    if (Test-Path $preferred) { $cands += (Resolve-Path $preferred).Path }
+    Get-ChildItem -Path (Join-Path $rt 'docs') -Recurse -File -Filter 'MEP_BUNDLE.md' -ErrorAction SilentlyContinue |
+      Where-Object { $_.FullName -match '\\MEP_SUB\\EVIDENCE\\' -or $_.FullName -match '\\EVIDENCE\\' } |
+      ForEach-Object { $cands += $_.FullName }
+  } catch { }
+  $cands = @($cands | Select-Object -Unique)
+  if ($cands.Count -eq 0) { throw "pr_number=0 but no evidence bundle candidates found" }
+  foreach ($p in $cands) {
+    try {
+      $hits = @(Select-String -LiteralPath $p -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
+      if ($hits.Count -gt 0) {
+        $last = $hits[$hits.Count - 1].Matches[0].Groups[1].Value
+        $n = [int]$last
+        if ($n -gt 0) { return $n }
+      }
+    } catch { }
+  }
+  throw "pr_number=0 could not be resolved to a real PR number from evidence bundles"
+}
+# 既知の変数名候補を走査して、0なら実PRへ置換（param() の形に依存しない）
+try {
+  $varCandidates = @('pr_number','prNumber','pr','PR','PrNumber','PRNumber')
+  $bundleVarCandidates = @('evidence_bundle','evidenceBundle','bundlePath','evidenceBundlePath','EvidenceBundlePath')
+  $evidencePaths = @()
+  foreach ($bn in $bundleVarCandidates) {
+    $v = Get-Variable -Name $bn -ErrorAction SilentlyContinue
+    if ($v) { $evidencePaths += [string]$v.Value }
+  }
+  foreach ($pn in $varCandidates) {
+    $v = Get-Variable -Name $pn -ErrorAction SilentlyContinue
+    if ($v -and ($v.Value -is [int] -or $v.Value -is [string])) {
+      $cur = [int]$v.Value
+      if ($cur -eq 0) {
+        $resolved = Resolve-RealPrNumber_FromEvidence -InputPr 0 -EvidenceBundleCandidates $evidencePaths
+        if ($resolved -le 0) { throw "Resolved PR number invalid: $resolved" }
+        Set-Variable -Name $pn -Value $resolved -Scope Local
+      }
+    }
+  }
+} catch {
+  throw "PR0_GUARD failed (forbid PR #0 output): $($_.Exception.Message)"
+}
+### END PR0_GUARD_RESOLVE_AND_FORBID (AUTO) ###
+
 $ErrorActionPreference = "Stop"
 
 function Fail([string]$m){ throw $m }
