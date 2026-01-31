@@ -1,5 +1,5 @@
 name: MEP Writeback Bundle (Dispatch) REBORN 20260201_050222
-on:
+"on":
   # rereg-onblock 20260201_050047
   workflow_dispatch:
     inputs:
