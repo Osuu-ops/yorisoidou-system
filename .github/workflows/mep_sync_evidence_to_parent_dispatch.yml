@@ -12,6 +12,10 @@ permissions:
   contents: write
   pull-requests: write
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -30,15 +34,6 @@ jobs:
           $pr = [int]"${{ inputs.pr_number }}"
           pwsh -NoProfile -File tools/mep_sync_evidence_to_parent.ps1 -PrNumber $pr
 
-      - name: Prepare GH_TOKEN
-        shell: bash
-        env:
-          MEP_BOT_PAT: ${{ secrets.MEP_BOT_PAT }}
-        run: |
-          set -euo pipefail
-          tok="$(printf "%s" "$MEP_BOT_PAT" | tr -d '\r\n')"
-          echo "GH_TOKEN=$tok" >> "$GITHUB_ENV"
-          echo "[INFO] prepared GH_TOKEN (sanitized)"
       - name: Create PR if changed
         shell: bash
         run: |
