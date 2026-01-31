@@ -7,6 +7,7 @@ param(
   [string]$ParentBundledPath   = "docs/MEP/MEP_BUNDLE.md",
   [switch]$NoAppendScriptFallback
 )
+)
 
 function Fail([string]$m){ throw $m }
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
