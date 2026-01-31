@@ -1,0 +1,89 @@
+name: MEP Writeback Bundle (Dispatch) REBORN 20260201_050222
+on:
+  # rereg-onblock 20260201_050047
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number (0 = auto latest merged PR into main)"
+        required: false
+        default: "0"
+        type: string
+      write_handoff:
+        description: "Generate+Guard+Writeback HANDOFF_NEXT into Bundled (false/true)"
+        required: false
+        default: "false"
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  writeback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Resolve PR number (0 => latest merged into main)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PR_IN="${{ inputs.pr_number }}"
+          if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
+          if [ "${PR_IN}" = "0" ]; then
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          fi
+          if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
+            echo "[NG] failed to resolve PR number"
+            exit 2
+          fi
+          echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "[OK] PR_NUMBER=${PR_IN}"
+      - name: Bump Bundled version (parent)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Append full evidence line into parent Bundled
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Optional: Writeback HANDOFF_NEXT (CI)
+        if: ${{ inputs.write_handoff == 'true' }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
+      - name: Create PR for writeback branch (if needed)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
+          function Warn([string]$m){ Write-Host ('[WARN] {0}' -f $m) }
+          $head = (git rev-parse --abbrev-ref HEAD).Trim()
+          Info ('HEAD=' + $head)
+          if ($head -notlike 'auto/writeback-bundle_*') {
+            Warn 'Not on auto/writeback-bundle_* branch; skip PR create.'
+            exit 0
+          }
+          $exists = gh pr list --state open --head $head --json number --jq '.[0].number' 2>$null
+          if ($exists) {
+            Info ('PR already exists for head ' + $head + ': #' + $exists)
+            exit 0
+          }
+          $title = ('Writeback bundle evidence ({0})' -f $head)
+          $body  = ('Automated writeback: created from branch {0} (run_id={1})' -f $head, '${{ github.run_id }}')
+          $url = gh pr create --title $title --body $body --base 'main' --head $head
+          Info ('Created PR: ' + $url)
