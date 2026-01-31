@@ -57,7 +57,7 @@ jobs:
       - name: Writeback evidence -> PR (full)
         shell: pwsh
         env:
-    GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ inputs.pr_number }}
       - name: Writeback evidence -> PR (slim)
@@ -116,6 +116,7 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
