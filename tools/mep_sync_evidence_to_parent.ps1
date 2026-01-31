@@ -7,7 +7,6 @@ param(
 
 Set-StrictMode -Version Latest
 
-}
 ### END PR0_GUARD_V2_FALLBACK (AUTO) ###
 
 
@@ -26,7 +25,6 @@ function Resolve-RealPrNumber_FromEvidenceOrParent {
   $cands = @()
   foreach ($p in ($EvidenceBundleCandidates | Where-Object { $_ -and (Test-Path $_) })) {
     try { $cands += (Resolve-Path $p).Path } catch { }
-  }
   try {
     $rt = (git rev-parse --show-toplevel)
     $preferred = Join-Path $rt 'docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md'
