@@ -1,3 +1,33 @@
+# PATCH_MARKER: restored-header
+name: MEP Writeback Bundle (Evidence)
+"on":
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number (0 = auto latest merged PR)"
+        required: false
+        default: "0"
+        type: string
+      write_handoff:
+        description: "Generate+Guard+Writeback HANDOFF_NEXT into Bundled"
+        required: false
+        default: "false"
+        type: string
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        default: "0"
+        type: string
+      write_handoff:
+        required: false
+        default: "false"
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
 # PATCH_MARKER: gen-runstep 20260131_021740
 # PATCH_MARKER: generate-via-compiler 20260131_021532
 name: MEP Writeback Bundle (Evidence)
@@ -109,6 +139,7 @@ name: MEP Writeback Bundle (Evidence)
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
