@@ -17,10 +17,11 @@ jobs:
     steps:
       - name: Enable auto-merge (waits for all required checks)
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
           pr="${{ github.event.pull_request.number }}"
           echo "Enabling auto-merge for PR #$pr"
           gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --merge --auto --delete-branch || true
+

@@ -23,7 +23,7 @@ jobs:
 
       - name: Analyze issue body -> analysis_body.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           python tools/chat_packet_intake/analyze_issue.py
 
@@ -68,3 +68,4 @@ jobs:
               });
               core.info(`Created intake comment: ${created.data.html_url}`);
             }
+

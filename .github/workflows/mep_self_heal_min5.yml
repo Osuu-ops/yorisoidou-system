@@ -17,7 +17,7 @@ jobs:
       - name: Resolve PR info from run
         id: pr
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -130,7 +130,7 @@ CSV
       - name: Comment and stop (out-of-scope)
         if: ${{ env.OUT_OF_SCOPE == '1' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
@@ -157,9 +157,10 @@ CSV
       - name: Comment on PR (self-heal applied)
         if: ${{ steps.pr.outputs.pr_number != '' && env.OUT_OF_SCOPE != '1' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
           pr="${{ steps.pr.outputs.pr_number }}"
           gh pr comment "$pr" --body "P(Self-Heal): applied safe fixes (canonical/utf8/seed). Gate will re-run." || true
+
