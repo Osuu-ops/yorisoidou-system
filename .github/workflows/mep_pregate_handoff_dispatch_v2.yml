@@ -2,16 +2,6 @@ name: mep_pregate_handoff_dispatch_v2
 
 on:
   workflow_dispatch:
-    inputs:
-      context:
-        description: "Context label (e.g., CORE / BUSINESS/yorisoidou). Default: CORE"
-        required: false
-        default: "CORE"
-      status:
-        description: "handoff STATUS (DRAFT/ACTIVE/COMPLETED/ABANDONED). Default: DRAFT"
-        required: false
-        default: "DRAFT"
-
 permissions:
   contents: read
 
