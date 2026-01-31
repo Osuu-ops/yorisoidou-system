@@ -18,21 +18,21 @@ if (-not $root) { Fail "Not a git repo (git rev-parse failed)." }
 Set-Location $root
 
 # Fixed paths (canonical)
-$repoOrigin     = (git remote get-url origin 2>$null)
-$parentBundled  = "docs/MEP/MEP_BUNDLE.md"
-$evidenceBundled= "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+$repoOrigin      = (git remote get-url origin 2>$null)
+$parentBundled   = "docs/MEP/MEP_BUNDLE.md"
+$evidenceBundled = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
 
 if (!(Test-Path $parentBundled))   { Fail "Missing: $parentBundled" }
 if (!(Test-Path $evidenceBundled)) { Fail "Missing: $evidenceBundled" }
 
 # Extract: parent BUNDLE_VERSION line (first occurrence)
 $parentLines = Get-Content -LiteralPath $parentBundled -Encoding UTF8
-$parentBV = ($parentLines | Select-String -Pattern '^\s*\*?\s*BUNDLE_VERSION\s*=\s*.+$' -SimpleMatch:$false | Select-Object -First 1).Line
+$parentBV = ($parentLines | Select-String -Pattern '^\s*\*?\s*BUNDLE_VERSION\s*=\s*.+$' | Select-Object -First 1).Line
 if (-not $parentBV) { Fail "BUNDLE_VERSION line not found in parent bundled." }
 
 # Extract: latest evidence PR line with audit=OK,WB0000 (last occurrence)
 $evLines = Get-Content -LiteralPath $evidenceBundled -Encoding UTF8
-$hits = ($evLines | Select-String -Pattern 'PR\s*#\d+.*audit=OK,WB0000' -SimpleMatch:$false)
+$hits = ($evLines | Select-String -Pattern 'PR\s*#\d+.*audit=OK,WB0000')
 if (-not $hits -or $hits.Count -eq 0) { Fail "No evidence line matched: PR #... audit=OK,WB0000" }
 $evLine = $hits[-1].Line
 
@@ -59,9 +59,7 @@ $out += "* 以降はこの確定点を前提に次テーマへ進む"
 
 $text = ($out -join "`n")
 
-if ($ToClipboard) {
-  Set-Clipboard -Value $text
-}
+if ($ToClipboard) { Set-Clipboard -Value $text }
 
 if ($ToDesktopFile) {
   $dir = Join-Path $env:USERPROFILE "Desktop\MEP_HANDOFF"
