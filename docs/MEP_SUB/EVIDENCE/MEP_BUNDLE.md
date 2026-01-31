@@ -43,3 +43,5 @@ PR #1395 | audit=OK,WB0000 | appended_at=2026-01-31T05:15:56Z | via=mep_append_e
 - 親Bundled基準点: docs/MEP/MEP_BUNDLE.md（BUNDLE_VERSIONのみ）
 
 PR #0 | audit=OK,WB0000 | appended_at=2026-01-31T14:42:08Z | via=mep_append_evidence_line.ps1
+* - PR #1507 | mergedAt=01/31/2026 17:46:03 | mergeCommit=e46ba1163202354647049b668e78e641fee1a744 | BUNDLE_VERSION=v0.0.0+20260131_143312+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1507
+PR #1507 | audit=OK,WB0000 | appended_at=2026-02-01T04:10:48.4072230+09:00 | via=mep_append_evidence_line_full.ps1
