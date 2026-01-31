@@ -1,0 +1,69 @@
+name: mep-required-checks-ci
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-audit:
+    name: semantic-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute changed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$BASE" "$HEAD" > changed_files.txt
+          echo "changed_files=$(wc -l < changed_files.txt)"
+
+      - name: Run semantic audit (core)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f tools/semantic_audit.sh ]; then
+            bash tools/semantic_audit.sh
+          elif [ -f tools/semantic_audit.py ]; then
+            python3 tools/semantic_audit.py
+          else
+            echo "semantic audit scripts not found; failing to prevent false green"
+            exit 1
+          fi
+
+  semantic-audit-business:
+    name: semantic-audit-business
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute changed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          git diff --name-only "$BASE" "$HEAD" > changed_files.txt
+          echo "changed_files=$(wc -l < changed_files.txt)"
+
+      - name: Run semantic audit (business)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f tools/semantic_audit_business.sh ]; then
+            bash tools/semantic_audit_business.sh
+          elif [ -f tools/semantic_audit_business.py ]; then
+            python3 tools/semantic_audit_business.py
+          else
+            echo "semantic audit business scripts not found; failing to prevent false green"
+            exit 1
+          fi
