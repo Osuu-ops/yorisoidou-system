@@ -1,8 +1,3 @@
-param(
-  [int]$PrNumber,
-  [string]$BundlePath
-)
-
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
@@ -10,10 +5,15 @@ $ProgressPreference = "SilentlyContinue"
 $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"
 
-function Fail($m){ throw $m }
-function Info($m){ Write-Host "[INFO] $m" }
+param(
+  [int]$PrNumber,
+  [string]$BundlePath
+)
 
-# defaults (keep out of param to avoid runner parse quirks)
+function Fail($m){ throw $m }
+function Info($m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
+
+# defaults (NO default assignment in param)
 if (-not $PSBoundParameters.ContainsKey("PrNumber")) { $PrNumber = 0 }
 if (-not $PSBoundParameters.ContainsKey("BundlePath") -or [string]::IsNullOrWhiteSpace($BundlePath)) { $BundlePath = "docs/MEP/MEP_BUNDLE.md" }
 
@@ -24,7 +24,7 @@ Set-Location $root
 if (-not (Test-Path $BundlePath)) { Fail ("Bundled not found: " + $BundlePath) }
 $bundle = Get-Content $BundlePath -Raw
 
-if ($bundle -notmatch '(?m)^BUNDLE_VERSION\s*=\s*(.+)$') { Fail "BUNDLE_VERSION not found" }
+if ($bundle -notmatch '(m)^BUNDLE_VERSION\s*=\s*(.+)$') { Fail "BUNDLE_VERSION not found" }
 $bundleVersion = ($Matches[1]).Trim()
 
 # Resolve target PR (0 = latest merged)
@@ -41,8 +41,8 @@ $mergedAt    = $pr.mergedAt
 $mergeCommit = $pr.mergeCommit.oid
 $url         = $pr.url
 
-# Idempotency
-$idRe = "(?m)^PR\s+#" + $prNum + "\s+\|\s+audit=OK,WB0000\s+\|\s+appended_at=.*\|\s+via=mep_append_evidence_line_full\.ps1\s*$"
+# Idempotency: if appended_at(full) already exists, skip
+$idRe = "(m)^PR\s+#" + $prNum + "\s+\|\s+audit=OK,WB0000\s+\|\s+appended_at=.*\|\s+via=mep_append_evidence_line_full\.ps1\s*$"
 if ($bundle -match $idRe) {
   Info ("Full evidence already exists for PR #" + $prNum + ". Skip.")
   exit 0
