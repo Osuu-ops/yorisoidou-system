@@ -33,10 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Export PR_NUMBER (resolve 0=latest merged)
-        shell: bash
-        env:
+#         shell: bash
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           set -euo pipefail
       
           # Prefer reusable input. Empty -> 0
@@ -56,10 +56,10 @@ jobs:
       
           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
           echo "[OK] PR_NUMBER=${PR_IN}"      - name: Guard: mergeable & leftover branches
-        shell: bash
-        env:
+#         shell: bash
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           set -euo pipefail
           echo "[guard] check leftover remote branches: auto/writeback-bundle_*"
           if git ls-remote --heads origin "auto/writeback-bundle_*" | grep -q . ; then
@@ -91,17 +91,17 @@ jobs:
             exit 2
           fi
           echo "[OK] mergeable guard passed."
-        with:
+#         with:
           fetch-depth: 0
 
       - name: Configure git identity
-        shell: bash
-        run: |
+#         shell: bash
+#         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Generate Bundled (update docs/MEP/MEP_BUNDLE.md)
-        shell: pwsh
-        run: |
+#         shell: pwsh
+#         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
 
@@ -111,25 +111,25 @@ jobs:
           # evidence (non-fatal)
           git status --porcelain -- docs/MEP/MEP_BUNDLE.md || true
       - name: Writeback evidence -> PR (full)
-        shell: pwsh
-        env:
+#         shell: pwsh
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ inputs.pr_number }}
       - name: Writeback evidence -> PR (slim)
-        shell: pwsh
-        env:
+#         shell: pwsh
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           $pr = '${{ inputs.pr_number }}'
           if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber $pr -BundlePath "docs/MEP/MEP_BUNDLE.md" -BundleScope "parent"
 
       - name: Create PR for writeback branch
-        shell: pwsh
-        env:
+#         shell: pwsh
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = 'Stop'
           function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
@@ -156,15 +156,15 @@ jobs:
           Info ('Created PR: ' + $url)
       - name: Writeback HANDOFF_NEXT -> PR (slim)
         if: ${{ inputs.write_handoff == 'true' }}
-        shell: pwsh
-        env:
+#         shell: pwsh
+#         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
+#         run: |
           pwsh -NoProfile -File tools/mep_writeback_handoff.ps1 -CI
 
       - name: GUARD_NO_PARENT_BUNDLED_WRITE
-        shell: bash
-        run: |
+#         shell: bash
+#         run: |
           set -euo pipefail
           if git diff --name-only | grep -q '^docs/MEP/MEP_BUNDLE\.md$'; then
             echo "ERROR: HANDOFF_NEXT must not modify docs/MEP/MEP_BUNDLE.md (parent Bundled)."
