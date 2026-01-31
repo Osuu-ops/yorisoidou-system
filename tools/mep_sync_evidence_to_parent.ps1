@@ -16,73 +16,6 @@ Set-StrictMode -Version Latest
 #   - 0 を受け取った場合は、(a) Evidence bundle の最新 実PR (PR #<n> | audit=OK,WB0000) へ解決
 #     できなければ (b) 親Bundled（docs/MEP/MEP_BUNDLE.md）の最新 実PR へフォールバックして解決する。
 #   - 解決できない場合のみ NG で停止（PR #0 を生成しない）。
-function Resolve-RealPrNumber_FromEvidenceOrParent {
-  param(
-    [int]$InputPr,
-    [string[]]$EvidenceBundleCandidates
-  )
-  if ($InputPr -ne 0) { return $InputPr }
-  $cands = @()
-  foreach ($p in ($EvidenceBundleCandidates | Where-Object { $_ -and (Test-Path $_) })) {
-    try { $cands += (Resolve-Path $p).Path } catch { }
-  try {
-    $rt = (git rev-parse --show-toplevel)
-    $preferred = Join-Path $rt 'docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md'
-    if (Test-Path $preferred) { $cands += (Resolve-Path $preferred).Path }
-    Get-ChildItem -Path (Join-Path $rt 'docs') -Recurse -File -Filter 'MEP_BUNDLE.md' -ErrorAction SilentlyContinue |
-      Where-Object { $_.FullName -match '\\MEP_SUB\\EVIDENCE\\' -or $_.FullName -match '\\EVIDENCE\\' } |
-      ForEach-Object { $cands += $_.FullName }
-  } catch { }
-  $cands = @($cands | Select-Object -Unique)
-  # (a) evidence bundles: take last real PR (>0)
-  foreach ($p in $cands) {
-    try {
-      $hits = @(Select-String -LiteralPath $p -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
-      if ($hits.Count -gt 0) {
-        $last = $hits[$hits.Count - 1].Matches[0].Groups[1].Value
-        $n = [int]$last
-        if ($n -gt 0) { return $n }
-      }
-    } catch { }
-  }
-  # (b) parent bundled fallback
-  try {
-    $rt = (git rev-parse --show-toplevel)
-    $parent = Join-Path $rt 'docs/MEP/MEP_BUNDLE.md'
-    if (Test-Path $parent) {
-      $ph = @(Select-String -LiteralPath $parent -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
-      if ($ph.Count -gt 0) {
-        $last2 = $ph[$ph.Count - 1].Matches[0].Groups[1].Value
-        $m = [int]$last2
-        if ($m -gt 0) { return $m }
-      }
-    }
-  } catch { }
-  throw "pr_number=0 could not be resolved to a real PR number (evidence+parent bundled)"
-}
-# param() 形状に依存せず、既知変数名を走査して 0→実PRへ置換
-try {
-  $varCandidates = @('pr_number','prNumber','pr','PR','PrNumber','PRNumber')
-  $bundleVarCandidates = @('evidence_bundle','evidenceBundle','bundlePath','evidenceBundlePath','EvidenceBundlePath')
-  $evidencePaths = @()
-  foreach ($bn in $bundleVarCandidates) {
-    $v = Get-Variable -Name $bn -ErrorAction SilentlyContinue
-    if ($v) { $evidencePaths += [string]$v.Value }
-  }
-  foreach ($pn in $varCandidates) {
-    $v = Get-Variable -Name $pn -ErrorAction SilentlyContinue
-    if ($v -and ($v.Value -is [int] -or $v.Value -is [string])) {
-      $cur = [int]$v.Value
-      if ($cur -eq 0) {
-        $resolved = Resolve-RealPrNumber_FromEvidenceOrParent -InputPr 0 -EvidenceBundleCandidates $evidencePaths
-        if ($resolved -le 0) { throw "Resolved PR number invalid: $resolved" }
-        Set-Variable -Name $pn -Value $resolved -Scope Local
-      }
-    }
-  }
-} catch {
-  throw "PR0_GUARD failed (forbid PR #0 output): $($_.Exception.Message)"
-}
 ### END PR0_GUARD_RESOLVE_AND_FORBID (AUTO) ###
 
 $ErrorActionPreference = "Stop"
@@ -237,4 +170,5 @@ try {
   Write-Host "[WARN] PR0_GUARD_V2: exception (soft-continue): $($_.Exception.Message)" -ForegroundColor Yellow
 }
 ### END PR0_GUARD_V2_FALLBACK (AUTO) ###
+
 
