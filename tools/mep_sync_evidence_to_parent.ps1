@@ -9,10 +9,11 @@ Set-StrictMode -Version Latest
 
 ### PR0_GUARD_RESOLVE_AND_FORBID (AUTO) ###
 # Policy:
-#   - "0" は内部表現（auto-latest）のみ。Bundled/ Evidence へ "PR #0" を書くことを禁止。
-#   - 0 を受け取った場合は evidence bundle から最新の実PR番号（PR #<n> | audit=OK,WB0000）へ解決して置換。
-#   - 解決できない場合は NG で停止（PR #0 を生成しない）。
-function Resolve-RealPrNumber_FromEvidence {
+#   - "0" は内部表現（auto-latest）のみ。Bundled/Evidence へ "PR #0" を書くことを禁止。
+#   - 0 を受け取った場合は、(a) Evidence bundle の最新 実PR (PR #<n> | audit=OK,WB0000) へ解決
+#     できなければ (b) 親Bundled（docs/MEP/MEP_BUNDLE.md）の最新 実PR へフォールバックして解決する。
+#   - 解決できない場合のみ NG で停止（PR #0 を生成しない）。
+function Resolve-RealPrNumber_FromEvidenceOrParent {
   param(
     [int]$InputPr,
     [string[]]$EvidenceBundleCandidates
@@ -22,7 +23,6 @@ function Resolve-RealPrNumber_FromEvidence {
   foreach ($p in ($EvidenceBundleCandidates | Where-Object { $_ -and (Test-Path $_) })) {
     try { $cands += (Resolve-Path $p).Path } catch { }
   }
-  # 既定候補（存在すれば追加）
   try {
     $rt = (git rev-parse --show-toplevel)
     $preferred = Join-Path $rt 'docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md'
@@ -32,7 +32,7 @@ function Resolve-RealPrNumber_FromEvidence {
       ForEach-Object { $cands += $_.FullName }
   } catch { }
   $cands = @($cands | Select-Object -Unique)
-  if ($cands.Count -eq 0) { throw "pr_number=0 but no evidence bundle candidates found" }
+  # (a) evidence bundles: take last real PR (>0)
   foreach ($p in $cands) {
     try {
       $hits = @(Select-String -LiteralPath $p -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
@@ -43,9 +43,22 @@ function Resolve-RealPrNumber_FromEvidence {
       }
     } catch { }
   }
-  throw "pr_number=0 could not be resolved to a real PR number from evidence bundles"
+  # (b) parent bundled fallback
+  try {
+    $rt = (git rev-parse --show-toplevel)
+    $parent = Join-Path $rt 'docs/MEP/MEP_BUNDLE.md'
+    if (Test-Path $parent) {
+      $ph = @(Select-String -LiteralPath $parent -Pattern 'PR #(\d+)\s*\|\s*audit=OK,WB0000' -ErrorAction SilentlyContinue)
+      if ($ph.Count -gt 0) {
+        $last2 = $ph[$ph.Count - 1].Matches[0].Groups[1].Value
+        $m = [int]$last2
+        if ($m -gt 0) { return $m }
+      }
+    }
+  } catch { }
+  throw "pr_number=0 could not be resolved to a real PR number (evidence+parent bundled)"
 }
-# 既知の変数名候補を走査して、0なら実PRへ置換（param() の形に依存しない）
+# param() 形状に依存せず、既知変数名を走査して 0→実PRへ置換
 try {
   $varCandidates = @('pr_number','prNumber','pr','PR','PrNumber','PRNumber')
   $bundleVarCandidates = @('evidence_bundle','evidenceBundle','bundlePath','evidenceBundlePath','EvidenceBundlePath')
@@ -59,7 +72,7 @@ try {
     if ($v -and ($v.Value -is [int] -or $v.Value -is [string])) {
       $cur = [int]$v.Value
       if ($cur -eq 0) {
-        $resolved = Resolve-RealPrNumber_FromEvidence -InputPr 0 -EvidenceBundleCandidates $evidencePaths
+        $resolved = Resolve-RealPrNumber_FromEvidenceOrParent -InputPr 0 -EvidenceBundleCandidates $evidencePaths
         if ($resolved -le 0) { throw "Resolved PR number invalid: $resolved" }
         Set-Variable -Name $pn -Value $resolved -Scope Local
       }
@@ -152,3 +165,4 @@ Set-Content -LiteralPath $ParentBundledPath -Value $parent -NoNewline -Encoding 
 
 Info "Appended: $line"
 exit 0
+
