@@ -1,4 +1,81 @@
 name: MEP Integration Compiler
-on:
-    workflow_dispatch:
 
+on:
+  pull_request:
+    paths:
+      - 'platform/MEP/01_CORE/**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  integration-compiler:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect all MEP_core markdown files (full input)
+        id: collect
+        run: |
+          set -e
+          find platform/MEP/01_CORE -type f -name "*.md" | sort > inputs.txt
+          echo "count=$(wc -l < inputs.txt)" >> $GITHUB_OUTPUT
+
+      - name: Show input summary
+        run: |
+          echo "Total markdown inputs:"
+          cat inputs.txt
+          echo "Count: ${{ steps.collect.outputs.count }}"
+
+      - name: Semantic Audit
+        id: audit
+        run: |
+          set -e
+          python tools/mep_integration_compiler/semantic_audit.py inputs.txt > audit_results.json
+          cat audit_results.json
+          echo "ng_count=$(jq '[.results[] | select(.result==\"NG\")] | length' audit_results.json)" >> $GITHUB_OUTPUT
+
+      - name: BAT Full Regeneration (NG only)
+        if: steps.audit.outputs.ng_count != '0'
+        run: |
+          set -e
+          echo "NG detected. BAT regeneration is manual-only by design."
+
+      - name: Re-Audit Summary
+        run: |
+          echo "Re-audit completed (single pass)."
+
+      - name: Post PR summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const audit = JSON.parse(fs.readFileSync('audit_results.json','utf8'));
+            const ngCount = audit.results.filter(r => r.result === 'NG').length;
+            const total = audit.results.length;
+
+            const body = [
+              '### MEP Integration Compiler Result',
+              '',
+              '- Input scope: **Full read (no diff)**',
+              `- Files scanned: ${total}`,
+              `- NG count: ${ngCount}`,
+              '- BAT executed: **No (manual only)**',
+              '',
+              'This workflow does **not** auto-merge.',
+              'Final decision is reserved for a human maintainer.'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
