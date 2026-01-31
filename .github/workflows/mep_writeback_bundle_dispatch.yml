@@ -2,6 +2,7 @@
 # PATCH_MARKER: generate-via-compiler 20260131_021532
 name: MEP Writeback Bundle (Evidence)
 on:
+  workflow_dispatch:
   workflow_call:
     inputs:
       pr_number:
@@ -115,6 +116,7 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
 
