@@ -32,7 +32,11 @@ permissions:
 
 jobs:
   writeback:
-    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}    permissions:
+      contents: write
+      pull-requests: write
+      actions: read    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -108,5 +112,6 @@ jobs:
             git diff -- docs/MEP/MEP_BUNDLE.md || true
             exit 1
           fi
+
 
 
