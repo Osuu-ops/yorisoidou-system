@@ -43,3 +43,5 @@ PR #1395 | audit=OK,WB0000 | appended_at=2026-01-31T05:15:56Z | via=mep_append_e
 - 親Bundled基準点: docs/MEP/MEP_BUNDLE.md（BUNDLE_VERSIONのみ）
 
 PR #0 | audit=OK,WB0000 | appended_at=2026-01-31T14:42:08Z | via=mep_append_evidence_line.ps1
+
+BUNDLE_VERSION = v0.0.0+20260201_030804+main+c9e827e1f164c553713fafd3537221b460986ccf
