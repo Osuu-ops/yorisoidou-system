@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260131_144709+main_18f50c0
+BUNDLE_VERSION = v0.0.0+20260131_165056+main_036eb9b
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
@@ -779,3 +779,5 @@ PR #1382 | audit=OK,WB0000 | appended_at=2026-01-30T19:00:58Z | via=mep_append_e
 PR #1418 | audit=OK,WB0000 | appended_at=2026-01-31T14:22:10Z | via=mep_append_evidence_line.ps1
 # CI probe 2026-01-31T14:57:05.5751278Z
 PR #0 | audit=OK,WB0000 | appended_at=2026-01-31T15:38:47Z | via=mep_append_evidence_line.ps1
+* - PR #1492 | mergedAt=01/31/2026 16:50:34 | mergeCommit=036eb9b85de738cd5fe30b3d47b129b8db0fac77 | BUNDLE_VERSION=v0.0.0+20260131_165056+main_036eb9b | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1492
+PR #1492 | audit=OK,WB0000 | appended_at=2026-01-31T16:50:58.6524960+00:00 | via=mep_append_evidence_line_full.ps1
