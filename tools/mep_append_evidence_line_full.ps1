@@ -1,3 +1,8 @@
+param(
+  [int]$PrNumber,
+  [string]$BundlePath
+)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
@@ -5,15 +10,10 @@ $ProgressPreference = "SilentlyContinue"
 $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"
 
-param(
-  [int]$PrNumber,
-  [string]$BundlePath
-)
-
 function Fail($m){ throw $m }
 function Info($m){ Write-Host "[INFO] $m" }
 
-# defaults (NO default assignment in param)
+# defaults (keep out of param to avoid runner parse quirks)
 if (-not $PSBoundParameters.ContainsKey("PrNumber")) { $PrNumber = 0 }
 if (-not $PSBoundParameters.ContainsKey("BundlePath") -or [string]::IsNullOrWhiteSpace($BundlePath)) { $BundlePath = "docs/MEP/MEP_BUNDLE.md" }
 
