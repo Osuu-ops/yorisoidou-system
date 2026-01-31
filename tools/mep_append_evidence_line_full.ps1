@@ -50,3 +50,4 @@ Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 
 Info ("Appended full evidence for PR #" + $prNum)
+
