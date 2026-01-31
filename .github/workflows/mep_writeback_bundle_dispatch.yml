@@ -46,7 +46,7 @@ jobs:
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
             echo "[export] inputs.pr_number=0 => resolve latest merged PR into base=main"
-            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pullsstate=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
           fi
           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
             echo "[NG] failed to resolve PR number."
@@ -92,7 +92,7 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($pr)) { $pr = '0' }
           pwsh -NoProfile -File tools/mep_writeback_bundle.ps1 -Mode pr -PrNumber $pr -BundlePath "docs/MEP/MEP_BUNDLE.md" -BundleScope "parent"
 
-      - name: Create PR for writeback branch (if on auto/writeback-bundle_*)
+      - name: Create PR for writeback branch (if on auto/writeback-bundle_* and no PR exists)
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
