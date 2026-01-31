@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 param(
-  [int]$PrNumber = 0,
+  [int]$PrNumber = 0
   [string]$EvidenceBundledPath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
   [string]$ParentBundledPath   = "docs/MEP/MEP_BUNDLE.md",
   [switch]$NoAppendScriptFallback
