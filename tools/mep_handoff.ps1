@@ -50,7 +50,23 @@ try {
   if ($evOk -and $evLines.Count -gt 0) {
     foreach ($l in $evLines) { $out.Add("- " + $l) }
   } elseif ($evOk) {
-    $out.Add("- （EVIDENCE_BUNDLEは存在するが、対象PR行を未検出）")
+    # --- fallback excerpt (tail scan) ---
+try {
+  if (Test-Path $evidencePath) {
+    $tail = Get-Content -Path $evidencePath -Tail 300 -ErrorAction Stop
+    $hits = $tail | Select-String -Pattern '^PR #\d+ \| .*audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
+    if ($hits -and $hits.Count -gt 0) {
+      foreach ($h in $hits) { $out.Add("- " + $h.Line.Trim()) }
+    } else {
+      $out.Add("- （EVIDENCE_BUNDLEは存在するが、対象PR行を未検出）")
+    }
+  } else {
+    $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
+  }
+} catch {
+  $out.Add("- （EVIDENCE_BUNDLE抽出で例外）: " + $_.Exception.Message)
+}
+# --- /fallback excerpt ---
   } else {
     $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
   }
