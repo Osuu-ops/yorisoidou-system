@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260130_191811+main_04f6f17
+BUNDLE_VERSION = v0.0.0+20260131_120348+main_f86f9fc
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
