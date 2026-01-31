@@ -70,7 +70,7 @@ if ($already) {
 $appendScript = Join-Path (Split-Path -Parent $PSCommandPath) "mep_append_evidence_line.ps1"
 if ((Test-Path -LiteralPath $appendScript) -and (-not $NoAppendScriptFallback)) {
   Info "Using existing append script: $appendScript"
-  & $appendScript -PrNumber $targetPr
+  & $appendScript -PrNumber $targetPr -BundlePath $ParentBundledPath
   exit 0
 }
 
