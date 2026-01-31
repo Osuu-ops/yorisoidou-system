@@ -1,4 +1,3 @@
-# PATCH_MARKER: restored-header
 name: MEP Writeback Bundle (Evidence)
 "on":
   workflow_dispatch:
