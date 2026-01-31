@@ -89,19 +89,20 @@ jobs:
         run: |
           set -euo pipefail
           if [ -s biz_inputs.txt ]; then
-# FILTER_MISSING_BIZ_INPUTS: remove paths that no longer exist (deleted/moved) to avoid REF_AUDIT_NG
-if [ -f biz_inputs.txt ]; then
+          # FILTER_MISSING_BIZ_INPUTS: remove paths that no longer exist (deleted/moved) to avoid REF_AUDIT_NG
+          if [ -f biz_inputs.txt ]; then
   python - <<'PY'
-import pathlib
-p = pathlib.Path("biz_inputs.txt")
-lines = [ln.strip().strip('"') for ln in p.read_text(encoding="utf-8").splitlines() if ln.strip()]
-kept = [ln for ln in lines if pathlib.Path(ln).exists()]
-p.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
-print(f"FILTER_MISSING_BIZ_INPUTS: {len(lines)} -> {len(kept)}")
-PY
-fi
+          import pathlib
+          p = pathlib.Path("biz_inputs.txt")
+          lines = [ln.strip().strip('"') for ln in p.read_text(encoding="utf-8").splitlines() if ln.strip()]
+          kept = [ln for ln in lines if pathlib.Path(ln).exists()]
+          p.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+          print(f"FILTER_MISSING_BIZ_INPUTS: {len(lines)} -> {len(kept)}")
+          PY
+          fi
             python tools/mep_integration_compiler/semantic_audit_business.py biz_inputs.txt
           else
             echo "BUSINESS audit: SKIP"
           fi
+
 
