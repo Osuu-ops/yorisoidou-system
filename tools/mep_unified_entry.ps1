@@ -5,14 +5,29 @@ MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本�
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 #>
 param(
-  [switch]$Once,
+[switch]$Once,
   [switch]$ApprovalYes,
   [string]$ScopeFile   = "platform/MEP/90_CHANGES/CURRENT_SCOPE.md",
   [string]$ScopeHeader = "## 変更対象（Scope-IN）",
   [string]$BaseRef     = "origin/main",
   [switch]$RunGate,
   [switch]$RunWriteback,
-  [int]$WritebackPrNumber = 0
+  [int]$WritebackPrNumber = 0,
+  [Parameter(Mandatory=$false)
+
+# === MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
+try {
+  if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
+    $repo = 'Osuu-ops/yorisoidou-system'
+    $tool = Join-Path $PSScriptRoot 'mep_scopein_candidates_from_pr.ps1'
+    if (-not (Test-Path $tool)) { throw "missing tool: $tool" }
+    & $tool -PrNumber ([int]$PrNumber) -Repo $repo
+    return
+  }
+} catch { throw }
+# === END MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
+]
+  [int]$PrNumber = 0
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
