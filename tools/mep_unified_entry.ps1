@@ -1,43 +1,3 @@
-### DONEB_PRNUMBER_SHIM_V1 ###
-# DoneB②③: -PrNumber non-interactive route (Scope-IN candidates; bullet-only)
-# NOTE: parse $MyInvocation.Line first; $args may lose bound params.
-$__DoneB_PrNumber = 0
-
-try {
-  $line = [string]$MyInvocation.Line
-  if ($line -match '(i)\-PrNumber\s+(\d+)') {
-    [int]::TryParse($Matches[1], [ref]$__DoneB_PrNumber) | Out-Null
-  }
-} catch {}
-
-if ($__DoneB_PrNumber -le 0) {
-  for ($i = 0; $i -lt $args.Count; $i++) {
-    if ([string]$args[$i] -ieq "-PrNumber" -and ($i + 1) -lt $args.Count) {
-      [int]::TryParse([string]$args[$i+1], [ref]$__DoneB_PrNumber) | Out-Null
-      break
-    }
-  }
-}
-
-if ($__DoneB_PrNumber -gt 0) {
-  try {
-    $filesJson = (gh pr view $__DoneB_PrNumber --repo $repo --json files 2>$null)
-    if (-not $filesJson) { throw "gh pr view failed for PR #$__DoneB_PrNumber" }
-    $obj = $filesJson | ConvertFrom-Json
-    $files = @()
-    if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and $_.Trim() } | Sort-Object -Unique)
-    }
-    Write-Host "## Scope-IN candidates"
-    foreach ($f in $files) { Write-Host ("- " + $f) }
-    exit 0
-  } catch {
-    Write-Host "## Scope-IN candidates"
-    Write-Host ("- [TOOLING_ERROR] " + $_.Exception.Message)
-    exit 1
-  }
-}
-### /DONEB_PRNUMBER_SHIM_V1 ###
 <#
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
@@ -56,6 +16,59 @@ param(
   [Parameter(Mandatory=$false)]
   [int]$PrNumber = 0
 )
+
+### DONEB_PRNUMBER_SHIM_V2 ###
+# DoneB②③: -PrNumber non-interactive route (Scope-IN candidates; bullet-only)
+# Must be placed AFTER param() and BEFORE any other executable code.
+$__DoneB_PrNumber = 0
+
+# prefer bound param if present
+try {
+  if ($PSBoundParameters.ContainsKey('PrNumber')) {
+    [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]$__DoneB_PrNumber) | Out-Null
+  }
+} catch {}
+
+# fallback: parse invocation line
+if ($__DoneB_PrNumber -le 0) {
+  try {
+    $line = [string]$MyInvocation.Line
+    if ($line -match '(i)\-PrNumber\s+(\d+)') {
+      [int]::TryParse($Matches[1], [ref]$__DoneB_PrNumber) | Out-Null
+    }
+  } catch {}
+}
+
+# final fallback: args scan
+if ($__DoneB_PrNumber -le 0) {
+  for ($i = 0; $i -lt $args.Count; $i++) {
+    if ([string]$args[$i] -ieq '-PrNumber' -and ($i + 1) -lt $args.Count) {
+      [int]::TryParse([string]$args[$i+1], [ref]$__DoneB_PrNumber) | Out-Null
+      break
+    }
+  }
+}
+
+if ($__DoneB_PrNumber -gt 0) {
+  try {
+    $filesJson = (gh pr view $__DoneB_PrNumber --repo Osuu-ops/yorisoidou-system --json files 2>$null)
+    if (-not $filesJson) { throw "gh pr view failed for PR #$__DoneB_PrNumber" }
+    $obj = $filesJson | ConvertFrom-Json
+    $files = @()
+    if ($obj -and $obj.files) {
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and $_ .Trim() } | Sort-Object -Unique)
+    }
+    Write-Host "## Scope-IN candidates"
+    foreach ($f in $files) { Write-Host ("- " + $f) }
+    exit 0
+  } catch {
+    Write-Host "## Scope-IN candidates"
+    Write-Host ("- [TOOLING_ERROR] " + $_.Exception.Message)
+    exit 1
+  }
+}
+### DONEB_PRNUMBER_SHIM_V2 ###
+
 
 # === HARD_EARLY_RETURN: PRNUMBER_MODE ===
 # PR-number mode: MUST NOT prompt. Force exit before any other logic.
