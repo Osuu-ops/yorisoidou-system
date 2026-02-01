@@ -2,6 +2,7 @@
 
 ## 変更対象（Scope-IN）
 - .github/workflows/mep_scope_fence_guard_pr.yml
+- .github/workflows/scope_in_suggest_pr.yml
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - tools/mep_scope_fence_guard.ps1
 - tools/mep_scope_route.ps1
