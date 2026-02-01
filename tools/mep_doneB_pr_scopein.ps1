@@ -23,11 +23,11 @@ try {
   }
 
   Write-Host "## Scope-IN candidates"
-  foreach ($f in $files) { Write-Host ("- " + $f) }
+  foreach ($f in $files) { Write-Output ("- " + $f) }
   exit 0
 }
 catch {
   Write-Host "## Scope-IN candidates"
-  Write-Host ("- [TOOLING_ERROR] " + $_.Exception.Message)
+  Write-Output ("- [TOOLING_ERROR] " + $_.Exception.Message)
   exit 1
 }
