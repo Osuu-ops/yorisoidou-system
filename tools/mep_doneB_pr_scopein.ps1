@@ -22,12 +22,12 @@ try {
     $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and ($_.Length -gt 0) } | Sort-Object -Unique)
   }
 
-  Write-Host "## Scope-IN candidates"
+  Write-Output "## Scope-IN candidates"
   foreach ($f in $files) { Write-Output ("- " + $f) }
   exit 0
 }
 catch {
-  Write-Host "## Scope-IN candidates"
+  Write-Output "## Scope-IN candidates"
   Write-Output ("- [TOOLING_ERROR] " + $_.Exception.Message)
   exit 1
 }
