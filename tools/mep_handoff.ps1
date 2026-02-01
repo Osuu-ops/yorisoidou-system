@@ -1,136 +1,83 @@
-
-function Get-BundledAtFromBundled([string]$bundledPath){
-  if (-not (Test-Path $bundledPath)) { return $null }
-  $m = Select-String -Path $bundledPath -Pattern '^\s*BUNDLED_AT\s*=\s*(.+)\s*$' -AllMatches -ErrorAction SilentlyContinue | Select-Object -First 1
-  if ($m) { return $m.Matches[0].Groups[1].Value.Trim() }
-  return $null
-}
-function Get-HandoffVerifiedAt([string]$evidenceFile){
-  if (-not (Test-Path $evidenceFile)) { return $null }
-  $v = (Get-Content -Path $evidenceFile -ErrorAction SilentlyContinue | Select-Object -First 1)
-  if ($v) { return $v.Trim() }
-  return $null
-}
 Set-StrictMode -Version Latest
-
-# --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
-try {
-  $repoRoot = (git rev-parse --show-toplevel 2>$null)
-  if ($repoRoot) {
-    $repoRoot = $repoRoot.Trim()
-    $cand = Join-Path $repoRoot "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md"
-    if (Test-Path $cand) {
-      $evidencePath = $cand
-    } elseif (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) {
-      $evidencePath = ""
-    }
-  } elseif (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) {
-    $evidencePath = ""
-  }
-} catch {
-  if (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) { $evidencePath = "" }
-}
-# --- end guard ---
 $ErrorActionPreference = "Stop"
-$env:GIT_PAGER="cat"
-$env:PAGER="cat"
-
 function Fail([string]$m){ throw $m }
-function Info([string]$m){ Write-Host $m -ForegroundColor Cyan }
-
+function Info([string]$m){ Write-Host "[HANDOFF] $m" -ForegroundColor Cyan }
+$root = (Get-Location).Path
+if (!(Test-Path -LiteralPath (Join-Path $root ".git"))) { Fail "Not a git repo root: $root" }
+$legacy = Join-Path $root "tools/mep_handoff_legacy.ps1"
+if (!(Test-Path -LiteralPath $legacy)) { Fail "Missing legacy: tools/mep_handoff_legacy.ps1" }
+# run legacy and capture stdout (pass-through args)
+$lines = @()
 try {
-  if (!(Test-Path -LiteralPath ".git")) { Fail "Run at repo root (where .git exists)." }
-
-  $repoUrl = (git remote get-url origin 2>$null)
-  if (-not $repoUrl) { $repoUrl = "(origin not found)" }
-
-  $bundlePath = "docs/MEP/MEP_BUNDLE.md"
-  if (!(Test-Path -LiteralPath $bundlePath)) { Fail ("Missing: " + $bundlePath) }
-
-  $bvLine = (Select-String -LiteralPath $bundlePath -Pattern "^BUNDLE_VERSION\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
-  $bundleVersion = if ($bvLine) { ($bvLine.Line -replace "\s+$","") } else { "BUNDLE_VERSION = (not found)" }
-
-  # === TIME_MARKS_INLINE_OUT_BEGIN (transcribe-only; do not generate) ===
-  $bundledAtLine = (Select-String -LiteralPath $bundlePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
-  $parentBundledAt = if ($bundledAtLine) { (($bundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
-  $handoffFile = "docs/MEP_SUB/EVIDENCE/HANDOFF_VERIFIED_AT.txt"
-  $handoffVerifiedAt = if (Test-Path -LiteralPath $handoffFile) { (Get-Content -LiteralPath $handoffFile -TotalCount 1) } else { "(not found)" }
-  $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
-  $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
-  # === TIME_MARKS_INLINE_OUT_END ===
-  $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-  # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (transcribe-only) ===
-  $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
-  $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
-  # === EVIDENCE_BUNDLED_AT_COMPUTE_END ===
-  $evOk = Test-Path -LiteralPath $evidencePath
-
-  # recent PR evidence anchors we touched in this session
-  $targets = @(1204,1210,1214,1218,1220,1222,1224,1226,1233)
-  $evLines = @()
-  if ($evOk) {
-    foreach ($n in $targets) {
-      $hit = Select-String -LiteralPath $evidencePath -Pattern ("PR\s*#\s*" + $n) -ErrorAction SilentlyContinue | Select-Object -First 1
-      if ($hit) { $evLines += $hit.Line }
-    }
-  }
-
-  $head = (git rev-parse --short HEAD 2>$null)
-  if (-not $head) { $head = "(unknown)" }
-
-  $out = New-Object System.Collections.Generic.List[string]
-  $out.Add("【HANDOFF｜次チャット冒頭に貼る本文】")
-  $out.Add("")
-  $out.Add("REPO_ORIGIN: " + $repoUrl)
-  $out.Add("HEAD: " + $head)
-  $out.Add($bundleVersion)
-  $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
-  $out.Add("HANDOFF_VERIFIED_AT: " + $handoffVerifiedAt)
-  $out.Add("GENERATED_AT: " + $handoffVerifiedAt)
-  $out.Add("EVIDENCE_BUNDLE: " + $evidencePath)
-  $out.Add("EVIDENCE_BUNDLED_AT: " + $evidenceBundledAt)
-  $out.Add("")
-  $out.Add("完了（今回の確定点）")
-  $out.Add("- Pre-Gate→AUTO（read-only suite）完走（stage=DONE）")
-  $out.Add("- tools: entry/auto/stage を args-based に統一（StrictMode耐性）")
-  $out.Add("")
-  $out.Add("証跡（EVIDENCEより抜粋）")
-  if ($evOk -and $evLines.Count -gt 0) {
-    foreach ($l in $evLines) { $out.Add("- " + $l) }
-  } elseif ($evOk) {
-    # --- fallback excerpt (tail scan) ---
-try {
-  if (Test-Path $evidencePath) {
-    $tail = Get-Content -Path $evidencePath -Tail 300 -ErrorAction Stop
-    $hits = $tail | Select-String -Pattern '^PR #\d+ \| .*audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
-    if ($hits -and $hits.Count -gt 0) {
-      foreach ($h in $hits) { $out.Add("- " + $h.Line.Trim()) }
-    } else {
-      $out.Add("- （EVIDENCE_BUNDLEは存在するが、対象PR行を未検出）")
-    }
-  } else {
-    $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
-  }
+  $lines = & $legacy @args 2>&1
 } catch {
-  $out.Add("- （EVIDENCE_BUNDLE抽出で例外）: " + $_.Exception.Message)
+  # still emit what we have (if any), then rethrow
+  if ($lines) { $lines | ForEach-Object { Write-Host $_ } }
+  throw
 }
-# --- /fallback excerpt ---
-  } else {
-    $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
-  }
-  $out.Add("")
-  $out.Add("次から自動で回す入口")
-  $out.Add("- .\tools\mep_entry.ps1 -Once")
-  $out.Add("")
-  $out.Add("注記")
-  $out.Add("- 本文は Bundled/EVIDENCE の一次根拠のみを採用。会話ログは根拠にしない。")
-  $out.Add("")
-
-  Write-Host ($out -join "`n")
-  exit 0
+# normalize to string array
+$lines = @($lines | ForEach-Object { [string]$_ })
+# helpers
+function Get-Value([string[]]$ls, [string]$key) {
+  $m = $ls | Select-String -Pattern ("^\s*" + [regex]::Escape($key) + "\s*:\s*(.+)\s*$") -AllMatches | Select-Object -First 1
+  if ($m) { return $m.Matches[0].Groups[1].Value.Trim() }
+  return ""
 }
-catch {
-  Write-Error $_.Exception.Message
-  exit 1
+function Get-ValueEq([string[]]$ls, [string]$key) {
+  $m = $ls | Select-String -Pattern ("^\s*" + [regex]::Escape($key) + "\s*=\s*(.+)\s*$") -AllMatches | Select-Object -First 1
+  if ($m) { return $m.Matches[0].Groups[1].Value.Trim() }
+  return ""
 }
-
+function Slice-After([string[]]$ls, [string]$pattern) {
+  $idx = -1
+  for ($i=0; $i -lt $ls.Count; $i++) { if ($ls[$i] -match $pattern) { $idx = $i; break } }
+  if ($idx -lt 0) { return @() }
+  return @($ls[($idx+1)..($ls.Count-1)])
+}
+# parse fields from legacy output format (as observed)
+$repo_origin = Get-Value   $lines "REPO_ORIGIN"
+$head        = Get-Value   $lines "HEAD"
+$bundle_ver  = Get-ValueEq $lines "BUNDLE_VERSION"
+$parent_at   = Get-Value   $lines "PARENT_BUNDLED_AT"
+$evid_path   = Get-Value   $lines "EVIDENCE_BUNDLE"
+$evid_at     = Get-Value   $lines "EVIDENCE_BUNDLED_AT"
+# evidence lines: take block after "証跡（EVIDENCEより抜粋）" or "証跡" heading, keep "- PR ..." lines
+$tail = Slice-After $lines "^\s*証跡"
+$evid_lines = @()
+foreach ($l in $tail) {
+  if ($l -match "^\s*次から") { break }
+  if ($l -match "^\s*注記") { break }
+  if ($l -match "^\s*-\s*PR\s*#") { $evid_lines += $l.Trim() }
+}
+# fixed paths for two-layer contract
+$parent_bundled = "docs/MEP/MEP_BUNDLE.md"
+# emit two-layer fixed output
+Write-Host "【HANDOFF｜次チャット冒頭に貼る本文（二層固定）】"
+Write-Host ""
+Write-Host "[監査用引継ぎ]（Bundled/EVIDENCE一次根拠のみ）"
+Write-Host ""
+if ($repo_origin) { Write-Host ("REPO_ORIGIN: " + $repo_origin) } else { Write-Host "REPO_ORIGIN: (not found)" }
+Write-Host ("PARENT_BUNDLED: " + $parent_bundled)
+if ($bundle_ver) { Write-Host ("BUNDLE_VERSION: " + $bundle_ver) } else { Write-Host "BUNDLE_VERSION: (not found)" }
+if ($parent_at) { Write-Host ("PARENT_BUNDLED_AT: " + $parent_at) } else { Write-Host "PARENT_BUNDLED_AT: (not found)" }
+Write-Host ""
+if ($evid_path) { Write-Host ("EVIDENCE_BUNDLE: " + $evid_path) } else { Write-Host "EVIDENCE_BUNDLE: (not found)" }
+if ($evid_at) { Write-Host ("EVIDENCE_BUNDLED_AT: " + $evid_at) } else { Write-Host "EVIDENCE_BUNDLED_AT: (not found)" }
+Write-Host ""
+Write-Host "EVIDENCE_LINES:"
+if ($evid_lines.Count -gt 0) {
+  foreach ($l in $evid_lines) { Write-Host $l }
+} else {
+  Write-Host "- (none)"
+}
+Write-Host ""
+Write-Host "[作業用引継ぎ]（未完・次工程）"
+Write-Host ""
+Write-Host "GOAL:"
+Write-Host "- EVIDENCE_BUNDLED_AT の (not found) 解消（EVIDENCE側を基準点あり一次根拠として成立）"
+Write-Host ""
+Write-Host "NEXT:"
+Write-Host "- .\tools\mep_entry.ps1 -Once"
+Write-Host ""
+Write-Host "NOTES:"
+Write-Host "- HEAD は監査一次根拠ではないため監査用には含めない（作業ログ側でのみ扱う）"
