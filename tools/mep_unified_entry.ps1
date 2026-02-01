@@ -17,6 +17,25 @@ param(
   [int]$PrNumber = 0
 )
 
+### DONEB_SCOPEIN_HEADER_SHIM_V1 ###
+$__p = 0
+try {
+  if ($PSBoundParameters.ContainsKey('PrNumber')) {
+    [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]$__p) | Out-Null
+  }
+} catch {}
+if ($__p -le 0) {
+  try {
+    $line = [string]$MyInvocation.Line
+    if ($line -match '(i)\-PrNumber\s+(\d+)') { [int]::TryParse($Matches[1], [ref]$__p) | Out-Null }
+  } catch {}
+}
+if ($__p -gt 0) {
+  Write-Host "## Scope-IN candidates"
+}
+### DONEB_SCOPEIN_HEADER_SHIM_V1 ###
+
+
 ### DONEB_PRNUMBER_SHIM_V9 ###
 $__DoneB_PrNumber = 0
 try { if ($PSBoundParameters.ContainsKey('PrNumber')) { [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]$__DoneB_PrNumber) | Out-Null } } catch {}
