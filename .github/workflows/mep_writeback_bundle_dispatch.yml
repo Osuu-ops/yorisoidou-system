@@ -64,7 +64,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Create PR for writeback branch (if needed)
         shell: pwsh
         env:
@@ -111,6 +111,7 @@ jobs:
           $body  = ('Automated writeback: created from branch {0} (run_id={1})' -f $head, '${{ github.run_id }}')
           $url = gh pr create --title $title --body $body --base 'main' --head $head
           Info ('Created PR: ' + $url)
+
 
 
 
