@@ -36,8 +36,9 @@ try {
   $parentBundledAt = if ($bundledAtLine) { (($bundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   $handoffFile = "docs/MEP_SUB/EVIDENCE/HANDOFF_VERIFIED_AT.txt"
   $handoffVerifiedAt = if (Test-Path -LiteralPath $handoffFile) { (Get-Content -LiteralPath $handoffFile -TotalCount 1) } else { "(not found)" }
+  $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
+  $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   # === TIME_MARKS_INLINE_OUT_END ===
-
   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
   $evOk = Test-Path -LiteralPath $evidencePath
 
@@ -64,6 +65,7 @@ try {
   $out.Add("HANDOFF_VERIFIED_AT: " + $handoffVerifiedAt)
   $out.Add("GENERATED_AT: " + $handoffVerifiedAt)
   $out.Add("EVIDENCE_BUNDLE: " + $evidencePath)
+  $out.Add("EVIDENCE_BUNDLED_AT: " + $evidenceBundledAt)
   $out.Add("")
   $out.Add("完了（今回の確定点）")
   $out.Add("- Pre-Gate→AUTO（read-only suite）完走（stage=DONE）")
