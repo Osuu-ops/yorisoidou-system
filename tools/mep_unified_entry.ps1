@@ -174,8 +174,8 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
-MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
+      Where-Object { $_ -and ($_.Length -gt 0) } |
+      Sort-Object -Unique
 # - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 # - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 # - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
