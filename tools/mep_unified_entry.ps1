@@ -13,13 +13,10 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
-  [Parameter(Mandatory=$false)]
-  [int]$PrNumber = 0
-)
+  [Parameter(Mandatory=$false)
 
-# === MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
-# If -PrNumber is provided (non-zero), generate Scope-IN candidates from PR diff and EXIT.
-# This mode must never prompt (no Read-Host) and must never mutate files.
+# === HARD_EARLY_RETURN: PRNUMBER_MODE ===
+# PR-number mode: MUST NOT prompt, MUST NOT use origin/main...HEAD local diff.
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
     $repo = 'Osuu-ops/yorisoidou-system'
@@ -28,10 +25,11 @@ try {
     & $tool -PrNumber ([int]$PrNumber) -Repo $repo
     return
   }
-} catch {
-  throw
-}
-# === END MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
+} catch { throw }
+# === END HARD_EARLY_RETURN: PRNUMBER_MODE ===
+]
+  [int]$PrNumber = 0
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
