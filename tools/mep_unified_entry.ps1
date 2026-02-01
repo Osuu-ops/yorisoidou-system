@@ -5,7 +5,7 @@ MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本�
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 #>
 param(
-[switch]$Once,
+  [switch]$Once,
   [switch]$ApprovalYes,
   [string]$ScopeFile   = "platform/MEP/90_CHANGES/CURRENT_SCOPE.md",
   [string]$ScopeHeader = "## 変更対象（Scope-IN）",
@@ -13,11 +13,13 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
-  [Parameter(Mandatory=$false
   [Parameter(Mandatory=$false)]
   [int]$PrNumber = 0
-)]
+)
+
 # === MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
+# If -PrNumber is provided (non-zero), generate Scope-IN candidates from PR diff and EXIT.
+# This mode must never prompt (no Read-Host) and must never mutate files.
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
     $repo = 'Osuu-ops/yorisoidou-system'
@@ -26,11 +28,11 @@ try {
     & $tool -PrNumber ([int]$PrNumber) -Repo $repo
     return
   }
-} catch { throw }
+} catch {
+  throw
+}
 # === END MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
-]
-  [int]$PrNumber = 0
-)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
