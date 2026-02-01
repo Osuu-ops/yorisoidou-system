@@ -3,6 +3,7 @@
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - tools/mep_entry.ps1
 - tools/mep_append_evidence_line_full.ps1
+- .github/workflows/mep_writeback_bundle_dispatch.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
