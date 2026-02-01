@@ -13,8 +13,7 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
-  [Parameter(Mandatory=$false)
-
+  [Parameter(Mandatory=$false)]
 # === HARD_EARLY_RETURN: PRNUMBER_MODE ===
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
