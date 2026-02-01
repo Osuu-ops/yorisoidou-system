@@ -1,0 +1,18 @@
+name: mep_scope_fence_guard_pr
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scope-fence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Guard (diff to origin/main)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -File tools/mep_scope_fence_guard.ps1 -Mode diff -BaseRef origin/main
