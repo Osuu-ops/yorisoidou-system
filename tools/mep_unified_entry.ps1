@@ -12,8 +12,23 @@ param(
   [string]$BaseRef     = "origin/main",
   [switch]$RunGate,
   [switch]$RunWriteback,
-  [int]$WritebackPrNumber = 0
+  [int]$WritebackPrNumber = 0,
+  [Parameter(Mandatory=$false)]
+  [int]$PrNumber = 0
 )
+
+# === HARD_EARLY_RETURN: PRNUMBER_MODE ===
+# PR-number mode: MUST NOT prompt. Force exit before any other logic.
+if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
+  $repo = 'Osuu-ops/yorisoidou-system'
+  $tool = Join-Path $PSScriptRoot 'mep_scopein_candidates_from_pr.ps1'
+  if (-not (Test-Path $tool)) { throw "missing tool: $tool" }
+  & $tool -PrNumber ([int]$PrNumber) -Repo $repo
+  exit 0
+}
+# === END HARD_EARLY_RETURN: PRNUMBER_MODE ===
+
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
