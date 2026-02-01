@@ -34,11 +34,11 @@ jobs:
           PR_IN="${{ inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
-            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
           fi
           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
-            echo "[NG] failed to resolve PR number"
-            exit 2
+          echo "[NG] failed to resolve PR number"
+          exit 2
           fi
           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
           echo "[OK] PR_NUMBER=${PR_IN}"
@@ -54,12 +54,59 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Create PR for writeback branch (if needed)
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Ensure writeback PR (helper)
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
+          function Warn([string]$m){ Write-Host ('[WARN] {0}' -f $m) }
+          # === patched: if HEAD is main, create writeback branch, commit/push bundle, then create PR ===
+          $head = (git rev-parse --abbrev-ref HEAD).Trim()
+          Info ('HEAD=' + $head)
+          # If we're not on auto/writeback-bundle_* , but we have changes, create a writeback branch and push it.
+          if ($head -notlike 'auto/writeback-bundle_*') {
+          Warn 'Not on auto/writeback-bundle_* branch; creating writeback branch and PR.'
+          $dirty = (git status --porcelain).Trim()
+          if (-not $dirty) {
+          Info 'Working tree clean; nothing to write back.'
+          exit 0
+          }
+          $runId = $env:GITHUB_RUN_ID
+          if (-not $runId) { $runId = '0' }
+          $ts = (Get-Date -Format 'yyyyMMdd_HHmmss')
+          $newHead = ('auto/writeback-bundle_{0}_{1}_{2}' -f $runId, $env:PR_NUMBER, $ts)
+          Info ('Create branch: ' + $newHead)
+          git switch -c $newHead | Out-Null
+          # Commit only the bundle file (writeback content)
+          git add -- 'docs/MEP/MEP_BUNDLE.md' | Out-Null
+          if ((git status --porcelain).Trim()) {
+          $msg = ('chore(mep): writeback bundle evidence (PR #{0}) (run {1})' -f $env:PR_NUMBER, $runId)
+          git commit -m $msg | Out-Null
+          git push -u origin $newHead | Out-Null
+          }
+          $head = $newHead
+          Info ('HEAD=' + $head)
+          }
+          # ===========================================================
+          $exists = gh pr list --state open --head $head --json number --jq '.[0].number' 2>$null
+          if ($exists) {
+          Info ('PR already exists for head ' + $head + ': #' + $exists)
+          exit 0
+          }
+          $title = ('Writeback bundle evidence ({0})' -f $head)
+          $body  = ('Automated writeback: created from branch {0} (run_id={1})' -f $head, '${{ github.run_id }}')
+          $url = gh pr create --title $title --body $body --base 'main' --head $head
+          Info ('Created PR: ' + $url)
 
+
+
+
+
+          pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
