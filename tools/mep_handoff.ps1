@@ -1,3 +1,16 @@
+
+function Get-BundledAtFromBundled([string]$bundledPath){
+  if (-not (Test-Path $bundledPath)) { return $null }
+  $m = Select-String -Path $bundledPath -Pattern '^\s*BUNDLED_AT\s*=\s*(.+)\s*$' -AllMatches -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($m) { return $m.Matches[0].Groups[1].Value.Trim() }
+  return $null
+}
+function Get-HandoffVerifiedAt([string]$evidenceFile){
+  if (-not (Test-Path $evidenceFile)) { return $null }
+  $v = (Get-Content -Path $evidenceFile -ErrorAction SilentlyContinue | Select-Object -First 1)
+  if ($v) { return $v.Trim() }
+  return $null
+}
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $env:GIT_PAGER="cat"
@@ -85,3 +98,24 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
+# === time marks (transcribe-only) ===
+try {
+  $root = (git rev-parse --show-toplevel 2>$null).Trim()
+  if ($root) {
+    $parentBundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
+    $eviFile       = Join-Path $root "docs/MEP_SUB/EVIDENCE/HANDOFF_VERIFIED_AT.txt"
+
+    $parentBundledAt = Get-BundledAtFromBundled $parentBundled
+    $handoffVerified = Get-HandoffVerifiedAt $eviFile
+
+    if ($parentBundledAt) { Write-Output ("PARENT_BUNDLED_AT: " + $parentBundledAt) }
+    if ($handoffVerified) {
+      Write-Output ("HANDOFF_VERIFIED_AT: " + $handoffVerified)
+      Write-Output ("GENERATED_AT: " + $handoffVerified)
+    }
+  }
+} catch {
+  # ignore (handoff must remain usable)
+}
+
