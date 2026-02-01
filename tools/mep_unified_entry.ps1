@@ -3,15 +3,15 @@ MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本�
 - diff取得 → Scope-IN候補生成 → 承認①（任意） → CURRENT_SCOPE.md更新 → commit/push
 - 意味判断/マスタ改変はしない（候補列挙のみ）
 #>
+param(
+  [switch]$Once,
+  [switch]$ApprovalYes
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"; $ProgressPreference="SilentlyContinue"
-param(
-  [switch]$Once,
-  [switch]$ApprovalYes
-)
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
 function Warn([string]$m){ Write-Host "[WARN] $m" -ForegroundColor Yellow }
 function Fail([string]$m){ throw $m }
@@ -107,7 +107,6 @@ $enforce.ToArray() | Set-Content -Path $scopePath -Encoding UTF8 -NoNewline
 Info "Updated CURRENT_SCOPE.md (blank-lines removed; bullet-only enforced)."
 # ---- git commit/push (scope update) ----
 $branch = (git branch --show-current).Trim()
-if (-not $branch) { Fail "Current branch name is empty." }
 git add $scopePath | Out-Null
 $ts = Get-Date -Format "yyyyMMdd_HHmmss"
 $commitMsg = "chore(mep): unified entry scope-in update ($ts)"
