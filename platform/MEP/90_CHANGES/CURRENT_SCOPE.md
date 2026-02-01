@@ -1,11 +1,8 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
-- .github/workflows/mep_scope_fence_guard_pr.yml
-- .github/workflows/scope_in_suggest_pr.yml
-- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- tools/mep_scope_fence_guard.ps1
-- tools/mep_scope_route.ps1
+- tools/mep_generation_fence.ps1
+- tools/mep_unified_entry.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
