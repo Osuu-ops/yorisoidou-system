@@ -40,11 +40,5 @@ PR #1395 | audit=OK,WB0000 | appended_at=2026-01-31T05:15:56Z | via=mep_append_e
 - 親Bundled基準点: docs/MEP/MEP_BUNDLE.md（BUNDLE_VERSIONのみ）
 
 PR #0 | audit=OK,WB0000 | appended_at=2026-01-31T14:42:08Z | via=mep_append_evidence_line.ps1
-* - PR #1507 | mergedAt=01/31/2026 17:46:03 | mergeCommit=e46ba1163202354647049b668e78e641fee1a744 | BUNDLE_VERSION=v0.0.0+20260131_143312+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1507
-PR #1507 | audit=OK,WB0000 | appended_at=2026-02-01T04:10:48.4072230+09:00 | via=mep_append_evidence_line_full.ps1
 
-
-* - PR #1547 | mergedAt=02/01/2026 14:08:17 | mergeCommit=8ef23afd5cc256066c5b63783e0606e381a07a17 | BUNDLE_VERSION=v0.0.0+20260201_145322+main_135741d | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1547
-PR #1547 | audit=OK,WB0000 | appended_at=2026-02-01T23:53:23.4181959+09:00 | via=mep_append_evidence_line_full.ps1
-
-PR #1554 | quality=MERGECOMMIT_RESOLVED | mergeCommit=fcc15e6ccf886aae6e5a0dd76e14fe0fab4c031b | resolved_at=2026-02-02T03:07:23.3408200+09:00 | via=mergecommit_fetch_no_profile.ps1
+BUNDLE_VERSION = v0.0.0+20260201_030804+main+c9e827e1f164c553713fafd3537221b460986ccf
