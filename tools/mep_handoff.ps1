@@ -31,6 +31,13 @@ try {
   $bvLine = (Select-String -LiteralPath $bundlePath -Pattern "^BUNDLE_VERSION\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
   $bundleVersion = if ($bvLine) { ($bvLine.Line -replace "\s+$","") } else { "BUNDLE_VERSION = (not found)" }
 
+  # === TIME_MARKS_INLINE_OUT_BEGIN (transcribe-only; do not generate) ===
+  $bundledAtLine = (Select-String -LiteralPath $bundlePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
+  $parentBundledAt = if ($bundledAtLine) { (($bundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
+  $handoffFile = "docs/MEP_SUB/EVIDENCE/HANDOFF_VERIFIED_AT.txt"
+  $handoffVerifiedAt = if (Test-Path -LiteralPath $handoffFile) { (Get-Content -LiteralPath $handoffFile -TotalCount 1) } else { "(not found)" }
+  # === TIME_MARKS_INLINE_OUT_END ===
+
   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
   $evOk = Test-Path -LiteralPath $evidencePath
 
@@ -53,6 +60,9 @@ try {
   $out.Add("REPO_ORIGIN: " + $repoUrl)
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
+  $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
+  $out.Add("HANDOFF_VERIFIED_AT: " + $handoffVerifiedAt)
+  $out.Add("GENERATED_AT: " + $handoffVerifiedAt)
   $out.Add("EVIDENCE_BUNDLE: " + $evidencePath)
   $out.Add("")
   $out.Add("完了（今回の確定点）")
@@ -98,24 +108,3 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
-
-# === time marks (transcribe-only) ===
-try {
-  $root = (git rev-parse --show-toplevel 2>$null).Trim()
-  if ($root) {
-    $parentBundled = Join-Path $root "docs/MEP/MEP_BUNDLE.md"
-    $eviFile       = Join-Path $root "docs/MEP_SUB/EVIDENCE/HANDOFF_VERIFIED_AT.txt"
-
-    $parentBundledAt = Get-BundledAtFromBundled $parentBundled
-    $handoffVerified = Get-HandoffVerifiedAt $eviFile
-
-    if ($parentBundledAt) { Write-Output ("PARENT_BUNDLED_AT: " + $parentBundledAt) }
-    if ($handoffVerified) {
-      Write-Output ("HANDOFF_VERIFIED_AT: " + $handoffVerified)
-      Write-Output ("GENERATED_AT: " + $handoffVerified)
-    }
-  }
-} catch {
-  # ignore (handoff must remain usable)
-}
-
