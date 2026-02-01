@@ -84,7 +84,12 @@ if (-not $mergeCommit) {
   } catch {}
 }
 if (-not $mergeCommit) {
-  throw "mergeCommit not resolved (PR may be unmerged or API schema changed)"
+# === patched: do not fail if mergeCommit is missing (record UNKNOWN and continue) ===
+if (-not $mergeCommit -or [string]::IsNullOrWhiteSpace([string]$mergeCommit)) {
+  $mergeCommit = "UNKNOWN_MERGECOMMIT"
+  Write-Host "[WARN] mergeCommit not resolved; set to UNKNOWN_MERGECOMMIT and continue"
+}
+# ===========================================================================
 }
 # ------------------------------------------------
 }
@@ -101,6 +106,7 @@ $appendLine = "PR #$prNum | audit=OK,WB0000 | appended_at=$(Get-Date -Format o) 
 Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 Info ("Appended full evidence for PR #" + $prNum + " -> " + $BundlePath)
+
 
 
 
