@@ -17,3 +17,5 @@ A **tool-only PR** is a change that:
 ## Audit Notes
 - When a PR is tool-only, evidence absence is not a defect.
 - If future requirements change, this policy must be revised via PR.
+## Change Control
+- This policy must be changed via PR (no direct edits on main).
