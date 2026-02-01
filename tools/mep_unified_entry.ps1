@@ -42,8 +42,8 @@ foreach ($line in $diffRaw) {
     }
   }
 }
-$changedArr = $changed.ToArray() | Where-Object { $_ -and ($_ -notmatch '^\s*$') } | ForEach-Object { $_.Replace('\','/') } | Sort-Object -Unique
-if (-not $changedArr -or $changedArr.Count -eq 0) { Warn "No changed files detected vs $baseRef...HEAD. Scope-IN candidate will be empty." }
+$changedArr = @($changed.ToArray() | Where-Object { $_ -and ($_ -notmatch '^\s*$') } | ForEach-Object { $_.Replace('\','/') } | Sort-Object -Unique)
+if (-not $changedArr -or @($changedArr).Count -eq 0) { Warn "No changed files detected vs $baseRef...HEAD. Scope-IN candidate will be empty." }
 # ---- candidate (bullet-only) ----
 $candidate = New-Object System.Collections.Generic.List[string]
 foreach ($p in $changedArr) { $candidate.Add(("- {0}" -f $p)) }
