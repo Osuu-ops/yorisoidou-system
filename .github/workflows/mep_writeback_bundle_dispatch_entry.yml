@@ -14,8 +14,9 @@ on:
 
 jobs:
   call:
-    uses: ./.github/workflows/mep_writeback_bundle_dispatch.yml
+    uses: Osuu-ops/yorisoidou-system/.github/workflows/mep_writeback_bundle_dispatch.yml@main
     secrets: inherit
     with:
       pr_number: ${{ inputs.pr_number }}
       write_handoff: ${{ inputs.write_handoff }}
+
