@@ -118,7 +118,7 @@ if ($__DoneB_PrNumber -gt 0) {
 
 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -176,7 +176,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -561,7 +561,7 @@ try {
   if ($PSBoundParameters.ContainsKey('PrNumber')) {
     [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -619,7 +619,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1004,7 +1004,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
 # 2) invocation line
 if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1062,7 +1062,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1446,7 +1446,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber -le 0) {
     if ($line -match '(i)\-PrNumber\s+(\d+)') {
       [int]::TryParse($Matches[1], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1504,7 +1504,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1890,7 +1890,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
 # 3) args scan
 if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -1948,7 +1948,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -2331,7 +2331,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber -le 0) {
     if ([string]$args[$i] -ieq '-PrNumber' -and ($i + 1) -lt $args.Count) {
       [int]::TryParse([string]$args[$i+1], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -2389,7 +2389,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -2775,7 +2775,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
 
 if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -2833,7 +2833,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -3215,7 +3215,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber -gt 0) {
   try {
     $filesJson = (gh pr view 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -3273,7 +3273,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -3654,7 +3654,7 @@ if ($RunWriteback) {
 Info "Unified entry step1 done."_DoneB_PrNumber --repo Osuu-ops/yorisoidou-system --json files 2>$null)
     if (-not $filesJson) { throw "gh pr view failed for PR #
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -3712,7 +3712,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -4099,7 +4099,7 @@ Info "Unified entry step1 done."_DoneB_PrNumber" }
         $obj.files |
           ForEach-Object { 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -4157,7 +4157,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -4538,7 +4538,7 @@ if ($RunWriteback) {
 Info "Unified entry step1 done.".path } |
           Where-Object { 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -4596,7 +4596,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -4976,7 +4976,7 @@ if ($RunWriteback) {
 }
 Info "Unified entry step1 done." -and (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -5034,7 +5034,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -5424,7 +5424,7 @@ Info "Unified entry step1 done.".Length -gt 0) } |
     Write-Host "## Scope-IN candidates"
     Write-Host ("- [TOOLING_ERROR] " + 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
@@ -5482,7 +5482,7 @@ if ($__DoneB_PrNumber -gt 0) {
     if ($obj -and $obj.files) {
       $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
-- diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
+# - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
