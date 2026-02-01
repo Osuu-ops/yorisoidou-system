@@ -62,7 +62,31 @@ if ([string]::IsNullOrWhiteSpace($mergeCommit)) {
   $owner,$name = $repoSlug.Split('/')
   $q = 'query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){mergeCommit{oid}}}}'
   $g = gh api graphql -f query="$q" -F owner=$owner -F name=$name -F number=$PrNumber | ConvertFrom-Json
-  $mergeCommit = $g.data.repository.pullRequest.mergeCommit.oid
+# --- robust mergeCommit resolve (oid/sha/null) ---
+$mergeCommit = $null
+# 1) GraphQL: mergeCommit.oid / mergeCommit.sha (if present)
+try {
+  $mc = $g.data.repository.pullRequest.mergeCommit
+  if ($mc -ne $null) {
+    if ($mc.PSObject.Properties.Name -contains "oid" -and $mc.oid) { $mergeCommit = [string]$mc.oid }
+    elseif ($mc.PSObject.Properties.Name -contains "sha" -and $mc.sha) { $mergeCommit = [string]$mc.sha }
+    elseif ($mc -is [string] -and $mc) { $mergeCommit = [string]$mc }
+  }
+} catch {}
+# 2) REST fallback: merge_commit_sha
+if (-not $mergeCommit) {
+  try {
+    if (-not $script:repoSlug -or [string]::IsNullOrWhiteSpace([string]$script:repoSlug)) {
+      $script:repoSlug = $env:GITHUB_REPOSITORY
+    }
+    $p = gh api ("repos/{0}/pulls/{1}" -f $script:repoSlug, $PrNumber) | ConvertFrom-Json
+    if ($p.merge_commit_sha) { $mergeCommit = [string]$p.merge_commit_sha }
+  } catch {}
+}
+if (-not $mergeCommit) {
+  throw "mergeCommit not resolved (PR may be unmerged or API schema changed)"
+}
+# ------------------------------------------------
 }
 if ([string]::IsNullOrWhiteSpace($mergeCommit)) { throw "mergeCommit not found for PR #$PrNumber" }
 $url         = $pr.url
@@ -77,5 +101,6 @@ $appendLine = "PR #$prNum | audit=OK,WB0000 | appended_at=$(Get-Date -Format o) 
 Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 Info ("Appended full evidence for PR #" + $prNum + " -> " + $BundlePath)
+
 
 
