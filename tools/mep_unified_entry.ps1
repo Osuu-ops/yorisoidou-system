@@ -5,7 +5,7 @@ MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本�
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 #>
 param(
-  [switch]$Once,
+[switch]$Once,
   [switch]$ApprovalYes,
   [string]$ScopeFile   = "platform/MEP/90_CHANGES/CURRENT_SCOPE.md",
   [string]$ScopeHeader = "## 変更対象（Scope-IN）",
@@ -16,7 +16,6 @@ param(
   [Parameter(Mandatory=$false)
 
 # === HARD_EARLY_RETURN: PRNUMBER_MODE ===
-# PR-number mode: MUST NOT prompt, MUST NOT use origin/main...HEAD local diff.
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
     $repo = 'Osuu-ops/yorisoidou-system'
@@ -30,7 +29,6 @@ try {
 ]
   [int]$PrNumber = 0
 )
-
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
