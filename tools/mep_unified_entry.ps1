@@ -1,9 +1,9 @@
-<#
+
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -16,6 +16,30 @@ param(
   [Parameter(Mandatory=$false)]
   [int]$PrNumber = 0
 )
+
+### DONEB_PRNUMBER_SHIM_V9 ###
+$__DoneB_PrNumber = 0
+try { if ($PSBoundParameters.ContainsKey('PrNumber')) { [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]$__DoneB_PrNumber) | Out-Null } } catch {}
+if ($__DoneB_PrNumber -le 0) { try { $line = [string]$MyInvocation.Line; if ($line -match '(i)\-PrNumber\s+(\d+)') { [int]::TryParse($Matches[1], [ref]$__DoneB_PrNumber) | Out-Null } } catch {} }
+if ($__DoneB_PrNumber -le 0) { for ($i = 0; $i -lt $args.Count; $i++) { if ([string]$args[$i] -ieq '-PrNumber' -and ($i + 1) -lt $args.Count) { [int]::TryParse([string]$args[$i+1], [ref]$__DoneB_PrNumber) | Out-Null; break } } }
+if ($__DoneB_PrNumber -gt 0) {
+  try {
+    $filesJson = (gh pr view $__DoneB_PrNumber --repo Osuu-ops/yorisoidou-system --json files 2>$null)
+    if (-not $filesJson) { throw "gh pr view failed for PR #$__DoneB_PrNumber" }
+    $obj = $filesJson | ConvertFrom-Json
+    $files = @()
+    if ($obj -and $obj.files) { $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and ($_.Length -gt 0) } | Sort-Object -Unique) }
+    Write-Host "## Scope-IN candidates"
+    foreach ($f in $files) { Write-Host ("- " + $f) }
+    exit 0
+  } catch {
+    Write-Host "## Scope-IN candidates"
+    Write-Host ("- [TOOLING_ERROR] " + $_.Exception.Message)
+    exit 1
+  }
+}
+### DONEB_PRNUMBER_SHIM_V9 ###
+
 
 ### DONEB_PRNUMBER_SHIM_V3 ###
 $__DoneB_PrNumber = 0
@@ -73,12 +97,12 @@ if ($__DoneB_PrNumber -gt 0) {
 # DoneB②③: -PrNumber non-interactive route (Scope-IN candidates; bullet-only)
 # Placed after param(). Keep syntax ultra-simple to avoid parser issues.
 
-<#
+
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -131,12 +155,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -516,12 +540,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber = 0
 # 1) bound param
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber')) {
-    [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]<#
+    [int]::TryParse([string]$PSBoundParameters['PrNumber'], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -574,12 +598,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -959,12 +983,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
 } catch {}
 
 # 2) invocation line
-if (<#
+if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -1017,12 +1041,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -1401,12 +1425,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber -le 0) {
   try {
     $line = [string]$MyInvocation.Line
     if ($line -match '(i)\-PrNumber\s+(\d+)') {
-      [int]::TryParse($Matches[1], [ref]<#
+      [int]::TryParse($Matches[1], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -1459,12 +1483,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -1845,12 +1869,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
 }
 
 # 3) args scan
-if (<#
+if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -1903,12 +1927,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -2286,12 +2310,12 @@ if ($RunWriteback) {
 Info "Unified entry step1 done."_DoneB_PrNumber -le 0) {
   for ($i = 0; $i -lt $args.Count; $i++) {
     if ([string]$args[$i] -ieq '-PrNumber' -and ($i + 1) -lt $args.Count) {
-      [int]::TryParse([string]$args[$i+1], [ref]<#
+      [int]::TryParse([string]$args[$i+1], [ref]
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -2344,12 +2368,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -2730,12 +2754,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber) | Out-Null
   }
 }
 
-if (<#
+if (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -2788,12 +2812,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -3170,12 +3194,12 @@ if ($RunWriteback) {
 }
 Info "Unified entry step1 done."_DoneB_PrNumber -gt 0) {
   try {
-    $filesJson = (gh pr view <#
+    $filesJson = (gh pr view 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -3228,12 +3252,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -3609,12 +3633,12 @@ if ($RunWriteback) {
   }
 }
 Info "Unified entry step1 done."_DoneB_PrNumber --repo Osuu-ops/yorisoidou-system --json files 2>$null)
-    if (-not $filesJson) { throw "gh pr view failed for PR #<#
+    if (-not $filesJson) { throw "gh pr view failed for PR #
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -3667,12 +3691,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4054,12 +4078,12 @@ Info "Unified entry step1 done."_DoneB_PrNumber" }
     if ($obj -and $obj.files) {
       $files = @(
         $obj.files |
-          ForEach-Object { <#
+          ForEach-Object { 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4112,12 +4136,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4493,12 +4517,12 @@ if ($RunWriteback) {
   }
 }
 Info "Unified entry step1 done.".path } |
-          Where-Object { <#
+          Where-Object { 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4551,12 +4575,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4931,12 +4955,12 @@ if ($RunWriteback) {
     try { gh workflow run $wfRel -f pr_number=$WritebackPrNumber | Out-Null } catch { Warn "gh workflow run failed" }
   }
 }
-Info "Unified entry step1 done." -and (<#
+Info "Unified entry step1 done." -and (
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -4989,12 +5013,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -5379,12 +5403,12 @@ Info "Unified entry step1 done.".Length -gt 0) } |
     exit 0
   } catch {
     Write-Host "## Scope-IN candidates"
-    Write-Host ("- [TOOLING_ERROR] " + <#
+    Write-Host ("- [TOOLING_ERROR] " + 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
@@ -5437,12 +5461,12 @@ if ($__DoneB_PrNumber -gt 0) {
     $obj = $filesJson | ConvertFrom-Json
     $files = @()
     if ($obj -and $obj.files) {
-      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and <#
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and 
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
 - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
-#>
+
 param(
   [switch]$Once,
   [switch]$ApprovalYes,
