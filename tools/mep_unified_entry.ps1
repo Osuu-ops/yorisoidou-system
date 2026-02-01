@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"; $ProgressPreference="SilentlyContinue"
 param(
-  [switch]$Once
+  [switch]$Once,
   [switch]$ApprovalYes
 )
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
@@ -81,8 +81,10 @@ if ($startIdx -ge 0) {
     if ($lines[$j] -match '^\s*##\s+') { $endIdx = $j; break }
   }
 }
+function Add-NonEmpty([System.Collections.Generic.List[string]]$list, [string]$s) {
+  if ($null -ne $s -and $s -ne "") { $list.Add($s) }
+}
 $new = New-Object System.Collections.Generic.List[string]
-function Add-NonEmpty([System.Collections.Generic.List[string]]$list, [string]$s) { if ($null -ne $s -and $s -ne "") { $list.Add($s) } }
 if ($startIdx -lt 0) {
   foreach($ln in $lines){ Add-NonEmpty $new $ln }
   Add-NonEmpty $new "## Scope-IN"
@@ -92,7 +94,7 @@ if ($startIdx -lt 0) {
   if ($candidate.Count -gt 0) { foreach($c in $candidate){ Add-NonEmpty $new $c } } else { Add-NonEmpty $new "- (none)" }
   for ($k=$endIdx; $k -lt $lines.Count; $k++) { Add-NonEmpty $new $lines[$k] }
 }
-# enforce bullet-only inside Scope-IN
+# enforce bullet-only inside Scope-IN + remove blank lines
 $enforce = New-Object System.Collections.Generic.List[string]
 $inScope = $false
 foreach ($ln in $new) {
@@ -103,15 +105,12 @@ foreach ($ln in $new) {
 }
 $enforce.ToArray() | Set-Content -Path $scopePath -Encoding UTF8 -NoNewline
 Info "Updated CURRENT_SCOPE.md (blank-lines removed; bullet-only enforced)."
-# ---- git commit/push ----
+# ---- git commit/push (scope update) ----
 $branch = (git branch --show-current).Trim()
 if (-not $branch) { Fail "Current branch name is empty." }
 git add $scopePath | Out-Null
-git add (Join-Path $repoRoot "tools/mep_unified_entry.ps1") | Out-Null
 $ts = Get-Date -Format "yyyyMMdd_HHmmss"
-$commitMsg = "chore(mep): unified operation entry step1 ($ts)"
-try { git commit -m $commitMsg | Out-Null } catch { Fail "git commit failed. (Maybe nothing to commit?)" }
-Info "Committed: $commitMsg"
+$commitMsg = "chore(mep): unified entry scope-in update ($ts)"
+try { git commit -m $commitMsg | Out-Null } catch { Warn "git commit skipped (maybe no changes)." }
 try { git push -u origin $branch | Out-Null } catch { Warn "git push failed (check auth/remote)." }
-Info "Pushed: $branch"
-Info "Unified entry step1 done."
+Info "Unified entry run done."
