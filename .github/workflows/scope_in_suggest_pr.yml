@@ -20,14 +20,13 @@ jobs:
       SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 
     steps:
-      - name: Checkout (full history, PAT)
+      - name: Checkout (safe)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-          ref: ${{ github.event.pull_request.head.sha }}
-          token: ${{ secrets.MEP_BOT_PAT }}
-
-      - name: Force origin auth (token URL)
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          token: ${{ github.token }}
+          persist-credentials: true      - name: Force origin auth (token URL)
         shell: bash
         run: |
           git remote set-url origin "https://x-access-token:${{ secrets.MEP_BOT_PAT }}@github.com/${{ github.repository }}.git"
@@ -198,6 +197,8 @@ jobs:
           PY
 
           gh pr comment "$pr" --repo "$repo" --body $'### [SCOPE_SUGGEST] Out-of-scope detected\nA suggestion PR was created:\n- '"$url"$'\n\nOut-of-scope files:\n'"$(cat /tmp/out_list.txt)"$'\n'
+
+
 
 
 

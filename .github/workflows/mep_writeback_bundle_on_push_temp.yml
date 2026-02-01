@@ -1,0 +1,40 @@
+name: MEP Writeback Bundle (PUSH TEMP PROBE) 20260201_052017
+"on":
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+  actions: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Show context
+        run: |
+          echo "ref=${GITHUB_REF}"
+          echo "sha=${GITHUB_SHA}"
+          echo "repo=${GITHUB_REPOSITORY}"
+          echo "actor=${GITHUB_ACTOR}"
+      - name: List workflows
+        run: |
+          ls -la .github/workflows || true
+          echo "----"
+          find .github/workflows -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) | sed 's|^\./||' || true
+      - name: Dump target workflow heads
+        run: |
+          for f in \
+            .github/workflows/mep_writeback_bundle_dispatch.yml \
+            .github/workflows/mep_writeback_bundle_dispatch_reborn.yml \
+            .github/workflows/mep_writeback_bundle_dispatch_v2_20260201_035903.yml \
+            .github/workflows/mep_writeback_bundle_on_push.yml
+          do
+            echo "===== $f ====="
+            if [ -f "$f" ]; then
+              sed -n '1,120p' "$f"
+            else
+              echo "MISSING"
+            fi
+          done
