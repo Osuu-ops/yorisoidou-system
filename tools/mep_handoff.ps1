@@ -12,6 +12,25 @@ function Get-HandoffVerifiedAt([string]$evidenceFile){
   return $null
 }
 Set-StrictMode -Version Latest
+
+# --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
+try {
+  $repoRoot = (git rev-parse --show-toplevel 2>$null)
+  if ($repoRoot) {
+    $repoRoot = $repoRoot.Trim()
+    $cand = Join-Path $repoRoot "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md"
+    if (Test-Path $cand) {
+      $evidencePath = $cand
+    } elseif (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) {
+      $evidencePath = ""
+    }
+  } elseif (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) {
+    $evidencePath = ""
+  }
+} catch {
+  if (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) { $evidencePath = "" }
+}
+# --- end guard ---
 $ErrorActionPreference = "Stop"
 $env:GIT_PAGER="cat"
 $env:PAGER="cat"
@@ -110,3 +129,4 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
