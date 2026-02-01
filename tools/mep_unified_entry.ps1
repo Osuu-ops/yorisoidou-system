@@ -13,8 +13,12 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
+  [Parameter(Mandatory=$false,
   [Parameter(Mandatory=$false)]
+  [int]$PrNumber = 0
+)
 # === HARD_EARLY_RETURN: PRNUMBER_MODE ===
+# PR-number mode: MUST NOT prompt, MUST NOT use origin/main...HEAD local diff.
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
     $repo = 'Osuu-ops/yorisoidou-system'
@@ -24,7 +28,7 @@ try {
     return
   }
 } catch { throw }
-# === END HARD_EARLY_RETURN: PRNUMBER_MODE ===
+# === END HARD_EARLY_RETURN: PRNUMBER_MODE ===]
 ]
   [int]$PrNumber = 0
 )
