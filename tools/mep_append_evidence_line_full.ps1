@@ -30,7 +30,29 @@ if ($PrNumber -eq 0) {
 }
 $prNum       = [int]$pr.number
 $mergedAt    = $pr.mergedAt
-$mergeCommit = $pr.mergeCommit.oid
+# --- mergeCommit resolve (robust) ---
+$mergeCommit = $null
+# gh json may return mergeCommit as:
+# - object: { oid = "..." }
+# - string: "..."
+if ($pr.PSObject.Properties.Name -contains 'mergeCommit') {
+  $mc = $pr.mergeCommit
+  if ($mc -is [string]) {
+    $mergeCommit = $mc
+  } elseif ($mc -and ($mc.PSObject.Properties.Name -contains 'oid')) {
+    $mergeCommit = $mc.oid
+  } elseif ($mc -and ($mc.PSObject.Properties.Name -contains 'sha')) {
+    $mergeCommit = $mc.sha
+  }
+}
+# final fallback: GraphQL pullRequest.mergeCommit.oid
+if ([string]::IsNullOrWhiteSpace($mergeCommit)) {
+  $owner,$name = $repoSlug.Split('/')
+  $q = 'query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){mergeCommit{oid}}}}'
+  $g = gh api graphql -f query="$q" -F owner=$owner -F name=$name -F number=$PrNumber | ConvertFrom-Json
+  $mergeCommit = $g.data.repository.pullRequest.mergeCommit.oid
+}
+if ([string]::IsNullOrWhiteSpace($mergeCommit)) { throw "mergeCommit not found for PR #$PrNumber" }
 $url         = $pr.url
 # Idempotency: if PR already mentioned, skip
 $already = Select-String -InputObject $bundle -Pattern ("PR\s*#\s*{0}\b" -f $prNum) -AllMatches
@@ -43,3 +65,4 @@ $appendLine = "PR #$prNum | audit=OK,WB0000 | appended_at=$(Get-Date -Format o) 
 Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 Info ("Appended full evidence for PR #" + $prNum + " -> " + $BundlePath)
+
