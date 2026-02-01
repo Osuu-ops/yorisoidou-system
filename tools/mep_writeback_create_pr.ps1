@@ -1,13 +1,13 @@
+param(
+  [Parameter(Mandatory=$true)]
+  [string]$BundlePath
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-param(
-  [Parameter(Mandatory=$true)][string]$BundlePath
-)
 function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
 function Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }
 $head = (git rev-parse --abbrev-ref HEAD).Trim()
 Info ("HEAD=" + $head)
-# If we are already on a writeback branch, just create PR if needed
 function Ensure-PrForHead([string]$h){
   $exists = $null
   try { $exists = gh pr list --state open --head $h --json number --jq '.[0].number' 2>$null } catch {}
@@ -22,7 +22,6 @@ if ($head -like "auto/writeback-bundle_*") {
   Ensure-PrForHead $head
   exit 0
 }
-# If on main (or any non-writeback branch), create writeback branch if bundle file changed
 $dirty = (git status --porcelain).Trim()
 if (-not $dirty) {
   Info "Working tree clean; nothing to write back."
@@ -36,12 +35,11 @@ Warn ("Not on auto/writeback-bundle_*; creating branch " + $newHead)
 git switch -c $newHead | Out-Null
 git add -- $BundlePath | Out-Null
 $dirty2 = (git status --porcelain).Trim()
-if ($dirty2) {
-  $msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $runId)
-  git commit -m $msg | Out-Null
-  git push -u origin $newHead | Out-Null
-} else {
+if (-not $dirty2) {
   Info "No staged changes for bundle; skip push/PR."
   exit 0
 }
+$msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $runId)
+git commit -m $msg | Out-Null
+git push -u origin $newHead | Out-Null
 Ensure-PrForHead $newHead
