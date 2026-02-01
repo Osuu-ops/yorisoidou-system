@@ -120,7 +120,7 @@ if ($__DoneB_PrNumber -gt 0) {
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 # - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 # - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
-- Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
+# - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
 param(
   [switch]$Once,
@@ -178,7 +178,7 @@ if ($__DoneB_PrNumber -gt 0) {
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 # - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
 # - （任意）Gate / writeback を呼ぶのはオプション（意味判断はしない）
-- Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
+# - Scope Guard が読む SCOPE_FILE と見出し（## 変更対象（Scope-IN））に厳密準拠
 
 param(
   [switch]$Once,
