@@ -1,18 +1,5 @@
-name: MEP Writeback Bundle (Dispatch) (rereg 20260201_043933)
+name: MEP Writeback Bundle (Core)
 on:
-  # rereg-onblock 20260201_050047
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: "PR number (0 = auto latest merged PR into main)"
-        required: false
-        default: "0"
-        type: string
-      write_handoff:
-        description: "Generate+Guard+Writeback HANDOFF_NEXT into Bundled (false/true)"
-        required: false
-        default: "false"
-        type: string
   workflow_call:
     inputs:
       pr_number:
@@ -20,8 +7,8 @@ on:
         type: string
       write_handoff:
         required: false
-        type: string
-        default: "false"
+        type: boolean
+        default: false
 permissions:
   contents: write
   pull-requests: write
@@ -29,16 +16,16 @@ jobs:
   writeback:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Configure git identity
         shell: bash
         run: |
-          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Resolve PR number (0 => latest merged into main)
+      - name: Resolve PR number
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -57,19 +44,29 @@ jobs:
           echo "[OK] PR_NUMBER=${PR_IN}"
       - name: Bump Bundled version (parent)
         shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
         run: |
           pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Append full evidence line into parent Bundled
         shell: pwsh
         env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+<<<<<<< HEAD
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Create PR for writeback branch (if needed)
+=======
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Ensure writeback PR (helper)
+>>>>>>> origin/main
         shell: pwsh
         env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
+<<<<<<< HEAD
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
           function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
@@ -116,3 +113,6 @@ jobs:
 
 
 
+=======
+          pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+>>>>>>> origin/main
