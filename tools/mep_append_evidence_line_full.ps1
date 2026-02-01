@@ -3,6 +3,18 @@ param(
   [string]$BundlePath
 )
 Set-StrictMode -Version Latest
+# --- guard: repoSlug must be defined (Actions: GITHUB_REPOSITORY) ---
+if (-not (Get-Variable -Name repoSlug -Scope Script -ErrorAction SilentlyContinue)) { $script:repoSlug = $null }
+if (-not $script:repoSlug -or [string]::IsNullOrWhiteSpace([string]$script:repoSlug)) {
+  $script:repoSlug = $env:GITHUB_REPOSITORY
+}
+if (-not $script:repoSlug -or [string]::IsNullOrWhiteSpace([string]$script:repoSlug)) {
+  try { $script:repoSlug = (gh repo view --json nameWithOwner --jq '.nameWithOwner') } catch {}
+}
+if (-not $script:repoSlug -or [string]::IsNullOrWhiteSpace([string]$script:repoSlug)) {
+  throw "repoSlug is not set (expected env:GITHUB_REPOSITORY or gh repo view)"
+}
+# ---------------------------------------------------------------
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
@@ -65,4 +77,5 @@ $appendLine = "PR #$prNum | audit=OK,WB0000 | appended_at=$(Get-Date -Format o) 
 Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 Info ("Appended full evidence for PR #" + $prNum + " -> " + $BundlePath)
+
 
