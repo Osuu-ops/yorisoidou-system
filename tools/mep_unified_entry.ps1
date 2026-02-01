@@ -16,7 +16,7 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
-  [switch]$ApprovalYes  # 付けた場合は承認①プロンプトを省略（YES扱い）
+  [switch]$ApprovalYes = $false  # 付けた場合は承認①プロンプトを省略（YES扱い）
 )
 
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
@@ -65,7 +65,7 @@ Write-Host "==========================================="
 Write-Host ""
 
 # ---- approval① ----
-if (-not $ApprovalYes) {
+if (-not [bool]$ApprovalYes) {
   $ans = Read-Host "Approval① (type YES to apply to CURRENT_SCOPE.md, otherwise abort)"
   if ($ans -ne "YES") { Fail "Approval① denied (input was not YES)." }
 } else {
