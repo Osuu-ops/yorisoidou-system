@@ -1,3 +1,18 @@
+      - name: Stamp BUNDLED_AT
+        shell: bash
+        run: |
+          set -euo pipefail
+          ts=$(TZ=Asia/Tokyo date +"%Y-%m-%dT%H:%M:%S%z")
+          for f in docs/MEP/MEP_BUNDLE.md docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md; do
+            if [[ -f "$f" ]]; then
+              if grep -qE '^BUNDLED_AT\s*=' "$f"; then
+                sed -i -E "s/^BUNDLED_AT\s*=.*/BUNDLED_AT = $ts/" "$f"
+              else
+                awk -v ts="$ts" 'NR==1{print; print "BUNDLED_AT = " ts; next} {print}' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+              fi
+            fi
+          done
+
 name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
@@ -21,20 +36,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Stamp BUNDLED_AT
-        shell: bash
-        run: |
-          set -euo pipefail
-          ts=$(TZ=Asia/Tokyo date +"%Y-%m-%dT%H:%M:%S%z")
-          for f in docs/MEP/MEP_BUNDLE.md docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md; do
-            if [[ -f "$f" ]]; then
-              if grep -qE '^BUNDLED_AT\s*=' "$f"; then
-                sed -i -E "s/^BUNDLED_AT\s*=.*/BUNDLED_AT = $ts/" "$f"
-              else
-                awk -v ts="$ts" 'NR==1{print; print "BUNDLED_AT = " ts; next} {print}' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
-              fi
-            fi
-          done
       - name: Configure git identity
         shell: bash
         run: |
@@ -77,6 +78,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
 
 
 
