@@ -13,6 +13,15 @@ on:
         required: false
         default: "false"
         type: string
+  workflow_call:
+    inputs:
+      pr_number:
+        required: true
+        type: string
+      write_handoff:
+        required: false
+        type: string
+        default: "false"
 permissions:
   contents: write
   pull-requests: write
@@ -80,5 +89,6 @@ jobs:
           $body  = ('Automated writeback: created from branch {0} (run_id={1})' -f $head, '${{ github.run_id }}')
           $url = gh pr create --title $title --body $body --base 'main' --head $head
           Info ('Created PR: ' + $url)
+
 
 
