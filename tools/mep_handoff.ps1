@@ -59,6 +59,10 @@ try {
   $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   # === TIME_MARKS_INLINE_OUT_END ===
   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+  # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (transcribe-only) ===
+  $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
+  $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
+  # === EVIDENCE_BUNDLED_AT_COMPUTE_END ===
   $evOk = Test-Path -LiteralPath $evidencePath
 
   # recent PR evidence anchors we touched in this session
