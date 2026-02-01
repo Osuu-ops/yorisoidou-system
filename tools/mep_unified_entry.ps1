@@ -18,17 +18,16 @@ param(
 )
 
 # === HARD_EARLY_RETURN: PRNUMBER_MODE ===
-# PR-number mode: MUST NOT prompt, MUST NOT use origin/main...HEAD local diff.
-try {
-  if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
-    $repo = 'Osuu-ops/yorisoidou-system'
-    $tool = Join-Path $PSScriptRoot 'mep_scopein_candidates_from_pr.ps1'
-    if (-not (Test-Path $tool)) { throw "missing tool: $tool" }
-    & $tool -PrNumber ([int]$PrNumber) -Repo $repo
-    return
-  }
-} catch { throw }
+# PR-number mode: MUST NOT prompt. Force exit before any other logic.
+if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
+  $repo = 'Osuu-ops/yorisoidou-system'
+  $tool = Join-Path $PSScriptRoot 'mep_scopein_candidates_from_pr.ps1'
+  if (-not (Test-Path $tool)) { throw "missing tool: $tool" }
+  & $tool -PrNumber ([int]$PrNumber) -Repo $repo
+  exit 0
+}
 # === END HARD_EARLY_RETURN: PRNUMBER_MODE ===
+
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
