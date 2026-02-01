@@ -1,21 +1,8 @@
 #requires -Version 7.0
 <#
 MEP Generation Fence
-目的:
 - 生成(草案→実装)が誤って 03_BUSINESS へ落ちるのを「実行後に即検知して巻き戻す」ことで、結果的に生成させない。
-- 既存の生成スクリプトを全部改修せず、入口でSYSTEM/BUSINESSを分断する。
-使い方例:
-  pwsh tools/mep_generation_fence.ps1 -Kind SYSTEM  -Command 'pwsh tools/mep_entry.ps1 -Once'
-  pwsh tools/mep_generation_fence.ps1 -Kind BUSINESS -BusinessName 'よりそい堂' -Command 'pwsh tools/mep_business_new.ps1 ...'
-  pwsh tools/mep_generation_fence.ps1 -Kind PIPE    -BusinessName 'よりそい堂' -Command 'pwsh tools/some_pipe_update.ps1 ...'
-ルール:
-- Kind=SYSTEM:
-    NG: platform/MEP/03_BUSINESS/** に1ファイルでも変更が出たら巻き戻して exit 2
-- Kind=BUSINESS:
-    OK: platform/MEP/03_BUSINESS/<BusinessName>/** のみ
-    NG: それ以外に変更が出たら巻き戻して exit 2
-- Kind=PIPE:
-    現状は BUSINESS と同等（PIPEは business 配下に属する前提）
+- 入口で SYSTEM / BUSINESS / PIPE を分断する。
 退出コード:
 - 0 = OK
 - 2 = NG（巻き戻し済）
@@ -44,15 +31,21 @@ try {
   if (($Kind -eq "BUSINESS" -or $Kind -eq "PIPE") -and [string]::IsNullOrWhiteSpace($BusinessName)) {
     Boom "BusinessName is required for Kind=$Kind"
   }
-  # 基準点（作業ツリーを clean に寄せたいが、ここでは「差分を後で監査→巻き戻し」を保証する）
   $base = git rev-parse HEAD
   Info ("Base HEAD=" + $base)
   Info ("Run: " + $Command)
-  # 実行
-  $proc = Start-Process -FilePath "pwsh" -ArgumentList @("-NoProfile","-Command",$Command) -Wait -PassThru
-  $exit = $proc.ExitCode
+  # 同一プロセスで実行（exit codeを捕捉）
+  $global:LASTEXITCODE = 0
+  try {
+    Invoke-Expression $Command | Out-Default
+  } catch {
+    # PowerShell例外は TOOLING ERROR として扱う（必要ならここは運用で調整）
+    Warn ("Command threw: " + $_.Exception.Message)
+    $global:LASTEXITCODE = 1
+  }
+  $exit = $global:LASTEXITCODE
   Info ("Command exit=" + $exit)
-  # 変更ファイル一覧（未ステージ+ステージ両方）
+  # 変更ファイル一覧（未ステージ+ステージ）
   $changed = @()
   $a = git diff --name-only
   $b = git diff --name-only --cached
@@ -65,21 +58,20 @@ try {
   }
   Info "Changed files:"
   foreach ($p in $changed) { Write-Host (" - " + $p) }
-  $bad = New-Object System.Collections.Generic.List[string]
+  $bad = @()
   if ($Kind -eq "SYSTEM") {
     foreach ($p in $changed) {
-      if ($p.StartsWith("platform/MEP/03_BUSINESS/")) { [void]$bad.Add($p) }
+      if ($p.StartsWith("platform/MEP/03_BUSINESS/")) { $bad += $p }
     }
   } else {
     $allowPrefix = ("platform/MEP/03_BUSINESS/{0}/" -f $BusinessName)
     foreach ($p in $changed) {
-      if (-not $p.StartsWith($allowPrefix)) { [void]$bad.Add($p) }
+      if (-not $p.StartsWith($allowPrefix)) { $bad += $p }
     }
   }
   if ($bad.Count -gt 0) {
     Warn "Violation detected. Rolling back working tree..."
-    foreach ($p in $bad) { Write-Host ("[NG] " + $p) -ForegroundColor Red }
-    # 巻き戻し（作業ツリーを基準点に戻す）
+    foreach ($p in ($bad | Sort-Object -Unique)) { Write-Host ("[NG] " + $p) -ForegroundColor Red }
     git reset --hard | Out-Null
     git clean -fd | Out-Null
     Ng ("Generation Fence NG: Kind={0} BusinessName={1}. Out-of-scope changes were rolled back." -f $Kind,$BusinessName)
