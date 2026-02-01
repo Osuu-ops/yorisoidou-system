@@ -34,11 +34,11 @@ jobs:
           PR_IN="${{ inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
-            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
           fi
           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
-            echo "[NG] failed to resolve PR number"
-            exit 2
+          echo "[NG] failed to resolve PR number"
+          exit 2
           fi
           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
           echo "[OK] PR_NUMBER=${PR_IN}"
@@ -54,19 +54,15 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-<<<<<<< HEAD
           pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Create PR for writeback branch (if needed)
-=======
           pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Ensure writeback PR (helper)
->>>>>>> origin/main
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-<<<<<<< HEAD
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
           function Info([string]$m){ Write-Host ('[INFO] {0}' -f $m) }
@@ -101,8 +97,8 @@ jobs:
           # ===========================================================
           $exists = gh pr list --state open --head $head --json number --jq '.[0].number' 2>$null
           if ($exists) {
-            Info ('PR already exists for head ' + $head + ': #' + $exists)
-            exit 0
+          Info ('PR already exists for head ' + $head + ': #' + $exists)
+          exit 0
           }
           $title = ('Writeback bundle evidence ({0})' -f $head)
           $body  = ('Automated writeback: created from branch {0} (run_id={1})' -f $head, '${{ github.run_id }}')
@@ -113,6 +109,4 @@ jobs:
 
 
 
-=======
           pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
->>>>>>> origin/main
