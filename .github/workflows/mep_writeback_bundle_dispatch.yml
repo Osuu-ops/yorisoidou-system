@@ -54,7 +54,7 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
       - name: Ensure writeback PR (helper)
         shell: pwsh
         env:
@@ -62,3 +62,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
