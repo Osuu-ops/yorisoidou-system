@@ -13,7 +13,10 @@ param(
   [switch]$RunGate,
   [switch]$RunWriteback,
   [int]$WritebackPrNumber = 0,
+  [Parameter(Mandatory=$false
   [Parameter(Mandatory=$false)]
+  [int]$PrNumber = 0
+)]
 # === MEP_UNIFIED_ENTRY: PR_DIFF_SCOPEIN_CANDIDATES (EARLY RETURN) ===
 try {
   if ($PSBoundParameters.ContainsKey('PrNumber') -and ([int]$PrNumber) -ne 0) {
