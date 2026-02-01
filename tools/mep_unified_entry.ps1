@@ -1,3 +1,32 @@
+### DONEB_PRNUMBER_SHIM_V1 ###
+# DoneB②③: -PrNumber non-interactive route (Scope-IN candidates; bullet-only)
+# NOTE: do not touch existing param(); parse $args to avoid breaking legacy entry.
+$__DoneB_PrNumber = 0
+for ($i = 0; $i -lt $args.Count; $i++) {
+  if ($args[$i] -eq "-PrNumber" -and ($i + 1) -lt $args.Count) {
+    [int]::TryParse([string]$args[$i+1], [ref]$__DoneB_PrNumber) | Out-Null
+    break
+  }
+}
+if ($__DoneB_PrNumber -gt 0) {
+  try {
+    $filesJson = (gh pr view $__DoneB_PrNumber --repo $repo --json files 2>$null)
+    if (-not $filesJson) { throw "gh pr view failed for PR #$__DoneB_PrNumber" }
+    $obj = $filesJson | ConvertFrom-Json
+    $files = @()
+    if ($obj -and $obj.files) {
+      $files = @($obj.files | ForEach-Object { $_.path } | Where-Object { $_ -and $_.Trim() } | Sort-Object -Unique)
+    }
+    Write-Host "## Scope-IN candidates"
+    foreach ($f in $files) { Write-Host ("- " + $f) }
+    exit 0
+  } catch {
+    Write-Host "## Scope-IN candidates"
+    Write-Host ("- [TOOLING_ERROR] " + $_.Exception.Message)
+    exit 1
+  }
+}
+### /DONEB_PRNUMBER_SHIM_V1 ###
 <#
 MEP 運転完成フェーズ（Unified Operation Entry） - STEP1 入口一本化（最小・確定版）
 - diff取得 → Scope-IN候補生成 → 承認①（YES/NO） → SCOPE_FILE更新 → commit/push
