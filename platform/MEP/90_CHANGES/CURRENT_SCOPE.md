@@ -1,6 +1,7 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
+
 - platform/MEP/01_CORE/cards/**
 - START_HERE.md
 - .mep/CURRENT_STAGE.txt
@@ -32,6 +33,9 @@
 - .github/workflows/mep_sync_evidence_to_parent_dispatch.yml
 - tools/mep_sync_evidence_to_parent.ps1
 - .github/workflows/scope_in_suggest_pr.yml
+- .github/workflows/mep_scope_fence_guard_pr.yml
+- tools/mep_scope_fence_guard.ps1
+- tools/mep_scope_route.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
@@ -62,6 +66,7 @@
 
 ## Child MEPs
 - EVIDENCE -> docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
 
 
 
