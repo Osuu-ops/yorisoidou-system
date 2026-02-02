@@ -46,11 +46,11 @@ jobs:
           set -euo pipefail
           BASE="origin/${{ steps.refs.outputs.base_ref }}"
           HEAD="origin/${{ steps.refs.outputs.head_ref }}"
-          if ! git show-ref --verify --quiet "refs/remotes/${BASE#origin/}"; then
+          if ! git show-ref --verify --quiet "refs/remotes/$BASE"; then
             echo "BASE ref not found: $BASE" >&2
             exit 2
           fi
-          if ! git show-ref --verify --quiet "refs/remotes/${HEAD#origin/}"; then
+          if ! git show-ref --verify --quiet "refs/remotes/$HEAD"; then
             echo "HEAD ref not found: $HEAD" >&2
             exit 2
           fi
@@ -95,3 +95,4 @@ jobs:
           else
             echo "No business path changes detected -> OK."
           fi
+

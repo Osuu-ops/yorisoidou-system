@@ -6,6 +6,8 @@
 - .github/workflows/mep_writeback_bundle_dispatch.yml
 - tools/mep_writeback_create_pr.ps1
 - .github/workflows/mep_writeback_bundle_dispatch_entry.yml
+- docs/MEP/MEP_BUNDLE.md
+- .github/workflows/business_non_interference_guard.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
@@ -18,3 +20,4 @@
 - 例外運用を行う場合も、必ず Scope-IN に明示し、PR差分で実施する。
 ## Child MEPs
 - EVIDENCE -> docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
