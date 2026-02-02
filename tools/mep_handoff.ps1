@@ -36,6 +36,23 @@ $env:GIT_PAGER="cat"
 $env:PAGER="cat"
 
 function Fail([string]$m){ throw $m }
+
+###__MEP_HANDOFF_EVIDENCE_EXTRACTOR_INJECTED__###
+function Get-MepEvidenceAuditMarkers {
+  param(
+    [Parameter(Mandatory=$true)][string]$RepoRoot,
+    [string]$EvidenceRel = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+    [int]$Tail = 400,
+    [int]$Take = 5
+  )
+  $evidenceAbs = Join-Path $RepoRoot $EvidenceRel
+  if (-not (Test-Path -LiteralPath $evidenceAbs)) {
+    throw "EVIDENCE_BUNDLE not found: $EvidenceRel"
+  }
+  $lines = Get-Content -LiteralPath $evidenceAbs -Encoding UTF8 -Tail $Tail
+  $picked = $lines | Where-Object { $_ -match 'audit=OK,WB0000' } | Select-Object -Last $Take
+  return ,$picked
+}
 function Info([string]$m){ Write-Host $m -ForegroundColor Cyan }
 
 try {
@@ -130,30 +147,18 @@ try {
   $out.Add("- tools: entry/auto/stage を args-based に統一（StrictMode耐性）")
   $out.Add("")
   $out.Add("証跡（EVIDENCEより抜粋）")
-  if ($evOk -and $evLines.Count -gt 0) {
-    foreach ($l in $evLines) { $out.Add("- " + $l) }
-  } elseif ($evOk) {
-    # --- fallback excerpt (tail scan) ---
 try {
-  if (Test-Path $evidencePath) {
-    $tail = Get-Content -Path $evidencePath -Tail 300 -ErrorAction Stop
-    $hits = $tail | Select-String -Pattern 'audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
-    if ($hits -and $hits.Count -gt 0) {
-      foreach ($h in $hits) { $out.Add("- " + $h.Line.Trim()) }
-    } else {
-      $out.Add("- （EVIDENCE_BUNDLEは存在するが、対象PR行を未検出）")
-    }
+  $repoRoot = (git rev-parse --show-toplevel 2>$null)
+  if (-not $repoRoot) { throw "git rev-parse failed in handoff." }
+  $markers = Get-MepEvidenceAuditMarkers -RepoRoot $repoRoot -EvidenceRel "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" -Tail 400 -Take 5
+  if ($markers -and $markers.Count -gt 0) {
+    foreach ($ln in $markers) { $out.Add("- " + $ln) }
   } else {
-    $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
+    $out.Add("- EVIDENCE_BUNDLE抽出不能（audit=OK,WB0000 が Tail 400 に存在しない）: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md")
   }
 } catch {
-  $out.Add("- （EVIDENCE_BUNDLE抽出で例外）: " + $_.Exception.Message)
+  $out.Add("- EVIDENCE_BUNDLE抽出不能（例外）: " + $_.Exception.Message)
 }
-# --- /fallback excerpt ---
-  } else {
-    $out.Add("- （EVIDENCE_BUNDLEが存在しない）")
-  }
-  $out.Add("")
   $out.Add("次から自動で回す入口")
   $out.Add("- .\tools\mep_entry.ps1 -Once")
   $out.Add("")
@@ -168,6 +173,7 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
 
 
