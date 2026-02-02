@@ -139,7 +139,7 @@ try {
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
   $out.Add("HANDOFF_VERIFIED_AT: " + $handoffVerifiedAt)
   $out.Add("GENERATED_AT: " + $handoffVerifiedAt)
-  $out.Add("EVIDENCE_BUNDLE: " + $evidencePath)
+$out.Add("EVIDENCE_BUNDLE: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md")
   $out.Add("EVIDENCE_BUNDLED_AT: " + $evidenceBundledAt)
   $out.Add("")
   $out.Add("完了（今回の確定点）")
@@ -173,6 +173,7 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
 
 
