@@ -73,6 +73,9 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
 $stageVal = (Read-StageValue).Trim()
+Write-Host ("[STAGEVAL] stageVal=''{0}'' ec={1}" -f $stageVal,$ec)
+if ($stageVal -eq "DONE") { $ec = 0 }
+
 if ([string]::IsNullOrWhiteSpace($stageVal)) {
   $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
   if (Test-Path -LiteralPath $sf) {
