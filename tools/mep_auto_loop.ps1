@@ -1,4 +1,10 @@
 Set-StrictMode -Version Latest
+if ($stageVal -eq "DONE") {
+  # stage truth source priority: DONE means we must present ALL_DONE
+  $ec = 0
+}
+
+Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $ProgressPreference="SilentlyContinue"
 [Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
@@ -59,4 +65,4 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
   exit 0
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
-exit $ec
+$stageVal = (Read-StageValue).Trim()
