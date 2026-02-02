@@ -9,6 +9,19 @@ on:
         required: false
         type: boolean
         default: false
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number (0 = latest merged PR)'
+        required: true
+        type: string
+        default: '0'
+      write_handoff:
+        description: 'Whether to write handoff outputs'
+        required: false
+        type: boolean
+        default: false
+
 permissions:
   contents: write
   pull-requests: write
