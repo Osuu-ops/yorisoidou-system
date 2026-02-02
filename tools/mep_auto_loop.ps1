@@ -6,7 +6,10 @@ $OutputEncoding=[Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"
 $reporter = Join-Path $PSScriptRoot "mep_reporter.ps1"
 if (-not (Test-Path -LiteralPath $reporter)) { throw "Missing reporter: $reporter" }
-. $reporter
+if(-not $script:MEP_REPORTER_LOADED){
+  . $reporter
+  $script:MEP_REPORTER_LOADED = $true
+}
 function Invoke-Child { param([Parameter(Mandatory)][string]$File,[string[]]$Args=@())
   $pwsh=(Get-Command pwsh -ErrorAction Stop).Source
   $argList=@("-NoProfile","-File",$File)+$Args
