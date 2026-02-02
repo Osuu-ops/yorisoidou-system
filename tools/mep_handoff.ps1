@@ -1,3 +1,36 @@
+# MEP_HANDOFF_FIXED_META_DEFAULTS_BEGIN
+# V3: mep_handoff.ps1 内の Write-Host をフィルタし、固定メタの "(not set)" を出力直前に確実に置換する。
+# これにより、内部が Write-Host 直書きでも確実に効く。
+$__mepFixedMetaDefaults = @{
+  "ROLE（役割）"               = "audited handoff generator"
+  "ROLE_JP（役割・日本語）"     = "監査済み引継ぎ生成"
+  "EXIT_CONDITION（終了条件）"  = "handoff に ROOT_GOAL 等が常に埋まり、次チャット冒頭貼付だけで上位目標が消えない"
+  "ROOT_GOAL（上位目的・固定）" = "MEP Evidence を一意・正規・監査耐性ありで main に固定する（1PR=1行 / ノイズ無し）"
+}
+function __mep_filter_meta_line([string]$s){
+  foreach ($k in $__mepFixedMetaDefaults.Keys) {
+    $s = $s -replace ('(?m)^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$'), ($k + ": " + $__mepFixedMetaDefaults[$k])
+  }
+  return $s
+}
+# スクリプトスコープで Write-Host を上書き（本物は Microsoft.PowerShell.Utility\Write-Host へ委譲）
+function Write-Host {
+  [CmdletBinding()]
+  param(
+    [Parameter(Position=0, ValueFromPipeline=$true)]
+    $Object,
+    [ConsoleColor] $ForegroundColor,
+    [ConsoleColor] $BackgroundColor,
+    [switch] $NoNewline,
+    [object] $Separator
+  )
+  process {
+    $o = $Object
+    if ($o -is [string]) { $o = __mep_filter_meta_line $o }
+    Microsoft.PowerShell.Utility\Write-Host -Object $o -ForegroundColor $ForegroundColor -BackgroundColor $BackgroundColor -NoNewline:$NoNewline -Separator $Separator
+  }
+}
+# MEP_HANDOFF_FIXED_META_DEFAULTS_END
 
 function Get-BundledAtFromBundled([string]$bundledPath){
   if (-not (Test-Path $bundledPath)) { return $null }
@@ -182,49 +215,6 @@ catch {
 
 
 
-# MEP_HANDOFF_FIXED_META_DEFAULTS_BEGIN
-# 目的：ROOT_GOAL / ROLE / ROLE_JP / EXIT_CONDITION の (not set) を禁止し、既定値で必ず埋める。
-# V2：変数名非依存。スコープ内の List[string] を全探索して該当行を置換する（最終安全網）。
-$__mepFixedMetaDefaults = @{
-  "ROLE（役割）"               = "audited handoff generator"
-  "ROLE_JP（役割・日本語）"     = "監査済み引継ぎ生成"
-  "EXIT_CONDITION（終了条件）"  = "handoff に ROOT_GOAL 等が常に埋まり、次チャット冒頭貼付だけで上位目標が消えない"
-  "ROOT_GOAL（上位目的・固定）" = "MEP Evidence を一意・正規・監査耐性ありで main に固定する（1PR=1行 / ノイズ無し）"
-}
-function __mep_apply_line_defaults_to_list([System.Collections.Generic.List[string]]$list){
-  for ($i=0; $i -lt $list.Count; $i++) {
-    foreach ($k in $__mepFixedMetaDefaults.Keys) {
-      # 例: ROOT_GOAL（上位目的・固定）: (not set)
-      if ($list[$i] -match ('^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$')) {
-        $list[$i] = ($k + ": " + $__mepFixedMetaDefaults[$k])
-      }
-    }
-  }
-}
-# スコープ内の変数を全探索し、List[string] を見つけたら置換
-try {
-  foreach ($v in Get-Variable -Scope 0) {
-    try {
-      $val = $v.Value
-      if ($val -is [System.Collections.Generic.List[string]]) {
-        __mep_apply_line_defaults_to_list $val
-      }
-    } catch {}
-  }
-} catch {}
-# 文字列にまとめている実装向けの保険（最後にストリーム捕捉側でも効く）
-try {
-  foreach ($v in Get-Variable -Scope 0) {
-    try {
-      if ($v.Value -is [string]) {
-        $s = [string]$v.Value
-        foreach ($k in $__mepFixedMetaDefaults.Keys) {
-          $s = $s -replace ('(?m)^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$'), ($k + ": " + $__mepFixedMetaDefaults[$k])
-        }
-        Set-Variable -Name $v.Name -Scope 0 -Value $s -ErrorAction SilentlyContinue
-      }
-    } catch {}
-  }
-} catch {}
-# MEP_HANDOFF_FIXED_META_DEFAULTS_END
+
+
 
