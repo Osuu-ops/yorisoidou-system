@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260201_190559+main_371ff0b
+BUNDLE_VERSION = v0.0.0+20260202_084902+main_635760c
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -831,3 +831,6 @@ PR #1567 | audit=OK,WB0000 | appended_at=2026-02-01T18:23:56.2688033+00:00 | via
 PR #1600 | audit=OK,WB0000 | appended_at=2026-02-01T18:39:36.3416442+00:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1606 | mergedAt=02/01/2026 19:05:47 | mergeCommit=371ff0b295b17adfb008044cb490f9935ba7b3e9 | BUNDLE_VERSION=v0.0.0+20260201_190559+main_371ff0b | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1606
 PR #1606 | audit=OK,WB0000 | appended_at=2026-02-01T19:06:03.1370587+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1619 | mergedAt=02/01/2026 21:09:00 | mergeCommit=e86fb951e598609a6c989976b3daef749e933384 | BUNDLE_VERSION=v0.0.0+20260202_084902+main_635760c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1619
+PR #1619 | audit=OK,WB0000 | appended_at=2026-02-02T08:49:13.5984059+00:00 | via=mep_append_evidence_line_full.ps1
+* RULESET_LEDGER | main-required-checks(id=11525505) enforcement=active required_checks=[business-non-interference-guard, Scope Guard (PR)] verified_merge_block=PR#1633 base-branch-policy-prohibits-merge observed_at=2026-02-02T12:11:09Z
