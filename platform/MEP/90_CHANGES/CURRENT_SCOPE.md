@@ -1,5 +1,9 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 ## 変更対象（Scope-IN）
+- .github/workflows/self_heal_auto_prs.yml
+- .gitignore
+- tools/mep_auto_loop.ps1
+- tools/mep_reporter.ps1
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - tools/mep_entry.ps1
 - tools/mep_append_evidence_line_full.ps1
