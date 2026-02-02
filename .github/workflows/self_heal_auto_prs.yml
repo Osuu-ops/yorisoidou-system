@@ -21,6 +21,12 @@ concurrency:
 jobs:
   self-heal:
     continue-on-error: true
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
