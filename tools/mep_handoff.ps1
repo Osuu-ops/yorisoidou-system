@@ -180,3 +180,51 @@ catch {
 
 
 
+
+
+# MEP_HANDOFF_FIXED_META_DEFAULTS_BEGIN
+# 目的：ROOT_GOAL / ROLE / ROLE_JP / EXIT_CONDITION の (not set) を禁止し、既定値で必ず埋める。
+# V2：変数名非依存。スコープ内の List[string] を全探索して該当行を置換する（最終安全網）。
+$__mepFixedMetaDefaults = @{
+  "ROLE（役割）"               = "audited handoff generator"
+  "ROLE_JP（役割・日本語）"     = "監査済み引継ぎ生成"
+  "EXIT_CONDITION（終了条件）"  = "handoff に ROOT_GOAL 等が常に埋まり、次チャット冒頭貼付だけで上位目標が消えない"
+  "ROOT_GOAL（上位目的・固定）" = "MEP Evidence を一意・正規・監査耐性ありで main に固定する（1PR=1行 / ノイズ無し）"
+}
+function __mep_apply_line_defaults_to_list([System.Collections.Generic.List[string]]$list){
+  for ($i=0; $i -lt $list.Count; $i++) {
+    foreach ($k in $__mepFixedMetaDefaults.Keys) {
+      # 例: ROOT_GOAL（上位目的・固定）: (not set)
+      if ($list[$i] -match ('^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$')) {
+        $list[$i] = ($k + ": " + $__mepFixedMetaDefaults[$k])
+      }
+    }
+  }
+}
+# スコープ内の変数を全探索し、List[string] を見つけたら置換
+try {
+  foreach ($v in Get-Variable -Scope 0) {
+    try {
+      $val = $v.Value
+      if ($val -is [System.Collections.Generic.List[string]]) {
+        __mep_apply_line_defaults_to_list $val
+      }
+    } catch {}
+  }
+} catch {}
+# 文字列にまとめている実装向けの保険（最後にストリーム捕捉側でも効く）
+try {
+  foreach ($v in Get-Variable -Scope 0) {
+    try {
+      if ($v.Value -is [string]) {
+        $s = [string]$v.Value
+        foreach ($k in $__mepFixedMetaDefaults.Keys) {
+          $s = $s -replace ('(?m)^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$'), ($k + ": " + $__mepFixedMetaDefaults[$k])
+        }
+        Set-Variable -Name $v.Name -Scope 0 -Value $s -ErrorAction SilentlyContinue
+      }
+    } catch {}
+  }
+} catch {}
+# MEP_HANDOFF_FIXED_META_DEFAULTS_END
+
