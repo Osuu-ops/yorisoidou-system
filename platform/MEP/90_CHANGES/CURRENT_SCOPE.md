@@ -30,3 +30,6 @@
 
 .\tools\mep_entry.ps1
 .\tools\mep_auto.ps1
+- tools/gates/G0.ps1
+- tools/gates/G1.ps1
+- tools/gates/G2.ps1
