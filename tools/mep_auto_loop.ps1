@@ -93,6 +93,20 @@ $stageVal = ""
 if ($stageRaw -match "CURRENT_STAGE\s*=\s*(\w+)") { $stageVal = $Matches[1].Trim() }
 if ($stageVal -eq "DONE" -and $ec -eq 0) {
   $gm=@{}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
+# === STAGEVAL_BEFORE_OK_STOP_REAL:BEGIN ===
+$stageVal = ""
+try { $stageVal = (Read-StageValue).Trim() } catch { $stageVal = "" }
+if ([string]::IsNullOrWhiteSpace($stageVal)) {
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $tmp = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($tmp) { $stageVal = $tmp.Trim() }
+  }
+}
+Write-Host ("[STAGEVAL_OK_STOP] stageVal=''{0}'' ec={1}" -f $stageVal,$ec)
+if ($stageVal -eq "DONE") { $ec = 0 }
+# === STAGEVAL_BEFORE_OK_STOP_REAL:END ===
+
   Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
   exit 0
 }
