@@ -27,7 +27,7 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
       TARGET_FILE: "docs/MEP/CHAT_PACKET.md"
       BUILD_SCRIPT: "docs/MEP/build_chat_packet.py"
 
@@ -103,6 +103,7 @@ jobs:
       - name: Checkout PR branch
         if: steps.meta.outputs.skip == '0'
         uses: actions/checkout@v4
+            persist-credentials: true
         with:
           ref: ${{ steps.meta.outputs.headRef }}
           fetch-depth: 0
