@@ -8,25 +8,8 @@
 - tools/mep_repair_evidence_line.ps1
 - tools/mep_repair_evidence_log.ps1
 - tools/mep_unified_entry.ps1
-- .github/workflows/chat_packet_self_heal.yml
-- .github/workflows/mep_self_heal_min5.yml
-- .github/workflows/mep_writeback_bundle_dispatch_entry.yml
-- .github/workflows/mep_writeback_bundle_dispatch.yml
-- .github/workflows/self_heal_auto_prs.yml
-- .gitignore
-- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
-- docs/MEP/90_CHANGES/self_heal_401_fix_evidence_20260202_234830.md
-- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- tools/gates/G0.ps1
-- tools/gates/G1.ps1
-- tools/gates/G2.ps1
-- tools/gates/G3.ps1
-- tools/mep_append_evidence_line_full.ps1
-- tools/mep_auto_loop.ps1
-- tools/mep_auto.ps1
-- tools/mep_entry.ps1
-- tools/mep_reporter.ps1
 - tools/mep_writeback_create_pr.ps1
+
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
@@ -46,5 +29,4 @@
 - tools/gates/G1.ps1
 - tools/gates/G2.ps1
 - tools/gates/G3.ps1
-
 
