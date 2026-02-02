@@ -19,7 +19,7 @@
 - tools/mep_entry.ps1
 - tools/mep_reporter.ps1
 - tools/mep_writeback_create_pr.ps1
-CURRENT_SCOPE.md
+platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 tools/mep_auto_loop.ps1
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
