@@ -39,3 +39,5 @@ __pycache__/
 !.mep/allowlists/*.sha256
 !.mep/allowlists/business.sha256
 docs/MEP_SUB/EVIDENCE/RECOVERY_*/
+
+RUN_*.log
