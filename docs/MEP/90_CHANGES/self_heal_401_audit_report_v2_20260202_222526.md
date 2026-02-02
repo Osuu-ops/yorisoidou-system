@@ -1,0 +1,221 @@
+# self-heal 401 (Bad credentials) Audit Report v2
+
+- generated_at: 2026-02-02T22:27:41+09:00
+- branch: auto/audit_self-heal-401_v2_20260202_222526
+- head: 691610ac7645be0a72fdf3f06ca0682995b22958
+- head_main_at_start: 691610ac7645be0a72fdf3f06ca0682995b22958
+
+## Workflow inventory (.github/workflows) (name <-> yml)
+- yml: acceptance_tests.yml
+  - name: acceptance-tests
+  - path: .github/workflows/acceptance_tests.yml
+- yml: auto_merge_repair_prs.yml
+  - name: Auto-merge repair PRs
+  - path: .github/workflows/auto_merge_repair_prs.yml
+- yml: business_non_interference_guard.yml
+  - name: business-non-interference-guard
+  - path: .github/workflows/business_non_interference_guard.yml
+- yml: business_packet_guard_pr.yml
+  - name: Business Packet Guard (PR)
+  - path: .github/workflows/business_packet_guard_pr.yml
+- yml: business_packet_update_dispatch.yml
+  - name: Business Packet Update (Dispatch)
+  - path: .github/workflows/business_packet_update_dispatch.yml
+- yml: chat_packet_guard.yml
+  - name: Chat Packet Guard
+  - path: .github/workflows/chat_packet_guard.yml
+- yml: chat_packet_intake_issue.yml
+  - name: Chat Packet Intake (Issue)
+  - path: .github/workflows/chat_packet_intake_issue.yml
+- yml: chat_packet_self_heal.yml
+  - name: Chat Packet Self-Heal (PR)
+  - path: .github/workflows/chat_packet_self_heal.yml
+- yml: chat_packet_update_dispatch.yml
+  - name: Chat Packet Update (Dispatch)
+  - path: .github/workflows/chat_packet_update_dispatch.yml
+- yml: chat_packet_update_schedule.yml
+  - name: Chat Packet Update (Schedule)
+  - path: .github/workflows/chat_packet_update_schedule.yml
+- yml: ci_guard_bom.yml
+  - name: CI Guard - BOM Check
+  - path: .github/workflows/ci_guard_bom.yml
+- yml: current_scope_format_guard_pr.yml
+  - name: Current Scope Format Guard (PR)
+  - path: .github/workflows/current_scope_format_guard_pr.yml
+- yml: dispatch_smoke.yml
+  - name: UX Rooftop Entry (FULLAUTO)
+  - path: .github/workflows/dispatch_smoke.yml
+- yml: dispatch_smoke.yml.bak.20260113-021811
+  - name: UX Rooftop Entry (FULLAUTO)
+  - path: .github/workflows/dispatch_smoke.yml.bak.20260113-021811
+- yml: docs_index_guard.yml
+  - name: Docs Index Guard
+  - path: .github/workflows/docs_index_guard.yml
+- yml: mep_acceptance_tests_dispatch.yml
+  - name: mep_acceptance_tests_dispatch
+  - path: .github/workflows/mep_acceptance_tests_dispatch.yml
+- yml: mep_acceptance_tests_pr.yml
+  - name: mep_acceptance_tests_pr
+  - path: .github/workflows/mep_acceptance_tests_pr.yml
+- yml: mep_auto_pr_gate_dispatch.yml
+  - name: MEP Auto PR Gate Dispatch (Full Auto)
+  - path: .github/workflows/mep_auto_pr_gate_dispatch.yml
+- yml: mep_auto_pr_gate_min_dispatch.yml
+  - name: MEP Auto PR Gate Dispatch (Full Auto via MIN)
+  - path: .github/workflows/mep_auto_pr_gate_min_dispatch.yml
+- yml: mep_automerge.yml
+  - name: MEP Auto-Merge
+  - path: .github/workflows/mep_automerge.yml
+- yml: mep_bat_report_manual.yml
+  - name: MEP BAT Report (Manual)
+  - path: .github/workflows/mep_bat_report_manual.yml
+- yml: mep_bat_report.yml
+  - name: MEP BAT Report
+  - path: .github/workflows/mep_bat_report.yml
+- yml: mep_bump_bundle_version_dispatch.yml
+  - name: MEP Bump BUNDLE_VERSION (Dispatch)
+  - path: .github/workflows/mep_bump_bundle_version_dispatch.yml
+- yml: mep_bundle_autofix.yml
+  - name: MEP Bundle AutoFix (Allowlist)
+  - path: .github/workflows/mep_bundle_autofix.yml
+- yml: mep_dispatch_from_issue.yml
+  - name: MEP Dispatch (from Issue)
+  - path: .github/workflows/mep_dispatch_from_issue.yml
+- yml: mep_done_check.yml
+  - name: MEP Done Check
+  - path: .github/workflows/mep_done_check.yml
+- yml: mep_gate_min5.yml
+  - name: MEP Gate (min5)
+  - path: .github/workflows/mep_gate_min5.yml
+- yml: mep_gate_pr.yml
+  - name: MEP Gate (PR)
+  - path: .github/workflows/mep_gate_pr.yml
+- yml: mep_gate_runner_manual.yml
+  - name: MEP Gate Runner (Manual)
+  - path: .github/workflows/mep_gate_runner_manual.yml
+- yml: mep_handoff_push_v8.yml
+  - name: mep_handoff_push_v8
+  - path: .github/workflows/mep_handoff_push_v8.yml
+- yml: mep_handoff_repo_dispatch_v7.yml
+  - name: mep_handoff_repo_dispatch_v7
+  - path: .github/workflows/mep_handoff_repo_dispatch_v7.yml
+- yml: mep_integration_compiler.yml
+  - name: MEP Integration Compiler
+  - path: .github/workflows/mep_integration_compiler.yml
+- yml: mep_notify_block.yml
+  - name: MEP Notify (No-Touch)
+  - path: .github/workflows/mep_notify_block.yml
+- yml: mep_pregate_handoff_dispatch_v1.yml
+  - name: mep_pregate_handoff_dispatch_v1
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v1.yml
+- yml: mep_pregate_handoff_dispatch_v2.yml
+  - name: mep_pregate_handoff_dispatch_v2
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v2.yml
+- yml: mep_pregate_handoff_dispatch_v3.yml
+  - name: mep_pregate_handoff_dispatch_v3
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v3.yml
+- yml: mep_pregate_handoff_dispatch_v4.yml
+  - name: mep_pregate_handoff_dispatch_v4
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v4.yml
+- yml: mep_pregate_handoff_dispatch_v5.yml
+  - name: mep_pregate_handoff_dispatch_v5
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v5.yml
+- yml: mep_pregate_handoff_dispatch_v6.yml
+  - name: mep_pregate_handoff_dispatch_v6
+  - path: .github/workflows/mep_pregate_handoff_dispatch_v6.yml
+- yml: mep_required_checks_ci.yml
+  - name: mep-required-checks-ci
+  - path: .github/workflows/mep_required_checks_ci.yml
+- yml: mep_scope_fence_guard_pr.yml
+  - name: mep_scope_fence_guard_pr
+  - path: .github/workflows/mep_scope_fence_guard_pr.yml
+- yml: mep_self_heal_min5.yml
+  - name: MEP Self-Heal (min5)
+  - path: .github/workflows/mep_self_heal_min5.yml
+- yml: mep_semantic_audit_manual.yml
+  - name: MEP Semantic Audit (Manual)
+  - path: .github/workflows/mep_semantic_audit_manual.yml
+- yml: mep_semantic_audit.yml
+  - name: MEP Semantic Audit (PR Gate)
+  - path: .github/workflows/mep_semantic_audit.yml
+- yml: mep_sync_evidence_to_parent_dispatch.yml
+  - name: mep_sync_evidence_to_parent_dispatch
+  - path: .github/workflows/mep_sync_evidence_to_parent_dispatch.yml
+- yml: mep_writeback_bundle_dispatch_entry.yml
+  - name: MEP Writeback Bundle (Entry)
+  - path: .github/workflows/mep_writeback_bundle_dispatch_entry.yml
+- yml: mep_writeback_bundle_dispatch_manual.yml
+  - name: mep_writeback_bundle_dispatch_manual
+  - path: .github/workflows/mep_writeback_bundle_dispatch_manual.yml
+- yml: mep_writeback_bundle_dispatch_reborn.yml
+  - name: MEP Writeback Bundle (Dispatch) REBORN 20260201_050222
+  - path: .github/workflows/mep_writeback_bundle_dispatch_reborn.yml
+- yml: mep_writeback_bundle_dispatch_v2_20260201_035903.yml
+  - path: .github/workflows/mep_writeback_bundle_dispatch_v2_20260201_035903.yml
+- yml: mep_writeback_bundle_dispatch.yml
+  - name: MEP Writeback Bundle (Core)
+  - path: .github/workflows/mep_writeback_bundle_dispatch.yml
+- yml: mep_writeback_bundle_evidence_dispatch.yml
+  - name: MEP Writeback Bundle (Evidence Dispatch)
+  - path: .github/workflows/mep_writeback_bundle_evidence_dispatch.yml
+- yml: mep_writeback_bundle_manual.yml
+  - name: MEP Writeback Bundle (Manual Dispatcher)
+  - path: .github/workflows/mep_writeback_bundle_manual.yml
+- yml: mep_writeback_bundle_on_push_temp.yml
+  - name: MEP Writeback Bundle (PUSH TEMP PROBE) 20260201_052017
+  - path: .github/workflows/mep_writeback_bundle_on_push_temp.yml
+- yml: mep_writeback_bundle_on_push.yml
+  - name: MEP Writeback Bundle (Push Caller)
+  - path: .github/workflows/mep_writeback_bundle_on_push.yml
+- yml: metadata-format-check.yml
+  - name: metadata-format-check
+  - path: .github/workflows/metadata-format-check.yml
+- yml: required_checks_drift_guard_manual.yml
+  - name: Required Checks Drift Guard (Manual)
+  - path: .github/workflows/required_checks_drift_guard_manual.yml
+- yml: scope_guard_pr.yml
+  - name: Scope Guard (PR)
+  - path: .github/workflows/scope_guard_pr.yml
+- yml: scope_in_suggest_pr.yml
+  - name: Scope-IN Suggest (PR)
+  - path: .github/workflows/scope_in_suggest_pr.yml
+- yml: self_heal_auto_prs.yml
+  - name: Self-Heal Auto PRs (no-checks / behind)
+  - path: .github/workflows/self_heal_auto_prs.yml
+- yml: state_summary_update_schedule.yml
+  - name: State Summary Update (Schedule)
+  - path: .github/workflows/state_summary_update_schedule.yml
+- yml: text_integrity_guard_manual_v3.yml
+  - name: Text Integrity Guard (Manual v3)
+  - path: .github/workflows/text_integrity_guard_manual_v3.yml
+- yml: text_integrity_guard_manual.yml
+  - name: Text Integrity Guard (Manual)
+  - path: .github/workflows/text_integrity_guard_manual.yml
+- yml: text_integrity_guard_pr.yml
+  - name: Text Integrity Guard (PR)
+  - path: .github/workflows/text_integrity_guard_pr.yml
+- yml: upgrade_orchestrator.yml
+  - name: Upgrade Orchestrator (Manual/Schedule)
+  - path: .github/workflows/upgrade_orchestrator.yml
+- yml: ux_rooftop_full_auto_dispatch_v2.yml
+  - name: UX Rooftop Full Auto Dispatch v2
+  - path: .github/workflows/ux_rooftop_full_auto_dispatch_v2.yml
+- yml: ux_rooftop_full_auto_dispatch_v2.yml.bak.20260113-021811
+  - name: UX Rooftop Full Auto Dispatch v2
+  - path: .github/workflows/ux_rooftop_full_auto_dispatch_v2.yml.bak.20260113-021811
+- yml: ux_rooftop_full_auto_dispatch.yml
+  - name: UX Rooftop Full Auto Dispatch
+  - path: .github/workflows/ux_rooftop_full_auto_dispatch.yml
+- yml: ux_rooftop_full_auto_dispatch.yml.bak.20260113-021811
+  - name: UX Rooftop Full Auto Dispatch
+  - path: .github/workflows/ux_rooftop_full_auto_dispatch.yml.bak.20260113-021811
+
+## Actions-side failure run hits (primary evidence)
+- (no hits in last 80 failure runs on main, or logs not accessible)
+
+## Next step (fix requires these keys)
+- Choose ONE failing run_id above as target
+- Confirm exact yml file (not guess): workflow name <-> yml name alignment
+- Identify failing step + token source (GITHUB_TOKEN / GH_TOKEN / secret) + permissions
+- Decide Completion-B treatment: ENTRY_EXIT=1 vs ENTRY_EXIT=2 vs SKIP
+
