@@ -1,5 +1,7 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 ## 変更対象（Scope-IN）
+- docs/MEP/90_CHANGES/scopein_pr1660_20260203_032519.md
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - tools/mep_acceptance_tests.ps1
 - tools/mep_chat_packet_min.ps1
 - tools/mep_evidence_latest.ps1
