@@ -1,4 +1,6 @@
 Set-StrictMode -Version Latest
+
+Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $ProgressPreference="SilentlyContinue"
 [Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
@@ -59,4 +61,14 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
   exit 0
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
-exit $ec
+$stageVal = (Read-StageValue).Trim()
+if ([string]::IsNullOrWhiteSpace($stageVal)) {
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $tmp = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($tmp) { $stageVal = $tmp.Trim() }
+  }
+}
+if ($stageVal -eq "DONE") {
+  $ec = 0
+}
