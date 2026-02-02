@@ -38,5 +38,3 @@ __pycache__/
 !.mep/allowlists/
 !.mep/allowlists/*.sha256
 !.mep/allowlists/business.sha256
-RUN_RESULT.txt
-docs/MEP_SUB/EVIDENCE/FILE_KILLTRACE_*.log
