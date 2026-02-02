@@ -834,3 +834,9 @@ PR #1606 | audit=OK,WB0000 | appended_at=2026-02-01T19:06:03.1370587+00:00 | via
 * - PR #1619 | mergedAt=02/01/2026 21:09:00 | mergeCommit=e86fb951e598609a6c989976b3daef749e933384 | BUNDLE_VERSION=v0.0.0+20260202_084902+main_635760c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1619
 PR #1619 | audit=OK,WB0000 | appended_at=2026-02-02T08:49:13.5984059+00:00 | via=mep_append_evidence_line_full.ps1
 * RULESET_LEDGER | main-required-checks(id=11525505) enforcement=active required_checks=[business-non-interference-guard, Scope Guard (PR)] verified_merge_block=PR#1633 base-branch-policy-prohibits-merge observed_at=2026-02-02T12:11:09Z
+
+
+## Bundled Additions (2026-02-02T22:17:29+09:00)
+- contract: docs/MEP/CONTRACTS/GATE_EXIT_STOP_CONTRACT.md
+  - topic: Gate progress + ENTRY_EXIT + loop stop contract (Completion-B add-on)
+  - note: fixed vocabulary (GateResult/StopReason) + mandatory progress table + exit 0/1/2 contract
