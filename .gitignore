@@ -38,4 +38,3 @@ __pycache__/
 !.mep/allowlists/
 !.mep/allowlists/*.sha256
 !.mep/allowlists/business.sha256
-PR_URL.txt
