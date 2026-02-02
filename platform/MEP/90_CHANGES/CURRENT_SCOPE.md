@@ -9,6 +9,9 @@
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - docs/MEP/90_CHANGES/self_heal_401_fix_evidence_20260202_234830.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+- tools/gates/G0.ps1
+- tools/gates/G1.ps1
+- tools/gates/G2.ps1
 - tools/mep_append_evidence_line_full.ps1
 - tools/mep_auto_loop.ps1
 - tools/mep_auto.ps1
