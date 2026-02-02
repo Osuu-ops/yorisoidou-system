@@ -842,3 +842,31 @@ PR #1619 | audit=OK,WB0000 | appended_at=2026-02-02T08:49:13.5984059+00:00 | via
   - note: fixed vocabulary (GateResult/StopReason) + mandatory progress table + exit 0/1/2 contract
 * - PR #1625 | mergedAt=02/02/2026 08:48:37 | mergeCommit=635760c9896875b3a654c4d56d0948dc1c2a815f | BUNDLE_VERSION=v0.0.0+20260202_165120+main_efefc52 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1625
 PR #1625 | audit=OK,WB0000 | appended_at=2026-02-02T16:51:22.7222372+00:00 | via=mep_append_evidence_line_full.ps1
+
+## CARD: ENTRY_EXIT_CONTRACT_EVIDENCE
+- scope: gate/exit contract + entry/gate existence (audit-grade evidence)
+- recordedAt: 2026-02-03 03:49:02 +09:00
+- repo: https://github.com/Osuu-ops/yorisoidou-system.git
+- baseBranch: main
+- head(main): 72c15ea3a7e7ec646feb194a64f0a96eb2039d7f
+- sourcePR: #1666
+  - url: https://github.com/Osuu-ops/yorisoidou-system/pull/1666
+  - mergedAt: 02/02/2026 18:34:26
+  - mergeCommit: ccef1be156801d284819b4b4d3fc6c07604cc4a7
+### Evidence: Entry Orchestrator + Gates (paths)
+- tools/mep_entry.ps1 (Entry Orchestrator)
+- tools/gates/G0.ps1 (Pre-Gate)
+- tools/gates/G1.ps1 (read-only audit)
+- tools/gates/G2.ps1 (Approval gate: MEP_APPROVE=0 => OK; missing => STOP)
+- tools/gates/G3.ps1 (End gate: OK)
+### Evidence: Exit/Approval contract (operational behavior)
+- no approval (MEP_APPROVE not set):
+  - ENTRY_EXIT(no approval) = 2 (STOP at G2)
+- with approval (MEP_APPROVE=0):
+  - Gate table: G0:OK, G1:OK, G2:OK, G3:OK
+  - STOP_REASON: ALL_DONE
+  - ENTRY_EXIT: 0
+  - Progress: Gate 3/3 OK -> ALL_DONE (exit=0)
+### Notes
+- This card fixes the evidence in Bundled to avoid reliance on chat logs.
+
