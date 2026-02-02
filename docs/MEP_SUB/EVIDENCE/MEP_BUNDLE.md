@@ -46,3 +46,5 @@ BUNDLE_VERSION = v0.0.0+20260201_030804+main+c9e827e1f164c553713fafd3537221b4609
 # appended_from_parent_bundle: PR #1567 | appended_at=2026-02-01T19:21:53Z
 * - PR #1567 | mergedAt=02/01/2026 17:51:55 | mergeCommit=7c478c619b64273ac49645fb49ccbea88d9ff7a7 | BUNDLE_VERSION=v0.0.0+20260201_182352+main_46ca524 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1567
 PR #1567 | audit=OK,WB0000 | appended_at=2026-02-01T18:23:56.2688033+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1609 | mergedAt=02/01/2026 19:08:56 | mergeCommit=f543b230d3e86310230f3cceb3bfecd3ccdd7b2f | BUNDLE_VERSION=v0.0.0+20260131_143312+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1609
+PR #1609 | audit=OK,WB0000 | appended_at=2026-02-02T21:16:43.1139301+09:00 | via=mep_append_evidence_line_full.ps1
