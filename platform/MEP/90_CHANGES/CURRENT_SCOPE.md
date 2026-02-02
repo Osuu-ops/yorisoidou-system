@@ -24,3 +24,5 @@
 ## Child MEPs
 - EVIDENCE -> docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 
+.\tools\mep_entry.ps1
+.\tools\mep_auto.ps1
