@@ -57,6 +57,9 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
   $gm=@{}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
   Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
   exit 0
+}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
+  Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
+  exit 0
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
 exit $ec
