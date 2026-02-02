@@ -25,6 +25,16 @@ function Invoke-Child { param([Parameter(Mandatory)][string]$File,[string[]]$Arg
 function Get-RepoRoot { $r=(git rev-parse --show-toplevel 2>$null); if(-not $r){ throw "Not a git repo." }; $r.Trim() }
 $root = Get-RepoRoot
 Set-Location $root
+
+# Stage truth source: .mep/CURRENT_STAGE.txt
+function Read-StageValue {
+  if (Test-Path -LiteralPath $stageFile) {
+    $v = (Get-Content -LiteralPath $stageFile -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($v) { return $v.Trim() }
+  }
+  return ""
+}
+
 $GateMax = 10
 $preGate = Join-Path $root "tools\pre_gate.ps1"
 $auto    = Join-Path $root "tools\mep_auto.ps1"
