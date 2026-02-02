@@ -18,7 +18,7 @@ $path = Join-Path $root "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
 if (!(Test-Path $path)) { Fail "Missing: $path" }
 
 $lines = Get-Content -LiteralPath $path -Encoding UTF8
-if ($lines.Count -eq 0) { Fail "Empty: $path" }
+if (@($lines).Length -eq 0) { Fail "Empty: $path" }
 
 # latest BUNDLE_VERSION (first occurrence)
 $bv = $lines | Where-Object { $_ -match '^\s*BUNDLE_VERSION\s*=' } | Select-Object -First 1
@@ -26,7 +26,7 @@ if (-not $bv) { Fail "No BUNDLE_VERSION found." }
 
 # latest appended evidence line (last match)
 $latest = $null
-for ($i = $lines.Count - 1; $i -ge 0; $i--) {
+for ($i = @($lines).Length - 1; $i -ge 0; $i--) {
   $l = $lines[$i]
   if ($l -match 'appended_at=' -and $l -match 'via=mep_append_evidence_line\.ps1') { $latest = $l.Trim(); break }
 }
@@ -35,3 +35,4 @@ if (-not $latest) { Fail "No appended evidence line found (appended_at + via=mep
 Info "EVIDENCE_BUNDLE (latest)"
 "  $bv"
 "  $latest"
+

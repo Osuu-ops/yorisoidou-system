@@ -49,7 +49,7 @@ $lines=$ev -split "`r?`n"
 
 # Collect PRs that have empty mergedAt or empty mergeCommit
 $targets = New-Object System.Collections.Generic.List[int]
-for($i=0;$i -lt $lines.Count; $i++){
+for($i=0;$i -lt @($lines).Length; $i++){
   $ln=$lines[$i]
   if($ln -match '^\s*[\-\*]\s+PR\s+#(\d+)\s+\|'){
     $pr=[int]$Matches[1]
@@ -86,7 +86,7 @@ for($ti=0;$ti -lt $targets.Count; $ti++){
   $pr=$targets[$ti]
   $truth=Get-MergeTruth $pr
 
-  for($i=0;$i -lt $lines.Count; $i++){
+  for($i=0;$i -lt @($lines).Length; $i++){
     $ln=$lines[$i]
     if($ln -match ('^\s*[\-\*]\s+PR\s+#' + $pr + '\s+\|')){
       if($ln -match 'mergedAt=\s*\|' -or $ln -match 'mergeCommit=\s*\|'){
@@ -122,3 +122,4 @@ if($badPSObj -gt 0 -or $badEmptyMergedAt -gt 0 -or $badEmptyMergeCommit -gt 0){
 $txt2=$before + $ev2 + $after
 Set-Content -Encoding UTF8 $BundlePath -Value $txt2
 Write-Host "Repaired Evidence Log holistically."
+

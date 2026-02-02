@@ -25,7 +25,7 @@ $lines = $raw -split "`n"
 $inActive = $false
 $result = New-Object System.Collections.Generic.List[string]
 
-for ($i=0; $i -lt $lines.Count; $i++) {
+for ($i=0; $i -lt @($lines).Length; $i++) {
   $ln = $lines[$i]
   if ($ln -match '^##\s+ACTIVE') { $inActive = $true; continue }
   if ($inActive -and $ln -match '^##\s+') { break }
@@ -36,7 +36,7 @@ for ($i=0; $i -lt $lines.Count; $i++) {
     $desc  = ""
 
     # look ahead a few lines for TITLE/DESC
-    for ($j=1; $j -le 8 -and ($i+$j) -lt $lines.Count; $j++) {
+    for ($j=1; $j -le 8 -and ($i+$j) -lt @($lines).Length; $j++) {
       $x = $lines[$i+$j]
       if ($x -match '^- TITLE:\s*(.*)$') { $title = $Matches[1].Trim(); continue }
       if ($x -match '^- DESC:\s*(.*)$')  { $desc  = $Matches[1].Trim(); continue }

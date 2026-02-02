@@ -22,7 +22,7 @@ if ($head -like "auto/writeback-bundle_*") {
   Ensure-PrForHead $head
   exit 0
 }
-$dirty = (git status --porcelain).Trim()
+$dirty = ([string](git status --porcelain)).Trim()
 if (-not $dirty) {
   Info "Working tree clean; nothing to write back."
   exit 0
@@ -34,7 +34,7 @@ $newHead = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $prNo, $ts)
 Warn ("Not on auto/writeback-bundle_*; creating branch " + $newHead)
 git switch -c $newHead | Out-Null
 git add -- $BundlePath | Out-Null
-$dirty2 = (git status --porcelain).Trim()
+$dirty2 = ([string](git status --porcelain)).Trim()
 if (-not $dirty2) {
   Info "No staged changes for bundle; skip push/PR."
   exit 0
@@ -43,3 +43,4 @@ $msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $r
 git commit -m $msg | Out-Null
 git push -u origin $newHead | Out-Null
 Ensure-PrForHead $newHead
+
