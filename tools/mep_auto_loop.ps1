@@ -1,3 +1,6 @@
+Write-Host ("[DEBUG] stageVal=''{0}'' ec={1}" -f $stageVal,$ec)
+
+exit $ec
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $ProgressPreference="SilentlyContinue"
