@@ -870,3 +870,63 @@ PR #1625 | audit=OK,WB0000 | appended_at=2026-02-02T16:51:22.7222372+00:00 | via
 ### Notes
 - This card fixes the evidence in Bundled to avoid reliance on chat logs.
 
+
+## CARD: RULESET_REQUIRED_CHECKS_EVIDENCE
+- scope: ruleset / required checks evidence (audit-grade; discovery + observed checks)
+- recordedAt: 2026-02-03 03:55:36 +09:00
+- repo: https://github.com/Osuu-ops/yorisoidou-system.git
+- baseBranch: main
+- head(main): f32a1a9ba8d49b17b10ff3ba38d45b2b604bda7c
+### Evidence A: Branch protection (classic)
+- protectionEnabled: True
+- required_status_checks.strict: 
+- required contexts (as required checks): (none detected via branch protection API)
+### Evidence B: Rulesets (best-effort discovery)
+- id=11525505 name=main-required-checks target=branch enforcement=active required_checks=Scope Guard (PR) | business-non-interference-guard
+### Evidence C: Observed checks on merged PR (snapshot)
+- sourcePR: #1669
+> self-heal	fail	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060741/job/62253782919	
+update-state-summary	fail	28s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603068087/job/62253807447	
+Business Packet Guard (PR)	pass	10s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060734/job/62253782750	
+Scope Guard (PR)	pass	4s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060727/job/62253782746	
+Text Integrity Guard (PR)	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060697/job/62253782891	
+acceptance	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060673/job/62253782606	
+bom-check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060722/job/62253782652	
+business-non-interference-guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060729/job/62253782479	
+done_check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060680/job/62253782673	
+guard	pass	7s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060685/job/62253782496	
+guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060714/job/62253782581	
+scope-fence	pass	11s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060677/job/62253782523	
+semantic-audit	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782669	
+semantic-audit-business	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782644	
+merge_repair_pr	skipping	0	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060726/job/62253783002	
+### Notes
+- “実動制御（ブロックされた証跡）”を一次根拠で固定するには、意図的に required check を未充足にして merge が拒否される証跡を採取する必要がある。
+
+
+## CARD: RULESET_MERGE_BLOCK_EVIDENCE
+- scope: proof that ruleset/required checks block merges (primary evidence)
+- recordedAt: 2026-02-03 03:59:44 +09:00
+- repo: https://github.com/Osuu-ops/yorisoidou-system.git
+- baseBranch: main
+- head(main): e5143891a13068954f9936aec7d9ed7e40907d0e
+### Ruleset (source of required checks)
+- name: main-required-checks
+- id: 11525505
+- enforcement: active
+- required checks (contexts): business-non-interference-guard | Scope Guard (PR)
+### Block evidence (intentional PR; DO NOT MERGE)
+- pr: #1672
+- url: https://github.com/Osuu-ops/yorisoidou-system/pull/1672
+- merge attempt output (excerpt):
+> X Pull request Osuu-ops/yorisoidou-system#1672 is not mergeable: the base branch policy prohibits the merge.
+To have the pull request merged after all the requirements have been met, add the `--auto` flag.
+To use administrator privileges to immediately merge the pull request, add the `--admin` flag.
+
+- checks output (excerpt):
+> no checks reported on the 'auto/intentional-block_20260203_035936' branch
+
+### Local logs (operator machine)
+- C:\Users\Syuichi\Desktop\MEP_LOGS\RULESET_BLOCK\blocked_merge_20260203_035936_pr1672.log
+- C:\Users\Syuichi\Desktop\MEP_LOGS\RULESET_BLOCK\blocked_checks_20260203_035936_pr1672.log
+
