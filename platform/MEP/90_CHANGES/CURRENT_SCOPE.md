@@ -1,5 +1,13 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 ## 変更対象（Scope-IN）
+- tools/mep_acceptance_tests.ps1
+- tools/mep_chat_packet_min.ps1
+- tools/mep_evidence_latest.ps1
+- tools/mep_handoff_auditonly.ps1
+- tools/mep_idea_list.ps1
+- tools/mep_repair_evidence_line.ps1
+- tools/mep_repair_evidence_log.ps1
+- tools/mep_unified_entry.ps1
 - .github/workflows/chat_packet_self_heal.yml
 - .github/workflows/mep_self_heal_min5.yml
 - .github/workflows/mep_writeback_bundle_dispatch_entry.yml
@@ -38,3 +46,5 @@
 - tools/gates/G1.ps1
 - tools/gates/G2.ps1
 - tools/gates/G3.ps1
+
+
