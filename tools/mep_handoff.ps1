@@ -137,7 +137,7 @@ try {
 try {
   if (Test-Path $evidencePath) {
     $tail = Get-Content -Path $evidencePath -Tail 300 -ErrorAction Stop
-    $hits = $tail | Select-String -Pattern '^\s*\*?\s*-?\s*PR #\d+ \| .*audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
+    $hits = $tail | Select-String -Pattern 'audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
     if ($hits -and $hits.Count -gt 0) {
       foreach ($h in $hits) { $out.Add("- " + $h.Line.Trim()) }
     } else {
@@ -168,6 +168,7 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
 
 
