@@ -63,6 +63,19 @@ if ([string]::IsNullOrWhiteSpace($stageVal)) {
 if ($stageVal -eq "DONE") { $ec = 0 }
 # === STAGEVAL_CANONICAL:END ===
 
+# === STAGEVAL_BEFORE_STOP:BEGIN ===
+$stageVal = ""
+try { $stageVal = (Read-StageValue).Trim() } catch { $stageVal = "" }
+if ([string]::IsNullOrWhiteSpace($stageVal)) {
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $tmp = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($tmp) { $stageVal = $tmp.Trim() }
+  }
+}
+if ($stageVal -eq "DONE") { $ec = 0 }
+# === STAGEVAL_BEFORE_STOP:END ===
+
   Write-MepRun -Source DRAFT -PreGateResult FAIL -PreGateReason $reason -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $exitCode -StopReason $reason -GateMatrix @{}
   if ($exitCode -eq 2) {
     [void](Read-Host "ENTER（承認）で続行")
