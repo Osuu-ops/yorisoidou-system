@@ -60,6 +60,12 @@ try {
   # === TIME_MARKS_INLINE_OUT_END ===
 #   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"  # do not overwrite resolved evidencePath
   # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (mtime-based) ===
+  # force evidencePath to repoRoot + fixed relative (stable)
+  if ($repoRoot) {
+    $evidencePath = (Join-Path $repoRoot "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md")
+  } else {
+    $evidencePath = "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md"
+  }
   if (-not $evidencePath) {
     if ($repoRoot) {
       $evidencePath = (Join-Path $repoRoot "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md")
@@ -162,6 +168,7 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
 
 
