@@ -52,6 +52,7 @@ if ($pre.ExitCode -ne 0) {
   elseif ($pre.Output -match "mep_doneB_audit\.ps1" -and $pre.Output -match "PrNumber not provided") { $reason="AUDIT_NEEDS_PRNUMBER"; $exitCode=2 }
   elseif ($pre.ExitCode -eq 2) { $reason="PREGATE_NG"; $exitCode=2 }
 # === STAGEVAL_CANONICAL:BEGIN ===
+$stageVal = ""
 if ([string]::IsNullOrWhiteSpace($stageVal)) {
   $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
   if (Test-Path -LiteralPath $sf) {
