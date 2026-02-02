@@ -1,56 +1,102 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
-$ProgressPreference="SilentlyContinue"
-[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)
-$OutputEncoding=[Console]::OutputEncoding
-$env:GIT_PAGER="cat"; $env:PAGER="cat"
-$reporter = Join-Path $PSScriptRoot "mep_reporter.ps1"
-if (-not (Test-Path -LiteralPath $reporter)) { throw "Missing reporter: $reporter" }
-. $reporter
-function Invoke-Child { param([Parameter(Mandatory)][string]$File,[string[]]$Args=@())
-  $pwsh=(Get-Command pwsh -ErrorAction Stop).Source
-  $argList=@("-NoProfile","-File",$File)+$Args
-  $out=& $pwsh @argList 2>&1 | Out-String
-  $ec=$LASTEXITCODE
-  return [pscustomobject]@{ ExitCode=[int]$ec; Output=$out.TrimEnd() }
+function Get-GateSymbol {
+  param([Parameter(Mandatory)][ValidateSet('OK','STOP','SKIP','PENDING')][string]$State,[ValidateSet(0,1,2)][int]$ExitCode=0)
+  switch($State){ 'OK'{'✅'} 'SKIP'{'◽'} 'PENDING'{'⬜'} 'STOP'{ if($ExitCode -eq 2){'⏸️'} else {'❌'} } }
 }
-function Get-RepoRoot { $r=(git rev-parse --show-toplevel 2>$null); if(-not $r){ throw "Not a git repo." }; $r.Trim() }
-$root = Get-RepoRoot
-Set-Location $root
-$GateMax = 10
-$preGate = Join-Path $root "tools\pre_gate.ps1"
-$auto    = Join-Path $root "tools\mep_auto.ps1"
-$stagePs = Join-Path $root "tools\mep_current_stage.ps1"
-if (-not (Test-Path -LiteralPath $preGate)) { throw "Missing: $preGate" }
-if (-not (Test-Path -LiteralPath $auto))    { throw "Missing: $auto" }
-if (-not (Test-Path -LiteralPath $stagePs)) { throw "Missing: $stagePs" }
-# --- Pre-Gate
-$pre = Invoke-Child -File $preGate
-if ($pre.ExitCode -ne 0) {
-  $reason="PREGATE_FAIL_" + $pre.ExitCode
-  $exitCode=1
-  if ($pre.Output -match "Working tree is dirty") { $reason="WORKTREE_DIRTY"; $exitCode=1 }
-  elseif ($pre.Output -match "mep_doneB_audit\.ps1" -and $pre.Output -match "PrNumber not provided") { $reason="AUDIT_NEEDS_PRNUMBER"; $exitCode=2 }
-  elseif ($pre.ExitCode -eq 2) { $reason="PREGATE_NG"; $exitCode=2 }
-  Write-MepRun -Source DRAFT -PreGateResult FAIL -PreGateReason $reason -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $exitCode -StopReason $reason -GateMatrix @{}
-  if ($exitCode -eq 2) {
-    [void](Read-Host "ENTER（承認）で続行")
+function Write-GateReport {
+  param(
+    [Parameter(Mandatory)][int]$GateMax,
+    [Parameter(Mandatory)][int]$GateOkUpto,
+    [int]$GateStopAt,
+    [Parameter(Mandatory)][ValidateSet(0,1,2)][int]$ExitCode,
+    [string]$StopReason,
+    [hashtable]$GateMatrix
+  )
+  $states=@{}; for($i=0;$i -le $GateMax;$i++){ $states[$i]='PENDING' }
+  if($ExitCode -eq 0){
+    # exit=0 でも GateOkUpto を尊重（ALL_DONEの誤表示を防ぐ）
+    $maxOk=[Math]::Min($GateOkUpto,$GateMax)
+    for($i=0;$i -le $maxOk;$i++){ $states[$i]='OK' }
   } else {
-    exit 1
+    $maxOk=[Math]::Min($GateOkUpto,$GateMax)
+    for($i=0;$i -le $maxOk;$i++){ $states[$i]='OK' }
+    if($GateStopAt -ge 0 -and $GateStopAt -le $GateMax){ $states[$GateStopAt]='STOP' }
   }
+  if($null -ne $GateMatrix){
+    foreach($key in $GateMatrix.Keys){
+      $raw=[string]$key; $n=$null
+      if($raw -match '^\s*\d+\s*$'){ $n=[int]$raw }
+      elseif($raw -match '^\s*G(\d+)\s*$'){ $n=[int]$Matches[1] }
+      elseif($raw -match '^\s*Gate\s*(\d+)\s*$'){ $n=[int]$Matches[1] }
+      if($null -ne $n -and $n -ge 0 -and $n -le $GateMax){
+        $v=[string]$GateMatrix[$key]
+        # ★重要：exit=0 のときは GateMatrix による STOP 上書きを無視（ALL_DONE定型を守る）
+        if($ExitCode -eq 0){
+          if($v -in @('OK','SKIP')){ $states[$n]=$v }
+        } else {
+          if($v -in @('OK','STOP','SKIP')){ $states[$n]=$v }
+        }
+      }
+    }
+  }
+  if($ExitCode -eq 0 -and $GateOkUpto -ge $GateMax){
+    Write-Host ("Progress: G{0}/{1} ALL_DONE (exit=0)" -f $GateMax,$GateMax)
+  } elseif($ExitCode -eq 0) {
+    Write-Host ("Progress: G{0}/{1} (exit=0)" -f $GateOkUpto,$GateMax)
+  } else {
+    Write-Host ("Progress: G{0}/{1} STOP@G{2} (exit={3})" -f $GateOkUpto,$GateMax,$GateStopAt,$ExitCode)
+  }
+  if($ExitCode -eq 1){ Write-Host "操作: NO-ENTER（AIへ）" }
+  elseif($ExitCode -eq 2){ Write-Host "操作: ENTER（承認）" }
+  Write-Host "--------------------------------"
+  $inPending=$false;$pendingStart=-1;$pendingEnd=-1
+  function Flush-Pending([int]$s,[int]$e,[int]$ExitCodeLocal){
+    if($s -lt 0){ return }
+    $count=($e-$s+1)
+    if($count -le 1){ Write-Host ("G{0}  {1}" -f $s,(Get-GateSymbol -State 'PENDING' -ExitCode $ExitCodeLocal)) }
+    else{ Write-Host ("G{0}..G{1}  ⬜ x{2}" -f $s,$e,$count) }
+  }
+  for($i=0;$i -le $GateMax;$i++){
+    $state=$states[$i]
+    if($state -eq 'PENDING'){
+      if(-not $inPending){ $inPending=$true; $pendingStart=$i }
+      $pendingEnd=$i; continue
+    }
+    if($inPending){ Flush-Pending $pendingStart $pendingEnd $ExitCode; $inPending=$false; $pendingStart=-1; $pendingEnd=-1 }
+    $sym = Get-GateSymbol -State $state -ExitCode $ExitCode
+    if($state -eq 'STOP'){
+      $r=($StopReason ?? "")
+      if([string]::IsNullOrWhiteSpace($r)){ Write-Host ("G{0}  {1}" -f $i,$sym) }
+      else{ Write-Host ("G{0}  {1}  {2}" -f $i,$sym,$r) }
+    } else {
+      Write-Host ("G{0}  {1}" -f $i,$sym)
+    }
+  }
+  if($inPending){ Flush-Pending $pendingStart $pendingEnd $ExitCode }
 }
-# --- 本体（1回）
-$r = Invoke-Child -File $auto -Args @("-Once")
-$ec = $r.ExitCode
-if ($ec -ne 0 -and $ec -ne 1 -and $ec -ne 2) { $ec = 1 }
-# --- stage取得
-$stageRaw = (& $stagePs get 2>&1 | Out-String).Trim()
-$stageVal = ""
-if ($stageRaw -match "CURRENT_STAGE\s*=\s*(\w+)") { $stageVal = $Matches[1].Trim() }
-if ($stageVal -eq "DONE" -and $ec -eq 0) {
-  $gm=@{}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
-  Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
-  exit 0
+function Write-MepRun {
+  param(
+    [Parameter(Mandatory)][ValidateSet('DRAFT','MASTER')][string]$Source,
+    [ValidateSet('OK','FAIL')][string]$PreGateResult,
+    [string]$PreGateReason,
+    [Parameter(Mandatory)][int]$GateMax,
+    [Parameter(Mandatory)][int]$GateOkUpto,
+    [int]$GateStopAt,
+    [Parameter(Mandatory)][ValidateSet(0,1,2)][int]$ExitCode,
+    [string]$StopReason,
+    [hashtable]$GateMatrix
+  )
+  Write-Host ("Src: {0}" -f $Source)
+  if($Source -eq 'DRAFT'){
+    if($PreGateResult -ne 'OK'){
+      $reason=($PreGateReason ?? "")
+      if([string]::IsNullOrWhiteSpace($reason)){ Write-Host "Pre: FAIL" } else { Write-Host ("Pre: FAIL (reason={0})" -f $reason) }
+      if($ExitCode -eq 2){ Write-Host "操作: ENTER（承認）" } else { Write-Host "操作: NO-ENTER（AIへ）" }
+      return
+    }
+    Write-Host "Pre: OK"
+  }
+  Write-Host "--------------------------------"
+  Write-GateReport -GateMax $GateMax -GateOkUpto $GateOkUpto -GateStopAt $GateStopAt -ExitCode $ExitCode -StopReason $StopReason -GateMatrix $GateMatrix
 }
-Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
-exit $ec
