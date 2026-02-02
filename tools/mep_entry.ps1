@@ -16,4 +16,5 @@ if ($args -and ($args -contains "-Once")) { $onceFlag = $true }
 
 Info ("Delegating to tools/mep_auto.ps1 (Once=" + $onceFlag + ")")
 if ($onceFlag) { & $auto -Once } else { & $auto }
-exit $LASTEXITCODE
+if (Test-Path variable:LASTEXITCODE) { exit $LASTEXITCODE } else { exit 0 }
+
