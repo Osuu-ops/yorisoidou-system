@@ -28,8 +28,9 @@ Set-Location $root
 
 # Stage truth source: .mep/CURRENT_STAGE.txt
 function Read-StageValue {
-  if (Test-Path -LiteralPath $stageFile) {
-    $v = (Get-Content -LiteralPath $stageFile -ErrorAction SilentlyContinue | Select-Object -First 1)
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $v = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
     if ($v) { return $v.Trim() }
   }
   return ""
