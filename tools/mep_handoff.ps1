@@ -76,11 +76,11 @@ try {
   $evOk = Test-Path -LiteralPath $evidencePath
 
   # recent PR evidence anchors we touched in this session
-  $targets = @(1204,1210,1214,1218,1220,1222,1224,1226,1233)
+  $targets = @(1567,1204,1210,1214,1218,1220,1222,1224,1226,1233)
   $evLines = @()
   if ($evOk) {
     foreach ($n in $targets) {
-      $hit = Select-String -LiteralPath $evidencePath -Pattern ("PR\s*#\s*" + $n) -ErrorAction SilentlyContinue | Select-Object -First 1
+      $hit = Select-String -LiteralPath $evidencePath -Pattern ("PR\s*#\s*" + $n + "\b") -ErrorAction SilentlyContinue | Select-Object -First 1
       if ($hit) { $evLines += $hit.Line }
     }
   }
@@ -131,7 +131,7 @@ try {
 try {
   if (Test-Path $evidencePath) {
     $tail = Get-Content -Path $evidencePath -Tail 300 -ErrorAction Stop
-    $hits = $tail | Select-String -Pattern '^PR #\d+ \| .*audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
+    $hits = $tail | Select-String -Pattern '^\s*\*?\s*-?\s*PR #\d+ \| .*audit=OK,WB0000' -ErrorAction SilentlyContinue | Select-Object -Last 5
     if ($hits -and $hits.Count -gt 0) {
       foreach ($h in $hits) { $out.Add("- " + $h.Line.Trim()) }
     } else {
@@ -162,4 +162,5 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
 
