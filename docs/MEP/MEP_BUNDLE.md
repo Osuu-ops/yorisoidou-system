@@ -903,3 +903,30 @@ merge_repair_pr	skipping	0	https://github.com/Osuu-ops/yorisoidou-system/actions
 ### Notes
 - “実動制御（ブロックされた証跡）”を一次根拠で固定するには、意図的に required check を未充足にして merge が拒否される証跡を採取する必要がある。
 
+
+## CARD: RULESET_MERGE_BLOCK_EVIDENCE
+- scope: proof that ruleset/required checks block merges (primary evidence)
+- recordedAt: 2026-02-03 03:59:44 +09:00
+- repo: https://github.com/Osuu-ops/yorisoidou-system.git
+- baseBranch: main
+- head(main): e5143891a13068954f9936aec7d9ed7e40907d0e
+### Ruleset (source of required checks)
+- name: main-required-checks
+- id: 11525505
+- enforcement: active
+- required checks (contexts): business-non-interference-guard | Scope Guard (PR)
+### Block evidence (intentional PR; DO NOT MERGE)
+- pr: #1672
+- url: https://github.com/Osuu-ops/yorisoidou-system/pull/1672
+- merge attempt output (excerpt):
+> X Pull request Osuu-ops/yorisoidou-system#1672 is not mergeable: the base branch policy prohibits the merge.
+To have the pull request merged after all the requirements have been met, add the `--auto` flag.
+To use administrator privileges to immediately merge the pull request, add the `--admin` flag.
+
+- checks output (excerpt):
+> no checks reported on the 'auto/intentional-block_20260203_035936' branch
+
+### Local logs (operator machine)
+- C:\Users\Syuichi\Desktop\MEP_LOGS\RULESET_BLOCK\blocked_merge_20260203_035936_pr1672.log
+- C:\Users\Syuichi\Desktop\MEP_LOGS\RULESET_BLOCK\blocked_checks_20260203_035936_pr1672.log
+
