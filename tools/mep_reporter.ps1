@@ -1,8 +1,16 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 function Get-GateSymbol {
-  param([Parameter(Mandatory)][ValidateSet('OK','STOP','SKIP','PENDING')][string]$State,[ValidateSet(0,1,2)][int]$ExitCode=0)
-  switch($State){ 'OK'{'✅'} 'SKIP'{'◽'} 'PENDING'{'⬜'} 'STOP'{ if($ExitCode -eq 2){'⏸️'} else {'❌'} } }
+  param(
+    [Parameter(Mandatory)][ValidateSet('OK','STOP','SKIP','PENDING')][string]$State,
+    [ValidateSet(0,1,2)][int]$ExitCode=0
+  )
+  switch($State){
+    'OK'      { '✅' }
+    'SKIP'    { '◽' }
+    'PENDING' { '⬜' }
+    'STOP'    { if($ExitCode -eq 2){ '⏸️' } else { '❌' } }
+  }
 }
 function Write-GateReport {
   param(
@@ -15,13 +23,14 @@ function Write-GateReport {
   )
   $states=@{}; for($i=0;$i -le $GateMax;$i++){ $states[$i]='PENDING' }
   if($ExitCode -eq 0){
-    for($i=0;$i -le $GateMax;$i++){ $states[$i]='OK' }
+    # exit=0 でも GateOkUpto を尊重（ALL_DONEの誤表示を防ぐ）
+    $maxOk=[Math]::Min($GateOkUpto,$GateMax)
+    for($i=0;$i -le $maxOk;$i++){ $states[$i]='OK' }
   } else {
     $maxOk=[Math]::Min($GateOkUpto,$GateMax)
     for($i=0;$i -le $maxOk;$i++){ $states[$i]='OK' }
     if($GateStopAt -ge 0 -and $GateStopAt -le $GateMax){ $states[$GateStopAt]='STOP' }
   }
-  # GateMatrixで上書き（DONE時の全OKもここで入る）
   if($null -ne $GateMatrix){
     foreach($key in $GateMatrix.Keys){
       $raw=[string]$key; $n=$null
@@ -30,17 +39,26 @@ function Write-GateReport {
       elseif($raw -match '^\s*Gate\s*(\d+)\s*$'){ $n=[int]$Matches[1] }
       if($null -ne $n -and $n -ge 0 -and $n -le $GateMax){
         $v=[string]$GateMatrix[$key]
-        if($v -in @('OK','STOP','SKIP')){ $states[$n]=$v }
+        # ★重要：exit=0 のときは GateMatrix による STOP 上書きを無視（ALL_DONE定型を守る）
+        if($ExitCode -eq 0){
+          if($v -in @('OK','SKIP')){ $states[$n]=$v }
+        } else {
+          if($v -in @('OK','STOP','SKIP')){ $states[$n]=$v }
+        }
       }
     }
   }
-  if($ExitCode -eq 0){ Write-Host ("Progress: G{0}/{1} ALL_DONE (exit=0)" -f $GateMax,$GateMax) }
-  else{ Write-Host ("Progress: G{0}/{1} STOP@G{2} (exit={3})" -f $GateOkUpto,$GateMax,$GateStopAt,$ExitCode) }
+  if($ExitCode -eq 0 -and $GateOkUpto -ge $GateMax){
+    Write-Host ("Progress: G{0}/{1} ALL_DONE (exit=0)" -f $GateMax,$GateMax)
+  } elseif($ExitCode -eq 0) {
+    Write-Host ("Progress: G{0}/{1} (exit=0)" -f $GateOkUpto,$GateMax)
+  } else {
+    Write-Host ("Progress: G{0}/{1} STOP@G{2} (exit={3})" -f $GateOkUpto,$GateMax,$GateStopAt,$ExitCode)
+  }
   if($ExitCode -eq 1){ Write-Host "操作: NO-ENTER（AIへ）" }
   elseif($ExitCode -eq 2){ Write-Host "操作: ENTER（承認）" }
   Write-Host "--------------------------------"
-  # PENDING連続を畳む
-  $inPending=$false; $pendingStart=-1; $pendingEnd=-1
+  $inPending=$false;$pendingStart=-1;$pendingEnd=-1
   function Flush-Pending([int]$s,[int]$e,[int]$ExitCodeLocal){
     if($s -lt 0){ return }
     $count=($e-$s+1)

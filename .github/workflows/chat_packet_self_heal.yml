@@ -22,7 +22,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # mep: rerun tick
   self-heal:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
