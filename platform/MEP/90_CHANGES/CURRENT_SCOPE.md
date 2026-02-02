@@ -1,4 +1,4 @@
-﻿# CURRENT_SCOPE
+# CURRENT_SCOPE
 
 ## 変更対象（Scope-IN）
 
