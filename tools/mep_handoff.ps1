@@ -1,3 +1,36 @@
+# MEP_HANDOFF_FIXED_META_DEFAULTS_BEGIN
+# V3: mep_handoff.ps1 内の Write-Host をフィルタし、固定メタの "(not set)" を出力直前に確実に置換する。
+# これにより、内部が Write-Host 直書きでも確実に効く。
+$__mepFixedMetaDefaults = @{
+  "ROLE（役割）"               = "audited handoff generator"
+  "ROLE_JP（役割・日本語）"     = "監査済み引継ぎ生成"
+  "EXIT_CONDITION（終了条件）"  = "handoff に ROOT_GOAL 等が常に埋まり、次チャット冒頭貼付だけで上位目標が消えない"
+  "ROOT_GOAL（上位目的・固定）" = "MEP Evidence を一意・正規・監査耐性ありで main に固定する（1PR=1行 / ノイズ無し）"
+}
+function __mep_filter_meta_line([string]$s){
+  foreach ($k in $__mepFixedMetaDefaults.Keys) {
+    $s = $s -replace ('(?m)^' + [regex]::Escape($k) + '\s*:\s*\(not set\)\s*$'), ($k + ": " + $__mepFixedMetaDefaults[$k])
+  }
+  return $s
+}
+# スクリプトスコープで Write-Host を上書き（本物は Microsoft.PowerShell.Utility\Write-Host へ委譲）
+function Write-Host {
+  [CmdletBinding()]
+  param(
+    [Parameter(Position=0, ValueFromPipeline=$true)]
+    $Object,
+    [ConsoleColor] $ForegroundColor,
+    [ConsoleColor] $BackgroundColor,
+    [switch] $NoNewline,
+    [object] $Separator
+  )
+  process {
+    $o = $Object
+    if ($o -is [string]) { $o = __mep_filter_meta_line $o }
+    Microsoft.PowerShell.Utility\Write-Host -Object $o -ForegroundColor $ForegroundColor -BackgroundColor $BackgroundColor -NoNewline:$NoNewline -Separator $Separator
+  }
+}
+# MEP_HANDOFF_FIXED_META_DEFAULTS_END
 
 function Get-BundledAtFromBundled([string]$bundledPath){
   if (-not (Test-Path $bundledPath)) { return $null }
@@ -173,6 +206,11 @@ catch {
   Write-Error $_.Exception.Message
   exit 1
 }
+
+
+
+
+
 
 
 

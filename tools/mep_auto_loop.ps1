@@ -1,3 +1,24 @@
+# === DONEB_AUDIT_POLICY:BEGIN ===
+# Policy: Pre-Gate doneB_audit is a HUMAN APPROVAL GATE.
+# Behavior:
+#   - PrNumber not provided / evaluable=false -> exit=2
+#   - ENTER (human approval) is required to continue
+# Rationale:
+#   - Avoids auto-detect ambiguity
+#   - Keeps audit integrity (explicit human decision)
+function Handle-DoneBAudit {
+  param(
+    [Parameter(Mandatory=$true)][bool]$Evaluable,
+    [Parameter(Mandatory=$true)][bool]$EnterApproved
+  )
+  if (-not $Evaluable) {
+    Write-Host "[DONEB_AUDIT] evaluable=false -> exit=2 (ENTER required)" -ForegroundColor Yellow
+    if (-not $EnterApproved) { exit 2 }
+    Write-Host "[DONEB_AUDIT] ENTER approved -> continue" -ForegroundColor Cyan
+  }
+}
+# === DONEB_AUDIT_POLICY:END ===
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 $ProgressPreference="SilentlyContinue"
@@ -54,3 +75,13 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
 exit $ec
+
+# === DONEB_AUDIT_USE ===
+if (Get-Variable -Name doneB_Evaluable -Scope Script -ErrorAction SilentlyContinue) {
+  $enter = $false
+  if (Get-Variable -Name ENTER_APPROVED -Scope Script -ErrorAction SilentlyContinue) {
+    $enter = [bool]$ENTER_APPROVED
+  }
+  Handle-DoneBAudit -Evaluable ([bool]$doneB_Evaluable) -EnterApproved $enter
+}
+# === DONEB_AUDIT_USE ===
