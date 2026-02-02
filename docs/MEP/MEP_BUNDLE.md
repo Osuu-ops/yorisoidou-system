@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260202_084902+main_635760c
+BUNDLE_VERSION = v0.0.0+20260202_165120+main_efefc52
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -840,3 +840,5 @@ PR #1619 | audit=OK,WB0000 | appended_at=2026-02-02T08:49:13.5984059+00:00 | via
 - contract: docs/MEP/CONTRACTS/GATE_EXIT_STOP_CONTRACT.md
   - topic: Gate progress + ENTRY_EXIT + loop stop contract (Completion-B add-on)
   - note: fixed vocabulary (GateResult/StopReason) + mandatory progress table + exit 0/1/2 contract
+* - PR #1625 | mergedAt=02/02/2026 08:48:37 | mergeCommit=635760c9896875b3a654c4d56d0948dc1c2a815f | BUNDLE_VERSION=v0.0.0+20260202_165120+main_efefc52 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1625
+PR #1625 | audit=OK,WB0000 | appended_at=2026-02-02T16:51:22.7222372+00:00 | via=mep_append_evidence_line_full.ps1
