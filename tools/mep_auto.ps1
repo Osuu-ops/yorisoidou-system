@@ -30,3 +30,15 @@ if($ec -eq 1){
 }
 Warn "ENTRY_EXIT=2 -> STOP (approval wait)"
 exit 2
+
+# --- approval hook (MEP_APPROVE=0) ---
+# If ENTRY_EXIT=2 and user provided MEP_APPROVE=0, rerun entry once.
+if($ec -eq 2 -and $env:MEP_APPROVE -eq "0"){
+  Info "MEP_APPROVE=0 detected -> rerun entry once"
+  & $entry
+  $ec2 = $LASTEXITCODE
+  if($ec2 -eq $null){ $ec2 = 2 }
+  if($ec2 -eq 0){ Ok "ENTRY_EXIT=0 -> END"; exit 0 }
+  if($ec2 -eq 1){ Warn "ENTRY_EXIT=1 -> STOP (retry prohibited)"; exit 1 }
+  Warn "ENTRY_EXIT=2 -> STOP (approval wait)"; exit 2
+}

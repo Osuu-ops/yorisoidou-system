@@ -36,3 +36,4 @@
 - tools/gates/G0.ps1
 - tools/gates/G1.ps1
 - tools/gates/G2.ps1
+- tools/gates/G3.ps1
