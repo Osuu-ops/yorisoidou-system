@@ -23,6 +23,7 @@ concurrency:
 
 jobs:
   self-heal:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
