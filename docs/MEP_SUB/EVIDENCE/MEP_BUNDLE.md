@@ -46,3 +46,4 @@ BUNDLE_VERSION = v0.0.0+20260201_030804+main+c9e827e1f164c553713fafd3537221b4609
 # appended_from_parent_bundle: PR #1567 | appended_at=2026-02-01T19:21:53Z
 * - PR #1567 | mergedAt=02/01/2026 17:51:55 | mergeCommit=7c478c619b64273ac49645fb49ccbea88d9ff7a7 | BUNDLE_VERSION=v0.0.0+20260201_182352+main_46ca524 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1567
 PR #1567 | audit=OK,WB0000 | appended_at=2026-02-01T18:23:56.2688033+00:00 | via=mep_append_evidence_line_full.ps1
+* - RULESET main-required-checks | id=11525505 | enforcement=active | required_checks=[business-non-interference-guard, Scope Guard (PR)] | verified_merge_block=PR#1633 base-branch-policy-prohibits-merge | observed_at=2026-02-02T12:06:15Z | via=gh_api_rulesets
