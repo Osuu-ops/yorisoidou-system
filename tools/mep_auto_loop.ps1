@@ -51,6 +51,17 @@ if ($pre.ExitCode -ne 0) {
   if ($pre.Output -match "Working tree is dirty") { $reason="WORKTREE_DIRTY"; $exitCode=1 }
   elseif ($pre.Output -match "mep_doneB_audit\.ps1" -and $pre.Output -match "PrNumber not provided") { $reason="AUDIT_NEEDS_PRNUMBER"; $exitCode=2 }
   elseif ($pre.ExitCode -eq 2) { $reason="PREGATE_NG"; $exitCode=2 }
+# === STAGEVAL_CANONICAL:BEGIN ===
+if ([string]::IsNullOrWhiteSpace($stageVal)) {
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $tmp = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($tmp) { $stageVal = $tmp.Trim() }
+  }
+}
+if ($stageVal -eq "DONE") { $ec = 0 }
+# === STAGEVAL_CANONICAL:END ===
+
   Write-MepRun -Source DRAFT -PreGateResult FAIL -PreGateReason $reason -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $exitCode -StopReason $reason -GateMatrix @{}
   if ($exitCode -eq 2) {
     [void](Read-Host "ENTER（承認）で続行")
@@ -72,8 +83,6 @@ if ($stageVal -eq "DONE" -and $ec -eq 0) {
   exit 0
 }
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
-$stageVal = (Read-StageValue).Trim()
-Write-Host ("[STAGEVAL] stageVal=''{0}'' ec={1}" -f $stageVal,$ec)
 if ($stageVal -eq "DONE") { $ec = 0 }
 
 if ([string]::IsNullOrWhiteSpace($stageVal)) {
