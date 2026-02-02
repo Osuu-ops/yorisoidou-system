@@ -1,18 +1,21 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 ## 変更対象（Scope-IN）
-tools/mep_entry.ps1
-tools/mep_auto.ps1
+
+- .github/workflows/mep_self_heal_min5.yml
+- .github/workflows/chat_packet_self_heal.yml
+- tools/mep_entry.ps1
+- tools/mep_auto.ps1
 - .github/workflows/self_heal_auto_prs.yml
 - .gitignore
 - tools/mep_auto_loop.ps1
 - tools/mep_reporter.ps1
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- tools/mep_entry.ps1
 - tools/mep_append_evidence_line_full.ps1
 - .github/workflows/mep_writeback_bundle_dispatch.yml
 - tools/mep_writeback_create_pr.ps1
 - .github/workflows/mep_writeback_bundle_dispatch_entry.yml
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
