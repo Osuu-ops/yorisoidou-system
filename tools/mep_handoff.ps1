@@ -58,10 +58,20 @@ try {
   $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
   $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   # === TIME_MARKS_INLINE_OUT_END ===
-  $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-  # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (transcribe-only) ===
-  $evidenceBundledAtLine = (Select-String -LiteralPath $evidencePath -Pattern "^BUNDLED_AT\s*=" -ErrorAction SilentlyContinue | Select-Object -First 1)
-  $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
+#   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"  # do not overwrite resolved evidencePath
+  # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (mtime-based) ===
+  if (-not $evidencePath) {
+    if ($repoRoot) {
+      $evidencePath = (Join-Path $repoRoot "docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md")
+    } else {
+      $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+    }
+  }
+  $evidenceBundledAt = if (Test-Path -LiteralPath $evidencePath) {
+    (Get-Item -LiteralPath $evidencePath).LastWriteTime.ToString("yyyy-MM-ddTHH:mm:ssK")
+  } else {
+    "(not found)"
+  }
   # === EVIDENCE_BUNDLED_AT_COMPUTE_END ===
   $evOk = Test-Path -LiteralPath $evidencePath
 
@@ -79,6 +89,25 @@ try {
   if (-not $head) { $head = "(unknown)" }
 
   $out = New-Object System.Collections.Generic.List[string]
+  # --- meta header (chat/card) ---
+  $chatId = if ($env:MEP_CHAT_ID) { $env:MEP_CHAT_ID } else { (Get-Date -Format "yyyyMMdd_HHmmss") + "_JST" }
+  $cardId = if ($env:MEP_CARD_ID) { $env:MEP_CARD_ID } else { "(not set)" }
+  $role   = if ($env:MEP_ROLE)    { $env:MEP_ROLE }    else { "(not set)" }
+  $roleJp = if ($env:MEP_ROLE_JP) { $env:MEP_ROLE_JP } else { "(not set)" }
+  $exitC  = if ($env:MEP_EXIT_CONDITION) { $env:MEP_EXIT_CONDITION } else { "(not set)" }
+  $rootG  = if ($env:MEP_ROOT_GOAL) { $env:MEP_ROOT_GOAL } else { "(not set)" }
+  $derivG = if ($env:MEP_DERIVED_GOAL) { $env:MEP_DERIVED_GOAL } else { "(not set)" }
+  $chain  = if ($env:MEP_PARENT_CHAIN) { $env:MEP_PARENT_CHAIN } else { "(not set)" }
+
+  $out.Add("CHAT_ID（チャット識別ID）: " + $chatId)
+  $out.Add("CARD_ID（担当カード）: " + $cardId)
+  $out.Add("ROLE（役割）: " + $role)
+  $out.Add("ROLE_JP（役割・日本語）: " + $roleJp)
+  $out.Add("EXIT_CONDITION（終了条件）: " + $exitC)
+  $out.Add("ROOT_GOAL（上位目的・固定）: " + $rootG)
+  $out.Add("DERIVED_GOAL（派生目的・担当範囲）: " + $derivG)
+  $out.Add("PARENT_CHAIN（派生元）: " + $chain)
+  $out.Add("")
   $out.Add("【HANDOFF｜次チャット冒頭に貼る本文】")
   $out.Add("")
   $out.Add("REPO_ORIGIN: " + $repoUrl)
