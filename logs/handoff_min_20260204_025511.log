@@ -1,0 +1,16 @@
+
+【監査用引継ぎ（一次根拠のみ）】
+
+REPO_ORIGIN: https://github.com/Osuu-ops/yorisoidou-system.git
+PARENT_BUNDLED: docs/MEP/MEP_BUNDLE.md
+EVIDENCE_BUNDLE: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
+HEAD(main): da43e251e4b5400515fdfe9fe2b2d57a58d489c9
+
+PARENT_BUNDLE_VERSION: v0.0.0+20260203_072104+main_e61b6b1
+EVIDENCE_BUNDLE_VERSION: v0.0.0+20260131_143312+main+evidence-child
+
+【作業用引継ぎ（未完・次工程）】
+
+未完:
+- EVIDENCE_BUNDLE_VERSION が最新 main に追随していない（要: evidence writeback の成立証跡）
