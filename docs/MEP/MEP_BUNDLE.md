@@ -1008,3 +1008,18 @@ mergedAt: 2026-02-03T22:04:24Z
 mergeCommit: bd336142762dbc9c061aceb9fd6e9307d726e717
 ※上記はすべて main ブランチおよび gh / git の一次出力に基づく。
 
+<!-- appended: OP-1/OP-2 evidence-only draft 2026-02-04T07:34:43+09:00 -->
+## OP-1/OP-2 最小固定（一次根拠採取点） [DRAFT]
+### OP-1: EVIDENCE 追随（採取点）
+- 子Bundled: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+  - 観測: BUNDLE_VERSION = v0.0.0+20260204_035621+main+evidence-child
+- EVIDENCE_BUNDLE_LAST_COMMIT（git object）
+  - 観測: 6e375cace69b1fe5af5507c2e34244576eb8a2ca 2026-02-04T06:15:35+09:00 fix(handoff): stub broken mep_handoff_min to unblock wrapper
+  - 観測コマンド: git cat-file -e 6e375cace69b1fe5af5507c2e34244576eb8a2ca^{commit}
+### OP-2: handoff 最小運用系（採取点）
+- mep_handoff_min（repo tree）
+  - 観測: tools/mep_handoff_min.ps1
+[DRAFT META]
+GENERATED_AT: 2026-02-04T07:34:43+09:00
+SOURCE_HEAD: 3021bf14ab0454ebe277c309e3f73bace134b7b4
+
