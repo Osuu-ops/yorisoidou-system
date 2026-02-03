@@ -11,6 +11,7 @@ $st=@(git status --porcelain)
 if($st.Count -gt 0){ FailGate "Working tree dirty (must be clean)" }
 git fetch origin 1>$null
 git checkout main 1>$null
-git pull --ff-only origin main 1>$null
+git reset --hard origin/main 1>$null
 OkGate "Pre-Gate OK (origin/clean/main-sync)"
 exit 0
+
