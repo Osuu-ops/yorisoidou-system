@@ -146,6 +146,9 @@ try {
   $out.Add("【HANDOFF｜次チャット冒頭に貼る本文】")
   $out.Add("")
   $out.Add("REPO_ORIGIN: " + $repoUrl)
+
+## Scope-IN
+- tools/mep_handoff.ps1
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
@@ -338,6 +341,9 @@ try {
   $out.Add("【HANDOFF｜次チャット冒頭に貼る本文】")
   $out.Add("")
   $out.Add("REPO_ORIGIN: " + $repoUrl)
+
+## Scope-IN
+- tools/mep_handoff.ps1
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
