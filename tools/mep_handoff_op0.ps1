@@ -10,7 +10,7 @@ function Fail($msg) { Write-Host "[FATAL] $msg" -ForegroundColor Red; exit 2 }
 
 # repo root
 $repoRoot = 
-try { $repoRoot = (git rev-parse --show-toplevel 2>).Trim() } catch {}
+try { $repoRoot = (git rev-parse --show-toplevel 2>$null).Trim() } catch {}
 if (-not $repoRoot) { Fail "repo root not found" }
 Set-Location $repoRoot
 
@@ -113,4 +113,5 @@ $op0
 $baseOut.TrimEnd() + "
 
 " + $append
+
 
