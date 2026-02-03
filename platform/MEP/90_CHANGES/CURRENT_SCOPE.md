@@ -8,6 +8,7 @@
 - docs/MEP/MEP_BUNDLE.md
 - docs/MEP_SUB/CARDS/**
 - .github/workflows/**
+- .github/workflows/mep_bump_bundle_version_dispatch.yml
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
