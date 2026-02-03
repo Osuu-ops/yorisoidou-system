@@ -1,14 +1,7 @@
 ## 変更対象（Scope-IN）
 - CURRENT_SCOPE.md
-- docs/MEP/HANDOFF_OFFICIAL_ENTRYPOINT.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- tools/_deprecated/mep_handoff_legacy_20260204_043811.ps1
-- tools/mep_handoff.ps1
-- tools/mep_handoff_min.ps1
-- docs/MEP/MEP_BUNDLE.md
-- docs/MEP_SUB/CARDS/**
-- .github/workflows/**
-- .github/workflows/mep_bump_bundle_version_dispatch.yml
+- tools/mep_handoff_op0.ps1
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
@@ -31,3 +24,4 @@
 注意
 - 一次根拠は “main と gh/git の一次出力” のみ。会話文脈・推測は入れない。
 
+>>>>>>> origin/main
