@@ -160,68 +160,28 @@ if($exitCode -eq 0){
 }
 exit $exitCode
 # --- MEP_ENTRY_PROGRESS_ENV_BEGIN ---
-# Contract: Provide stable progress/contract output values via ENV for tools/mep_reporter.ps1
-# Optional parameters (do not break existing callers):
-#  - -MepSrc           : "DRAFT" / "FIXATE" など
-#  - -MepPre           : "OK" / "NG" など
-#  - -MepProgressLabel : "G10/10 ALL_DONE" など
-#  - -MepProgressExit  : "0" / "1" / "2" など（文字列でも可）
-#  - -MepGates         : "G0,G1,...,G10"
-#  - -MepGatesOk       : "G0,G1,...,G10"（subset）
-#
-# If these are not provided, this hook will only emit what already exists in ENV.
-# MEP_AUTO_LOOP_EXIT is always set from $LASTEXITCODE at the end of entry execution.
-param(
-  [string]$MepSrc = $null,
-  [string]$MepPre = $null,
-  [string]$MepProgressLabel = $null,
-  [string]$MepProgressExit = $null,
-  [string]$MepGates = $null,
-  [string]$MepGatesOk = $null
-)
+# Contract (SAFE):
+# - Do NOT add a new param() block here (PowerShell allows script param only at top).
+# - Entry will always publish MEP_AUTO_LOOP_EXIT from $LASTEXITCODE at end of execution.
+# - Other fields are "pass-through": if upstream already set ENV, reporter will print them.
 function Set-MepProgressEnv {
-  param(
-    [int]$ExitCode,
-    [string]$Src,
-    [string]$Pre,
-    [string]$ProgressLabel,
-    [string]$ProgressExit,
-    [string]$Gates,
-    [string]$GatesOk
-  )
-  # Always publish exit code of the entry/auto loop
-  $env:MEP_AUTO_LOOP_EXIT = [string]$ExitCode
-  # Only set if provided and not already set (respect upstream)
-  if ($Src -and -not $env:MEP_SRC) { $env:MEP_SRC = $Src }
-  if ($Pre -and -not $env:MEP_PRE) { $env:MEP_PRE = $Pre }
-  if ($ProgressLabel -and -not $env:MEP_PROGRESS_LABEL) { $env:MEP_PROGRESS_LABEL = $ProgressLabel }
-  if ($ProgressExit  -and -not $env:MEP_PROGRESS_EXIT ) { $env:MEP_PROGRESS_EXIT  = $ProgressExit  }
-  if ($Gates   -and -not $env:MEP_GATES)    { $env:MEP_GATES    = $Gates }
-  if ($GatesOk -and -not $env:MEP_GATES_OK) { $env:MEP_GATES_OK = $GatesOk }
+  param([int]$ExitCode)
+  try { $env:MEP_AUTO_LOOP_EXIT = [string]$ExitCode } catch {}
+  # pass-through: do not overwrite MEP_SRC / MEP_PRE / MEP_PROGRESS_* / MEP_GATES_*
 }
 function Invoke-MepReporterSafely {
   param([int]$ExitCode)
   $reporter = Join-Path $PSScriptRoot "mep_reporter.ps1"
   if (!(Test-Path -LiteralPath $reporter)) { return }
-  try {
-    # reporter is expected to accept -ExitCode; if not, it will still run and ignore
-    & $reporter -ExitCode $ExitCode
-  } catch {
-    # reporter must never break entry
-  }
+  try { & $reporter -ExitCode $ExitCode } catch {}
 }
 try {
-  # Hook execution only when entry is invoked directly (not dot-sourced)
   if ($MyInvocation.InvocationName -ne '.') {
     $exit = 0
     try { $exit = [int]$LASTEXITCODE } catch { $exit = 0 }
-    Set-MepProgressEnv -ExitCode $exit `
-      -Src $MepSrc -Pre $MepPre `
-      -ProgressLabel $MepProgressLabel -ProgressExit $MepProgressExit `
-      -Gates $MepGates -GatesOk $MepGatesOk
+    Set-MepProgressEnv -ExitCode $exit
     Invoke-MepReporterSafely -ExitCode $exit
   }
-} catch {
-  # Entry must not fail due to contract hook
-}
+} catch {}
 # --- MEP_ENTRY_PROGRESS_ENV_END ---
+
