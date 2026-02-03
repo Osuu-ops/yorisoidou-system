@@ -8,4 +8,3 @@
 - docs/MEP/MEP_BUNDLE.md
 - docs/MEP_SUB/CARDS/**
 - .github/workflows/**
-
