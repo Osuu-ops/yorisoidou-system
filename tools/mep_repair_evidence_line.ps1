@@ -58,7 +58,7 @@ $after=$txt.Substring($end)
 # Find the PR line in Evidence Log
 $lines=$ev -split "`r?`n"
 $idx=-1
-for($i=0;$i -lt $lines.Count;$i++){
+for($i=0;$i -lt @($lines).Length;$i++){
   if($lines[$i] -match ('^\s*[\-\*]\s+PR\s+#' + $PrNumber + '\s+\|')){ $idx=$i; break }
 }
 if($idx -lt 0){ Fail "E_NO_EVID_LINE" ("Evidence line for PR #" + $PrNumber + " not found in Evidence Log.") }
@@ -94,3 +94,4 @@ Set-Content -Encoding UTF8 $BundlePath -Value $txt2
 Write-Host ("Repaired Evidence line for PR #" + $PrNumber)
 Write-Host ("mergedAt=" + $mergedAtFmt)
 Write-Host ("mergeCommit=" + $mergeCommit)
+
