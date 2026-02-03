@@ -1003,8 +1003,9 @@ v0.0.0+20260203_194633+main_cfbd3c5
 EVIDENCE_BUNDLE_VERSION
 v0.0.0+20260204_035621+main+evidence-child
 確定（証跡）
-PR #
-mergedAt: 
+PR #1739
+mergedAt: 2026-02-03T21:49:36Z
 mergeCommit: 35fbdeb093fbf301b9e19ec2bb34926e7cf586a5
 ※上記はすべて main ブランチおよび gh / git の一次出力に基づく。
+
 
