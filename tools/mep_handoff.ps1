@@ -1,11 +1,17 @@
+param(
+  [int]$TargetPr
+)
+
 # PowerShellは @' '@（シングルクォートHere-String）前提
 Set-StrictMode -Version Latest
 # BEGIN_BUNDLED_EVIDENCE_SEARCH_RESULT_V2
 # NOTE: Bundled/EVIDENCEに「証跡行が存在」と断定しない。PR番号を自動推定し、検索結果(FOUND/NOT FOUND/UNKNOWN/ERROR)を一次根拠として必ず出す。
 function __MEP_Resolve-PrNumber {
-  $vals = @()
+  
+  if ($TargetPr) { return [int]$TargetPr }
+$vals = @()
   # 1) env
-  foreach ($e in @('PR_NUMBER','MEP_PR_NUMBER','TARGET_PR','GITHUB_PR_NUMBER')) {
+  foreach ($e in @('MEP_TARGET_PR','PR_NUMBER','MEP_PR_NUMBER','TARGET_PR','GITHUB_PR_NUMBER')) {
     $v = [string]([Environment]::GetEnvironmentVariable($e))
     if ($v) { $vals += $v }
   }
@@ -67,7 +73,8 @@ if (!(Test-Path -LiteralPath $min)) {
   exit 2
 }
 try {
-  & $min @args
+  $pass = @($args)
+  & $min @pass
   exit $LASTEXITCODE
 } catch {
   Write-Error ("[HANDOFF] wrapper failed: " + $_.Exception.Message)

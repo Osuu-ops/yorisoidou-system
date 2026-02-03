@@ -1,11 +1,11 @@
 # tools/mep_handoff_min.ps1
 # Minimal handoff generator (safe: no here-strings, short lines).
 Set-StrictMode -Version Latest
-Stop = 'Stop'
-SilentlyContinue = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 try { [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false) } catch {}
 try { $OutputEncoding = [Console]::OutputEncoding } catch {}
-cat='cat'; cat='cat'; cat='cat'
+$env:GIT_PAGER='cat'; $env:PAGER='cat'; $env:GH_PAGER='cat'
 
 function ReadKey([string]$path,[string]$key){
   if(-not (Test-Path $path)){ return "" }
@@ -24,7 +24,6 @@ $head = (git rev-parse HEAD).Trim()
 
 $parent = Join-Path $repo "docs/MEP/MEP_BUNDLE.md"
 $evid   = Join-Path $repo "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-
 $pv = ReadKey $parent "BUNDLE_VERSION"
 $ev = ReadKey $evid   "EVIDENCE_BUNDLE_VERSION"
 
