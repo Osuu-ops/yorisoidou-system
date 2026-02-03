@@ -2,7 +2,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(False) } catch {}
+try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false) } catch {}
 try { $OutputEncoding = [Console]::OutputEncoding } catch {}
 $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
 
@@ -113,3 +113,4 @@ $op0
 $baseOut.TrimEnd() + "
 
 " + $append
+
