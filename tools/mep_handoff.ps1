@@ -14,13 +14,7 @@ function Get-HandoffVerifiedAt([string]$evidenceFile){
 Set-StrictMode -Version Latest
 
 # === MEP_HANDOFF_BUNDLED_PATCH_v1 ===
-
-## Scope-IN
-- tools/mep_handoff.ps1
 # Adds Bundled (docs/MEP/MEP_BUNDLE.md) evidence extraction into handoff output.
-
-## Scope-IN
-- tools/mep_handoff.ps1
 function __ReadBundledEvidence {
   param([string]$RepoRoot)
   $p = Join-Path $RepoRoot "docs/MEP/MEP_BUNDLE.md"
@@ -32,9 +26,6 @@ function __ReadBundledEvidence {
   $cards = @()
   foreach ($m in ($lines | Select-String -Pattern '^\s*##\s*CARD:\s*.+
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
-
-## Scope-IN
-- tools/mep_handoff.ps1
 try {
   $repoRoot = (git rev-parse --show-toplevel 2>$null)
   if ($repoRoot) {
@@ -52,9 +43,6 @@ try {
   if (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) { $evidencePath = "" }
 }
 # --- end guard ---
-
-## Scope-IN
-- tools/mep_handoff.ps1
 $ErrorActionPreference = "Stop"
 $env:GIT_PAGER="cat"
 $env:PAGER="cat"
@@ -62,9 +50,6 @@ $env:PAGER="cat"
 function Fail([string]$m){ throw $m }
 
 ###__MEP_HANDOFF_EVIDENCE_EXTRACTOR_INJECTED__###
-
-## Scope-IN
-- tools/mep_handoff.ps1
 function Get-MepEvidenceAuditMarkers {
   param(
     [Parameter(Mandatory=$true)][string]$RepoRoot,
@@ -103,9 +88,6 @@ try {
   $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   # === TIME_MARKS_INLINE_OUT_END ===
 #   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"  # do not overwrite resolved evidencePath
-
-## Scope-IN
-- tools/mep_handoff.ps1
   # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (mtime-based) ===
   # force evidencePath to repoRoot + fixed relative (stable)
   if ($repoRoot) {
@@ -235,13 +217,7 @@ catch {
 }
 # === /MEP_HANDOFF_BUNDLED_PATCH_v1 ===
 
-## Scope-IN
-- tools/mep_handoff.ps1
-
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
-
-## Scope-IN
-- tools/mep_handoff.ps1
 try {
   $repoRoot = (git rev-parse --show-toplevel 2>$null)
   if ($repoRoot) {
@@ -259,9 +235,6 @@ try {
   if (-not (Get-Variable evidencePath -Scope Local -ErrorAction SilentlyContinue)) { $evidencePath = "" }
 }
 # --- end guard ---
-
-## Scope-IN
-- tools/mep_handoff.ps1
 $ErrorActionPreference = "Stop"
 $env:GIT_PAGER="cat"
 $env:PAGER="cat"
@@ -269,9 +242,6 @@ $env:PAGER="cat"
 function Fail([string]$m){ throw $m }
 
 ###__MEP_HANDOFF_EVIDENCE_EXTRACTOR_INJECTED__###
-
-## Scope-IN
-- tools/mep_handoff.ps1
 function Get-MepEvidenceAuditMarkers {
   param(
     [Parameter(Mandatory=$true)][string]$RepoRoot,
@@ -310,9 +280,6 @@ try {
   $evidenceBundledAt = if ($evidenceBundledAtLine) { (($evidenceBundledAtLine.Line -replace "\s+$","") -replace "^\s*BUNDLED_AT\s*=\s*","") } else { "(not found)" }
   # === TIME_MARKS_INLINE_OUT_END ===
 #   $evidencePath = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"  # do not overwrite resolved evidencePath
-
-## Scope-IN
-- tools/mep_handoff.ps1
   # === EVIDENCE_BUNDLED_AT_COMPUTE_BEGIN (mtime-based) ===
   # force evidencePath to repoRoot + fixed relative (stable)
   if ($repoRoot) {
@@ -412,9 +379,6 @@ catch {
 }
 
 # === MEP_HANDOFF_BUNDLED_APPEND_v1 ===
-
-## Scope-IN
-- tools/mep_handoff.ps1
 try {
   $be = __ReadBundledEvidence -RepoRoot $PSScriptRoot | Out-Null
 } catch {}
@@ -459,7 +423,4 @@ try {
   Write-Output ("Bundled append failed: " + $_.Exception.Message)
 }
 # === /MEP_HANDOFF_BUNDLED_APPEND_v1 ===
-
-## Scope-IN
-- tools/mep_handoff.ps1
 
