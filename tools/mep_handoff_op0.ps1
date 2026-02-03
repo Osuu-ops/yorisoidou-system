@@ -2,24 +2,31 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false) } catch {}
+try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(False) } catch {}
 try { $OutputEncoding = [Console]::OutputEncoding } catch {}
 $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
+
 function Fail($msg) { Write-Host "[FATAL] $msg" -ForegroundColor Red; exit 2 }
+
 # repo root
-$repoRoot = $null
-try { $repoRoot = (git rev-parse --show-toplevel 2>$null).Trim() } catch {}
+$repoRoot = 
+try { $repoRoot = (git rev-parse --show-toplevel 2>).Trim() } catch {}
 if (-not $repoRoot) { Fail "repo root not found" }
 Set-Location $repoRoot
+
 # run base generator (capture all)
 $base = "C:/Users/Syuichi/OneDrive/ドキュメント/GitHub/yorisoidou-system/tools/mep_handoff_min.ps1"
 if (-not (Test-Path $base)) { Fail "base handoff generator not found: $base" }
+
 $baseOut = & $base 2>&1 | Out-String
 if (-not $baseOut.Trim()) { Fail "base handoff output empty" }
+
 # OP-0 excerpt (embedded, audit-side primary evidence)
-$op0 = @'SOURCE_MD: C:\Users\Syuichi\Desktop\MEP_LOGS\OP0_EVIDENCE_EXTRACT\op0_evidence_select_20260204_062145.md
-EXTRACT_AT: 2026-02-04T06:36:54+09:00
-HEAD(main): 38061eb492c4fc4c08321bad000f0d1768bc210a
+$op0 = @'
+SOURCE_MD: C:\Users\Syuichi\Desktop\MEP_LOGS\OP0_EVIDENCE_EXTRACT\op0_evidence_select_20260204_062145.md
+EXTRACT_AT: 2026-02-04T06:39:44+09:00
+HEAD(branch): 6882b4f79c72b5ee5afcdcc395935039f40474e3
+
 # OP-0 Evidence Select (paste-ready)
 
 INPUT_EXTRACT: C:\Users\Syuichi\Desktop\MEP_LOGS\OP0_EVIDENCE_EXTRACT\op0_evidence_extract_20260204_061514.md
@@ -91,12 +98,18 @@ L0919: - enforcement: active
 L0920: - required checks (contexts): business-non-interference-guard | Scope Guard (PR)
 L0921: ### Block evidence (intentional PR; DO NOT MERGE)
 L0922: - pr: #1672
-```'@
+```
+'@
+
 # append under audit section (simple + deterministic)
 $stamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ssK"
 $append = @"
 【OP-0 一次根拠追記（監査用：抜粋）】
 APPENDED_AT: $stamp
+
 $op0
 "@
-$baseOut.TrimEnd() + "`r`n`r`n" + $append
+
+$baseOut.TrimEnd() + "
+
+" + $append
