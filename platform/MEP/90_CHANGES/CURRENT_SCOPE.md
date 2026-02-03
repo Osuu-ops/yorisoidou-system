@@ -9,7 +9,6 @@
 - tools/*.psm1
 - docs/MEP/90_CHANGES/*
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
