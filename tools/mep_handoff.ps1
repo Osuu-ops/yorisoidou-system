@@ -218,7 +218,7 @@ catch {
     key_hits=$keyHits
     pr_hits=$prHits
   }
-}
+
 # === /MEP_HANDOFF_BUNDLED_PATCH_v1 ===
 
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
