@@ -963,3 +963,7 @@ NOTE
 PR #1704 | audit=OK,WB0000 | appended_at=2026-02-04T04:46:28.7269724+09:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1710 | mergedAt=02/03/2026 19:25:31 | mergeCommit=34b5a6e00266fd8f344642d85b77e4a3dd574910 | BUNDLE_VERSION=v0.0.0+20260203_183554+main_539db06 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1710
 PR #1710 | audit=OK,WB0000 | appended_at=2026-02-04T04:46:30.1344388+09:00 | via=mep_append_evidence_line_full.ps1
+
+## CARDS
+- OP-2: 最小復帰（handoff破損時の復帰系） → docs/MEP_SUB/CARDS/OP-2_RECOVERY_MIN.md
+
