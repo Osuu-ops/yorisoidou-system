@@ -1,6 +1,7 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
 
 ## 変更対象（Scope-IN）
+- tools/mep_handoff.ps1
 - .gitignore
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
@@ -13,4 +14,5 @@
 
 ## Child MEPs
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
 
