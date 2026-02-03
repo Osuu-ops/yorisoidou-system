@@ -1,4 +1,6 @@
 # CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
+
+
 ## 変更対象（Scope-IN）
 - tools/mep_handoff.ps1
 - .gitignore
@@ -11,12 +13,34 @@
 - platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
 - .github/workflows/state_summary_update_schedule.yml
 - docs/MEP/MEP_BUNDLE.md
+- tools/mep_recover_min.ps1
 ## 非対象（Scope-OUT｜明示）
+
+
 - platform/MEP/01_CORE/**
+
+
 - platform/MEP/00_GLOBAL/**
+
+
 ## Child MEPs
+
+
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+
+
 - docs/MEP/90_CHANGES/HANDOFF_LATEST.md
+
+
 - platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
+
+
 - tools/mep_dispatch_audit.ps1
+
+
 - tools/mep_handoff_regen_latest.ps1
+
+
+- tools/mep_recover_min.ps1
+
+
