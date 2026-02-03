@@ -41,9 +41,17 @@ PR #1395 | audit=OK,WB0000 | appended_at=2026-01-31T05:15:56Z | via=mep_append_e
 
 PR #0 | audit=OK,WB0000 | appended_at=2026-01-31T14:42:08Z | via=mep_append_evidence_line.ps1
 
-BUNDLE_VERSION = v0.0.0+20260201_030804+main+c9e827e1f164c553713fafd3537221b460986ccf
 
 # appended_from_parent_bundle: PR #1567 | appended_at=2026-02-01T19:21:53Z
 * - PR #1567 | mergedAt=02/01/2026 17:51:55 | mergeCommit=7c478c619b64273ac49645fb49ccbea88d9ff7a7 | BUNDLE_VERSION=v0.0.0+20260201_182352+main_46ca524 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1567
 PR #1567 | audit=OK,WB0000 | appended_at=2026-02-01T18:23:56.2688033+00:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1609 | mergedAt=02/01/2026 19:08:56 | mergeCommit=f543b230d3e86310230f3cceb3bfecd3ccdd7b2f | BUNDLE_VERSION=v0.0.0+20260131_143312+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1609
+
+## EVIDENCE_SYNC (auto) : parent->docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- syncedAt: 2026-02-03 16:55:42
+- source: docs/MEP/MEP_BUNDLE.md
+- note: appended parent evidence lines for PR #1675
+
+* - PR #1675 | mergedAt=02/03/2026 05:57:16 | mergeCommit=9f0d626d848ce1cf86fb7582ce2f2f63b27d8efa | BUNDLE_VERSION=v0.0.0+20260203_072104+main_e61b6b1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1675
+PR #1675 | audit=OK,WB0000 | appended_at=2026-02-03T07:21:07.7141432+00:00 | via=mep_append_evidence_line_full.ps1
+
