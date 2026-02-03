@@ -344,7 +344,7 @@ try {
   $out.Add("REPO_ORIGIN: " + $repoUrl)
 
 ## Scope-IN
-- tools/mep_handoff.ps1
+$out.Add("- tools/mep_handoff.ps1")
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
