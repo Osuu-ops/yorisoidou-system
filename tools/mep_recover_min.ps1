@@ -1,4 +1,9 @@
 #Requires -Version 7.0
+param(
+  [switch]$NoPull,
+  [switch]$NoGh,
+  [switch]$WriteFileOnly
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -8,11 +13,6 @@ $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
 function Info([string]$m){ Write-Host "[INFO] $m" -ForegroundColor Cyan }
 function Warn([string]$m){ Write-Host "[WARN] $m" -ForegroundColor Yellow }
 function Fail([string]$m){ throw "[FAIL] $m" }
-param(
-  [switch]$NoPull,
-  [switch]$NoGh,
-  [switch]$WriteFileOnly
-)
 # ---- Fixed paths (minimal recovery contract) ----
 $ExpectedRepoOrigin = 'https://github.com/Osuu-ops/yorisoidou-system.git'
 $BaseBranch         = 'main'
@@ -52,7 +52,7 @@ function Ensure-FileFromHead([string]$path){
   Warn "missing file: $path -> restoring from HEAD"
   try {
     $dir = Split-Path -Parent $path
-    if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Path $dir | Out-Null }
+    if($dir -and -not (Test-Path -LiteralPath $dir)){ New-Item -ItemType Directory -Force -Path $dir | Out-Null }
     git checkout HEAD -- $path | Out-Null
   } catch {
     Fail "ファイル復元に失敗: $path"
@@ -85,7 +85,7 @@ if(-not $NoGh){
 $hits = Select-String -LiteralPath $EvidenceBundlePath -Pattern '#1693' -AllMatches -ErrorAction SilentlyContinue |
   Select-Object LineNumber, Line | Sort-Object LineNumber -Unique
 $nowIso = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK")
-# ---- Emit official 2-layer handoff (audit layer is primary only) ----
+# ---- Emit official 2-layer handoff ----
 $handoff = @"
 【HANDOFF｜次チャット冒頭に貼る本文（二重構造・公式テンプレ）】
 【監査用引継ぎ（一次根拠のみ／確定事項）】
