@@ -11,6 +11,24 @@ function Get-HandoffVerifiedAt([string]$evidenceFile){
   if ($v) { return $v.Trim() }
   return $null
 }
+# === AUTO_ANCHOR_EMIT_BEGIN (Bundled anchors v2) ===
+function __MEP_ReadBundledAnchors {
+  param([string]$RepoRoot)
+  $p = Join-Path $RepoRoot "docs/MEP/MEP_BUNDLE.md"
+  if (!(Test-Path $p)) { return @() }
+  $lines = Get-Content -LiteralPath $p -Encoding UTF8
+  $bv = ($lines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
+  if (-not $bv) { $bv = "BUNDLE_VERSION = <NOT_FOUND>" }
+  # latest PR evidence line in Bundled (best-effort): pick last line containing "PR #"
+  $prEv = @($lines | Where-Object { $_ -match 'PR\s*#\d+' })
+  $latest = $null
+  if ($prEv.Count -gt 0) { $latest = $prEv[-1] }
+  $out = @()
+  $out += $bv
+  if ($latest) { $out += $latest }
+  return $out
+}
+# === AUTO_ANCHOR_EMIT_END (Bundled anchors v2) ===
 Set-StrictMode -Version Latest
 
 # === MEP_HANDOFF_BUNDLED_PATCH_v1 ===
@@ -524,3 +542,4 @@ try {
   Write-Output ($_.Exception.Message)
 }
 # === /MEP_HANDOFF_EOF_PATCH_v1 ===
+
