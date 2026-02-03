@@ -1,22 +1,7 @@
-# CURRENT_SCOPE（唯一の正：変更範囲の許可リスト）
-## 変更対象（Scope-IN）
+Scope-IN
+- CURRENT_SCOPE.md
+- docs/MEP/HANDOFF_OFFICIAL_ENTRYPOINT.md
+- tools/_deprecated/mep_handoff_legacy_20260204_043811.ps1
 - tools/mep_handoff.ps1
-- .gitignore
-- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- tools/mep_handoff_min.ps1
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- tools/**
-- tools/mep_reporter.ps1
-- tools/mep_entry.ps1
-- docs/MEP/90_CHANGES/HANDOFF_LATEST.md
-- platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
-- .github/workflows/state_summary_update_schedule.yml
-- docs/MEP/MEP_BUNDLE.md
-## 非対象（Scope-OUT｜明示）
-- platform/MEP/01_CORE/**
-- platform/MEP/00_GLOBAL/**
-## Child MEPs
-- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
-- docs/MEP/90_CHANGES/HANDOFF_LATEST.md
-- platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
-- tools/mep_dispatch_audit.ps1
-- tools/mep_handoff_regen_latest.ps1
