@@ -495,7 +495,7 @@ try {
   if ($evVersion) { Write-Output ("EVIDENCE_BUNDLE " + $evVersion) }
   $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE Ruleset/Checks Evidence (raw lines)" -Lines $evRulesetHits
-  $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673)\b|pull/(1669|1671|1673)\b|\b(1669|1671|1673)\b)' -Max 200
+  $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex "(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)" -Max 200
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE PR Evidence (1669/1671/1673 raw lines)" -Lines $evPrHits
   # --- mep_entry evidence (logs) ---
   $entryDir = Join-Path $env:USERPROFILE "Desktop\MEP_LOGS\ENTRY_AUDIT"
