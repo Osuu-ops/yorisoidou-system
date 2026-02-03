@@ -1,4 +1,4 @@
-BUNDLE_VERSION = v0.0.0+20260203_054702+main_fb7ee4a
+BUNDLE_VERSION = v0.0.0+20260203_072104+main_e61b6b1
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -932,3 +932,5 @@ To use administrator privileges to immediately merge the pull request, add the `
 
 * - PR #1676 | mergedAt=02/03/2026 05:40:29 | mergeCommit=7472a7c8fe5730433087354a7732b116d0f10409 | BUNDLE_VERSION=v0.0.0+20260203_054702+main_fb7ee4a | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1676
 PR #1676 | audit=OK,WB0000 | appended_at=2026-02-03T05:47:05.9396183+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1675 | mergedAt=02/03/2026 05:57:16 | mergeCommit=9f0d626d848ce1cf86fb7582ce2f2f63b27d8efa | BUNDLE_VERSION=v0.0.0+20260203_072104+main_e61b6b1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1675
+PR #1675 | audit=OK,WB0000 | appended_at=2026-02-03T07:21:07.7141432+00:00 | via=mep_append_evidence_line_full.ps1
