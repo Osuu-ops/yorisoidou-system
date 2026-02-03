@@ -471,14 +471,14 @@ try {
   $evidencePath = Join-Path $repoRoot "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
   # --- Bundled ---
   $bundledLines = __MEP_ReadTextLines -Path $bundledPath
-  $bundleVersion = ($bundledLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  $bundleVersion = ($bundledLines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
   if (-not $bundleVersion) { $bundleVersion = "<BUNDLE_VERSION_NOT_FOUND>" }
   Write-Output ""
   Write-Output "=== [Bundled Baseline] ==="
   Write-Output ("Bundled Path: " + $bundledPath)
   Write-Output ("Bundled " + $bundleVersion)
   # CARD headings
-  $cards = __MEP_GrepLines -Lines $bundledLines -Regex '^\s*##\s*CARD:\s*.+$' -Max 500
+  $cards = __MEP_GrepLines -Lines $bundledLines -Regex "^\s*##\s*CARD:\s*.+$" -Max 500
   __MEP_PrintSection -Title "Bundled Cards" -Lines $cards
   # Ruleset evidence: match broadly (token names may differ)
   $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
