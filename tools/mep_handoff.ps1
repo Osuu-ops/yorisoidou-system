@@ -180,3 +180,96 @@ catch {
 
 
 
+
+
+# === MEP_HANDOFF_EOF_PATCH_v1 (SAFE: EOF only) ===
+# Goal:
+# - Surface Bundled (docs/MEP/MEP_BUNDLE.md) + EVIDENCE_BUNDLE (docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md) evidence
+# - Surface mep_entry run evidence (Desktop\MEP_LOGS\ENTRY_AUDIT)
+# - Do not disturb existing handoff logic; only append additional sections.
+function __MEP_ReadTextLines {
+  param([string]$Path)
+  if (!(Test-Path $Path)) { return @() }
+  try { return (Get-Content -LiteralPath $Path -Encoding UTF8 -ErrorAction Stop) } catch { return (Get-Content -LiteralPath $Path -ErrorAction SilentlyContinue) }
+}
+function __MEP_GrepLines {
+  param(
+    [string[]]$Lines,
+    [string]$Regex,
+    [int]$Max = 200
+  )
+  $out = New-Object System.Collections.Generic.List[string]
+  foreach ($l in $Lines) {
+    if ($l -match $Regex) { $out.Add($l.Trim()) }
+    if ($out.Count -ge $Max) { break }
+  }
+  return $out.ToArray()
+}
+function __MEP_PrintSection {
+  param([string]$Title, [string[]]$Lines)
+  Write-Output ""
+  Write-Output ("=== [" + $Title + "] ===")
+  if (-not $Lines -or $Lines.Count -eq 0) {
+    Write-Output "(none)"
+    return
+  }
+  $Lines | Select-Object -Unique | ForEach-Object { Write-Output ("- " + $_) }
+}
+try {
+  $repoRoot = Split-Path -Parent $PSScriptRoot
+  $bundledPath  = Join-Path $repoRoot "docs/MEP/MEP_BUNDLE.md"
+  $evidencePath = Join-Path $repoRoot "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+  # --- Bundled ---
+  $bundledLines = __MEP_ReadTextLines -Path $bundledPath
+  $bundleVersion = ($bundledLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  if (-not $bundleVersion) { $bundleVersion = "<BUNDLE_VERSION_NOT_FOUND>" }
+  Write-Output ""
+  Write-Output "=== [Bundled Baseline] ==="
+  Write-Output ("Bundled Path: " + $bundledPath)
+  Write-Output ("Bundled " + $bundleVersion)
+  # CARD headings
+  $cards = __MEP_GrepLines -Lines $bundledLines -Regex '^\s*##\s*CARD:\s*.+$' -Max 500
+  __MEP_PrintSection -Title "Bundled Cards" -Lines $cards
+  # Ruleset evidence: match broadly (token names may differ)
+  $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
+  __MEP_PrintSection -Title "Bundled Ruleset/Checks Evidence (raw lines)" -Lines $rulesetHits
+  # PR evidence: match 1669/1671/1673 even if formatting differs
+  $prHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673)\b|pull/(1669|1671|1673)\b|\b(1669|1671|1673)\b)' -Max 200
+  __MEP_PrintSection -Title "Bundled PR Evidence (1669/1671/1673 raw lines)" -Lines $prHits
+  # --- EVIDENCE_BUNDLE (fallback / supplement) ---
+  $evidenceLines = __MEP_ReadTextLines -Path $evidencePath
+  Write-Output ""
+  Write-Output "=== [EVIDENCE_BUNDLE Baseline] ==="
+  Write-Output ("EVIDENCE_BUNDLE Path: " + $evidencePath)
+  $evVersion = ($evidenceLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  if ($evVersion) { Write-Output ("EVIDENCE_BUNDLE " + $evVersion) }
+  $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
+  __MEP_PrintSection -Title "EVIDENCE_BUNDLE Ruleset/Checks Evidence (raw lines)" -Lines $evRulesetHits
+  $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673)\b|pull/(1669|1671|1673)\b|\b(1669|1671|1673)\b)' -Max 200
+  __MEP_PrintSection -Title "EVIDENCE_BUNDLE PR Evidence (1669/1671/1673 raw lines)" -Lines $evPrHits
+  # --- mep_entry evidence (logs) ---
+  $entryDir = Join-Path $env:USERPROFILE "Desktop\MEP_LOGS\ENTRY_AUDIT"
+  Write-Output ""
+  Write-Output "=== [Entry Orchestrator Evidence] ==="
+  Write-Output ("ENTRY_AUDIT Dir: " + $entryDir)
+  $latest = $null
+  if (Test-Path $entryDir) {
+    $latest = Get-ChildItem -LiteralPath $entryDir -Recurse -File -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending |
+      Select-Object -First 1
+  }
+  if ($latest) {
+    Write-Output ("Latest Log: " + $latest.FullName)
+    $logLines = __MEP_ReadTextLines -Path $latest.FullName
+    # pull the key tokens aggressively
+    $entryHits = __MEP_GrepLines -Lines $logLines -Regex '(?i)(ENTRY_EXIT|STOP_REASON|ALL_DONE|Progress|Gate\s*\d+/\d+|mep_entry\.ps1)' -Max 200
+    __MEP_PrintSection -Title "ENTRY_AUDIT Key Lines (raw)" -Lines $entryHits
+  } else {
+    Write-Output "(no log file found)"
+  }
+} catch {
+  Write-Output ""
+  Write-Output "=== [EOF Patch Error] ==="
+  Write-Output ($_.Exception.Message)
+}
+# === /MEP_HANDOFF_EOF_PATCH_v1 ===

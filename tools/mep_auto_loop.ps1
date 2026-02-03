@@ -110,8 +110,25 @@ if ($stageVal -eq "DONE") { $ec = 0 }
   Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
   exit 0
 }
+# === DONE_OVERRIDE_BEFORE_STOP:BEGIN ===
+$stageVal = ""
+try { $stageVal = (Read-StageValue).Trim() } catch { $stageVal = "" }
+if ([string]::IsNullOrWhiteSpace($stageVal)) {
+  $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
+  if (Test-Path -LiteralPath $sf) {
+    $tmp = (Get-Content -LiteralPath $sf -ErrorAction SilentlyContinue | Select-Object -First 1)
+    if ($tmp) { $stageVal = $tmp.Trim() }
+  }
+}
+if ($stageVal -eq "DONE") {
+  $ec = 0
+  $gm=@{}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
+  Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
+  exit 0
+}
+# === DONE_OVERRIDE_BEFORE_STOP:END ===
+
 Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $ec -StopReason ("STAGE_" + $stageVal) -GateMatrix @{0="STOP"}
-if ($stageVal -eq "DONE") { $ec = 0 }
 
 if ([string]::IsNullOrWhiteSpace($stageVal)) {
   $sf = Join-Path $root ".mep\CURRENT_STAGE.txt"
