@@ -1,4 +1,24 @@
-
+# === AUTO_ANCHOR_EMIT_BEGIN (Bundled anchors) ===
+try {
+  $repoRoot = Split-Path -Parent $PSScriptRoot
+  if (-not (Test-Path $repoRoot)) { $repoRoot = (& git rev-parse --show-toplevel 2>$null) }
+  if (-not [string]::IsNullOrWhiteSpace($repoRoot)) {
+    $bundled = Join-Path $repoRoot "docs/MEP/MEP_BUNDLE.md"
+    if (Test-Path $bundled) {
+      $bvLine = Select-String -Path $bundled -Pattern "^\s*BUNDLE_VERSION\s*=" -ErrorAction Stop | Select-Object -First 1
+      if ($bvLine) {
+        $val = ($bvLine.Line -replace "^\s*BUNDLE_VERSION\s*=\s*","").Trim()
+        Write-Output ("BUNDLE_VERSION = " + $val)
+      }
+      $pr = 1676
+      $ev = Select-String -Path $bundled -Pattern ("PR #"+$pr) -ErrorAction SilentlyContinue | ForEach-Object { $_.Line }
+      foreach ($l in $ev) { Write-Output $l }
+    }
+  }
+} catch {
+  Write-Output ("[WARN] Bundled anchor emit failed: " + $_.Exception.Message)
+}
+# === AUTO_ANCHOR_EMIT_END (Bundled anchors) ===
 function Get-BundledAtFromBundled([string]$bundledPath){
   if (-not (Test-Path $bundledPath)) { return $null }
   $m = Select-String -Path $bundledPath -Pattern '^\s*BUNDLED_AT\s*=\s*(.+)\s*$' -AllMatches -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -478,7 +498,7 @@ try {
   Write-Output ("Bundled Path: " + $bundledPath)
   Write-Output ("Bundled " + $bundleVersion)
   # CARD headings
-  $cards = __MEP_GrepLines -Lines $bundledLines -Regex '^\s*##\s*CARD:\s*.+$' -Max 500
+  $cards = __MEP_GrepLines -Lines $bundledLines -Regex "^\s*##\s*CARD:\s*.+$" -Max 500
   __MEP_PrintSection -Title "Bundled Cards" -Lines $cards
   # Ruleset evidence: match broadly (token names may differ)
   $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex "(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK" -Max 300
