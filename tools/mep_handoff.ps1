@@ -196,7 +196,7 @@ catch {
 
 
 
-)) { $cards += $m.Line.Trim() }
+
   $key = @(
     "RULESET_REQUIRED_CHECKS_EVIDENCE",
     "RULESET_MERGE_BLOCK_EVIDENCE"
