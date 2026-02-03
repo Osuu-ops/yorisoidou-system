@@ -1,4 +1,0 @@
-op2 ci trigger
-ts=2026-02-04T05:01:26+09:00
-pr=1722
-branch=fix/op2-recovery-min-param_20260204_045701
