@@ -491,7 +491,7 @@ try {
   $evidencePath = Join-Path $repoRoot "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
   # --- Bundled ---
   $bundledLines = __MEP_ReadTextLines -Path $bundledPath
-  $bundleVersion = ($bundledLines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
+  $bundleVersion = ($bundledLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
   if (-not $bundleVersion) { $bundleVersion = "<BUNDLE_VERSION_NOT_FOUND>" }
   Write-Output ""
   Write-Output "=== [Bundled Baseline] ==="
