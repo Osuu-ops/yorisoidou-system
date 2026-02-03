@@ -9,6 +9,7 @@
 - tools/mep_entry.ps1
 - docs/MEP/90_CHANGES/HANDOFF_LATEST.md
 - platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
+- .github/workflows/state_summary_update_schedule.yml
 ## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
 - platform/MEP/00_GLOBAL/**
