@@ -25,6 +25,7 @@ function __ReadBundledEvidence {
   $lines = Get-Content -Path $p -Encoding UTF8
   $cards = @()
   foreach ($m in ($lines | Select-String -Pattern "^\s*##\s*CARD:\s*.+" -AllMatches)) { $cards += $m.Line }
+}
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
 try {
   $repoRoot = (git rev-parse --show-toplevel 2>$null)
