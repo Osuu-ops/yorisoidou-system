@@ -158,16 +158,56 @@ if($exitCode -eq 0){
 } else {
   Write-Host ("Progress: Gate " + $okUpto + "/" + $gateMax + " OK -> STOP at Gate " + $stopGate + " (exit=2, reason=" + $stopReason + ")")
 }
+try {
+  $gm = $null; $gmax = -1; $okUpto = -1; $stopGate = -1; $stopReason = $null
+  try { $gm = (Get-Variable -Name gateMap -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
+  try { $gmax = [int](Get-Variable -Name gateMax -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
+  try { $okUpto = [int](Get-Variable -Name okUpto -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
+  try { $stopGate = [int](Get-Variable -Name stopGate -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
+  try { $stopReason = (Get-Variable -Name stopReason -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
+  Set-MepProgressEnv -ExitCode $exitCode -GateMax $gmax -GateMap $gm -OkUpto $okUpto -StopGate $stopGate -StopReason $stopReason
+  Invoke-MepReporterSafely -ExitCode $exitCode
+} catch {}
 exit $exitCode
 # --- MEP_ENTRY_PROGRESS_ENV_BEGIN ---
-# Contract (SAFE):
-# - Do NOT add a new param() block here (PowerShell allows script param only at top).
-# - Entry will always publish MEP_AUTO_LOOP_EXIT from $LASTEXITCODE at end of execution.
-# - Other fields are "pass-through": if upstream already set ENV, reporter will print them.
+# Contract (GATE-AWARE, SAFE):
+# - Publish stable progress outputs via ENV for tools/mep_reporter.ps1.
+# - This block must be invoked BEFORE 'exit $exitCode' (wired below).
 function Set-MepProgressEnv {
-  param([int]$ExitCode)
+  param(
+    [int]$ExitCode,
+    [int]$GateMax,
+    [hashtable]$GateMap,
+    [int]$OkUpto,
+    [int]$StopGate,
+    [string]$StopReason
+  )
   try { $env:MEP_AUTO_LOOP_EXIT = [string]$ExitCode } catch {}
-  # pass-through: do not overwrite MEP_SRC / MEP_PRE / MEP_PROGRESS_* / MEP_GATES_*
+  if (-not $env:MEP_SRC) { $env:MEP_SRC = "DRAFT" }
+  if (-not $env:MEP_PRE) { $env:MEP_PRE = "OK" }
+  $label = ""
+  if ($GateMax -ge 0) {
+    if ($ExitCode -eq 0) {
+      $label = ("G{0}/{0} ALL_DONE" -f $GateMax)
+    } else {
+      $sr = if ($StopReason) { $StopReason } else { "STOP" }
+      if ($StopGate -ge 0) { $label = ("G{0}/{1} STOP {2}" -f $StopGate, $GateMax, $sr) }
+      else { $label = ("G?/{0} STOP {1}" -f $GateMax, $sr) }
+    }
+  }
+  if ($label) { $env:MEP_PROGRESS_LABEL = $label }
+  $env:MEP_PROGRESS_EXIT = [string]$ExitCode
+  if ($GateMax -ge 0) {
+    $all = New-Object System.Collections.Generic.List[string]
+    $ok  = New-Object System.Collections.Generic.List[string]
+    for ($i=0; $i -le $GateMax; $i++) {
+      $k = "G$($i)"
+      $all.Add($k) | Out-Null
+      if ($GateMap -and $GateMap.ContainsKey($k) -and $GateMap[$k] -eq "OK") { $ok.Add($k) | Out-Null }
+    }
+    $env:MEP_GATES    = ($all -join ",")
+    $env:MEP_GATES_OK = ($ok  -join ",")
+  }
 }
 function Invoke-MepReporterSafely {
   param([int]$ExitCode)
@@ -175,13 +215,6 @@ function Invoke-MepReporterSafely {
   if (!(Test-Path -LiteralPath $reporter)) { return }
   try { & $reporter -ExitCode $ExitCode } catch {}
 }
-try {
-  if ($MyInvocation.InvocationName -ne '.') {
-    $exit = 0
-    try { $exit = [int]$LASTEXITCODE } catch { $exit = 0 }
-    Set-MepProgressEnv -ExitCode $exit
-    Invoke-MepReporterSafely -ExitCode $exit
-  }
-} catch {}
 # --- MEP_ENTRY_PROGRESS_ENV_END ---
+
 
