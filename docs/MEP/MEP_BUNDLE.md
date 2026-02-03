@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260203_194633+main_cfbd3c5
+BUNDLE_VERSION = v0.0.0+20260204_042728+main_34b5a6e0
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -985,3 +985,66 @@ MERGED_AT=2026-02-03T20:43:56+09:00
 - EVIDENCE_BUNDLE_VERSION bumped by commit 84af90e0..
 - Child MEP follow ref: PR#1709 mergeCommit 99b1a5bc..
 
+<!-- appended: OP-3 jp audit template 2026-02-04T06:44:52+09:00 -->
+## OP-3 日本語監査テンプレ（一次根拠ブロック）
+【監査用引継ぎ（一次根拠のみ／確定事項）】
+REPO_ORIGIN
+https://github.com/Osuu-ops/yorisoidou-system.git
+基準ブランチ
+main
+HEAD（main）
+bd336142762dbc9c061aceb9fd6e9307d726e717
+PARENT_BUNDLED
+docs/MEP/MEP_BUNDLE.md
+EVIDENCE_BUNDLE
+docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+PARENT_BUNDLE_VERSION
+v0.0.0+20260204_042728+main_34b5a6e0
+EVIDENCE_BUNDLE_VERSION
+v0.0.0+20260204_035621+main+evidence-child
+確定（証跡）
+PR #1740
+mergedAt: 2026-02-03T22:04:24Z
+mergeCommit: bd336142762dbc9c061aceb9fd6e9307d726e717
+※上記はすべて main ブランチおよび gh / git の一次出力に基づく。
+
+<!-- appended: OP-1/OP-2 evidence-only draft 2026-02-04T07:34:43+09:00 -->
+## OP-1/OP-2 最小固定（一次根拠採取点） [DRAFT]
+### OP-1: EVIDENCE 追随（採取点）
+- 子Bundled: docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+  - 観測: BUNDLE_VERSION = v0.0.0+20260204_035621+main+evidence-child
+- EVIDENCE_BUNDLE_LAST_COMMIT（git object）
+  - 観測: 6e375cace69b1fe5af5507c2e34244576eb8a2ca 2026-02-04T06:15:35+09:00 fix(handoff): stub broken mep_handoff_min to unblock wrapper
+  - 観測コマンド: git cat-file -e 6e375cace69b1fe5af5507c2e34244576eb8a2ca^{commit}
+### OP-2: handoff 最小運用系（採取点）
+- mep_handoff_min（repo tree）
+  - 観測: tools/mep_handoff_min.ps1
+[DRAFT META]
+GENERATED_AT: 2026-02-04T07:34:43+09:00
+SOURCE_HEAD: 3021bf14ab0454ebe277c309e3f73bace134b7b4
+
+* - PR #1727 | mergedAt=02/03/2026 20:57:31 | mergeCommit=08230259a2d9ae18ff1f178ec69c37942b88f574 | BUNDLE_VERSION=v0.0.0+20260204_042728+main_34b5a6e0 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1727
+PR #1727 | audit=OK,WB0000 | appended_at=2026-02-04T07:57:48.2292713+09:00 | via=mep_append_evidence_line_full.ps1
+
+<!-- BEGIN: OP3_REQUIRED_CHECKS_EVIDENCE -->
+## CARD: OP-3 REQUIRED_CHECKS_EVIDENCE（required checks の一次根拠）  [Draft]
+### 目的
+- OP-3（Scope Guard / 非干渉ガード）を「会話ログではなく一次出力」で追跡できる形に、親Bundledへ固定する。
+### 固定（一次根拠：gh / git 出力）
+REPO_ORIGIN=https://github.com/Osuu-ops/yorisoidou-system.git
+BASE_BRANCH=main
+SOURCE_PR=1744
+PR_URL=https://github.com/Osuu-ops/yorisoidou-system/pull/1744
+mergedAt(UTC)=2026-02-03T22:37:14Z
+mergeCommit=ecfbd24092105b3014baa731fe2156c1d5f795b0
+recordedAt(local)=2026-02-04T07:58:35+09:00
+### Evidence: gh pr checks（要約）
+- All checks were successful
+- required checks (filtered):
+  - business-non-interference-guard  SUCCESS  2026-02-03 22:34:54  ->  2026-02-03 22:35:01
+  - Scope Guard (PR)                 SUCCESS  2026-02-03 22:34:53  ->  2026-02-03 22:34:57
+### 観測コマンド（再現用）
+- gh pr view 1744 -R Osuu-ops/yorisoidou-system --json mergedAt,mergeCommit,url
+- gh pr checks 1744 -R Osuu-ops/yorisoidou-system --watch=false
+- gh pr checks 1744 -R Osuu-ops/yorisoidou-system --json name,state,startedAt,completedAt
+<!-- END: OP3_REQUIRED_CHECKS_EVIDENCE -->
