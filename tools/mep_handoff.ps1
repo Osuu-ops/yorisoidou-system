@@ -1,4 +1,18 @@
-
+# === AUTO_ANCHOR_EMIT_BEGIN (Bundled anchors) ===
+try {
+  $__repoRoot = Split-Path -Parent $PSScriptRoot
+  $__bundled  = Join-Path $__repoRoot "docs/MEP/MEP_BUNDLE.md"
+  if (Test-Path $__bundled) {
+    $__bvLine = Select-String -Path $__bundled -Pattern '^\s*BUNDLE_VERSION\s*=' -ErrorAction Stop | Select-Object -First 1
+    if ($__bvLine) { Write-Output ("BUNDLE_VERSION = " + ($__bvLine.Line -replace '^\s*BUNDLE_VERSION\s*=\s*','').Trim()) }
+    $__pr = 1676
+    $__ev = Select-String -Path $__bundled -Pattern ("PR #"+$__pr) -ErrorAction SilentlyContinue | ForEach-Object { $_.Line }
+    foreach ($l in $__ev) { Write-Output $l }
+  }
+} catch {
+  Write-Output ("[WARN] Bundled anchor emit failed: " + $_.Exception.Message)
+}
+# === AUTO_ANCHOR_EMIT_END (Bundled anchors) ===
 function Get-BundledAtFromBundled([string]$bundledPath){
   if (-not (Test-Path $bundledPath)) { return $null }
   $m = Select-String -Path $bundledPath -Pattern '^\s*BUNDLED_AT\s*=\s*(.+)\s*$' -AllMatches -ErrorAction SilentlyContinue | Select-Object -First 1
