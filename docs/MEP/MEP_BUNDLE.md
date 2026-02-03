@@ -967,3 +967,21 @@ PR #1710 | audit=OK,WB0000 | appended_at=2026-02-04T04:46:30.1344388+09:00 | via
 ## CARDS
 - OP-2: 最小復帰（handoff破損時の復帰系） → docs/MEP_SUB/CARDS/OP-2_RECOVERY_MIN.md
 
+
+
+---
+## OP-3 PARENT_BUNDLED FOLLOW LEDGER
+
+### FIXED_1 PRIMARY_EVIDENCE
+REPO_ORIGIN=https://github.com/Osuu-ops/yorisoidou-system.git
+BASE_BRANCH=main
+HEAD(main)=7bf06fccd4c171013c50ef0d0f7f432505fb5e54
+PR=1717
+PR_URL=https://github.com/Osuu-ops/yorisoidou-system/pull/1717
+MERGED_AT=2026-02-03T20:43:56+09:00
+
+### FIXED_2 NON_VOLATILE_LEDGER_LINES
+- HEAD(main) matches PR#1717 mergeCommit
+- EVIDENCE_BUNDLE_VERSION bumped by commit 84af90e0..
+- Child MEP follow ref: PR#1709 mergeCommit 99b1a5bc..
+
