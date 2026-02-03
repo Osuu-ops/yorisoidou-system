@@ -484,16 +484,16 @@ try {
   $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
   __MEP_PrintSection -Title "Bundled Ruleset/Checks Evidence (raw lines)" -Lines $rulesetHits
   # PR evidence: match 1669/1671/1673 even if formatting differs
-  $prHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)' -Max 200
+  $prHits = __MEP_GrepLines -Lines $bundledLines -Regex "(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)" -Max 200
   __MEP_PrintSection -Title "Bundled PR Evidence (1669/1671/1673 raw lines)" -Lines $prHits
   # --- EVIDENCE_BUNDLE (fallback / supplement) ---
   $evidenceLines = __MEP_ReadTextLines -Path $evidencePath
   Write-Output ""
   Write-Output "=== [EVIDENCE_BUNDLE Baseline] ==="
   Write-Output ("EVIDENCE_BUNDLE Path: " + $evidencePath)
-  $evVersion = ($evidenceLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  $evVersion = ($evidenceLines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
   if ($evVersion) { Write-Output ("EVIDENCE_BUNDLE " + $evVersion) }
-  $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
+  $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex "(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK" -Max 300
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE Ruleset/Checks Evidence (raw lines)" -Lines $evRulesetHits
   $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673)\b|pull/(1669|1671|1673)\b|\b(1669|1671|1673)\b)' -Max 200
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE PR Evidence (1669/1671/1673 raw lines)" -Lines $evPrHits
