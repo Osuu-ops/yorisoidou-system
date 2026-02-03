@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260203_183554+main_539db06
+BUNDLE_VERSION = v0.0.0+20260203_193923+main_1b47cd7
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -959,3 +959,5 @@ NOTE
 - この追記は「親Bundledが最新HEAD/直近PR群に追随している」一次根拠を親Bundled側に固定する目的で追加。
 - 変更対象は docs/MEP/MEP_BUNDLE.md のみ。
 --------------------------------
+* - PR #1715 | mergedAt=02/03/2026 19:34:48 | mergeCommit=1b47cd7759217909c38bb72560ad444e25e1c6bd | BUNDLE_VERSION=v0.0.0+20260203_193923+main_1b47cd7 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1715
+PR #1715 | audit=OK,WB0000 | appended_at=2026-02-03T19:39:25.6676972+00:00 | via=mep_append_evidence_line_full.ps1
