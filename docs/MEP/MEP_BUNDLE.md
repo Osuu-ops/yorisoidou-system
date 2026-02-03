@@ -1023,3 +1023,28 @@ mergeCommit: bd336142762dbc9c061aceb9fd6e9307d726e717
 GENERATED_AT: 2026-02-04T07:34:43+09:00
 SOURCE_HEAD: 3021bf14ab0454ebe277c309e3f73bace134b7b4
 
+* - PR #1727 | mergedAt=02/03/2026 20:57:31 | mergeCommit=08230259a2d9ae18ff1f178ec69c37942b88f574 | BUNDLE_VERSION=v0.0.0+20260204_042728+main_34b5a6e0 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1727
+PR #1727 | audit=OK,WB0000 | appended_at=2026-02-04T07:57:48.2292713+09:00 | via=mep_append_evidence_line_full.ps1
+
+<!-- BEGIN: OP3_REQUIRED_CHECKS_EVIDENCE -->
+## CARD: OP-3 REQUIRED_CHECKS_EVIDENCE（required checks の一次根拠）  [Draft]
+### 目的
+- OP-3（Scope Guard / 非干渉ガード）を「会話ログではなく一次出力」で追跡できる形に、親Bundledへ固定する。
+### 固定（一次根拠：gh / git 出力）
+REPO_ORIGIN=https://github.com/Osuu-ops/yorisoidou-system.git
+BASE_BRANCH=main
+SOURCE_PR=1744
+PR_URL=https://github.com/Osuu-ops/yorisoidou-system/pull/1744
+mergedAt(UTC)=2026-02-03T22:37:14Z
+mergeCommit=ecfbd24092105b3014baa731fe2156c1d5f795b0
+recordedAt(local)=2026-02-04T07:58:35+09:00
+### Evidence: gh pr checks（要約）
+- All checks were successful
+- required checks (filtered):
+  - business-non-interference-guard  SUCCESS  2026-02-03 22:34:54  ->  2026-02-03 22:35:01
+  - Scope Guard (PR)                 SUCCESS  2026-02-03 22:34:53  ->  2026-02-03 22:34:57
+### 観測コマンド（再現用）
+- gh pr view 1744 -R Osuu-ops/yorisoidou-system --json mergedAt,mergeCommit,url
+- gh pr checks 1744 -R Osuu-ops/yorisoidou-system --watch=false
+- gh pr checks 1744 -R Osuu-ops/yorisoidou-system --json name,state,startedAt,completedAt
+<!-- END: OP3_REQUIRED_CHECKS_EVIDENCE -->
