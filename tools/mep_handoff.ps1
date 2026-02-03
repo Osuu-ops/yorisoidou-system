@@ -512,7 +512,7 @@ try {
     Write-Output ("Latest Log: " + $latest.FullName)
     $logLines = __MEP_ReadTextLines -Path $latest.FullName
     # pull the key tokens aggressively
-    $entryHits = __MEP_GrepLines -Lines $logLines -Regex '(?i)(ENTRY_EXIT|STOP_REASON|ALL_DONE|Progress|Gate\s*\d+/\d+|mep_entry\.ps1)' -Max 200
+    $entryHits = __MEP_GrepLines -Lines $logLines -Regex "(?i)(ENTRY_EXIT|STOP_REASON|ALL_DONE|Progress|Gate\s*\d+/\d+|mep_entry\.ps1)" -Max 200
     __MEP_PrintSection -Title "ENTRY_AUDIT Key Lines (raw)" -Lines $entryHits
   } else {
     Write-Output "(no log file found)"
