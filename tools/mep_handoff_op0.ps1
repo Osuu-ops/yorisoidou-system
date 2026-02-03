@@ -1,4 +1,4 @@
-# PowerShell is @' '@ safe (wrapper)
+# PowerShell is @' '@ safe (wrapper; OP-0 embedded as base64)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -8,100 +8,24 @@ $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
 
 function Fail($msg) { Write-Host "[FATAL] $msg" -ForegroundColor Red; exit 2 }
 
-# repo root
-$repoRoot = 
-try { $repoRoot = (git rev-parse --show-toplevel 2>$null).Trim() } catch {}
-if (-not $repoRoot) { Fail "repo root not found" }
+# repo root: tools\.. (no git invocation needed)
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $repoRoot
 
-# run base generator (capture all)
-$base = "C:/Users/Syuichi/OneDrive/ドキュメント/GitHub/yorisoidou-system/tools/mep_handoff_min.ps1"
-if (-not (Test-Path $base)) { Fail "base handoff generator not found: $base" }
+# base generator (prefer min)
+$baseMin  = Join-Path $PSScriptRoot "mep_handoff_min.ps1"
+$baseMain = Join-Path $PSScriptRoot "mep_handoff.ps1"
+if (Test-Path $baseMin) { $base = $baseMin } elseif (Test-Path $baseMain) { $base = $baseMain } else { Fail "base handoff generator not found under tools" }
 
 $baseOut = & $base 2>&1 | Out-String
 if (-not $baseOut.Trim()) { Fail "base handoff output empty" }
 
-# OP-0 excerpt (embedded, audit-side primary evidence)
-$op0 = @'
-SOURCE_MD: C:\Users\Syuichi\Desktop\MEP_LOGS\OP0_EVIDENCE_EXTRACT\op0_evidence_select_20260204_062145.md
-EXTRACT_AT: 2026-02-04T06:39:44+09:00
-HEAD(branch): 6882b4f79c72b5ee5afcdcc395935039f40474e3
-
-# OP-0 Evidence Select (paste-ready)
-
-INPUT_EXTRACT: C:\Users\Syuichi\Desktop\MEP_LOGS\OP0_EVIDENCE_EXTRACT\op0_evidence_extract_20260204_061514.md
-REPO_ROOT: C:/Users/Syuichi/OneDrive/ドキュメント/GitHub/yorisoidou-system
-HEAD(main): 00affc8118854727990fa0371874978a13e90b1e
-GENERATED_AT: 2026-02-04T06:21:45+09:00
-
-WARNING: HEAD drift vs HANDOFF_HEAD
-- HANDOFF_HEAD: 7bf06fccd4c171013c50ef0d0f7f432505fb5e54
-- CURRENT_HEAD: 00affc8118854727990fa0371874978a13e90b1e
-
-## 監査用引継ぎへ追記する『一次根拠（抜粋）』候補（上位抽出・重複/偏り抑制）
-
-### OP-0 ROOT_EVIDENCE 1 (score=380)
-SOURCE: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\MEP_BUNDLE.md
-RANGE : L0886-L0890 (hit=L0888)
-
-```text
-L0886: - required contexts (as required checks): (none detected via branch protection API)
-L0887: ### Evidence B: Rulesets (best-effort discovery)
-L0888: - id=11525505 name=main-required-checks target=branch enforcement=active required_checks=Scope Guard (PR) | business-non-interference-guard
-L0889: ### Evidence C: Observed checks on merged PR (snapshot)
-L0890: - sourcePR: #1669
-```
-
-### OP-0 ROOT_EVIDENCE 2 (score=380)
-SOURCE: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\MEP_BUNDLE.md
-RANGE : L0885-L0889 (hit=L0887)
-
-```text
-L0885: - required_status_checks.strict: 
-L0886: - required contexts (as required checks): (none detected via branch protection API)
-L0887: ### Evidence B: Rulesets (best-effort discovery)
-L0888: - id=11525505 name=main-required-checks target=branch enforcement=active required_checks=Scope Guard (PR) | business-non-interference-guard
-L0889: ### Evidence C: Observed checks on merged PR (snapshot)
-```
-
-### OP-0 ROOT_EVIDENCE 3 (score=380)
-SOURCE: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\MEP_BUNDLE.md
-RANGE : L0884-L0888 (hit=L0886)
-
-```text
-L0884: - protectionEnabled: True
-L0885: - required_status_checks.strict: 
-L0886: - required contexts (as required checks): (none detected via branch protection API)
-L0887: ### Evidence B: Rulesets (best-effort discovery)
-L0888: - id=11525505 name=main-required-checks target=branch enforcement=active required_checks=Scope Guard (PR) | business-non-interference-guard
-```
-
-### OP-0 ROOT_EVIDENCE 4 (score=380)
-SOURCE: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\MEP_BUNDLE.md
-RANGE : L0837-L0841 (hit=L0839)
-
-```text
-L0837: * - PR #1619 | mergedAt=02/01/2026 21:09:00 | mergeCommit=e86fb951e598609a6c989976b3daef749e933384 | BUNDLE_VERSION=v0.0.0+20260202_084902+main_635760c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1619
-L0838: PR #1619 | audit=OK,WB0000 | appended_at=2026-02-02T08:49:13.5984059+00:00 | via=mep_append_evidence_line_full.ps1
-L0839: * RULESET_LEDGER | main-required-checks(id=11525505) enforcement=active required_checks=[business-non-interference-guard, Scope Guard (PR)] verified_merge_block=PR#1633 base-branch-policy-prohibits-merge observed_at=2026-02-02T12:11:09Z
-L0840: 
-L0841: 
-```
-
-### OP-0 ROOT_EVIDENCE 5 (score=355)
-SOURCE: C:\Users\Syuichi\OneDrive\ドキュメント\GitHub\yorisoidou-system\docs\MEP\MEP_BUNDLE.md
-RANGE : L0918-L0922 (hit=L0920)
-
-```text
-L0918: - id: 11525505
-L0919: - enforcement: active
-L0920: - required checks (contexts): business-non-interference-guard | Scope Guard (PR)
-L0921: ### Block evidence (intentional PR; DO NOT MERGE)
-L0922: - pr: #1672
-```
+# OP-0 excerpt decode
+$op0_b64 = @'
+U09VUkNFX01EOiBDOlxVc2Vyc1xTeXVpY2hpXERlc2t0b3BcTUVQX0xPR1NcT1AwX0VWSURFTkNFX0VYVFJBQ1Rcb3AwX2V2aWRlbmNlX3NlbGVjdF8yMDI2MDIwNF8wNjIxNDUubWQKRVhUUkFDVF9BVDogMjAyNi0wMi0wNFQwNjo0OToyMSswOTowMApIRUFEKHByLWJyYW5jaCk6IGYzOTQyMDMwZTA3YzEzZWYyNjRiMTZiYjg1ZWJlN2YxYjBlOGMyY2QKIyBPUC0wIEV2aWRlbmNlIFNlbGVjdCAocGFzdGUtcmVhZHkpCgpJTlBVVF9FWFRSQUNUOiBDOlxVc2Vyc1xTeXVpY2hpXERlc2t0b3BcTUVQX0xPR1NcT1AwX0VWSURFTkNFX0VYVFJBQ1Rcb3AwX2V2aWRlbmNlX2V4dHJhY3RfMjAyNjAyMDRfMDYxNTE0Lm1kClJFUE9fUk9PVDogQzovVXNlcnMvU3l1aWNoaS9PbmVEcml2ZS/jg4njgq3jg6Xjg6Hjg7Pjg4gvR2l0SHViL3lvcmlzb2lkb3Utc3lzdGVtCkhFQUQobWFpbik6IDAwYWZmYzgxMTg4NTQ3Mjc5OTBmYTAzNzE4NzQ5NzhhMTNlOTBiMWUKR0VORVJBVEVEX0FUOiAyMDI2LTAyLTA0VDA2OjIxOjQ1KzA5OjAwCgpXQVJOSU5HOiBIRUFEIGRyaWZ0IHZzIEhBTkRPRkZfSEVBRAotIEhBTkRPRkZfSEVBRDogN2JmMDZmY2NkNGMxNzEwMTNjNTBlZjBkMGY3ZjQzMjUwNWZiNWU1NAotIENVUlJFTlRfSEVBRDogMDBhZmZjODExODg1NDcyNzk5MGZhMDM3MTg3NDk3OGExM2U5MGIxZQoKIyMg55uj5p+755So5byV57aZ44GO44G46L+96KiY44GZ44KL44CO5LiA5qyh5qC55oug77yI5oqc57KL77yJ44CP5YCZ6KOc77yI5LiK5L2N5oq95Ye644O76YeN6KSHL+WBj+OCiuaKkeWItu+8iQoKIyMjIE9QLTAgUk9PVF9FVklERU5DRSAxIChzY29yZT0zODApClNPVVJDRTogQzpcVXNlcnNcU3l1aWNoaVxPbmVEcml2ZVzjg4njgq3jg6Xjg6Hjg7Pjg4hcR2l0SHViXHlvcmlzb2lkb3Utc3lzdGVtXGRvY3NcTUVQXE1FUF9CVU5ETEUubWQKUkFOR0UgOiBMMDg4Ni1MMDg5MCAoaGl0PUwwODg4KQoKYGBgdGV4dApMMDg4NjogLSByZXF1aXJlZCBjb250ZXh0cyAoYXMgcmVxdWlyZWQgY2hlY2tzKTogKG5vbmUgZGV0ZWN0ZWQgdmlhIGJyYW5jaCBwcm90ZWN0aW9uIEFQSSkKTDA4ODc6ICMjIyBFdmlkZW5jZSBCOiBSdWxlc2V0cyAoYmVzdC1lZmZvcnQgZGlzY292ZXJ5KQpMMDg4ODogLSBpZD0xMTUyNTUwNSBuYW1lPW1haW4tcmVxdWlyZWQtY2hlY2tzIHRhcmdldD1icmFuY2ggZW5mb3JjZW1lbnQ9YWN0aXZlIHJlcXVpcmVkX2NoZWNrcz1TY29wZSBHdWFyZCAoUFIpIHwgYnVzaW5lc3Mtbm9uLWludGVyZmVyZW5jZS1ndWFyZApMMDg4OTogIyMjIEV2aWRlbmNlIEM6IE9ic2VydmVkIGNoZWNrcyBvbiBtZXJnZWQgUFIgKHNuYXBzaG90KQpMMDg5MDogLSBzb3VyY2VQUjogIzE2NjkKYGBgCgojIyMgT1AtMCBST09UX0VWSURFTkNFIDIgKHNjb3JlPTM4MCkKU09VUkNFOiBDOlxVc2Vyc1xTeXVpY2hpXE9uZURyaXZlXOODieOCreODpeODoeODs+ODiFxHaXRIdWJceW9yaXNvaWRvdS1zeXN0ZW1cZG9jc1xNRVBcTUVQX0JVTkRMRS5tZApSQU5HRSA6IEwwODg1LUwwODg5IChoaXQ9TDA4ODcpCgpgYGB0ZXh0CkwwODg1OiAtIHJlcXVpcmVkX3N0YXR1c19jaGVja3Muc3RyaWN0OiAKTDA4ODY6IC0gcmVxdWlyZWQgY29udGV4dHMgKGFzIHJlcXVpcmVkIGNoZWNrcyk6IChub25lIGRldGVjdGVkIHZpYSBicmFuY2ggcHJvdGVjdGlvbiBBUEkpCkwwODg3OiAjIyMgRXZpZGVuY2UgQjogUnVsZXNldHMgKGJlc3QtZWZmb3J0IGRpc2NvdmVyeSkKTDA4ODg6IC0gaWQ9MTE1MjU1MDUgbmFtZT1tYWluLXJlcXVpcmVkLWNoZWNrcyB0YXJnZXQ9YnJhbmNoIGVuZm9yY2VtZW50PWFjdGl2ZSByZXF1aXJlZF9jaGVja3M9U2NvcGUgR3VhcmQgKFBSKSB8IGJ1c2luZXNzLW5vbi1pbnRlcmZlcmVuY2UtZ3VhcmQKTDA4ODk6ICMjIyBFdmlkZW5jZSBDOiBPYnNlcnZlZCBjaGVja3Mgb24gbWVyZ2VkIFBSIChzbmFwc2hvdCkKYGBgCgojIyMgT1AtMCBST09UX0VWSURFTkNFIDMgKHNjb3JlPTM4MCkKU09VUkNFOiBDOlxVc2Vyc1xTeXVpY2hpXE9uZURyaXZlXOODieOCreODpeODoeODs+ODiFxHaXRIdWJceW9yaXNvaWRvdS1zeXN0ZW1cZG9jc1xNRVBcTUVQX0JVTkRMRS5tZApSQU5HRSA6IEwwODg0LUwwODg4IChoaXQ9TDA4ODYpCgpgYGB0ZXh0CkwwODg0OiAtIHByb3RlY3Rpb25FbmFibGVkOiBUcnVlCkwwODg1OiAtIHJlcXVpcmVkX3N0YXR1c19jaGVja3Muc3RyaWN0OiAKTDA4ODY6IC0gcmVxdWlyZWQgY29udGV4dHMgKGFzIHJlcXVpcmVkIGNoZWNrcyk6IChub25lIGRldGVjdGVkIHZpYSBicmFuY2ggcHJvdGVjdGlvbiBBUEkpCkwwODg3OiAjIyMgRXZpZGVuY2UgQjogUnVsZXNldHMgKGJlc3QtZWZmb3J0IGRpc2NvdmVyeSkKTDA4ODg6IC0gaWQ9MTE1MjU1MDUgbmFtZT1tYWluLXJlcXVpcmVkLWNoZWNrcyB0YXJnZXQ9YnJhbmNoIGVuZm9yY2VtZW50PWFjdGl2ZSByZXF1aXJlZF9jaGVja3M9U2NvcGUgR3VhcmQgKFBSKSB8IGJ1c2luZXNzLW5vbi1pbnRlcmZlcmVuY2UtZ3VhcmQKYGBgCgojIyMgT1AtMCBST09UX0VWSURFTkNFIDQgKHNjb3JlPTM4MCkKU09VUkNFOiBDOlxVc2Vyc1xTeXVpY2hpXE9uZURyaXZlXOODieOCreODpeODoeODs+ODiFxHaXRIdWJceW9yaXNvaWRvdS1zeXN0ZW1cZG9jc1xNRVBcTUVQX0JVTkRMRS5tZApSQU5HRSA6IEwwODM3LUwwODQxIChoaXQ9TDA4MzkpCgpgYGB0ZXh0CkwwODM3OiAqIC0gUFIgIzE2MTkgfCBtZXJnZWRBdD0wMi8wMS8yMDI2IDIxOjA5OjAwIHwgbWVyZ2VDb21taXQ9ZTg2ZmI5NTFlNTk4NjA5YTZjOTg5OTc2YjNkYWVmNzQ5ZTkzMzM4NCB8IEJVTkRMRV9WRVJTSU9OPXYwLjAuMCsyMDI2MDIwMl8wODQ5MDIrbWFpbl82MzU3NjBjIHwgYXVkaXQ9T0ssV0IwMDAwIHwgaHR0cHM6Ly9naXRodWIuY29tL09zdXUtb3BzL3lvcmlzb2lkb3Utc3lzdGVtL3B1bGwvMTYxOQpMMDgzODogUFIgIzE2MTkgfCBhdWRpdD1PSyxXQjAwMDAgfCBhcHBlbmRlZF9hdD0yMDI2LTAyLTAyVDA4OjQ5OjEzLjU5ODQwNTkrMDA6MDAgfCB2aWE9bWVwX2FwcGVuZF9ldmlkZW5jZV9saW5lX2Z1bGwucHMxCkwwODM5OiAqIFJVTEVTRVRfTEVER0VSIHwgbWFpbi1yZXF1aXJlZC1jaGVja3MoaWQ9MTE1MjU1MDUpIGVuZm9yY2VtZW50PWFjdGl2ZSByZXF1aXJlZF9jaGVja3M9W2J1c2luZXNzLW5vbi1pbnRlcmZlcmVuY2UtZ3VhcmQsIFNjb3BlIEd1YXJkIChQUildIHZlcmlmaWVkX21lcmdlX2Jsb2NrPVBSIzE2MzMgYmFzZS1icmFuY2gtcG9saWN5LXByb2hpYml0cy1tZXJnZSBvYnNlcnZlZF9hdD0yMDI2LTAyLTAyVDEyOjExOjA5WgpMMDg0MDogCkwwODQxOiAKYGBgCgojIyMgT1AtMCBST09UX0VWSURFTkNFIDUgKHNjb3JlPTM1NSkKU09VUkNFOiBDOlxVc2Vyc1xTeXVpY2hpXE9uZURyaXZlXOODieOCreODpeODoeODs+ODiFxHaXRIdWJceW9yaXNvaWRvdS1zeXN0ZW1cZG9jc1xNRVBcTUVQX0JVTkRMRS5tZApSQU5HRSA6IEwwOTE4LUwwOTIyIChoaXQ9TDA5MjApCgpgYGB0ZXh0CkwwOTE4OiAtIGlkOiAxMTUyNTUwNQpMMDkxOTogLSBlbmZvcmNlbWVudDogYWN0aXZlCkwwOTIwOiAtIHJlcXVpcmVkIGNoZWNrcyAoY29udGV4dHMpOiBidXNpbmVzcy1ub24taW50ZXJmZXJlbmNlLWd1YXJkIHwgU2NvcGUgR3VhcmQgKFBSKQpMMDkyMTogIyMjIEJsb2NrIGV2aWRlbmNlIChpbnRlbnRpb25hbCBQUjsgRE8gTk9UIE1FUkdFKQpMMDkyMjogLSBwcjogIzE2NzIKYGBg
 '@
+$op0 = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($op0_b64))
 
-# append under audit section (simple + deterministic)
 $stamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ssK"
 $append = @"
 【OP-0 一次根拠追記（監査用：抜粋）】
@@ -113,5 +37,3 @@ $op0
 $baseOut.TrimEnd() + "
 
 " + $append
-
-
