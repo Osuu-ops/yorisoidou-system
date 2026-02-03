@@ -20,3 +20,4 @@
 - platform/MEP/90_CHANGES/WRITEBACK_DISPATCH_ENTRY.md
 - tools/mep_dispatch_audit.ps1
 - tools/mep_handoff_regen_latest.ps1
+- tools/mep_recover_min.ps1
