@@ -42,3 +42,4 @@ docs/MEP_SUB/EVIDENCE/RECOVERY_*/
 
 RUN_*.log
 RUN_*_failed.log
+aws_sdk_*.log
