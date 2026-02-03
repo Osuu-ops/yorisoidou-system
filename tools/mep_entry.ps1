@@ -159,13 +159,8 @@ if($exitCode -eq 0){
   Write-Host ("Progress: Gate " + $okUpto + "/" + $gateMax + " OK -> STOP at Gate " + $stopGate + " (exit=2, reason=" + $stopReason + ")")
 }
 try {
-  $gm = $null; $gmax = -1; $okUpto = -1; $stopGate = -1; $stopReason = $null
-  try { $gm = (Get-Variable -Name gateMap -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
-  try { $gmax = [int](Get-Variable -Name gateMax -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
-  try { $okUpto = [int](Get-Variable -Name okUpto -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
-  try { $stopGate = [int](Get-Variable -Name stopGate -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
-  try { $stopReason = (Get-Variable -Name stopReason -Scope 0 -ErrorAction SilentlyContinue).Value } catch {}
-  Set-MepProgressEnv -ExitCode $exitCode -GateMax $gmax -GateMap $gm -OkUpto $okUpto -StopGate $stopGate -StopReason $stopReason
+  # Direct variable references (stable): gateMap/gateMax/okUpto/stopGate/stopReason/exitCode are produced by entry itself.
+  Set-MepProgressEnv -ExitCode $exitCode -GateMax $gateMax -GateMap $gateMap -OkUpto $okUpto -StopGate $stopGate -StopReason $stopReason
   Invoke-MepReporterSafely -ExitCode $exitCode
 } catch {}
 exit $exitCode
@@ -216,5 +211,6 @@ function Invoke-MepReporterSafely {
   try { & $reporter -ExitCode $ExitCode } catch {}
 }
 # --- MEP_ENTRY_PROGRESS_ENV_END ---
+
 
 
