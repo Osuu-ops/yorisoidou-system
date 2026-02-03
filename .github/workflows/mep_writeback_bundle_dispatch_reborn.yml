@@ -27,7 +27,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PR_IN="${{ env.PR_NUMBER }}"
+          PR_IN="${{ inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
             echo "[export] inputs.pr_number=0 => resolve latest merged PR into base=main"
@@ -53,7 +53,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PR_IN="${{ env.PR_NUMBER }}"
+          PR_IN="${{ inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
             PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
