@@ -108,3 +108,62 @@ function Write-MepRun {
   Write-Host "--------------------------------"
   Write-GateReport -GateMax $GateMax -GateOkUpto $GateOkUpto -GateStopAt $GateStopAt -ExitCode $ExitCode -StopReason $StopReason -GateMatrix $GateMatrix
 }
+# --- MEP_REPORTER_PROGRESS_CONTRACT_BEGIN ---
+# Purpose:
+#  - Print the "entrance→exit non-interference" progress contract lines in a stable format.
+#  - Values are read from ENV to avoid tight coupling; if not provided, nothing is printed.
+# ENV contract (optional):
+#  - MEP_AUTO_LOOP_EXIT        : numeric exit code for the auto loop
+#  - MEP_SRC                  : e.g. DRAFT / FIXATE
+#  - MEP_PRE                  : e.g. OK / NG
+#  - MEP_PROGRESS_LABEL       : e.g. G10/10 ALL_DONE
+#  - MEP_PROGRESS_EXIT        : e.g. 0 / 1 / 2
+#  - MEP_GATES                : comma list like "G0,G1,G2,...,G10"
+#  - MEP_GATES_OK             : comma list like "G0,G1,G2,...,G10" (subset)
+function Write-MepProgressContract {
+  param([int]$ExitCode)
+  # 1) human-gate (already used elsewhere): keep existing behavior, but also emit env-based contract lines
+  if ($env:MEP_AUTO_LOOP_EXIT) {
+    Write-Host ("MEP_AUTO_LOOP_EXIT=" + $env:MEP_AUTO_LOOP_EXIT)
+  }
+  if ($env:MEP_SRC -or $env:MEP_PRE) {
+    $src = if ($env:MEP_SRC) { $env:MEP_SRC } else { "" }
+    $pre = if ($env:MEP_PRE) { $env:MEP_PRE } else { "" }
+    if ($src -and $pre) { Write-Host ("Src: " + $src + " / Pre: " + $pre) }
+    elseif ($src)       { Write-Host ("Src: " + $src) }
+    elseif ($pre)       { Write-Host ("Pre: " + $pre) }
+  }
+  if ($env:MEP_PROGRESS_LABEL -or $env:MEP_PROGRESS_EXIT) {
+    $label = if ($env:MEP_PROGRESS_LABEL) { $env:MEP_PROGRESS_LABEL } else { "" }
+    $pexit = if ($env:MEP_PROGRESS_EXIT)  { $env:MEP_PROGRESS_EXIT }  else { "" }
+    if ($label -and $pexit) { Write-Host ("Progress: " + $label + " (exit=" + $pexit + ")") }
+    elseif ($label)         { Write-Host ("Progress: " + $label) }
+    elseif ($pexit)         { Write-Host ("Progress: (exit=" + $pexit + ")") }
+  }
+  # Gate checklist
+  if ($env:MEP_GATES) {
+    $all = @($env:MEP_GATES.Split(",") | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    $ok  = @()
+    if ($env:MEP_GATES_OK) {
+      $ok = @($env:MEP_GATES_OK.Split(",") | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    }
+    foreach ($g in $all) {
+      if ($ok -contains $g) { Write-Host ("$g ✅") } else { Write-Host ("$g ❌") }
+    }
+  }
+}
+# Hook point:
+# If the reporter already has a final "summary output" area, call Write-MepProgressContract there.
+# Minimal safety: call it at end of script when invoked directly (does nothing if env not set).
+try {
+  if ($MyInvocation.InvocationName -ne '.') {
+    if ($PSBoundParameters.ContainsKey('ExitCode')) {
+      Write-MepProgressContract -ExitCode $ExitCode
+    } else {
+      Write-MepProgressContract -ExitCode 0
+    }
+  }
+} catch {
+  # reporter must never crash just because contract vars are absent
+}
+# --- MEP_REPORTER_PROGRESS_CONTRACT_END ---
