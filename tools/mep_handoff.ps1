@@ -257,7 +257,7 @@ function Get-MepEvidenceAuditMarkers {
     throw "EVIDENCE_BUNDLE not found: $EvidenceRel"
   }
   $lines = Get-Content -LiteralPath $evidenceAbs -Encoding UTF8 -Tail $Tail
-  $picked = $lines | Where-Object { $_ -match 'audit=OK,WB0000' } | Select-Object -Last $Take
+  $picked = $lines | Where-Object { $_ -match "audit=OK,WB0000" } | Select-Object -Last $Take
   return ,$picked
 }
 function Info([string]$m){ Write-Host $m -ForegroundColor Cyan }
