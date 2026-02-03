@@ -19,8 +19,9 @@
 - tools/mep_entry.ps1
 - tools/mep_reporter.ps1
 - tools/mep_writeback_create_pr.ps1
-## 非対象（Scope-OUT｜明示）
 - platform/MEP/01_CORE/**
+- platform/MEP/01_CORE/cards/COMPLETION_B_RULESET_REQUIRED_CHECKS_SYSTEM_SPEC.md
+## 非対象（Scope-OUT｜明示）
 - platform/MEP/00_GLOBAL/**
 ## 判断が必要な点（YES/NO）
 - なし（必要が生じた場合のみ追記して停止する）
