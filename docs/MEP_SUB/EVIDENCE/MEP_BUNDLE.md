@@ -55,3 +55,5 @@ PR #1567 | audit=OK,WB0000 | appended_at=2026-02-01T18:23:56.2688033+00:00 | via
 * - PR #1675 | mergedAt=02/03/2026 05:57:16 | mergeCommit=9f0d626d848ce1cf86fb7582ce2f2f63b27d8efa | BUNDLE_VERSION=v0.0.0+20260203_072104+main_e61b6b1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1675
 PR #1675 | audit=OK,WB0000 | appended_at=2026-02-03T07:21:07.7141432+00:00 | via=mep_append_evidence_line_full.ps1
 
+* - PR #1693 | mergedAt=02/03/2026 17:57:35 | mergeCommit=549eec03335f7d9c4a29df96d55d06c6611cf43f | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1693
+PR #1693 | audit=OK,WB0000 | appended_at=2026-02-04T04:28:50.6300967+09:00 | via=mep_append_evidence_line_full.ps1
