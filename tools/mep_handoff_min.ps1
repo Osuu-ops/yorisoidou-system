@@ -1,6 +1,27 @@
+param(
+  [int]$TargetPr
+)
+
 # tools/mep_handoff_min.ps1
 # Minimal handoff generator (safe: no here-strings, short lines).
 Set-StrictMode -Version Latest
+function __MEP_Resolve-PrNumber {
+  if ($TargetPr) { return [int]$TargetPr }
+  foreach ($e in @('MEP_TARGET_PR','PR_NUMBER','MEP_PR_NUMBER','TARGET_PR','GITHUB_PR_NUMBER')) {
+    $v = [string]([Environment]::GetEnvironmentVariable($e))
+    if ($v) {
+      $m = [regex]::Match($v, '(\d{1,8})')
+      if ($m.Success) { return [int]$m.Groups[1].Value }
+    }
+  }
+  try {
+    $m = (git log --merges -n 1 --pretty=format:"%s" 2>$null)
+    $mm = [regex]::Match([string]$m, '#(\d{1,8})')
+    if ($mm.Success) { return [int]$mm.Groups[1].Value }
+  } catch {}
+  return $null
+}
+
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 try { [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false) } catch {}
