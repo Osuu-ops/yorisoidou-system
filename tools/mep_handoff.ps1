@@ -24,7 +24,8 @@ function __ReadBundledEvidence {
   # Extract: CARD headings + key evidence tokens + recent PR evidence lines (best-effort)
   $lines = Get-Content -Path $p -Encoding UTF8
   $cards = @()
-  foreach ($m in ($lines | Select-String -Pattern '^\s*##\s*CARD:\s*.+
+  foreach ($m in ($lines | Select-String -Pattern "^\s*##\s*CARD:\s*.+" -AllMatches)) { $cards += $m.Line }
+}
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
 try {
   $repoRoot = (git rev-parse --show-toplevel 2>$null)
@@ -62,7 +63,7 @@ function Get-MepEvidenceAuditMarkers {
     throw "EVIDENCE_BUNDLE not found: $EvidenceRel"
   }
   $lines = Get-Content -LiteralPath $evidenceAbs -Encoding UTF8 -Tail $Tail
-  $picked = $lines | Where-Object { $_ -match 'audit=OK,WB0000' } | Select-Object -Last $Take
+  $picked = $lines | Where-Object { $_ -match "audit=OK,WB0000" } | Select-Object -Last $Take
   return ,$picked
 }
 function Info([string]$m){ Write-Host $m -ForegroundColor Cyan }
@@ -148,7 +149,7 @@ try {
   $out.Add("REPO_ORIGIN: " + $repoUrl)
 
 ## Scope-IN
-- tools/mep_handoff.ps1
+$out.Add("- tools/mep_handoff.ps1")
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
@@ -195,7 +196,7 @@ catch {
 
 
 
-)) { $cards += $m.Line.Trim() }
+
   $key = @(
     "RULESET_REQUIRED_CHECKS_EVIDENCE",
     "RULESET_MERGE_BLOCK_EVIDENCE"
@@ -217,7 +218,7 @@ catch {
     key_hits=$keyHits
     pr_hits=$prHits
   }
-}
+
 # === /MEP_HANDOFF_BUNDLED_PATCH_v1 ===
 
 # --- StrictMode guard: ensure $evidencePath is always initialized (avoid unbound variable) ---
@@ -257,7 +258,7 @@ function Get-MepEvidenceAuditMarkers {
     throw "EVIDENCE_BUNDLE not found: $EvidenceRel"
   }
   $lines = Get-Content -LiteralPath $evidenceAbs -Encoding UTF8 -Tail $Tail
-  $picked = $lines | Where-Object { $_ -match 'audit=OK,WB0000' } | Select-Object -Last $Take
+  $picked = $lines | Where-Object { $_ -match "audit=OK,WB0000" } | Select-Object -Last $Take
   return ,$picked
 }
 function Info([string]$m){ Write-Host $m -ForegroundColor Cyan }
@@ -343,7 +344,7 @@ try {
   $out.Add("REPO_ORIGIN: " + $repoUrl)
 
 ## Scope-IN
-- tools/mep_handoff.ps1
+$out.Add("- tools/mep_handoff.ps1")
   $out.Add("HEAD: " + $head)
   $out.Add($bundleVersion)
   $out.Add("PARENT_BUNDLED_AT: " + $parentBundledAt)
@@ -471,31 +472,31 @@ try {
   $evidencePath = Join-Path $repoRoot "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
   # --- Bundled ---
   $bundledLines = __MEP_ReadTextLines -Path $bundledPath
-  $bundleVersion = ($bundledLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  $bundleVersion = ($bundledLines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
   if (-not $bundleVersion) { $bundleVersion = "<BUNDLE_VERSION_NOT_FOUND>" }
   Write-Output ""
   Write-Output "=== [Bundled Baseline] ==="
   Write-Output ("Bundled Path: " + $bundledPath)
   Write-Output ("Bundled " + $bundleVersion)
   # CARD headings
-  $cards = __MEP_GrepLines -Lines $bundledLines -Regex '^\s*##\s*CARD:\s*.+$' -Max 500
+  $cards = __MEP_GrepLines -Lines $bundledLines -Regex "^\s*##\s*CARD:\s*.+$" -Max 500
   __MEP_PrintSection -Title "Bundled Cards" -Lines $cards
   # Ruleset evidence: match broadly (token names may differ)
-  $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
+  $rulesetHits = __MEP_GrepLines -Lines $bundledLines -Regex "(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK" -Max 300
   __MEP_PrintSection -Title "Bundled Ruleset/Checks Evidence (raw lines)" -Lines $rulesetHits
   # PR evidence: match 1669/1671/1673 even if formatting differs
-  $prHits = __MEP_GrepLines -Lines $bundledLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)' -Max 200
+  $prHits = __MEP_GrepLines -Lines $bundledLines -Regex "(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)" -Max 200
   __MEP_PrintSection -Title "Bundled PR Evidence (1669/1671/1673 raw lines)" -Lines $prHits
   # --- EVIDENCE_BUNDLE (fallback / supplement) ---
   $evidenceLines = __MEP_ReadTextLines -Path $evidencePath
   Write-Output ""
   Write-Output "=== [EVIDENCE_BUNDLE Baseline] ==="
   Write-Output ("EVIDENCE_BUNDLE Path: " + $evidencePath)
-  $evVersion = ($evidenceLines | Select-String -Pattern '^\s*BUNDLE_VERSION\s*=' -List -ErrorAction SilentlyContinue).Line
+  $evVersion = ($evidenceLines | Select-String -Pattern "^\s*BUNDLE_VERSION\s*=" -List -ErrorAction SilentlyContinue).Line
   if ($evVersion) { Write-Output ("EVIDENCE_BUNDLE " + $evVersion) }
-  $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK' -Max 300
+  $evRulesetHits = __MEP_GrepLines -Lines $evidenceLines -Regex "(?i)RULESET_|Required\s*checks|merge\s*block|MERGE_BLOCK" -Max 300
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE Ruleset/Checks Evidence (raw lines)" -Lines $evRulesetHits
-  $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex '(?i)(PR\s*#\s*(1669|1671|1673)\b|pull/(1669|1671|1673)\b|\b(1669|1671|1673)\b)' -Max 200
+  $evPrHits = __MEP_GrepLines -Lines $evidenceLines -Regex "(?i)(PR\s*#\s*(1669|1671|1673|1676)\b|pull/(1669|1671|1673|1676)\b|\b(1669|1671|1673|1676)\b)" -Max 200
   __MEP_PrintSection -Title "EVIDENCE_BUNDLE PR Evidence (1669/1671/1673 raw lines)" -Lines $evPrHits
   # --- mep_entry evidence (logs) ---
   $entryDir = Join-Path $env:USERPROFILE "Desktop\MEP_LOGS\ENTRY_AUDIT"
@@ -512,7 +513,7 @@ try {
     Write-Output ("Latest Log: " + $latest.FullName)
     $logLines = __MEP_ReadTextLines -Path $latest.FullName
     # pull the key tokens aggressively
-    $entryHits = __MEP_GrepLines -Lines $logLines -Regex '(?i)(ENTRY_EXIT|STOP_REASON|ALL_DONE|Progress|Gate\s*\d+/\d+|mep_entry\.ps1)' -Max 200
+    $entryHits = __MEP_GrepLines -Lines $logLines -Regex "(?i)(ENTRY_EXIT|STOP_REASON|ALL_DONE|Progress|Gate\s*\d+/\d+|mep_entry\.ps1)" -Max 200
     __MEP_PrintSection -Title "ENTRY_AUDIT Key Lines (raw)" -Lines $entryHits
   } else {
     Write-Output "(no log file found)"
