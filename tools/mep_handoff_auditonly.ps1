@@ -62,7 +62,7 @@ try {
     New-Item -ItemType Directory -Force -Path (Split-Path $p) | Out-Null
     $n = 0
     $out = New-Object System.Collections.Generic.List[string]
-    for ($i=0; $i -lt $lines.Count; $i++) {
+    for ($i=0; $i -lt @($lines).Length; $i++) {
       if ($lines[$i] -match '^(<<<<<<<|=======|>>>>>>>)') {
         $n++
         if ($n -le 200) { $out.Add(("{0,6}: {1}" -f ($i+1), $lines[$i])) }
@@ -101,7 +101,7 @@ try {
 
   # --- fallback: scan Bundled lines for "writeback/sync" evidence and take last PR number ---
   if (-not $transportPr) {
-    for ($i = $lines.Count - 1; $i -ge 0; $i--) {
+    for ($i = @($lines).Length - 1; $i -ge 0; $i--) {
       $ln = $lines[$i]
       if ($ln -match 'PR\s*#\s*(?<n>\d+)\b' -and ($ln -match 'writeback' -or $ln -match 'auto/writeback' -or $ln -match 'auto\/writeback' -or $ln -match 'sync evidence' -or $ln -match 'sync-evidence' -or $ln -match 'sync_evidence')) {
         $transportPr = [int]$Matches.n
@@ -152,3 +152,4 @@ PARENT_BUNDLED: $bundledRel
   Warn $_.Exception.Message
   throw
 }
+

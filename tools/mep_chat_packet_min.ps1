@@ -1,4 +1,4 @@
-﻿param()
+param()
 
 $ErrorActionPreference = "Stop"
 
@@ -19,7 +19,7 @@ function Resolve-BusinessMasterSpecPath {
 
   # Prefer extensionless master_spec under BUSINESS
   $cands = @($all | Where-Object { $_ -like "platform/MEP/03_BUSINESS/*/master_spec" })
-  if ($cands.Count -eq 0) { throw "Cannot find BUSINESS master_spec under platform/MEP/03_BUSINESS/*/master_spec." }
+  if (@($cands).Length -eq 0) { throw "Cannot find BUSINESS master_spec under platform/MEP/03_BUSINESS/*/master_spec." }
 
   # Prefer one whose sibling ui_spec.md exists
   foreach ($p in $cands) {

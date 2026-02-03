@@ -20,7 +20,7 @@ $lines = Get-Content -LiteralPath $Path -Encoding UTF8
 
 # (A) Conflict markers are NG
 $conf = @()
-for ($i=0; $i -lt $lines.Count; $i++) {
+for ($i=0; $i -lt @($lines).Length; $i++) {
   if ($lines[$i] -match '^(<{7}|={7}|>{7})') {
     $conf += "AT0001 CONFLICT_MARKER line=$($i+1) text=$($lines[$i])"
   }
@@ -36,7 +36,7 @@ $end   = @{}
 $beginLines = @{}
 $endLines   = @{}
 
-for ($i=0; $i -lt $lines.Count; $i++) {
+for ($i=0; $i -lt @($lines).Length; $i++) {
   $line = $lines[$i]
   $m1 = [regex]::Match($line, $reBegin)
   if ($m1.Success) {
@@ -91,3 +91,4 @@ if ($ng.Count -gt 0) { OutNG 2 @($ng) }
 
 Write-Host "AT0000 OK path=$Path"
 exit 0
+

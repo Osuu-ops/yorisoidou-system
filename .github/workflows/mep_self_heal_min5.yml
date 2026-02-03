@@ -13,6 +13,14 @@ jobs:
   self_heal:
     continue-on-error: true
     if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+  GH_TOKEN: ${{ github.token }}
+  GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
     runs-on: ubuntu-latest
     steps:
       - name: Resolve PR info from run

@@ -102,13 +102,13 @@ $lines = Get-Content -Path $scopePath -Encoding UTF8
 if (-not $lines) { $lines = @() }
 # locate header (strict equality after Trim)
 $startIdx = -1
-for ($i=0; $i -lt $lines.Count; $i++) {
+for ($i=0; $i -lt @($lines).Length; $i++) {
   if ($lines[$i].Trim() -eq $ScopeHeader) { $startIdx = $i; break }
 }
 # find end (next heading or EOF)
-$endIdx = $lines.Count
+$endIdx = @($lines).Length
 if ($startIdx -ge 0) {
-  for ($j=$startIdx+1; $j -lt $lines.Count; $j++) {
+  for ($j=$startIdx+1; $j -lt @($lines).Length; $j++) {
     if ($lines[$j].StartsWith("## ") ) { $endIdx = $j; break }
   }
 }
@@ -123,7 +123,7 @@ if ($startIdx -lt 0) {
 } else {
   for ($k=0; $k -le $startIdx; $k++) { Add-NonEmpty $new $lines[$k] }
   if ($candidate.Count -gt 0) { foreach($c in $candidate){ Add-NonEmpty $new $c } } else { Add-NonEmpty $new "- (none)" }
-  for ($k=$endIdx; $k -lt $lines.Count; $k++) { Add-NonEmpty $new $lines[$k] }
+  for ($k=$endIdx; $k -lt @($lines).Length; $k++) { Add-NonEmpty $new $lines[$k] }
 }
 # enforce bullet-only inside Scope-IN block + remove blanks
 $enforce = New-Object System.Collections.Generic.List[string]
@@ -139,7 +139,7 @@ foreach ($ln in $new) {
 $enforce.ToArray() | Set-Content -Path $scopePath -Encoding UTF8
 Info ("Updated SCOPE_FILE: " + $ScopeFile)
 # ---- commit/push (scope update) ----
-$branchName = (git branch --show-current).Trim()
+$branchName = ([string](git branch --show-current)).Trim()
 if (-not $branchName) { Fail "Current branch name is empty." }
 git add $scopePath | Out-Null
 $ts2 = Get-Date -Format "yyyyMMdd_HHmmss"
