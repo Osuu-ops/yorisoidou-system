@@ -987,28 +987,24 @@ MERGED_AT=2026-02-03T20:43:56+09:00
 
 <!-- appended: OP-3 jp audit template 2026-02-04T06:44:52+09:00 -->
 ## OP-3 日本語監査テンプレ（一次根拠ブロック）
-【監査用引継ぎ（一次根拠のみ／確定事項）｜OP-3】
+【監査用引継ぎ（一次根拠のみ／確定事項）】
 REPO_ORIGIN
 https://github.com/Osuu-ops/yorisoidou-system.git
 基準ブランチ
 main
 HEAD（main）
-38061eb492c4fc4c08321bad000f0d1768bc210a
+35fbdeb093fbf301b9e19ec2bb34926e7cf586a5
 PARENT_BUNDLED
 docs/MEP/MEP_BUNDLE.md
 EVIDENCE_BUNDLE
 docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 PARENT_BUNDLE_VERSION
 v0.0.0+20260203_194633+main_cfbd3c5
+EVIDENCE_BUNDLE_VERSION
+v0.0.0+20260204_035621+main+evidence-child
 確定（証跡）
-- 上記はすべて main ブランチおよび gh / git の一次出力に基づく
-目的（OP-3）
-- Scope Guard / 非干渉ガードにより、ログ・zip・想定外ファイル混入を自動排除する
-- docs/MEP の運用を一次根拠として固定し、追随台帳として消えない形で維持する
-一次根拠（このファイル内の参照点）
-- 「## OP-3 PARENT_BUNDLED FOLLOW LEDGER」節の存在
-- 「CURRENT_SCOPE_OPS」固定方針の記載
-- 追随行（PR / commit / BUNDLE_VERSION 更新）の台帳
-備考
-- 本ブロックは “監査テンプレ形式” の固定。外部事情・会話文脈は一次根拠に含めない。
+PR #
+mergedAt: 
+mergeCommit: 35fbdeb093fbf301b9e19ec2bb34926e7cf586a5
+※上記はすべて main ブランチおよび gh / git の一次出力に基づく。
 
