@@ -1,4 +1,6 @@
 ## 変更対象（Scope-IN）
+- tools/mep_fix_bundle_version_suffix_to_head.ps1
+- tools/mep_writeback_create_pr.ps1
 - CURRENT_SCOPE.md
 - .github/workflows/mep_writeback_bundle_dispatch_reborn.yml
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
