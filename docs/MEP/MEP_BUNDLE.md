@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260204_145744+main_ab99836
+BUNDLE_VERSION = v0.0.0+20260204_152004+main_3c08faa
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1056,3 +1056,34 @@ PR #1738 | audit=OK,WB0000 | appended_at=2026-02-04T19:41:23.7134606+09:00 | via
 PR #1756 | audit=OK,WB0000 | appended_at=2026-02-04T19:41:25.2069529+09:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1797 | mergedAt=02/04/2026 14:57:23 | mergeCommit=ab99836a3c0d601e793bbfe7a623d591f125a264 | BUNDLE_VERSION=v0.0.0+20260204_145744+main_ab99836 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1797
 PR #1797 | audit=OK,WB0000 | appended_at=2026-02-04T14:57:46.4315986+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1798 | mergedAt=02/04/2026 14:58:08 | mergeCommit=93446324c904e42fc127588391ab351dadb9c252 | BUNDLE_VERSION=v0.0.0+20260204_145926+main_9344632 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1798
+PR #1798 | audit=OK,WB0000 | appended_at=2026-02-04T14:59:28.6742073+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1774 | mergedAt=02/04/2026 12:40:10 | mergeCommit=4916caadb5ea2b1139f5f9090e0ad3fc4bc739b9 | BUNDLE_VERSION=v0.0.0+20260204_152004+main_3c08faa | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1774
+PR #1774 | audit=OK,WB0000 | appended_at=2026-02-04T15:20:06.9751060+00:00 | via=mep_append_evidence_line_full.ps1
+
+## CARD: COMPLETED_B（完成B）
+STATUS
+DRAFT（Bundled固定：凍結前最小未完①のため追加）
+GOAL（終点）
+- 「入口」が一本でつながっていること：Pre-Gate → Gate（G0..Gn）→ Exit が切れ目なく接続され、機械的に再実行できる。
+- 「一次根拠ループ」が自動で回ること：0承認 → PR → main → Bundled/EVIDENCE（一次根拠）までの更新が連鎖し、監査で追跡可能。
+- 「停止」は根拠付きであること：未達・失敗・承認待ちは STOP_REASON / EXIT_CODE として一次根拠に残り、復帰手順が再現可能。
+NON-GOAL
+- Bundled を恒久SSOTにする（SSOT導入後はBundled拡張を凍結する前提）
+NOTES
+- SSOT（MEP_SSOT_MASTER）導入前の暫定措置として、凍結前の最小要件のみ Bundled に固定する。
+
+## CARD: CHAT_LEDGER（チャット台帳）
+STATUS
+DRAFT（Bundled固定：凍結前最小未完②のため追加）
+PURPOSE
+- 「チャット → 派生ノード → 状態 → 根拠」を一次根拠（Bundled）で運用するための台帳枠。
+- Bundled に存在しない枝・チャットは「未記載」として隔離し、推測で埋めない。
+SCHEMA（最小）
+| ChatID | 所属ノード | 状態(DONE/WIP/BLOCKED) | 根拠(一次: PR/commit/BUNDLE_VERSION/出力ファイル) | 備考 |
+|---|---|---|---|---|
+| （未記載） | （未記載） | （未記載） | （未記載） | （未記載） |
+OPERATION
+- 追加・更新は PR → main → Bundled の一次根拠ループでのみ行う。
+- SSOT導入後は Bundled への新枝/新台帳の増殖を凍結し、正の更新は SSOT 側へ寄せる。
+
