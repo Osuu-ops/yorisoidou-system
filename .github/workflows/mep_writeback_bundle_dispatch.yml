@@ -106,6 +106,7 @@ jobs:
           $sha = (git rev-parse HEAD).Trim()
           Info ('writeback head sha=' + $sha)
           $repo = $env:GITHUB_REPOSITORY
+          [string]$ep = "repos/$repo/statuses/$sha"
           $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
           function SetStatus([string]$context){
             $out = & gh api -X POST "$ep" `
