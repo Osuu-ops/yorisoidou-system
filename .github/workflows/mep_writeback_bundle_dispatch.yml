@@ -108,7 +108,7 @@ jobs:
           $repo = $env:GITHUB_REPOSITORY
           $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
           function SetStatus([string]$context){
-            $out = & gh api ("repos/{0}/statuses/{1}" -f $repo, $sha) `
+            $out = & gh api -X POST ("repos/{0}/statuses/{1}" -f $repo, $sha) `
               -f state="success" `
               -f context=$context `
               -f description=("writeback ok (run {0})" -f $env:GITHUB_RUN_ID) `
