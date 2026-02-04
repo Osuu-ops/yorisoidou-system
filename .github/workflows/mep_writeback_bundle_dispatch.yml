@@ -108,18 +108,9 @@ jobs:
           $repo = $env:GITHUB_REPOSITORY
           $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
           function SetStatus([string]$context){
-            $out = & gh api -X POST "$ep" `
-              -f state="success" `
-              -f context=$context `
-              -f description=("writeback ok (run {0})" -f $env:GITHUB_RUN_ID) `
-              -f target_url=$runUrl 2>&1
-            if($LASTEXITCODE -ne 0){
-              throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
-            }
-            $json = $out | ConvertFrom-Json
-            Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
-            Info ("set status: " + $context)
-          }
+            try {
+              [string]$ep = "repos/$repo/statuses/$sha"
+              Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)
           # contexts must match ruleset main-required-checks
           SetStatus "Scope Guard (PR)"
           SetStatus "business-non-interference-guard"
