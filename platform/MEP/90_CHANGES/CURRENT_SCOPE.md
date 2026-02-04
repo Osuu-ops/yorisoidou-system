@@ -2,6 +2,7 @@
 - CURRENT_SCOPE.md
 - .github/workflows/mep_writeback_bundle_dispatch_reborn.yml
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+- .github/workflows/writeback_required_checks.yml
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
@@ -23,4 +24,3 @@
    - zip/log 等の混入は Scope Guard / 非干渉ガードの対象（docs-only で収束させる）
 注意
 - 一次根拠は “main と gh/git の一次出力” のみ。会話文脈・推測は入れない。
-
