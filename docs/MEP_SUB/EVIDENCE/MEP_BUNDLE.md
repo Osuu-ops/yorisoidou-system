@@ -63,3 +63,12 @@ PR #1704 | audit=OK,WB0000 | appended_at=2026-02-04T04:46:31.5962450+09:00 | via
 PR #1710 | audit=OK,WB0000 | appended_at=2026-02-04T04:46:32.9873243+09:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1727 | mergedAt=02/03/2026 20:57:31 | mergeCommit=08230259a2d9ae18ff1f178ec69c37942b88f574 | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1727
 PR #1727 | audit=OK,WB0000 | appended_at=2026-02-04T08:03:13.3012007+09:00 | via=mep_append_evidence_line_full.ps1
+
+----
+SYNC_FROM_PARENT_BUNDLED | copied_at=2026-02-04T20:10:44.2074935+09:00 | via=manual_patch_child_evidence_from_parent.ps1
+* - PR #1738 | mergedAt=02/04/2026 00:13:51 | mergeCommit=14c5e8c1041cc5279f4af963219ad3f22af2597e | BUNDLE_VERSION=v0.0.0+20260204_193735+main_8f9f7b3 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1738
+PR #1738 | audit=OK,WB0000 | appended_at=2026-02-04T19:41:23.7134606+09:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1756 | mergedAt=02/04/2026 01:47:35 | mergeCommit=d5ed639376636bc2809e9a3afdfbaa5a6e71d713 | BUNDLE_VERSION=v0.0.0+20260204_193735+main_8f9f7b3 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1756
+PR #1756 | audit=OK,WB0000 | appended_at=2026-02-04T19:41:25.2069529+09:00 | via=mep_append_evidence_line_full.ps1
+----
+
