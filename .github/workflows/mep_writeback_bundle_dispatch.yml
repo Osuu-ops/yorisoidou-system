@@ -108,14 +108,19 @@ jobs:
           $repo = $env:GITHUB_REPOSITORY
           $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
           function SetStatus([string]$context){
-            try {
-              [string]$ep = "repos/$repo/statuses/$sha"
-              Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)
-          # contexts must match ruleset main-required-checks
-          SetStatus "Scope Guard (PR)"
-          SetStatus "business-non-interference-guard"
-          # =====================================================================
-          }
+  $ep2 = $ep  # capture outer string endpoint
+  $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)
+  $out = & gh api -X POST "$ep2" `
+    -f state="success" `
+    -f ("context=$context") `
+    -f ("description=$desc") `
+    -f ("target_url=$runUrl") 2>&1
+  if($LASTEXITCODE -ne 0){
+    throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
+  }
+  $json = $out | ConvertFrom-Json
+  Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
+}
           $head = $newHead
           Info ('HEAD=' + $head)
           }
@@ -135,3 +140,4 @@ jobs:
 
 
           pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
