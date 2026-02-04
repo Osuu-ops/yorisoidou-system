@@ -5,4 +5,4 @@
 - docs/MEP_SUB/**
 - START_HERE.md
 - .github/workflows/mep_writeback_bundle_on_push.yml
-
+- .github/workflows/mep_writeback_bundle_manual.yml
