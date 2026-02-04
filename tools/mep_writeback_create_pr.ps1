@@ -41,6 +41,17 @@ if (-not $dirty2) {
 }
 $msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $runId)
 git commit -m $msg | Out-Null
+# ---- ensure BUNDLE_VERSION main_<hash> matches the commit that contains it (race-proof) ----
+try {
+  $bundlePathResolved = $BundlePath
+  if (-not $bundlePathResolved) { $bundlePathResolved = "docs/MEP/MEP_BUNDLE.md" }
+  pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath $bundlePathResolved
+} catch {
+  Write-Host "[WARN] mep_fix_bundle_version_suffix_to_head.ps1 failed: $($_.Exception.Message)"
+}
+# ------------------------------------------------------------------------------
+
 git push -u origin $newHead | Out-Null
 Ensure-PrForHead $newHead
+
 
