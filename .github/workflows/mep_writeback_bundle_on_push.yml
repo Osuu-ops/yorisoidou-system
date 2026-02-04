@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
   pull-requests: write
 
@@ -15,6 +16,4 @@ jobs:
       pr_number: '0'
       write_handoff: false
     secrets: inherit
-
-
 
