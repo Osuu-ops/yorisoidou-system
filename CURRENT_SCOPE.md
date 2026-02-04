@@ -6,3 +6,6 @@
 - START_HERE.md
 - .github/workflows/mep_writeback_bundle_on_push.yml
 - .github/workflows/mep_writeback_bundle_manual.yml
+- CURRENT_SCOPE.md
+- tools/mep_diag_context.ps1
+- tools/mep_diag_context.cmd
