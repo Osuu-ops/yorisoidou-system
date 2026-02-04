@@ -22,14 +22,12 @@ jobs:
 
       - name: Bump BUNDLE_VERSION
         shell: pwsh
-        env:
         GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1
 
       - name: Create PR if diff
         shell: bash
-        env:
         GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           set -euo pipefail
