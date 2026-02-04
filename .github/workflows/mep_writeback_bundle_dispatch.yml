@@ -110,9 +110,9 @@ jobs:
           function SetStatus([string]$context){
             $out = & gh api -X POST "$ep" `
               -f state="success" `
-              -f context=$context `
-              -f description=("writeback ok (run {0})" -f $env:GITHUB_RUN_ID) `
-              -f target_url=$runUrl 2>&1
+    -f ("context=$context") `
+    -f ("description={0}" -f ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)) `
+    -f ("target_url=$runUrl") 2>&1
             if($LASTEXITCODE -ne 0){
               throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
             }
@@ -144,3 +144,4 @@ jobs:
 
 
           pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
