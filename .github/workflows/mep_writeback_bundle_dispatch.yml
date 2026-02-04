@@ -108,11 +108,20 @@ jobs:
           Info ("writeback head sha=" + $sha)
           $ep = ("repos/{0}/statuses/{1}" -f $repo, $sha)
           function SetStatus([string]$context){
-            $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)
-            $out = & gh api -X POST $ep -f "state=success" -f ("context=$context") -f ("description=$desc") -f ("target_url=$runUrl") 2>&1
-            if($LASTEXITCODE -ne 0){ throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " ")) }
-            $json = $out | ConvertFrom-Json
-            Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
+            try {
+              [string]$ep = ("repos/{0}/statuses/{1}" -f $repo, $sha)
+              Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)
+              $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)
+              $out = & gh api -X POST "$ep" -f "state=success" -f ("context=" + $context) -f ("description=" + $desc) -f ("target_url=" + $runUrl) 2>&1
+              if($LASTEXITCODE -ne 0){
+                throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
+              }
+              $json = $out | ConvertFrom-Json
+              Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
+            } catch {
+              Warn ("set status FAILED: " + $context)
+              throw
+            }
           }
           SetStatus "Scope Guard (PR)"
           SetStatus "business-non-interference-guard"
