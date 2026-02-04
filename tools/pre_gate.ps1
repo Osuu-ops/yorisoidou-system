@@ -46,8 +46,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -100,8 +107,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -138,8 +152,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -177,8 +193,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -213,8 +236,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -252,8 +277,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -288,8 +320,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -310,8 +344,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -352,8 +388,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -406,8 +449,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -444,8 +494,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -483,8 +535,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -519,8 +578,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -558,8 +619,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -594,8 +662,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -616,8 +686,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -658,8 +730,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -712,8 +791,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -750,8 +836,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -789,8 +877,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -825,8 +920,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -864,8 +961,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -900,8 +1004,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -922,8 +1028,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -964,8 +1072,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1018,8 +1133,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1056,8 +1178,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1095,8 +1219,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1131,8 +1262,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1170,8 +1303,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1206,8 +1346,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1228,8 +1370,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1260,8 +1404,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1335,8 +1486,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1389,8 +1547,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1427,8 +1592,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1466,8 +1633,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1502,8 +1676,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1541,8 +1717,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1577,8 +1760,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1599,8 +1784,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1641,8 +1828,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1695,8 +1889,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1733,8 +1934,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1772,8 +1975,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1808,8 +2018,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1847,8 +2059,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -1883,8 +2102,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1905,8 +2126,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -1947,8 +2170,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2001,8 +2231,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2039,8 +2276,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2078,8 +2317,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2114,8 +2360,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2153,8 +2401,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2189,8 +2444,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2211,8 +2468,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2253,8 +2512,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2307,8 +2573,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2345,8 +2618,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2384,8 +2659,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2420,8 +2702,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2459,8 +2743,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2495,8 +2786,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2517,8 +2810,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2549,8 +2844,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2587,8 +2889,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2647,8 +2951,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2701,8 +3012,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2739,8 +3057,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2778,8 +3098,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2814,8 +3141,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2853,8 +3182,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -2889,8 +3225,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2911,8 +3249,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -2953,8 +3293,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3007,8 +3354,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3045,8 +3399,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3084,8 +3440,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3120,8 +3483,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3159,8 +3524,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3195,8 +3567,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3217,8 +3591,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3259,8 +3635,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3313,8 +3696,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3351,8 +3741,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3390,8 +3782,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3426,8 +3825,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3465,8 +3866,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3501,8 +3909,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3523,8 +3933,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3565,8 +3977,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3619,8 +4038,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3657,8 +4083,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3696,8 +4124,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3732,8 +4167,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3771,8 +4208,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3807,8 +4251,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3829,8 +4275,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3861,8 +4309,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -3897,8 +4352,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -3957,8 +4414,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4011,8 +4475,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4049,8 +4520,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4088,8 +4561,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4124,8 +4604,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4163,8 +4645,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4199,8 +4688,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4221,8 +4712,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4263,8 +4756,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4317,8 +4817,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4355,8 +4862,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4394,8 +4903,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4430,8 +4946,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4469,8 +4987,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4505,8 +5030,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4527,8 +5054,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4569,8 +5098,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4623,8 +5159,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4661,8 +5204,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4700,8 +5245,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4736,8 +5288,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4775,8 +5329,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4811,8 +5372,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4833,8 +5396,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -4875,8 +5440,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4929,8 +5501,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -4967,8 +5546,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5006,8 +5587,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -5042,8 +5630,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5081,8 +5671,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -5117,8 +5714,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5139,8 +5738,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5171,8 +5772,15 @@ $env:GIT_CEILING_DIRECTORIES = $repoRoot
 
 Set-Location $repoRoot
 # === /ROOT_FIXED_BY_PSSCRIPTROOT ===
-function Fail([string]$m){ Write-Error $m; exit 2 }
-function Boom([string]$m){ Write-Error $m; exit 1 }
+function Fail([string]$m){
+  Write-Host $m -ForegroundColor Red
+  exit 2
+}
+function Boom([string]$m){
+  Write-Host $m -ForegroundColor Red
+  if ($m -match "Too many workflow_dispatch entrypoints \(target\)") { exit 2 }
+  exit 1
+}
 function Info([string]$m){ Write-Host "[PREGATE] $m" -ForegroundColor Cyan }
 
 try {
@@ -5207,8 +5815,10 @@ Info ("[PROBE] bundled_exists=" + (Test-Path -LiteralPath $bundled))
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5229,8 +5839,10 @@ catch {
     foreach ($c in $candidates) {
       Info ("Running: " + $c.Name)
       & $c.FullName
-      if ($LASTEXITCODE -ne 0) { Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name) }
-    }
+if ($LASTEXITCODE -ne 0) {
+  # dispatch-audit のNGは「状態NG」として exit2 に落とす（TOOLING ERROR にしない）
+  Fail ("Audit script failed (exit=" + $LASTEXITCODE + "): " + $c.Name)
+}}
   } else {
     Info "No read-only audit script found. Minimal checks only."
   }
@@ -5241,6 +5853,9 @@ catch {
 catch {
   Boom $_.Exception.Message
 }
+
+
+
 
 
 
