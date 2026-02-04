@@ -1,4 +1,5 @@
 ## 変更対象（Scope-IN）
+- .github/workflows/mep_writeback_bundle_manual.yml
 - .github/workflows/mep_writeback_bundle_dispatch_entry.yml
 - tools/mep_fix_bundle_version_suffix_to_head.ps1
 - tools/mep_writeback_create_pr.ps1
@@ -31,4 +32,3 @@
 注意
 - 一次根拠は “main と gh/git の一次出力” のみ。会話文脈・推測は入れない。
 - .github/workflows/mep_writeback_bundle_on_push.yml
-- .github/workflows/mep_writeback_bundle_manual.yml
