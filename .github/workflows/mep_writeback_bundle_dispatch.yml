@@ -24,6 +24,7 @@ on:
 
 permissions:
   contents: write
+  statuses: write
   pull-requests: write
 jobs:
   writeback:
@@ -107,11 +108,16 @@ jobs:
           $repo = $env:GITHUB_REPOSITORY
           $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
           function SetStatus([string]$context){
-            gh api ("repos/{0}/statuses/{1}" -f $repo, $sha) `
+            $out = & gh api ("repos/{0}/statuses/{1}" -f $repo, $sha) `
               -f state="success" `
               -f context=$context `
               -f description=("writeback ok (run {0})" -f $env:GITHUB_RUN_ID) `
-              -f target_url=$runUrl | Out-Null
+              -f target_url=$runUrl 2>&1
+            if($LASTEXITCODE -ne 0){
+              throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
+            }
+            $json = $out | ConvertFrom-Json
+            Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
             Info ("set status: " + $context)
           }
           # contexts must match ruleset main-required-checks
