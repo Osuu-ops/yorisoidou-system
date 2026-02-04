@@ -11,9 +11,8 @@ name: MEP Writeback Bundle (Manual Dispatcher)
       write_handoff:
         description: "write HANDOFF_NEXT too (true/false)"
         required: false
-        default: "false"
-        type: string
-
+        default: false
+        type: boolean
 jobs:
   call-writeback:
     uses: ./.github/workflows/mep_writeback_bundle_dispatch.yml
