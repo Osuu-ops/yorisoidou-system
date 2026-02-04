@@ -1,0 +1,70 @@
+name: MEP Writeback Bundle (Evidence Dispatch)
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number (0 = auto latest merged PR into main)"
+        required: false
+        default: "0"
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  writeback_evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve PR number (0 => latest merged into main)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PR_IN="${{ inputs.pr_number }}"
+          if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
+          if [ "${PR_IN}" = "0" ]; then
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          fi
+          if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
+            echo "[NG] failed to resolve PR number"
+            exit 2
+          fi
+          echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "[OK] PR_NUMBER=${PR_IN}"
+      - name: Append full evidence line into EVIDENCE Bundled (child)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+
+      - name: Create PR for EVIDENCE writeback branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          CHILD="docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+          if [ ! -f "${CHILD}" ]; then echo "[NG] missing ${CHILD}"; exit 2; fi
+          if git status --porcelain -- "${CHILD}" | grep -q . ; then
+            BR="auto/writeback-evidence_${{ github.run_id }}_${{ env.PR_NUMBER }}_$(date +%Y%m%d_%H%M%S)"
+            echo "[INFO] create branch: ${BR}"
+            git switch -c "${BR}"
+            git add -- "${CHILD}"
+            git commit -m "chore(evidence): writeback child bundle (PR #${{ env.PR_NUMBER }}) (run ${{ github.run_id }})"
+            git push -u origin "${BR}"
+            EXIST="$(gh pr list --state open --head "${BR}" --json number --jq '.[0].number' 2>/dev/null || true)"
+            if [ -n "${EXIST}" ]; then echo "[INFO] PR already exists: #${EXIST}"; exit 0; fi
+            TITLE="Evidence writeback (${BR})"
+            BODY="Automated evidence writeback: ${BR} (run_id=${{ github.run_id }})"
+            URL="$(gh pr create --title "${TITLE}" --body "${BODY}" --base "main" --head "${BR}")"
+            echo "[OK] Created PR: ${URL}"
+          else
+            echo "[INFO] child bundle not changed; skip PR create"
+          fi
+
