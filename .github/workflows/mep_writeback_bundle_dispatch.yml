@@ -102,27 +102,6 @@ jobs:
           $msg = ('chore(mep): writeback bundle evidence (PR #{0}) (run {1})' -f $env:PR_NUMBER, $runId)
           git commit -m $msg | Out-Null
           git push -u origin $newHead | Out-Null
-          # === Set required checks status contexts on writeback head (avoid 'no checks' deadlock) ===
-          $sha = (git rev-parse HEAD).Trim()
-          Info ('writeback head sha=' + $sha)
-          $repo = $env:GITHUB_REPOSITORY
-          $runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)
-          function SetStatus([string]$context){
-            try {
-              [string]$ep = "repos/$repo/statuses/$sha"
-              Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)
-              $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)
-              $out = & gh api -X POST "$ep" -f "state=success" -f ("context=" + $context) -f ("description=" + $desc) -f ("target_url=" + $runUrl) 2>&1
-              if($LASTEXITCODE -ne 0){
-                throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
-              }
-              $json = $out | ConvertFrom-Json
-              Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)
-            } catch {
-              Warn ("set status FAILED: " + $context)
-              throw
-            }
-          }
           $head = $newHead
           Info ('HEAD=' + $head)
           }
