@@ -5,6 +5,8 @@
 - .github/workflows/writeback_required_checks.yml
 - .github/workflows/mep_writeback_bundle_dispatch.yml
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- docs/MEP_SUB/EVIDENCE/**
+- docs/MEP_SUB/EVIDENCE/*
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
