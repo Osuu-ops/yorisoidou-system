@@ -111,11 +111,8 @@ jobs:
             try {
               [string]$ep = "repos/$repo/statuses/$sha"
               Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)
-              $out = & gh api -X POST "$ep" `
-                -f state="success" `
-                -f context="$context" `
-                -f description=("writeback ok (run {0})" -f $env:GITHUB_RUN_ID) `
-                -f target_url=$runUrl 2>&1
+              $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)
+              $out = & gh api -X POST "$ep" -f "state=success" -f ("context=" + $context) -f ("description=" + $desc) -f ("target_url=" + $runUrl) 2>&1
               if($LASTEXITCODE -ne 0){
                 throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))
               }
