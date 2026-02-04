@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260204_152004+main_3c08faa
+BUNDLE_VERSION = v0.0.0+20260204_181117+main_6d5ced1
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1087,3 +1087,5 @@ OPERATION
 - 追加・更新は PR → main → Bundled の一次根拠ループでのみ行う。
 - SSOT導入後は Bundled への新枝/新台帳の増殖を凍結し、正の更新は SSOT 側へ寄せる。
 
+* - PR #1808 | mergedAt=02/04/2026 18:03:15 | mergeCommit=6d5ced12d5b526cfa3d769a2a83e5479726884a0 | BUNDLE_VERSION=v0.0.0+20260204_181117+main_6d5ced1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1808
+PR #1808 | audit=OK,WB0000 | appended_at=2026-02-04T18:11:20.2596049+00:00 | via=mep_append_evidence_line_full.ps1
