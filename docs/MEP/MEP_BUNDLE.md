@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260204_152004+main_3c08faa
+BUNDLE_VERSION = v0.0.0+20260204_184931+main_5036dde
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1086,4 +1086,21 @@ SCHEMA（最小）
 OPERATION
 - 追加・更新は PR → main → Bundled の一次根拠ループでのみ行う。
 - SSOT導入後は Bundled への新枝/新台帳の増殖を凍結し、正の更新は SSOT 側へ寄せる。
+
+## CARD: BUNDLED_FREEZE_POLICY（凍結宣言）
+STATUS
+ADOPTED（人間指示により固定：2026-02-05 03:49:31 +09:00）
+PURPOSE
+- 二重正（Bundled追記 vs SSOT追記）を禁止し、正の更新先を SSOT（MEP_SSOT_MASTER）へ一意化する。
+- Bundled/EVIDENCE は一次根拠（証跡・参照）として保持し、以後の拡張増殖を停止する。
+POLICY（凍結の定義）
+- 原則：Bundled（docs/MEP/MEP_BUNDLE.md）への新規カード追加・枝増殖・台帳増殖を禁止（人手による拡張停止）。
+- 原則：EVIDENCE（docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md）は自動writeback（Evidence Dispatch系）により追随し、人手で編集しない。
+- 正の更新先：採用・決定・仕様追加は SSOT（MEP_SSOT_MASTER）へ投入し、派生物（HANDOFF/READABLE_SPEC/health/cards）は機械生成で反映する。
+- 未記載：Bundledに存在しない枝・チャット・仕様は「未記載」として隔離し、推測で埋めない。
+EXCEPTIONS（例外）
+- 緊急復旧（壊れた入口の復旧・監査不能の復旧）に限り、0承認→PR→main→一次根拠で例外を許可する。
+- 例外は最小差分のみ。例外後も “正の更新先＝SSOT” は維持する。
+LOCAL LOGS（汚染回避）
+- ローカル診断ログ（例：MEP_LOGS_LOCAL/）および handoff_ready.txt は repo未追跡のローカル退避とし、監査対象外。
 
