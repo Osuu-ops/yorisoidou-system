@@ -1,3 +1,4 @@
+exit $ec
 Set-StrictMode -Version Latest
 
 Set-StrictMode -Version Latest
