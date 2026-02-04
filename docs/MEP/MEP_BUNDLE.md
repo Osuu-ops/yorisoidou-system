@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260204_184931+main_5036dde
+BUNDLE_VERSION = v0.0.0+20260204_191453+main_278b5ed
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1104,3 +1104,5 @@ EXCEPTIONS（例外）
 LOCAL LOGS（汚染回避）
 - ローカル診断ログ（例：MEP_LOGS_LOCAL/）および handoff_ready.txt は repo未追跡のローカル退避とし、監査対象外。
 
+* - PR #1818 | mergedAt=02/04/2026 18:37:51 | mergeCommit=5036ddef58819447d3932a5bfe4afdac9f82396f | BUNDLE_VERSION=v0.0.0+20260204_191453+main_278b5ed | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1818
+PR #1818 | audit=OK,WB0000 | appended_at=2026-02-04T19:14:55.8805706+00:00 | via=mep_append_evidence_line_full.ps1
