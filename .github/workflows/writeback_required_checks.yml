@@ -1,0 +1,52 @@
+name: writeback-required-checks
+on:
+  push:
+    branches:
+      - 'auto/writeback-bundle_*'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  scope_guard:
+    name: Scope Guard (PR)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Only allow bundle file change
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+          files="$(git diff --name-only "$base" "$head" || true)"
+          echo "$files"
+          bad="$(echo "$files" | awk 'NF' | grep -v '^docs/MEP/MEP_BUNDLE\.md$' || true)"
+          if [ -n "$bad" ]; then
+            echo "[NG] unexpected changed files:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "[OK] only bundle file changed"
+  non_interference:
+    name: business-non-interference-guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ensure no business paths touched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.before }}"
+          head="${{ github.sha }}"
+          files="$(git diff --name-only "$base" "$head" || true)"
+          bad="$(echo "$files" | awk 'NF' | grep -E '^(platform/MEP/03_BUSINESS/|business/|03_BUSINESS/)' || true)"
+          if [ -n "$bad" ]; then
+            echo "[NG] business paths changed:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "[OK] no business paths changed"
