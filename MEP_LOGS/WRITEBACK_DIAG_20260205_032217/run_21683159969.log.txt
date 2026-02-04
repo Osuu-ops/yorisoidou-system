@@ -1,0 +1,702 @@
+writeback	Set up job	﻿2026-02-04T18:18:59.3890928Z Current runner version: '2.331.0'
+writeback	Set up job	2026-02-04T18:18:59.3914219Z ##[group]Runner Image Provisioner
+writeback	Set up job	2026-02-04T18:18:59.3915062Z Hosted Compute Agent
+writeback	Set up job	2026-02-04T18:18:59.3915662Z Version: 20260123.484
+writeback	Set up job	2026-02-04T18:18:59.3916292Z Commit: 6bd6555ca37d84114959e1c76d2c01448ff61c5d
+writeback	Set up job	2026-02-04T18:18:59.3916955Z Build Date: 2026-01-23T19:41:17Z
+writeback	Set up job	2026-02-04T18:18:59.3917667Z Worker ID: {451d79a0-6b65-4655-9d68-5b92c61c76a5}
+writeback	Set up job	2026-02-04T18:18:59.3918376Z Azure Region: westus
+writeback	Set up job	2026-02-04T18:18:59.3918931Z ##[endgroup]
+writeback	Set up job	2026-02-04T18:18:59.3920512Z ##[group]Operating System
+writeback	Set up job	2026-02-04T18:18:59.3921111Z Ubuntu
+writeback	Set up job	2026-02-04T18:18:59.3921569Z 24.04.3
+writeback	Set up job	2026-02-04T18:18:59.3921969Z LTS
+writeback	Set up job	2026-02-04T18:18:59.3922535Z ##[endgroup]
+writeback	Set up job	2026-02-04T18:18:59.3922990Z ##[group]Runner Image
+writeback	Set up job	2026-02-04T18:18:59.3923504Z Image: ubuntu-24.04
+writeback	Set up job	2026-02-04T18:18:59.3924040Z Version: 20260126.10.1
+writeback	Set up job	2026-02-04T18:18:59.3925063Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260126.10/images/ubuntu/Ubuntu2404-Readme.md
+writeback	Set up job	2026-02-04T18:18:59.3926779Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260126.10
+writeback	Set up job	2026-02-04T18:18:59.3927673Z ##[endgroup]
+writeback	Set up job	2026-02-04T18:18:59.3928882Z ##[group]GITHUB_TOKEN Permissions
+writeback	Set up job	2026-02-04T18:18:59.3930811Z Contents: write
+writeback	Set up job	2026-02-04T18:18:59.3931376Z Metadata: read
+writeback	Set up job	2026-02-04T18:18:59.3932020Z PullRequests: write
+writeback	Set up job	2026-02-04T18:18:59.3932518Z Statuses: write
+writeback	Set up job	2026-02-04T18:18:59.3933014Z ##[endgroup]
+writeback	Set up job	2026-02-04T18:18:59.3935083Z Secret source: Actions
+writeback	Set up job	2026-02-04T18:18:59.3935870Z Prepare workflow directory
+writeback	Set up job	2026-02-04T18:18:59.4256841Z Prepare all required actions
+writeback	Set up job	2026-02-04T18:18:59.4294447Z Getting action download info
+writeback	Set up job	2026-02-04T18:18:59.8245329Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+writeback	Set up job	2026-02-04T18:18:59.9985571Z Complete job name: writeback
+writeback	Checkout	﻿2026-02-04T18:19:00.0778705Z ##[group]Run actions/checkout@v4
+writeback	Checkout	2026-02-04T18:19:00.0779765Z with:
+writeback	Checkout	2026-02-04T18:19:00.0780163Z   fetch-depth: 0
+writeback	Checkout	2026-02-04T18:19:00.0780609Z   repository: Osuu-ops/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:00.0781318Z   token: ***
+writeback	Checkout	2026-02-04T18:19:00.0781700Z   ssh-strict: true
+writeback	Checkout	2026-02-04T18:19:00.0782092Z   ssh-user: git
+writeback	Checkout	2026-02-04T18:19:00.0782485Z   persist-credentials: true
+writeback	Checkout	2026-02-04T18:19:00.0782979Z   clean: true
+writeback	Checkout	2026-02-04T18:19:00.0783384Z   sparse-checkout-cone-mode: true
+writeback	Checkout	2026-02-04T18:19:00.0783856Z   fetch-tags: false
+writeback	Checkout	2026-02-04T18:19:00.0784258Z   show-progress: true
+writeback	Checkout	2026-02-04T18:19:00.0784662Z   lfs: false
+writeback	Checkout	2026-02-04T18:19:00.0785031Z   submodules: false
+writeback	Checkout	2026-02-04T18:19:00.0785426Z   set-safe-directory: true
+writeback	Checkout	2026-02-04T18:19:00.0786056Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:00.1873812Z Syncing repository: Osuu-ops/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:00.1875534Z ##[group]Getting Git version info
+writeback	Checkout	2026-02-04T18:19:00.1876318Z Working directory is '/home/runner/work/yorisoidou-system/yorisoidou-system'
+writeback	Checkout	2026-02-04T18:19:00.1877453Z [command]/usr/bin/git version
+writeback	Checkout	2026-02-04T18:19:00.1954379Z git version 2.52.0
+writeback	Checkout	2026-02-04T18:19:00.1981353Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:00.1995001Z Temporarily overriding HOME='/home/runner/work/_temp/d6adc434-24f2-4b31-afa2-36d53e8c1521' before making global git config changes
+writeback	Checkout	2026-02-04T18:19:00.1997178Z Adding repository directory to the temporary git global config as a safe directory
+writeback	Checkout	2026-02-04T18:19:00.2006909Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:00.2045832Z Deleting the contents of '/home/runner/work/yorisoidou-system/yorisoidou-system'
+writeback	Checkout	2026-02-04T18:19:00.2049341Z ##[group]Initializing the repository
+writeback	Checkout	2026-02-04T18:19:00.2053319Z [command]/usr/bin/git init /home/runner/work/yorisoidou-system/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:00.2163055Z hint: Using 'master' as the name for the initial branch. This default branch name
+writeback	Checkout	2026-02-04T18:19:00.2164729Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+writeback	Checkout	2026-02-04T18:19:00.2165915Z hint: to use in all of your new repositories, which will suppress this warning,
+writeback	Checkout	2026-02-04T18:19:00.2167660Z hint: call:
+writeback	Checkout	2026-02-04T18:19:00.2168132Z hint:
+writeback	Checkout	2026-02-04T18:19:00.2168902Z hint: 	git config --global init.defaultBranch <name>
+writeback	Checkout	2026-02-04T18:19:00.2170349Z hint:
+writeback	Checkout	2026-02-04T18:19:00.2171592Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+writeback	Checkout	2026-02-04T18:19:00.2173583Z hint: 'development'. The just-created branch can be renamed via this command:
+writeback	Checkout	2026-02-04T18:19:00.2174923Z hint:
+writeback	Checkout	2026-02-04T18:19:00.2175599Z hint: 	git branch -m <name>
+writeback	Checkout	2026-02-04T18:19:00.2176327Z hint:
+writeback	Checkout	2026-02-04T18:19:00.2177330Z hint: Disable this message with "git config set advice.defaultBranchName false"
+writeback	Checkout	2026-02-04T18:19:00.2179458Z Initialized empty Git repository in /home/runner/work/yorisoidou-system/yorisoidou-system/.git/
+writeback	Checkout	2026-02-04T18:19:00.2182488Z [command]/usr/bin/git remote add origin https://github.com/Osuu-ops/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:00.2216534Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:00.2217760Z ##[group]Disabling automatic garbage collection
+writeback	Checkout	2026-02-04T18:19:00.2220577Z [command]/usr/bin/git config --local gc.auto 0
+writeback	Checkout	2026-02-04T18:19:00.2247940Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:00.2248960Z ##[group]Setting up auth
+writeback	Checkout	2026-02-04T18:19:00.2254437Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+writeback	Checkout	2026-02-04T18:19:00.2283511Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+writeback	Checkout	2026-02-04T18:19:00.2613585Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+writeback	Checkout	2026-02-04T18:19:00.2642122Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+writeback	Checkout	2026-02-04T18:19:00.2860971Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+writeback	Checkout	2026-02-04T18:19:00.2900930Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+writeback	Checkout	2026-02-04T18:19:00.3120857Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+writeback	Checkout	2026-02-04T18:19:00.3154491Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:00.3155745Z ##[group]Fetching the repository
+writeback	Checkout	2026-02-04T18:19:00.3164058Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+writeback	Checkout	2026-02-04T18:19:01.5606172Z From https://github.com/Osuu-ops/yorisoidou-system
+writeback	Checkout	2026-02-04T18:19:01.5608161Z  * [new branch]      Osuu-ops-patch-1        -> origin/Osuu-ops-patch-1
+writeback	Checkout	2026-02-04T18:19:01.5610228Z  * [new branch]      Osuu-ops-patch-2        -> origin/Osuu-ops-patch-2
+writeback	Checkout	2026-02-04T18:19:01.5612024Z  * [new branch]      Osuu-ops-patch-3        -> origin/Osuu-ops-patch-3
+writeback	Checkout	2026-02-04T18:19:01.5613833Z  * [new branch]      Osuu-ops-patch-4        -> origin/Osuu-ops-patch-4
+writeback	Checkout	2026-02-04T18:19:01.5615562Z  * [new branch]      Osuu-ops-patch-6        -> origin/Osuu-ops-patch-6
+writeback	Checkout	2026-02-04T18:19:01.5617324Z  * [new branch]      Osuu-ops-patch-7        -> origin/Osuu-ops-patch-7
+writeback	Checkout	2026-02-04T18:19:01.5619596Z  * [new branch]      auto/add_gate3_approve_20260203_032406 -> origin/auto/add_gate3_approve_20260203_032406
+writeback	Checkout	2026-02-04T18:19:01.5621748Z  * [new branch]      auto/add_gates_0_1_2_20260203_030507 -> origin/auto/add_gates_0_1_2_20260203_030507
+writeback	Checkout	2026-02-04T18:19:01.5624257Z  * [new branch]      auto/append_ruleset_required_checks_evidence_20260202_210616 -> origin/auto/append_ruleset_required_checks_evidence_20260202_210616
+writeback	Checkout	2026-02-04T18:19:01.5626774Z  * [new branch]      auto/audit_self-heal-401_20260202_222016 -> origin/auto/audit_self-heal-401_20260202_222016
+writeback	Checkout	2026-02-04T18:19:01.5628817Z  * [new branch]      auto/audit_self-heal-401_v2_20260202_222526 -> origin/auto/audit_self-heal-401_v2_20260202_222526
+writeback	Checkout	2026-02-04T18:19:01.5631046Z  * [new branch]      auto/bundle-regenerate_20260201_052347 -> origin/auto/bundle-regenerate_20260201_052347
+writeback	Checkout	2026-02-04T18:19:01.5633609Z  * [new branch]      auto/bundle_gate-exit-stop-contract_20260202_221729 -> origin/auto/bundle_gate-exit-stop-contract_20260202_221729
+writeback	Checkout	2026-02-04T18:19:01.5635905Z  * [new branch]      auto/bundled-entry-exit_20260203_034903 -> origin/auto/bundled-entry-exit_20260203_034903
+writeback	Checkout	2026-02-04T18:19:01.5638080Z  * [new branch]      auto/bundled-ruleset-block_20260203_035936 -> origin/auto/bundled-ruleset-block_20260203_035936
+writeback	Checkout	2026-02-04T18:19:01.5640413Z  * [new branch]      auto/bundled-ruleset-checks_20260203_035537 -> origin/auto/bundled-ruleset-checks_20260203_035537
+writeback	Checkout	2026-02-04T18:19:01.5642477Z  * [new branch]      auto/doneB_audit_cutter_20260202_011109 -> origin/auto/doneB_audit_cutter_20260202_011109
+writeback	Checkout	2026-02-04T18:19:01.5644547Z  * [new branch]      auto/evidence-bundle-version_20260131_142601 -> origin/auto/evidence-bundle-version_20260131_142601
+writeback	Checkout	2026-02-04T18:19:01.5646755Z  * [new branch]      auto/fix-422-env-emptystring_20260201_002638 -> origin/auto/fix-422-env-emptystring_20260201_002638
+writeback	Checkout	2026-02-04T18:19:01.5648848Z  * [new branch]      auto/fix-422-env-indent_20260201_002800 -> origin/auto/fix-422-env-indent_20260201_002800
+writeback	Checkout	2026-02-04T18:19:01.5651131Z  * [new branch]      auto/fix-current-scope-format_20260203_162531 -> origin/auto/fix-current-scope-format_20260203_162531
+writeback	Checkout	2026-02-04T18:19:01.5653381Z  * [new branch]      auto/fix-dispatch-yaml-line61_20260201_013210 -> origin/auto/fix-dispatch-yaml-line61_20260201_013210
+writeback	Checkout	2026-02-04T18:19:01.5655794Z  * [new branch]      auto/fix-evidence-dispatch-shellpwsh_20260131_031856 -> origin/auto/fix-evidence-dispatch-shellpwsh_20260131_031856
+writeback	Checkout	2026-02-04T18:19:01.5658064Z  * [new branch]      auto/fix-failing-checks_20260201_042630 -> origin/auto/fix-failing-checks_20260201_042630
+writeback	Checkout	2026-02-04T18:19:01.5659663Z  * [new branch]      auto/fix-fullstep-env-indent_20260201_013355 -> origin/auto/fix-fullstep-env-indent_20260201_013355
+writeback	Checkout	2026-02-04T18:19:01.5662451Z  * [new branch]      auto/fix-fullstep-gh-token-value_20260201_014752 -> origin/auto/fix-fullstep-gh-token-value_20260201_014752
+writeback	Checkout	2026-02-04T18:19:01.5664728Z  * [new branch]      auto/fix-handoff-bundled_20260203_041350 -> origin/auto/fix-handoff-bundled_20260203_041350
+writeback	Checkout	2026-02-04T18:19:01.5667107Z  * [new branch]      auto/fix-parse-mep_writeback_bundle_ps1_20260131_005221 -> origin/auto/fix-parse-mep_writeback_bundle_ps1_20260131_005221
+writeback	Checkout	2026-02-04T18:19:01.5669901Z  * [new branch]      auto/fix-tool-evidence-latest_20260131_145200 -> origin/auto/fix-tool-evidence-latest_20260131_145200
+writeback	Checkout	2026-02-04T18:19:01.5672338Z  * [new branch]      auto/fix-wf-fullstep-gh-token_20260201_011204 -> origin/auto/fix-wf-fullstep-gh-token_20260201_011204
+writeback	Checkout	2026-02-04T18:19:01.5674609Z  * [new branch]      auto/fix-wf-fullstep-gh-token_20260201_011423 -> origin/auto/fix-wf-fullstep-gh-token_20260201_011423
+writeback	Checkout	2026-02-04T18:19:01.5676829Z  * [new branch]      auto/fix-workflow-create-pr_20260131_024948 -> origin/auto/fix-workflow-create-pr_20260131_024948
+writeback	Checkout	2026-02-04T18:19:01.5679391Z  * [new branch]      auto/fix-writeback-bundle-create-pr_20260131_024016 -> origin/auto/fix-writeback-bundle-create-pr_20260131_024016
+writeback	Checkout	2026-02-04T18:19:01.5682064Z  * [new branch]      auto/fix-writeback-bundle-parsererror_20260131_030611 -> origin/auto/fix-writeback-bundle-parsererror_20260131_030611
+writeback	Checkout	2026-02-04T18:19:01.5684572Z  * [new branch]      auto/fix-writeback-yamlline78_20260202_011803 -> origin/auto/fix-writeback-yamlline78_20260202_011803
+writeback	Checkout	2026-02-04T18:19:01.5686672Z  * [new branch]      auto/fix-yaml-env-map_20260201_002418 -> origin/auto/fix-yaml-env-map_20260201_002418
+writeback	Checkout	2026-02-04T18:19:01.5688581Z  * [new branch]      auto/fix_actions_auth_20260203_023617 -> origin/auto/fix_actions_auth_20260203_023617
+writeback	Checkout	2026-02-04T18:19:01.5690771Z  * [new branch]      auto/fix_forbid_pr0_evidence_20260201_011451 -> origin/auto/fix_forbid_pr0_evidence_20260201_011451
+writeback	Checkout	2026-02-04T18:19:01.5692844Z  * [new branch]      auto/fix_gate2_approval_20260203_033408 -> origin/auto/fix_gate2_approval_20260203_033408
+writeback	Checkout	2026-02-04T18:19:01.5694747Z  * [new branch]      auto/fix_handoff_and_append_20260203_160933 -> origin/auto/fix_handoff_and_append_20260203_160933
+writeback	Checkout	2026-02-04T18:19:01.5696045Z  * [new branch]      auto/fix_handoff_and_append_20260203_161135 -> origin/auto/fix_handoff_and_append_20260203_161135
+writeback	Checkout	2026-02-04T18:19:01.5697295Z  * [new branch]      auto/fix_handoff_evidence_20260202_203243 -> origin/auto/fix_handoff_evidence_20260202_203243
+writeback	Checkout	2026-02-04T18:19:01.5698652Z  * [new branch]      auto/fix_handoff_meta_defaults_20260202_234308 -> origin/auto/fix_handoff_meta_defaults_20260202_234308
+writeback	Checkout	2026-02-04T18:19:01.5701380Z  * [new branch]      auto/fix_handoff_meta_defaults_v2_20260202_234615 -> origin/auto/fix_handoff_meta_defaults_v2_20260202_234615
+writeback	Checkout	2026-02-04T18:19:01.5703940Z  * [new branch]      auto/fix_mep_handoff_anchors_20260204_025058 -> origin/auto/fix_mep_handoff_anchors_20260204_025058
+writeback	Checkout	2026-02-04T18:19:01.5706308Z  * [new branch]      auto/fix_mep_handoff_l487_20260203_162733 -> origin/auto/fix_mep_handoff_l487_20260203_162733
+writeback	Checkout	2026-02-04T18:19:01.5708660Z  * [new branch]      auto/fix_mep_handoff_parser_20260203_171631 -> origin/auto/fix_mep_handoff_parser_20260203_171631
+writeback	Checkout	2026-02-04T18:19:01.5711236Z  * [new branch]      auto/fix_mep_handoff_parser_20260203_171908 -> origin/auto/fix_mep_handoff_parser_20260203_171908
+writeback	Checkout	2026-02-04T18:19:01.5713772Z  * [new branch]      auto/fix_mep_handoff_parser_and_anchors_20260203_162532 -> origin/auto/fix_mep_handoff_parser_and_anchors_20260203_162532
+writeback	Checkout	2026-02-04T18:19:01.5715354Z  * [new branch]      auto/fix_mep_handoff_parser_min_20260203_173123 -> origin/auto/fix_mep_handoff_parser_min_20260203_173123
+writeback	Checkout	2026-02-04T18:19:01.5716695Z  * [new branch]      auto/fix_scope_guard_scopein_20260131_032751 -> origin/auto/fix_scope_guard_scopein_20260131_032751
+writeback	Checkout	2026-02-04T18:19:01.5717947Z  * [new branch]      auto/fix_self-heal-401_20260202_234830 -> origin/auto/fix_self-heal-401_20260202_234830
+writeback	Checkout	2026-02-04T18:19:01.5719732Z  * [new branch]      auto/fix_workflow_parse_422_20260201_001052 -> origin/auto/fix_workflow_parse_422_20260201_001052
+writeback	Checkout	2026-02-04T18:19:01.5721141Z  * [new branch]      auto/fix_workflow_use_github_token_20260201_003441 -> origin/auto/fix_workflow_use_github_token_20260201_003441
+writeback	Checkout	2026-02-04T18:19:01.5722454Z  * [new branch]      auto/fix_writeback_yaml_20260201_180245 -> origin/auto/fix_writeback_yaml_20260201_180245
+writeback	Checkout	2026-02-04T18:19:01.5723944Z  * [new branch]      auto/gate_add_draftlane_status_intent_blastradius_20260201_174434 -> origin/auto/gate_add_draftlane_status_intent_blastradius_20260201_174434
+writeback	Checkout	2026-02-04T18:19:01.5725520Z  * [new branch]      auto/handoff_next_no_rollback_20260131_035435 -> origin/auto/handoff_next_no_rollback_20260131_035435
+writeback	Checkout	2026-02-04T18:19:01.5726755Z  * [new branch]      auto/handoff_two_line/20260131_205224 -> origin/auto/handoff_two_line/20260131_205224
+writeback	Checkout	2026-02-04T18:19:01.5727984Z  * [new branch]      auto/impl_entry_exit_contract_20260203_014436 -> origin/auto/impl_entry_exit_contract_20260203_014436
+writeback	Checkout	2026-02-04T18:19:01.5729483Z  * [new branch]      auto/intentional-block_20260203_035936 -> origin/auto/intentional-block_20260203_035936
+writeback	Checkout	2026-02-04T18:19:01.5730877Z  * [new branch]      auto/repair_pr0_guard_v2_syntax_20260201_014947 -> origin/auto/repair_pr0_guard_v2_syntax_20260201_014947
+writeback	Checkout	2026-02-04T18:19:01.5732326Z  * [new branch]      auto/restore_mep_append_evidence_line_20260203_144646 -> origin/auto/restore_mep_append_evidence_line_20260203_144646
+writeback	Checkout	2026-02-04T18:19:01.5733830Z  * [new branch]      auto/sync-evidence-to-parent_run_21546535838 -> origin/auto/sync-evidence-to-parent_run_21546535838
+writeback	Checkout	2026-02-04T18:19:01.5735170Z  * [new branch]      auto/sync-evidence-to-parent_run_21546680334 -> origin/auto/sync-evidence-to-parent_run_21546680334
+writeback	Checkout	2026-02-04T18:19:01.5736511Z  * [new branch]      auto/sync-evidence-to-parent_run_21546693060 -> origin/auto/sync-evidence-to-parent_run_21546693060
+writeback	Checkout	2026-02-04T18:19:01.5738081Z  * [new branch]      auto/system_completionB_ruleset_required_checks_20260203_042809 -> origin/auto/system_completionB_ruleset_required_checks_20260203_042809
+writeback	Checkout	2026-02-04T18:19:01.5739874Z  * [new branch]      auto/wire-full-evidence_20260201_001926 -> origin/auto/wire-full-evidence_20260201_001926
+writeback	Checkout	2026-02-04T18:19:01.5741259Z  * [new branch]      auto/writeback-bundle_21599170055_1625_20260202_165124 -> origin/auto/writeback-bundle_21599170055_1625_20260202_165124
+writeback	Checkout	2026-02-04T18:19:01.5742775Z  * [new branch]      auto/writeback-bundle_21618709061_1676_20260203_054707 -> origin/auto/writeback-bundle_21618709061_1676_20260203_054707
+writeback	Checkout	2026-02-04T18:19:01.5744279Z  * [new branch]      auto/writeback-bundle_21618898696_1660_20260203_055542 -> origin/auto/writeback-bundle_21618898696_1660_20260203_055542
+writeback	Checkout	2026-02-04T18:19:01.5745788Z  * [new branch]      auto/writeback-bundle_21620934793_1675_20260203_072109 -> origin/auto/writeback-bundle_21620934793_1675_20260203_072109
+writeback	Checkout	2026-02-04T18:19:01.5747307Z  * [new branch]      auto/writeback-bundle_21641797533_1693_20260203_180401 -> origin/auto/writeback-bundle_21641797533_1693_20260203_180401
+writeback	Checkout	2026-02-04T18:19:01.5748828Z  * [new branch]      auto/writeback-bundle_21642830139_1700_20260203_183557 -> origin/auto/writeback-bundle_21642830139_1700_20260203_183557
+writeback	Checkout	2026-02-04T18:19:01.5750437Z  * [new branch]      auto/writeback-bundle_21644897579_1715_20260203_193927 -> origin/auto/writeback-bundle_21644897579_1715_20260203_193927
+writeback	Checkout	2026-02-04T18:19:01.5751934Z  * [new branch]      auto/writeback-bundle_21646778137_1722_20260203_203335 -> origin/auto/writeback-bundle_21646778137_1722_20260203_203335
+writeback	Checkout	2026-02-04T18:19:01.5753447Z  * [new branch]      auto/writeback-bundle_21646875932_1722_20260203_203633 -> origin/auto/writeback-bundle_21646875932_1722_20260203_203633
+writeback	Checkout	2026-02-04T18:19:01.5754941Z  * [new branch]      auto/writeback-bundle_21647328212_1717_20260203_205055 -> origin/auto/writeback-bundle_21647328212_1717_20260203_205055
+writeback	Checkout	2026-02-04T18:19:01.5756600Z  * [new branch]      auto/writeback-bundle_21650340852_1734_20260203_222951 -> origin/auto/writeback-bundle_21650340852_1734_20260203_222951
+writeback	Checkout	2026-02-04T18:19:01.5758163Z  * [new branch]      auto/writeback-bundle_21650455517_1727_20260203_223353 -> origin/auto/writeback-bundle_21650455517_1727_20260203_223353
+writeback	Checkout	2026-02-04T18:19:01.5759794Z  * [new branch]      auto/writeback-bundle_21650673664_1727_20260203_224151 -> origin/auto/writeback-bundle_21650673664_1727_20260203_224151
+writeback	Checkout	2026-02-04T18:19:01.5761313Z  * [new branch]      auto/writeback-bundle_21652490395_1748_20260203_235402 -> origin/auto/writeback-bundle_21652490395_1748_20260203_235402
+writeback	Checkout	2026-02-04T18:19:01.5762825Z  * [new branch]      auto/writeback-bundle_21652659466_1748_20260204_000108 -> origin/auto/writeback-bundle_21652659466_1748_20260204_000108
+writeback	Checkout	2026-02-04T18:19:01.5764326Z  * [new branch]      auto/writeback-bundle_21652715282_1748_20260204_000320 -> origin/auto/writeback-bundle_21652715282_1748_20260204_000320
+writeback	Checkout	2026-02-04T18:19:01.5765832Z  * [new branch]      auto/writeback-bundle_21653215204_1738_20260204_002400 -> origin/auto/writeback-bundle_21653215204_1738_20260204_002400
+writeback	Checkout	2026-02-04T18:19:01.5767346Z  * [new branch]      auto/writeback-bundle_21653219605_1727_20260204_002407 -> origin/auto/writeback-bundle_21653219605_1727_20260204_002407
+writeback	Checkout	2026-02-04T18:19:01.5768859Z  * [new branch]      auto/writeback-bundle_21653419328_1738_20260204_003245 -> origin/auto/writeback-bundle_21653419328_1738_20260204_003245
+writeback	Checkout	2026-02-04T18:19:01.5770590Z  * [new branch]      auto/writeback-bundle_21654157365_1752_20260204_010357 -> origin/auto/writeback-bundle_21654157365_1752_20260204_010357
+writeback	Checkout	2026-02-04T18:19:01.5772142Z  * [new branch]      auto/writeback-bundle_21655226625_1756_20260204_015203 -> origin/auto/writeback-bundle_21655226625_1756_20260204_015203
+writeback	Checkout	2026-02-04T18:19:01.5773676Z  * [new branch]      auto/writeback-bundle_21661964624_1756_20260204_070438 -> origin/auto/writeback-bundle_21661964624_1756_20260204_070438
+writeback	Checkout	2026-02-04T18:19:01.5775194Z  * [new branch]      auto/writeback-bundle_21661966961_1756_20260204_070443 -> origin/auto/writeback-bundle_21661966961_1756_20260204_070443
+writeback	Checkout	2026-02-04T18:19:01.5776873Z  * [new branch]      auto/writeback-bundle_21667882178_1756_20260204_102830 -> origin/auto/writeback-bundle_21667882178_1756_20260204_102830
+writeback	Checkout	2026-02-04T18:19:01.5778375Z  * [new branch]      auto/writeback-bundle_21667883480_1756_20260204_102829 -> origin/auto/writeback-bundle_21667883480_1756_20260204_102829
+writeback	Checkout	2026-02-04T18:19:01.5780006Z  * [new branch]      auto/writeback-bundle_21667958852_1756_20260204_103056 -> origin/auto/writeback-bundle_21667958852_1756_20260204_103056
+writeback	Checkout	2026-02-04T18:19:01.5781519Z  * [new branch]      auto/writeback-bundle_21667970429_1756_20260204_103114 -> origin/auto/writeback-bundle_21667970429_1756_20260204_103114
+writeback	Checkout	2026-02-04T18:19:01.5783027Z  * [new branch]      auto/writeback-bundle_21668040675_1756_20260204_103331 -> origin/auto/writeback-bundle_21668040675_1756_20260204_103331
+writeback	Checkout	2026-02-04T18:19:01.5784527Z  * [new branch]      auto/writeback-bundle_21668083611_1757_20260204_103457 -> origin/auto/writeback-bundle_21668083611_1757_20260204_103457
+writeback	Checkout	2026-02-04T18:19:01.5786060Z  * [new branch]      auto/writeback-bundle_21668141455_1757_20260204_103648 -> origin/auto/writeback-bundle_21668141455_1757_20260204_103648
+writeback	Checkout	2026-02-04T18:19:01.5787569Z  * [new branch]      auto/writeback-bundle_21668221681_1757_20260204_103927 -> origin/auto/writeback-bundle_21668221681_1757_20260204_103927
+writeback	Checkout	2026-02-04T18:19:01.5789088Z  * [new branch]      auto/writeback-bundle_21671363652_1776_20260204_122546 -> origin/auto/writeback-bundle_21671363652_1776_20260204_122546
+writeback	Checkout	2026-02-04T18:19:01.5790682Z  * [new branch]      auto/writeback-bundle_21671809226_1774_20260204_124048 -> origin/auto/writeback-bundle_21671809226_1774_20260204_124048
+writeback	Checkout	2026-02-04T18:19:01.5792187Z  * [new branch]      auto/writeback-bundle_21671874769_1774_20260204_124254 -> origin/auto/writeback-bundle_21671874769_1774_20260204_124254
+writeback	Checkout	2026-02-04T18:19:01.5793674Z  * [new branch]      auto/writeback-bundle_21672225963_1780_20260204_125426 -> origin/auto/writeback-bundle_21672225963_1780_20260204_125426
+writeback	Checkout	2026-02-04T18:19:01.5795373Z  * [new branch]      auto/writeback-bundle_21672504533_1782_20260204_130329 -> origin/auto/writeback-bundle_21672504533_1782_20260204_130329
+writeback	Checkout	2026-02-04T18:19:01.5796883Z  * [new branch]      auto/writeback-bundle_21672688608_1782_20260204_130919 -> origin/auto/writeback-bundle_21672688608_1782_20260204_130919
+writeback	Checkout	2026-02-04T18:19:01.5798381Z  * [new branch]      auto/writeback-bundle_21673137426_1783_20260204_132348 -> origin/auto/writeback-bundle_21673137426_1783_20260204_132348
+writeback	Checkout	2026-02-04T18:19:01.5800032Z  * [new branch]      auto/writeback-bundle_21673401249_1784_20260204_133155 -> origin/auto/writeback-bundle_21673401249_1784_20260204_133155
+writeback	Checkout	2026-02-04T18:19:01.5801546Z  * [new branch]      auto/writeback-bundle_21673423341_1785_20260204_133233 -> origin/auto/writeback-bundle_21673423341_1785_20260204_133233
+writeback	Checkout	2026-02-04T18:19:01.5803049Z  * [new branch]      auto/writeback-bundle_21673600821_1788_20260204_133812 -> origin/auto/writeback-bundle_21673600821_1788_20260204_133812
+writeback	Checkout	2026-02-04T18:19:01.5804578Z  * [new branch]      auto/writeback-bundle_21676313124_1795_20260204_145652 -> origin/auto/writeback-bundle_21676313124_1795_20260204_145652
+writeback	Checkout	2026-02-04T18:19:01.5806077Z  * [new branch]      auto/writeback-bundle_21677047331_1774_20260204_151720 -> origin/auto/writeback-bundle_21677047331_1774_20260204_151720
+writeback	Checkout	2026-02-04T18:19:01.5807580Z  * [new branch]      auto/writeback-bundle_21680765223_1806_20260204_170447 -> origin/auto/writeback-bundle_21680765223_1806_20260204_170447
+writeback	Checkout	2026-02-04T18:19:01.5809125Z  * [new branch]      auto/writeback-bundle_21682906578_1808_20260204_181121 -> origin/auto/writeback-bundle_21682906578_1808_20260204_181121
+writeback	Checkout	2026-02-04T18:19:01.5810899Z  * [new branch]      auto/writeback-bundle_21682982096_1809_20260204_181340 -> origin/auto/writeback-bundle_21682982096_1809_20260204_181340
+writeback	Checkout	2026-02-04T18:19:01.5812426Z  * [new branch]      auto/writeback-bundle_21683145407_1809_20260204_181842 -> origin/auto/writeback-bundle_21683145407_1809_20260204_181842
+writeback	Checkout	2026-02-04T18:19:01.5814141Z  * [new branch]      auto/writeback-evidence_21678049218_1805_20260204_154513 -> origin/auto/writeback-evidence_21678049218_1805_20260204_154513
+writeback	Checkout	2026-02-04T18:19:01.5815397Z  * [new branch]      backup/crash-20260107-011333 -> origin/backup/crash-20260107-011333
+writeback	Checkout	2026-02-04T18:19:01.5816355Z  * [new branch]      backup/crash-20260107-013037 -> origin/backup/crash-20260107-013037
+writeback	Checkout	2026-02-04T18:19:01.5817549Z  * [new branch]      biz/alertlabels-recalc-trigger-20260104-200205 -> origin/biz/alertlabels-recalc-trigger-20260104-200205
+writeback	Checkout	2026-02-04T18:19:01.5818936Z  * [new branch]      biz/expense-business-master-20260104-052234 -> origin/biz/expense-business-master-20260104-052234
+writeback	Checkout	2026-02-04T18:19:01.5820374Z  * [new branch]      biz/expense-business-spec-20260104-052212 -> origin/biz/expense-business-spec-20260104-052212
+writeback	Checkout	2026-02-04T18:19:01.5821699Z  * [new branch]      biz/fix-review-rootcause-dup-20260104-203953 -> origin/biz/fix-review-rootcause-dup-20260104-203953
+writeback	Checkout	2026-02-04T18:19:01.5823074Z  * [new branch]      biz/health-score-deductions-20260104-183134 -> origin/biz/health-score-deductions-20260104-183134
+writeback	Checkout	2026-02-04T18:19:01.5824389Z  * [new branch]      biz/inconsistency-signals-20260104-194245 -> origin/biz/inconsistency-signals-20260104-194245
+writeback	Checkout	2026-02-04T18:19:01.5825712Z  * [new branch]      biz/management-alert-labels-20260104-194416 -> origin/biz/management-alert-labels-20260104-194416
+writeback	Checkout	2026-02-04T18:19:01.5827058Z  * [new branch]      biz/master-spec-lf-normalize-20260104-193832 -> origin/biz/master-spec-lf-normalize-20260104-193832
+writeback	Checkout	2026-02-04T18:19:01.5828480Z  * [new branch]      biz/order-alertlabels-columns-fix-20260104-195904 -> origin/biz/order-alertlabels-columns-fix-20260104-195904
+writeback	Checkout	2026-02-04T18:19:01.5830119Z  * [new branch]      biz/order-alertlabels-field-20260104-195223 -> origin/biz/order-alertlabels-field-20260104-195223
+writeback	Checkout	2026-02-04T18:19:01.5831644Z  * [new branch]      biz/order-business-master-20260104-045819 -> origin/biz/order-business-master-20260104-045819
+writeback	Checkout	2026-02-04T18:19:01.5832934Z  * [new branch]      biz/order-business-master-20260104-050019 -> origin/biz/order-business-master-20260104-050019
+writeback	Checkout	2026-02-04T18:19:01.5834235Z  * [new branch]      biz/parts-business-master-20260104-051732 -> origin/biz/parts-business-master-20260104-051732
+writeback	Checkout	2026-02-04T18:19:01.5835503Z  * [new branch]      biz/parts-business-spec-20260104-051453 -> origin/biz/parts-business-spec-20260104-051453
+writeback	Checkout	2026-02-04T18:19:01.5836842Z  * [new branch]      biz/phase1-parts-expense-docs-20260104-210346 -> origin/biz/phase1-parts-expense-docs-20260104-210346
+writeback	Checkout	2026-02-04T18:19:01.5838201Z  * [new branch]      biz/photo-sufficiency-rules-20260104-194018 -> origin/biz/photo-sufficiency-rules-20260104-194018
+writeback	Checkout	2026-02-04T18:19:01.5839871Z  * [new branch]      biz/request-resolution-metadata-contract-20260104-201319 -> origin/biz/request-resolution-metadata-contract-20260104-201319
+writeback	Checkout	2026-02-04T18:19:01.5841435Z  * [new branch]      biz/request-status-contract-20260104-200542 -> origin/biz/request-status-contract-20260104-200542
+writeback	Checkout	2026-02-04T18:19:01.5842755Z  * [new branch]      biz/review-rootcause-keys-20260104-203610 -> origin/biz/review-rootcause-keys-20260104-203610
+writeback	Checkout	2026-02-04T18:19:01.5844155Z  * [new branch]      biz/review-rootcause-schema-keys2-20260104-204820 -> origin/biz/review-rootcause-schema-keys2-20260104-204820
+writeback	Checkout	2026-02-04T18:19:01.5845520Z  * [new branch]      biz/reviewtype-mapping-20260104-203306 -> origin/biz/reviewtype-mapping-20260104-203306
+writeback	Checkout	2026-02-04T18:19:01.5846733Z  * [new branch]      biz/tidy-3.7.2-subbans2-20260104-204428 -> origin/biz/tidy-3.7.2-subbans2-20260104-204428
+writeback	Checkout	2026-02-04T18:19:01.5847967Z  * [new branch]      biz/work-business-master-20260104-050912 -> origin/biz/work-business-master-20260104-050912
+writeback	Checkout	2026-02-04T18:19:01.5849320Z  * [new branch]      biz/work-business-spec-20260104-050739 -> origin/biz/work-business-spec-20260104-050739
+writeback	Checkout	2026-02-04T18:19:01.5850482Z  * [new branch]      biz/work-normalize-20260105-004002 -> origin/biz/work-normalize-20260105-004002
+writeback	Checkout	2026-02-04T18:19:01.5851729Z  * [new branch]      biz/yorisoidou-done-definition_20260123_211048 -> origin/biz/yorisoidou-done-definition_20260123_211048
+writeback	Checkout	2026-02-04T18:19:01.5853040Z  * [new branch]      bot-check-bot/20260201_020402 -> origin/bot-check-bot/20260201_020402
+writeback	Checkout	2026-02-04T18:19:01.5853948Z  * [new branch]      bot-check/20260201_015343 -> origin/bot-check/20260201_015343
+writeback	Checkout	2026-02-04T18:19:01.5855042Z  * [new branch]      business/doc-flow-normalize-20260104-152705 -> origin/business/doc-flow-normalize-20260104-152705
+writeback	Checkout	2026-02-04T18:19:01.5856354Z  * [new branch]      business/order-status-enum-20260104-152927 -> origin/business/order-status-enum-20260104-152927
+writeback	Checkout	2026-02-04T18:19:01.5857756Z  * [new branch]      business/parts-expense-ex-align-20260104-154921 -> origin/business/parts-expense-ex-align-20260104-154921
+writeback	Checkout	2026-02-04T18:19:01.5859281Z  * [new branch]      business/request-category-enum-20260104-153111 -> origin/business/request-category-enum-20260104-153111
+writeback	Checkout	2026-02-04T18:19:01.5860708Z  * [new branch]      business/request-contract-align-20260104-220315 -> origin/business/request-contract-align-20260104-220315
+writeback	Checkout	2026-02-04T18:19:01.5862155Z  * [new branch]      business/request-payload-schema-20260104-153400 -> origin/business/request-payload-schema-20260104-153400
+writeback	Checkout	2026-02-04T18:19:01.5863726Z  * [new branch]      business/request-uf07-uf08-id-consistency-20260104-220830 -> origin/business/request-uf07-uf08-id-consistency-20260104-220830
+writeback	Checkout	2026-02-04T18:19:01.5865413Z  * [new branch]      business/ui-spec-request-id-consistency-20260104-224201 -> origin/business/ui-spec-request-id-consistency-20260104-224201
+writeback	Checkout	2026-02-04T18:19:01.5866870Z  * [new branch]      chore/append_evidence_line_20260131_141208 -> origin/chore/append_evidence_line_20260131_141208
+writeback	Checkout	2026-02-04T18:19:01.5868198Z  * [new branch]      chore/append_evidence_line_pr1395_20260131_141357 -> origin/chore/append_evidence_line_pr1395_20260131_141357
+writeback	Checkout	2026-02-04T18:19:01.5870037Z  * [new branch]      chore/approval-error-exec-flow-spec_20260203_144727 -> origin/chore/approval-error-exec-flow-spec_20260203_144727
+writeback	Checkout	2026-02-04T18:19:01.5871490Z  * [new branch]      chore/draft-isolation-lanes_20260202_060430 -> origin/chore/draft-isolation-lanes_20260202_060430
+writeback	Checkout	2026-02-04T18:19:01.5872695Z  * [new branch]      chore/encoding-fix/20260107-024345 -> origin/chore/encoding-fix/20260107-024345
+writeback	Checkout	2026-02-04T18:19:01.5873885Z  * [new branch]      chore/evidence_dedupe_pr1609_20260202_221417 -> origin/chore/evidence_dedupe_pr1609_20260202_221417
+writeback	Checkout	2026-02-04T18:19:01.5875176Z  * [new branch]      chore/evidence_dedupe_pr1609_20260202_221516 -> origin/chore/evidence_dedupe_pr1609_20260202_221516
+writeback	Checkout	2026-02-04T18:19:01.5876469Z  * [new branch]      chore/evidence_dedupe_pr1609_20260202_221915 -> origin/chore/evidence_dedupe_pr1609_20260202_221915
+writeback	Checkout	2026-02-04T18:19:01.5877927Z  * [new branch]      chore/fix-chat-packet-self-heal-push-20260103-062451 -> origin/chore/fix-chat-packet-self-heal-push-20260103-062451
+writeback	Checkout	2026-02-04T18:19:01.5879556Z  * [new branch]      chore/mep-add-handoff-auditonly_20260131_142622 -> origin/chore/mep-add-handoff-auditonly_20260131_142622
+writeback	Checkout	2026-02-04T18:19:01.5880745Z  * [new branch]      chore/mep-bundle-writeback -> origin/chore/mep-bundle-writeback
+writeback	Checkout	2026-02-04T18:19:01.5881793Z  * [new branch]      chore/mep-evidence-writeback-split -> origin/chore/mep-evidence-writeback-split
+writeback	Checkout	2026-02-04T18:19:01.5882998Z  * [new branch]      chore/mep-gate-dispatch-20260103-063059 -> origin/chore/mep-gate-dispatch-20260103-063059
+writeback	Checkout	2026-02-04T18:19:01.5884312Z  * [new branch]      chore/op3_parentbundled_scopeops_20260204_061438 -> origin/chore/op3_parentbundled_scopeops_20260204_061438
+writeback	Checkout	2026-02-04T18:19:01.5885634Z  * [new branch]      chore/scope-fence-guard_20260201_061743 -> origin/chore/scope-fence-guard_20260201_061743
+writeback	Checkout	2026-02-04T18:19:01.5887063Z  * [new branch]      chore/scope-guard-maintenance-allowlist-20260103-034249 -> origin/chore/scope-guard-maintenance-allowlist-20260103-034249
+writeback	Checkout	2026-02-04T18:19:01.5888628Z  * [new branch]      chore/scope-guard-self-diagnose-20260103-030137 -> origin/chore/scope-guard-self-diagnose-20260103-030137
+writeback	Checkout	2026-02-04T18:19:01.5890271Z  * [new branch]      chore/system-entry-fenced_20260201_153604 -> origin/chore/system-entry-fenced_20260201_153604
+writeback	Checkout	2026-02-04T18:19:01.5891468Z  * [new branch]      chore/time-marks_fix2_20260202_033408 -> origin/chore/time-marks_fix2_20260202_033408
+writeback	Checkout	2026-02-04T18:19:01.5892753Z  * [new branch]      chore/time-marks_fix_evidence_path_20260202_041145 -> origin/chore/time-marks_fix_evidence_path_20260202_041145
+writeback	Checkout	2026-02-04T18:19:01.5894040Z  * [new branch]      chore/time-marks_handoff_timefields -> origin/chore/time-marks_handoff_timefields
+writeback	Checkout	2026-02-04T18:19:01.5895240Z  * [new branch]      chore/upgrade-bundle-001-20260103-061405 -> origin/chore/upgrade-bundle-001-20260103-061405
+writeback	Checkout	2026-02-04T18:19:01.5896410Z  * [new branch]      ci/chat-packet-schedule-20260103 -> origin/ci/chat-packet-schedule-20260103
+writeback	Checkout	2026-02-04T18:19:01.5897551Z  * [new branch]      ci/fix-chat-packet-schedule-20260103 -> origin/ci/fix-chat-packet-schedule-20260103
+writeback	Checkout	2026-02-04T18:19:01.5898870Z  * [new branch]      ci/mep-state-summary-auto-update-20260103-152119 -> origin/ci/mep-state-summary-auto-update-20260103-152119
+writeback	Checkout	2026-02-04T18:19:01.5900478Z  * [new branch]      ci/mep-updater-include-chat-packet-20260103-160231 -> origin/ci/mep-updater-include-chat-packet-20260103-160231
+writeback	Checkout	2026-02-04T18:19:01.5902019Z  * [new branch]      docs/chat-packet-handoff-short-memo-20260104-210143 -> origin/docs/chat-packet-handoff-short-memo-20260104-210143
+writeback	Checkout	2026-02-04T18:19:01.5903527Z  * [new branch]      docs/chat-packet-handoff-trigger-20260104-203132 -> origin/docs/chat-packet-handoff-trigger-20260104-203132
+writeback	Checkout	2026-02-04T18:19:01.5904926Z  * [new branch]      docs/chat-packet-regenerate-20260104-212238 -> origin/docs/chat-packet-regenerate-20260104-212238
+writeback	Checkout	2026-02-04T18:19:01.5906228Z  * [new branch]      docs/final-audit-contract-20260104-191025 -> origin/docs/final-audit-contract-20260104-191025
+writeback	Checkout	2026-02-04T18:19:01.5907670Z  * [new branch]      docs/fix-chat-packet-guard-20260104-154448 -> origin/docs/fix-chat-packet-guard-20260104-154448
+writeback	Checkout	2026-02-04T18:19:01.5909009Z  * [new branch]      docs/fix-idea-index-mojibake-20260104-214830 -> origin/docs/fix-idea-index-mojibake-20260104-214830
+writeback	Checkout	2026-02-04T18:19:01.5910726Z  * [new branch]      docs/fix-state-current-scope-mojibake-20260104-205028 -> origin/docs/fix-state-current-scope-mojibake-20260104-205028
+writeback	Checkout	2026-02-04T18:19:01.5912077Z  * [new branch]      docs/idea-cleanup-20260104-214212 -> origin/docs/idea-cleanup-20260104-214212
+writeback	Checkout	2026-02-04T18:19:01.5913228Z  * [new branch]      docs/idea-index-add-bom-20260104-215056 -> origin/docs/idea-index-add-bom-20260104-215056
+writeback	Checkout	2026-02-04T18:19:01.5914527Z  * [new branch]      docs/idea-index1-implemented-20260104-212244 -> origin/docs/idea-index1-implemented-20260104-212244
+writeback	Checkout	2026-02-04T18:19:01.5915881Z  * [new branch]      docs/idea-index1-implemented-20260104-213620 -> origin/docs/idea-index1-implemented-20260104-213620
+writeback	Checkout	2026-02-04T18:19:01.5917206Z  * [new branch]      docs/idea-trigger-phrases-20260104-192353 -> origin/docs/idea-trigger-phrases-20260104-192353
+writeback	Checkout	2026-02-04T18:19:01.5918582Z  * [new branch]      docs/mep-add-handoff-and-bundles-20260103-155334 -> origin/docs/mep-add-handoff-and-bundles-20260103-155334
+writeback	Checkout	2026-02-04T18:19:01.5920038Z  * [new branch]      docs/mep-add-idea-vault-20260103-205303 -> origin/docs/mep-add-idea-vault-20260103-205303
+writeback	Checkout	2026-02-04T18:19:01.5921350Z  * [new branch]      docs/mep-add-manual-summaries-20260103-153458 -> origin/docs/mep-add-manual-summaries-20260103-153458
+writeback	Checkout	2026-02-04T18:19:01.5922636Z  * [new branch]      docs/mep-add-playbook-20260103-151247 -> origin/docs/mep-add-playbook-20260103-151247
+writeback	Checkout	2026-02-04T18:19:01.5923794Z  * [new branch]      docs/mep-add-runbook-20260103-150840 -> origin/docs/mep-add-runbook-20260103-150840
+writeback	Checkout	2026-02-04T18:19:01.5925021Z  * [new branch]      docs/mep-add-state-summary-20260103-151642 -> origin/docs/mep-add-state-summary-20260103-151642
+writeback	Checkout	2026-02-04T18:19:01.5926402Z  * [new branch]      docs/mep-add-state-summary-step1-20260103-151916 -> origin/docs/mep-add-state-summary-step1-20260103-151916
+writeback	Checkout	2026-02-04T18:19:01.5927984Z  * [new branch]      docs/mep-chat-style-contract-20260104-044201 -> origin/docs/mep-chat-style-contract-20260104-044201
+writeback	Checkout	2026-02-04T18:19:01.5929724Z  * [new branch]      docs/mep-expand-request-bundles-platform-20260103-155717 -> origin/docs/mep-expand-request-bundles-platform-20260103-155717
+writeback	Checkout	2026-02-04T18:19:01.5931311Z  * [new branch]      docs/mep-fix-handoff-generator-20260103-193849 -> origin/docs/mep-fix-handoff-generator-20260103-193849
+writeback	Checkout	2026-02-04T18:19:01.5932686Z  * [new branch]      docs/mep-fix-handoff-trigger-20260103-193547 -> origin/docs/mep-fix-handoff-trigger-20260103-193547
+writeback	Checkout	2026-02-04T18:19:01.5933984Z  * [new branch]      docs/mep-guidance-align-20260104-153937 -> origin/docs/mep-guidance-align-20260104-153937
+writeback	Checkout	2026-02-04T18:19:01.5935328Z  * [new branch]      docs/mep-handoff-current-archive-20260103-164630 -> origin/docs/mep-handoff-current-archive-20260103-164630
+writeback	Checkout	2026-02-04T18:19:01.5936757Z  * [new branch]      docs/mep-handoff-id-overview-20260103-181619 -> origin/docs/mep-handoff-id-overview-20260103-181619
+writeback	Checkout	2026-02-04T18:19:01.5938071Z  * [new branch]      docs/mep-handoff-trigger-20260103-182010 -> origin/docs/mep-handoff-trigger-20260103-182010
+writeback	Checkout	2026-02-04T18:19:01.5939360Z  * [new branch]      docs/mep-idea-flow-20260103-212432 -> origin/docs/mep-idea-flow-20260103-212432
+writeback	Checkout	2026-02-04T18:19:01.5940632Z  * [new branch]      docs/mep-idea-receipts-finalize-20260103-214123 -> origin/docs/mep-idea-receipts-finalize-20260103-214123
+writeback	Checkout	2026-02-04T18:19:01.5941979Z  * [new branch]      docs/mep-idea-vault-pull-20260103-205912 -> origin/docs/mep-idea-vault-pull-20260103-205912
+writeback	Checkout	2026-02-04T18:19:01.5943263Z  * [new branch]      docs/mep-index-add-runbook-20260103-151053 -> origin/docs/mep-index-add-runbook-20260103-151053
+writeback	Checkout	2026-02-04T18:19:01.5944527Z  * [new branch]      docs/mep-lease-continue-20260103-220947 -> origin/docs/mep-lease-continue-20260103-220947
+writeback	Checkout	2026-02-04T18:19:01.5946120Z  * [new branch]      docs/mep-one-packet-bootstrap-rebuild-20260104-030214 -> origin/docs/mep-one-packet-bootstrap-rebuild-20260104-030214
+writeback	Checkout	2026-02-04T18:19:01.5947763Z  * [new branch]      docs/mep-powershell-output-contract-v2-20260103-145848 -> origin/docs/mep-powershell-output-contract-v2-20260103-145848
+writeback	Checkout	2026-02-04T18:19:01.5949458Z  * [new branch]      docs/mep-process-chat-packet-update-20260104-221151 -> origin/docs/mep-process-chat-packet-update-20260104-221151
+writeback	Checkout	2026-02-04T18:19:01.5950814Z  * [new branch]      docs/mep-repair-1-2-3-20260103-153905 -> origin/docs/mep-repair-1-2-3-20260103-153905
+writeback	Checkout	2026-02-04T18:19:01.5952150Z  * [new branch]      docs/mep-runbook-crash-recovery-v1_2-20260103-222813 -> origin/docs/mep-runbook-crash-recovery-v1_2-20260103-222813
+writeback	Checkout	2026-02-04T18:19:01.5953652Z  * [new branch]      docs/mep-update-state-current-v12-20260103-150635 -> origin/docs/mep-update-state-current-v12-20260103-150635
+writeback	Checkout	2026-02-04T18:19:01.5955049Z  * [new branch]      docs/op2-recovery-min-card_20260204_053252 -> origin/docs/op2-recovery-min-card_20260204_053252
+writeback	Checkout	2026-02-04T18:19:01.5956301Z  * [new branch]      docs/ops-chat-packet-followup-20260103 -> origin/docs/ops-chat-packet-followup-20260103
+writeback	Checkout	2026-02-04T18:19:01.5957365Z  * [new branch]      docs/ops-rules-20260103 -> origin/docs/ops-rules-20260103
+writeback	Checkout	2026-02-04T18:19:01.5958509Z  * [new branch]      docs/ops-scope-suggest-20260103-150621 -> origin/docs/ops-scope-suggest-20260103-150621
+writeback	Checkout	2026-02-04T18:19:01.5960141Z  * [new branch]      docs/required1-mep-gate-migration-20260103-062110 -> origin/docs/required1-mep-gate-migration-20260103-062110
+writeback	Checkout	2026-02-04T18:19:01.5961914Z  * [new branch]      docs/revert-chat-packet-schedule-test-20260103 -> origin/docs/revert-chat-packet-schedule-test-20260103
+writeback	Checkout	2026-02-04T18:19:01.5963587Z  * [new branch]      docs/revert-chat-packet-schedule-test-v2-20260103 -> origin/docs/revert-chat-packet-schedule-test-v2-20260103
+writeback	Checkout	2026-02-04T18:19:01.5965006Z  * [new branch]      docs/runbook-business-go-20260104-053757 -> origin/docs/runbook-business-go-20260104-053757
+writeback	Checkout	2026-02-04T18:19:01.5966427Z  * [new branch]      docs/state-current-add-bom-20260104-215733 -> origin/docs/state-current-add-bom-20260104-215733
+writeback	Checkout	2026-02-04T18:19:01.5967905Z  * [new branch]      docs/state-current-required-checks-note-20260104-224911 -> origin/docs/state-current-required-checks-note-20260104-224911
+writeback	Checkout	2026-02-04T18:19:01.5969565Z  * [new branch]      docs/state-current-v12-20260103-153345 -> origin/docs/state-current-v12-20260103-153345
+writeback	Checkout	2026-02-04T18:19:01.5970852Z  * [new branch]      docs/test-chat-packet-schedule-20260103 -> origin/docs/test-chat-packet-schedule-20260103
+writeback	Checkout	2026-02-04T18:19:01.5972131Z  * [new branch]      docs/test-chat-packet-schedule-20260103b -> origin/docs/test-chat-packet-schedule-20260103b
+writeback	Checkout	2026-02-04T18:19:01.5973595Z  * [new branch]      docs/writeback_implementation_list_update_20260119_010935 -> origin/docs/writeback_implementation_list_update_20260119_010935
+writeback	Checkout	2026-02-04T18:19:01.5975144Z  * [new branch]      docs/yorisoidou-invoice-master-20260104-042430 -> origin/docs/yorisoidou-invoice-master-20260104-042430
+writeback	Checkout	2026-02-04T18:19:01.5976685Z  * [new branch]      docs/yorisoidou-invoice-spec-recover-20260104-041924 -> origin/docs/yorisoidou-invoice-spec-recover-20260104-041924
+writeback	Checkout	2026-02-04T18:19:01.5978241Z  * [new branch]      docs/yorisoidou-invoice-ui-master-20260104-042636 -> origin/docs/yorisoidou-invoice-ui-master-20260104-042636
+writeback	Checkout	2026-02-04T18:19:01.5979818Z  * [new branch]      docs/yorisoidou-invoice-ui-spec-20260104-042810 -> origin/docs/yorisoidou-invoice-ui-spec-20260104-042810
+writeback	Checkout	2026-02-04T18:19:01.5981204Z  * [new branch]      docs/yorisoidou-order-spec-20260104-043908 -> origin/docs/yorisoidou-order-spec-20260104-043908
+writeback	Checkout	2026-02-04T18:19:01.5982565Z  * [new branch]      docs/yorisoidou-receipt-master-20260104-043310 -> origin/docs/yorisoidou-receipt-master-20260104-043310
+writeback	Checkout	2026-02-04T18:19:01.5983970Z  * [new branch]      docs/yorisoidou-receipt-spec-20260104-043052 -> origin/docs/yorisoidou-receipt-spec-20260104-043052
+writeback	Checkout	2026-02-04T18:19:01.5985564Z  * [new branch]      docs/yorisoidou-receipt-ui-master-20260104-043436 -> origin/docs/yorisoidou-receipt-ui-master-20260104-043436
+writeback	Checkout	2026-02-04T18:19:01.5987041Z  * [new branch]      docs/yorisoidou-receipt-ui-spec-20260104-043655 -> origin/docs/yorisoidou-receipt-ui-spec-20260104-043655
+writeback	Checkout	2026-02-04T18:19:01.5988229Z  * [new branch]      feat/chat-packet-self-heal -> origin/feat/chat-packet-self-heal
+writeback	Checkout	2026-02-04T18:19:01.5989339Z  * [new branch]      feat/chat-packet-self-heal-rerun -> origin/feat/chat-packet-self-heal-rerun
+writeback	Checkout	2026-02-04T18:19:01.5990263Z  * [new branch]      feat/invoice-v1         -> origin/feat/invoice-v1
+writeback	Checkout	2026-02-04T18:19:01.5991154Z  * [new branch]      feat/mep-gate-pr-20260103-061907 -> origin/feat/mep-gate-pr-20260103-061907
+writeback	Checkout	2026-02-04T18:19:01.5992076Z  * [new branch]      feat/order-intake-v1    -> origin/feat/order-intake-v1
+writeback	Checkout	2026-02-04T18:19:01.5992927Z  * [new branch]      feat/scope-guard-phase1 -> origin/feat/scope-guard-phase1
+writeback	Checkout	2026-02-04T18:19:01.5993906Z  * [new branch]      feat/scope-suggest-20260103-072132 -> origin/feat/scope-suggest-20260103-072132
+writeback	Checkout	2026-02-04T18:19:01.5994890Z  * [new branch]      feat/self-heal-auto-prs -> origin/feat/self-heal-auto-prs
+writeback	Checkout	2026-02-04T18:19:01.5995723Z  * [new branch]      feat/tax-report-v1      -> origin/feat/tax-report-v1
+writeback	Checkout	2026-02-04T18:19:01.5996474Z  * [new branch]      feat/uf06-v1            -> origin/feat/uf06-v1
+writeback	Checkout	2026-02-04T18:19:01.5997449Z  * [new branch]      feat/unified-entry-step1_20260201_151133 -> origin/feat/unified-entry-step1_20260201_151133
+writeback	Checkout	2026-02-04T18:19:01.5998454Z  * [new branch]      feat/work-done-v1       -> origin/feat/work-done-v1
+writeback	Checkout	2026-02-04T18:19:01.5999521Z  * [new branch]      feat/workflow-write-handoff-input -> origin/feat/workflow-write-handoff-input
+writeback	Checkout	2026-02-04T18:19:01.6000632Z  * [new branch]      feat/workflow-write-handoff-step -> origin/feat/workflow-write-handoff-step
+writeback	Checkout	2026-02-04T18:19:01.6001830Z  * [new branch]      feat/yorisoidou-runtime-selftest-batch -> origin/feat/yorisoidou-runtime-selftest-batch
+writeback	Checkout	2026-02-04T18:19:01.6003095Z  * [new branch]      feature/new-implementation -> origin/feature/new-implementation
+writeback	Checkout	2026-02-04T18:19:01.6004302Z  * [new branch]      fix/append_parent_evidence_1738_1756_20260204_194125 -> origin/fix/append_parent_evidence_1738_1756_20260204_194125
+writeback	Checkout	2026-02-04T18:19:01.6005713Z  * [new branch]      fix/auto_loop_all_done_progress_20260203_021142 -> origin/fix/auto_loop_all_done_progress_20260203_021142
+writeback	Checkout	2026-02-04T18:19:01.6007147Z  * [new branch]      fix/auto_loop_all_done_progress_final_20260203_022601 -> origin/fix/auto_loop_all_done_progress_final_20260203_022601
+writeback	Checkout	2026-02-04T18:19:01.6008585Z  * [new branch]      fix/auto_loop_all_done_progress_v2_20260203_021339 -> origin/fix/auto_loop_all_done_progress_v2_20260203_021339
+writeback	Checkout	2026-02-04T18:19:01.6010187Z  * [new branch]      fix/auto_loop_debug_stageval_20260203_022815 -> origin/fix/auto_loop_debug_stageval_20260203_022815
+writeback	Checkout	2026-02-04T18:19:01.6011538Z  * [new branch]      fix/auto_loop_done_before_stop_20260203_040004 -> origin/fix/auto_loop_done_before_stop_20260203_040004
+writeback	Checkout	2026-02-04T18:19:01.6012923Z  * [new branch]      fix/auto_loop_read_stagevalue_safe_20260203_031824 -> origin/fix/auto_loop_read_stagevalue_safe_20260203_031824
+writeback	Checkout	2026-02-04T18:19:01.6014372Z  * [new branch]      fix/auto_loop_remove_stagefile_var_v2_20260203_032753 -> origin/fix/auto_loop_remove_stagefile_var_v2_20260203_032753
+writeback	Checkout	2026-02-04T18:19:01.6015862Z  * [new branch]      fix/auto_loop_stage_truth_overrides_ec_20260203_023236 -> origin/fix/auto_loop_stage_truth_overrides_ec_20260203_023236
+writeback	Checkout	2026-02-04T18:19:01.6017347Z  * [new branch]      fix/auto_loop_stageval_before_ok_stop_20260203_034330 -> origin/fix/auto_loop_stageval_before_ok_stop_20260203_034330
+writeback	Checkout	2026-02-04T18:19:01.6018880Z  * [new branch]      fix/auto_loop_stageval_before_ok_stop_real_20260203_035235 -> origin/fix/auto_loop_stageval_before_ok_stop_real_20260203_035235
+writeback	Checkout	2026-02-04T18:19:01.6020666Z  * [new branch]      fix/auto_loop_stageval_before_report_20260203_033230 -> origin/fix/auto_loop_stageval_before_report_20260203_033230
+writeback	Checkout	2026-02-04T18:19:01.6022134Z  * [new branch]      fix/auto_loop_stageval_before_stop_20260203_033953 -> origin/fix/auto_loop_stageval_before_stop_20260203_033953
+writeback	Checkout	2026-02-04T18:19:01.6023471Z  * [new branch]      fix/auto_loop_stageval_init_20260203_033417 -> origin/fix/auto_loop_stageval_init_20260203_033417
+writeback	Checkout	2026-02-04T18:19:01.6024935Z  * [new branch]      fix/auto_loop_stageval_observe_and_force_done_20260203_033003 -> origin/fix/auto_loop_stageval_observe_and_force_done_20260203_033003
+writeback	Checkout	2026-02-04T18:19:01.6026350Z  * [new branch]      fix/aws-sdk-log-ignore_20260203_193213 -> origin/fix/aws-sdk-log-ignore_20260203_193213
+writeback	Checkout	2026-02-04T18:19:01.6027626Z  * [new branch]      fix/bundled-append-missing-prs_20260204_044626 -> origin/fix/bundled-append-missing-prs_20260204_044626
+writeback	Checkout	2026-02-04T18:19:01.6028944Z  * [new branch]      fix/bundled-freeze-min2_20260205_025938 -> origin/fix/bundled-freeze-min2_20260205_025938
+writeback	Checkout	2026-02-04T18:19:01.6030481Z  * [new branch]      fix/business-non-interference-guard-refs_20260202_064019 -> origin/fix/business-non-interference-guard-refs_20260202_064019
+writeback	Checkout	2026-02-04T18:19:01.6031997Z  * [new branch]      fix/disable-scheduled-auto-prs_20260130_224758 -> origin/fix/disable-scheduled-auto-prs_20260130_224758
+writeback	Checkout	2026-02-04T18:19:01.6033376Z  * [new branch]      fix/doneB_unified_entry_prnumber_20260202_012849 -> origin/fix/doneB_unified_entry_prnumber_20260202_012849
+writeback	Checkout	2026-02-04T18:19:01.6034695Z  * [new branch]      fix/done_display_gate0_stop_20260203_014800 -> origin/fix/done_display_gate0_stop_20260203_014800
+writeback	Checkout	2026-02-04T18:19:01.6035872Z  * [new branch]      fix/doneb_human_gate_20260202_235358 -> origin/fix/doneb_human_gate_20260202_235358
+writeback	Checkout	2026-02-04T18:19:01.6037013Z  * [new branch]      fix/entry-env-cleanup-20260204_035826 -> origin/fix/entry-env-cleanup-20260204_035826
+writeback	Checkout	2026-02-04T18:19:01.6038187Z  * [new branch]      fix/entry-env-cleanup2-20260204_040048 -> origin/fix/entry-env-cleanup2-20260204_040048
+writeback	Checkout	2026-02-04T18:19:01.6039508Z  * [new branch]      fix/entry-env-cleanup3-20260204_040501 -> origin/fix/entry-env-cleanup3-20260204_040501
+writeback	Checkout	2026-02-04T18:19:01.6040841Z  * [new branch]      fix/entry-env-cleanup4-20260204_040655 -> origin/fix/entry-env-cleanup4-20260204_040655
+writeback	Checkout	2026-02-04T18:19:01.6042011Z  * [new branch]      fix/entry-env-inline-20260204_034912 -> origin/fix/entry-env-inline-20260204_034912
+writeback	Checkout	2026-02-04T18:19:01.6043166Z  * [new branch]      fix/entry-env-inline2-20260204_035146 -> origin/fix/entry-env-inline2-20260204_035146
+writeback	Checkout	2026-02-04T18:19:01.6044316Z  * [new branch]      fix/entry-env-inline3-20260204_035433 -> origin/fix/entry-env-inline3-20260204_035433
+writeback	Checkout	2026-02-04T18:19:01.6045556Z  * [new branch]      fix/entry-env-wireup-final-20260204_041919 -> origin/fix/entry-env-wireup-final-20260204_041919
+writeback	Checkout	2026-02-04T18:19:01.6046865Z  * [new branch]      fix/entry-export-env-parent-20260204_044431 -> origin/fix/entry-export-env-parent-20260204_044431
+writeback	Checkout	2026-02-04T18:19:01.6048300Z  * [new branch]      fix/entry-export-progress-env-clean-20260204_044053 -> origin/fix/entry-export-progress-env-clean-20260204_044053
+writeback	Checkout	2026-02-04T18:19:01.6050497Z  * [new branch]      fix/entry-exports-progress-env-20260204_043435 -> origin/fix/entry-exports-progress-env-20260204_043435
+writeback	Checkout	2026-02-04T18:19:01.6052019Z  * [new branch]      fix/entry-progress-hook-directvars-20260204_033046 -> origin/fix/entry-progress-hook-directvars-20260204_033046
+writeback	Checkout	2026-02-04T18:19:01.6053553Z  * [new branch]      fix/entry-progress-hook-move-marker-20260204_033736 -> origin/fix/entry-progress-hook-move-marker-20260204_033736
+writeback	Checkout	2026-02-04T18:19:01.6054987Z  * [new branch]      fix/entry-progress-hook-safe-20260204_030742 -> origin/fix/entry-progress-hook-safe-20260204_030742
+writeback	Checkout	2026-02-04T18:19:01.6056460Z  * [new branch]      fix/entry-progress-hook-selfcontained-20260204_034132 -> origin/fix/entry-progress-hook-selfcontained-20260204_034132
+writeback	Checkout	2026-02-04T18:19:01.6058179Z  * [new branch]      fix/entry-read-workitems-once_20260202_063308 -> origin/fix/entry-read-workitems-once_20260202_063308
+writeback	Checkout	2026-02-04T18:19:01.6059861Z  * [new branch]      fix/entry_pr_create_guard_20260202_011107 -> origin/fix/entry_pr_create_guard_20260202_011107
+writeback	Checkout	2026-02-04T18:19:01.6061161Z  * [new branch]      fix/evidence-child-pr1567_20260202_040146 -> origin/fix/evidence-child-pr1567_20260202_040146
+writeback	Checkout	2026-02-04T18:19:01.6062429Z  * [new branch]      fix/evidence-child-pr1567_20260202_040450 -> origin/fix/evidence-child-pr1567_20260202_040450
+writeback	Checkout	2026-02-04T18:19:01.6063664Z  * [new branch]      fix/evidence-child-pr1567_20260202_040915 -> origin/fix/evidence-child-pr1567_20260202_040915
+writeback	Checkout	2026-02-04T18:19:01.6064901Z  * [new branch]      fix/evidence-child-pr1567_20260202_042153 -> origin/fix/evidence-child-pr1567_20260202_042153
+writeback	Checkout	2026-02-04T18:19:01.6066139Z  * [new branch]      fix/evidence-child-pr1609_20260202_211641 -> origin/fix/evidence-child-pr1609_20260202_211641
+writeback	Checkout	2026-02-04T18:19:01.6067390Z  * [new branch]      fix/evidence-child-pr1675-20260203_165542 -> origin/fix/evidence-child-pr1675-20260203_165542
+writeback	Checkout	2026-02-04T18:19:01.6068661Z  * [new branch]      fix/evidence-child-pr1693_20260204_042850 -> origin/fix/evidence-child-pr1693_20260204_042850
+writeback	Checkout	2026-02-04T18:19:01.6070219Z  * [new branch]      fix/evidence-dispatch-accept-prnumber_20260131_020611 -> origin/fix/evidence-dispatch-accept-prnumber_20260131_020611
+writeback	Checkout	2026-02-04T18:19:01.6071871Z  * [new branch]      fix/evidence-dispatch-add-inputs-prnumber_20260131_021625 -> origin/fix/evidence-dispatch-add-inputs-prnumber_20260131_021625
+writeback	Checkout	2026-02-04T18:19:01.6073540Z  * [new branch]      fix/evidence-dispatch-add-pr-step_force_20260205_004433 -> origin/fix/evidence-dispatch-add-pr-step_force_20260205_004433
+writeback	Checkout	2026-02-04T18:19:01.6075117Z  * [new branch]      fix/evidence-dispatch-persist-child_20260205_003550 -> origin/fix/evidence-dispatch-persist-child_20260205_003550
+writeback	Checkout	2026-02-04T18:19:01.6076628Z  * [new branch]      fix/evidence-dispatch-writeback-pr_20260205_003205 -> origin/fix/evidence-dispatch-writeback-pr_20260205_003205
+writeback	Checkout	2026-02-04T18:19:01.6078156Z  * [new branch]      fix/evidence-sync-child-for-1738-1756_20260204_201044 -> origin/fix/evidence-sync-child-for-1738-1756_20260204_201044
+writeback	Checkout	2026-02-04T18:19:01.6079841Z  * [new branch]      fix/evidence-sync-pr1774_20260205_003125 -> origin/fix/evidence-sync-pr1774_20260205_003125
+writeback	Checkout	2026-02-04T18:19:01.6081105Z  * [new branch]      fix/evidence_bundle_version_20260204_035621 -> origin/fix/evidence_bundle_version_20260204_035621
+writeback	Checkout	2026-02-04T18:19:01.6082334Z  * [new branch]      fix/g0-ffonly-to-reset-20260204_051715 -> origin/fix/g0-ffonly-to-reset-20260204_051715
+writeback	Checkout	2026-02-04T18:19:01.6083467Z  * [new branch]      fix/g2-env-progress-20260204_042844 -> origin/fix/g2-env-progress-20260204_042844
+writeback	Checkout	2026-02-04T18:19:01.6084673Z  * [new branch]      fix/g2-remove-progress-env-20260204_050455 -> origin/fix/g2-remove-progress-env-20260204_050455
+writeback	Checkout	2026-02-04T18:19:01.6086044Z  * [new branch]      fix/handoff-bundled-search-result_20260204_054115 -> origin/fix/handoff-bundled-search-result_20260204_054115
+writeback	Checkout	2026-02-04T18:19:01.6087494Z  * [new branch]      fix/handoff-bundled-search-result_20260204_054308 -> origin/fix/handoff-bundled-search-result_20260204_054308
+writeback	Checkout	2026-02-04T18:19:01.6089040Z  * [new branch]      fix/handoff-latestbundled-dispatch-entry_20260204_034222 -> origin/fix/handoff-latestbundled-dispatch-entry_20260204_034222
+writeback	Checkout	2026-02-04T18:19:01.6090599Z  * [new branch]      fix/handoff-min-restore2_20260204_062849 -> origin/fix/handoff-min-restore2_20260204_062849
+writeback	Checkout	2026-02-04T18:19:01.6091816Z  * [new branch]      fix/handoff-min-restore_20260204_062629 -> origin/fix/handoff-min-restore_20260204_062629
+writeback	Checkout	2026-02-04T18:19:01.6093039Z  * [new branch]      fix/handoff-min-safe-stub_20260204_061535 -> origin/fix/handoff-min-safe-stub_20260204_061535
+writeback	Checkout	2026-02-04T18:19:01.6094320Z  * [new branch]      fix/handoff-official-min_20260204_043811 -> origin/fix/handoff-official-min_20260204_043811
+writeback	Checkout	2026-02-04T18:19:01.6095501Z  * [new branch]      fix/handoff-op0-embed_20260204_063654 -> origin/fix/handoff-op0-embed_20260204_063654
+writeback	Checkout	2026-02-04T18:19:01.6096855Z  * [new branch]      fix/handoff-op0-embed_clean_20260204_080033 -> origin/fix/handoff-op0-embed_clean_20260204_080033
+writeback	Checkout	2026-02-04T18:19:01.6098212Z  * [new branch]      fix/handoff-regen-latestbundled_20260204_033716 -> origin/fix/handoff-regen-latestbundled_20260204_033716
+writeback	Checkout	2026-02-04T18:19:01.6099799Z  * [new branch]      fix/handoff-search-result-v2_20260204_060104 -> origin/fix/handoff-search-result-v2_20260204_060104
+writeback	Checkout	2026-02-04T18:19:01.6101151Z  * [new branch]      fix/handoff-targetpr-and-args_20260204_063147 -> origin/fix/handoff-targetpr-and-args_20260204_063147
+writeback	Checkout	2026-02-04T18:19:01.6102487Z  * [new branch]      fix/handoff-two-layer-output_20260202_070126 -> origin/fix/handoff-two-layer-output_20260202_070126
+writeback	Checkout	2026-02-04T18:19:01.6103782Z  * [new branch]      fix/mep_entry_last_exitcode_20260201_174103 -> origin/fix/mep_entry_last_exitcode_20260201_174103
+writeback	Checkout	2026-02-04T18:19:01.6105070Z  * [new branch]      fix/ng992_ng1100_recovery_v2_20260130_232554 -> origin/fix/ng992_ng1100_recovery_v2_20260130_232554
+writeback	Checkout	2026-02-04T18:19:01.6106283Z  * [new branch]      fix/op1-op2-min-ledger_20260204_080312 -> origin/fix/op1-op2-min-ledger_20260204_080312
+writeback	Checkout	2026-02-04T18:19:01.6107508Z  * [new branch]      fix/op2-recovery-min-param_20260204_045701 -> origin/fix/op2-recovery-min-param_20260204_045701
+writeback	Checkout	2026-02-04T18:19:01.6108799Z  * [new branch]      fix/op3-jobs0-writeback-push_20260204_223305 -> origin/fix/op3-jobs0-writeback-push_20260204_223305
+writeback	Checkout	2026-02-04T18:19:01.6110190Z  * [new branch]      fix/op3-jp-audit-template_20260204_064452 -> origin/fix/op3-jp-audit-template_20260204_064452
+writeback	Checkout	2026-02-04T18:19:01.6111644Z  * [new branch]      fix/op3-parent-bundled-official-template_20260204_070407 -> origin/fix/op3-parent-bundled-official-template_20260204_070407
+writeback	Checkout	2026-02-04T18:19:01.6113147Z  * [new branch]      fix/op3-template-evidence-fill_20260204_071337 -> origin/fix/op3-template-evidence-fill_20260204_071337
+writeback	Checkout	2026-02-04T18:19:01.6114620Z  * [new branch]      fix/op3-writeback-push-startup_failure_20260205_000911 -> origin/fix/op3-writeback-push-startup_failure_20260205_000911
+writeback	Checkout	2026-02-04T18:19:01.6116214Z  * [new branch]      fix/parent-bundled-followup_20260204_042728 -> origin/fix/parent-bundled-followup_20260204_042728
+writeback	Checkout	2026-02-04T18:19:01.6117589Z  * [new branch]      fix/reporter_restore_no_recursion_20260203_015639 -> origin/fix/reporter_restore_no_recursion_20260203_015639
+writeback	Checkout	2026-02-04T18:19:01.6118880Z  * [new branch]      fix/restore-mep-entry-20260204_045808 -> origin/fix/restore-mep-entry-20260204_045808
+writeback	Checkout	2026-02-04T18:19:01.6120323Z  * [new branch]      fix/restore-workflow-from-success_20260131_152336 -> origin/fix/restore-workflow-from-success_20260131_152336
+writeback	Checkout	2026-02-04T18:19:01.6121703Z  * [new branch]      fix/suggest_checkout_auth2_20260131_152918Z -> origin/fix/suggest_checkout_auth2_20260131_152918Z
+writeback	Checkout	2026-02-04T18:19:01.6122965Z  * [new branch]      fix/suggest_checkout_auth_20260131_152726Z -> origin/fix/suggest_checkout_auth_20260131_152726Z
+writeback	Checkout	2026-02-04T18:19:01.6124210Z  * [new branch]      fix/unified-entry-step1_20260201_152711 -> origin/fix/unified-entry-step1_20260201_152711
+writeback	Checkout	2026-02-04T18:19:01.6125643Z  * [new branch]      fix/update-state-summary-checkout-auth_20260204_040454 -> origin/fix/update-state-summary-checkout-auth_20260204_040454
+writeback	Checkout	2026-02-04T18:19:01.6127050Z  * [new branch]      fix/workflow-env-indent_20260204_205603 -> origin/fix/workflow-env-indent_20260204_205603
+writeback	Checkout	2026-02-04T18:19:01.6128381Z  * [new branch]      fix/workflow-restore-from-success_20260131_152632 -> origin/fix/workflow-restore-from-success_20260131_152632
+writeback	Checkout	2026-02-04T18:19:01.6129732Z  * [new branch]      fix/workid-safety-20260203_031526 -> origin/fix/workid-safety-20260203_031526
+writeback	Checkout	2026-02-04T18:19:01.6130928Z  * [new branch]      fix/writeback-SetStatus-safe_20260204_233756 -> origin/fix/writeback-SetStatus-safe_20260204_233756
+writeback	Checkout	2026-02-04T18:19:01.6132203Z  * [new branch]      fix/writeback-define-ep_20260204_223721 -> origin/fix/writeback-define-ep_20260204_223721
+writeback	Checkout	2026-02-04T18:19:01.6133626Z  * [new branch]      fix/writeback-dispatch-rebuild_20260201_041032 -> origin/fix/writeback-dispatch-rebuild_20260201_041032
+writeback	Checkout	2026-02-04T18:19:01.6135071Z  * [new branch]      fix/writeback-dispatch-recoverable_20260204_062837 -> origin/fix/writeback-dispatch-recoverable_20260204_062837
+writeback	Checkout	2026-02-04T18:19:01.6136645Z  * [new branch]      fix/writeback-dispatch-workflow_dispatch_20260201_035926 -> origin/fix/writeback-dispatch-workflow_dispatch_20260201_035926
+writeback	Checkout	2026-02-04T18:19:01.6138246Z  * [new branch]      fix/writeback-ensurepr-script-rewrite_20260204_235600 -> origin/fix/writeback-ensurepr-script-rewrite_20260204_235600
+writeback	Checkout	2026-02-04T18:19:01.6139990Z  * [new branch]      fix/writeback-entry-raceproof-hook_20260204_223715 -> origin/fix/writeback-entry-raceproof-hook_20260204_223715
+writeback	Checkout	2026-02-04T18:19:01.6141391Z  * [new branch]      fix/writeback-ghapi-args_20260204_215824 -> origin/fix/writeback-ghapi-args_20260204_215824
+writeback	Checkout	2026-02-04T18:19:01.6142656Z  * [new branch]      fix/writeback-ghapi-xpost_20260204_220244 -> origin/fix/writeback-ghapi-xpost_20260204_220244
+writeback	Checkout	2026-02-04T18:19:01.6144141Z  * [new branch]      fix/writeback-quote-ghapi-fields-recreate_20260204_231718 -> origin/fix/writeback-quote-ghapi-fields-recreate_20260204_231718
+writeback	Checkout	2026-02-04T18:19:01.6145713Z  * [new branch]      fix/writeback-quote-ghapi-fields_20260204_231131 -> origin/fix/writeback-quote-ghapi-fields_20260204_231131
+writeback	Checkout	2026-02-04T18:19:01.6147108Z  * [new branch]      fix/writeback-required-checks2_20260204_091440 -> origin/fix/writeback-required-checks2_20260204_091440
+writeback	Checkout	2026-02-04T18:19:01.6148487Z  * [new branch]      fix/writeback-required-checks_20260204_091231 -> origin/fix/writeback-required-checks_20260204_091231
+writeback	Checkout	2026-02-04T18:19:01.6150007Z  * [new branch]      fix/writeback-set-required-status_20260204_104609 -> origin/fix/writeback-set-required-status_20260204_104609
+writeback	Checkout	2026-02-04T18:19:01.6151463Z  * [new branch]      fix/writeback-setstatus-define-ep_20260204_223154 -> origin/fix/writeback-setstatus-define-ep_20260204_223154
+writeback	Checkout	2026-02-04T18:19:01.6153056Z  * [new branch]      fix/writeback-setstatus-endpoint-onestring_20260204_235703 -> origin/fix/writeback-setstatus-endpoint-onestring_20260204_235703
+writeback	Checkout	2026-02-04T18:19:01.6154785Z  * [new branch]      fix/writeback-setstatus-endpoint_20260204_222309 -> origin/fix/writeback-setstatus-endpoint_20260204_222309
+writeback	Checkout	2026-02-04T18:19:01.6156273Z  * [new branch]      fix/writeback-setstatus-hardreplace_20260204_231123 -> origin/fix/writeback-setstatus-hardreplace_20260204_231123
+writeback	Checkout	2026-02-04T18:19:01.6157754Z  * [new branch]      fix/writeback-setstatus-repair_20260204_231707 -> origin/fix/writeback-setstatus-repair_20260204_231707
+writeback	Checkout	2026-02-04T18:19:01.6159286Z  * [new branch]      fix/writeback-setstatus-singleline_20260204_233440 -> origin/fix/writeback-setstatus-singleline_20260204_233440
+writeback	Checkout	2026-02-04T18:19:01.6160683Z  * [new branch]      fix/writeback-status-debug_20260204_194450 -> origin/fix/writeback-status-debug_20260204_194450
+writeback	Checkout	2026-02-04T18:19:01.6162141Z  * [new branch]      fix/writeback-status-endpoint-argsplit_20260204_222456 -> origin/fix/writeback-status-endpoint-argsplit_20260204_222456
+writeback	Checkout	2026-02-04T18:19:01.6163608Z  * [new branch]      fix/writeback-status-verify_20260204_215121 -> origin/fix/writeback-status-verify_20260204_215121
+writeback	Checkout	2026-02-04T18:19:01.6164908Z  * [new branch]      fix/writeback-statuses-perm_20260204_193903 -> origin/fix/writeback-statuses-perm_20260204_193903
+writeback	Checkout	2026-02-04T18:19:01.6166217Z  * [new branch]      fix/writeback-statuses-write_20260204_205609 -> origin/fix/writeback-statuses-write_20260204_205609
+writeback	Checkout	2026-02-04T18:19:01.6167587Z  * [new branch]      fix/writeback-targetpr-prnumber_20260204_064454 -> origin/fix/writeback-targetpr-prnumber_20260204_064454
+writeback	Checkout	2026-02-04T18:19:01.6168934Z  * [new branch]      fix/writeback-yaml-syntax-20260202_202142 -> origin/fix/writeback-yaml-syntax-20260202_202142
+writeback	Checkout	2026-02-04T18:19:01.6170362Z  * [new branch]      fix/writeback_bundle_param_repair_20260131_004710 -> origin/fix/writeback_bundle_param_repair_20260131_004710
+writeback	Checkout	2026-02-04T18:19:01.6171979Z  * [new branch]      fix/writeback_bundle_parsererror_param_20260131_010501 -> origin/fix/writeback_bundle_parsererror_param_20260131_010501
+writeback	Checkout	2026-02-04T18:19:01.6173430Z  * [new branch]      fix/writeback_bundle_real_param_20260131_005213 -> origin/fix/writeback_bundle_real_param_20260131_005213
+writeback	Checkout	2026-02-04T18:19:01.6174884Z  * [new branch]      fix/writeback_dispatch_yaml_repair_all_20260131_014559 -> origin/fix/writeback_dispatch_yaml_repair_all_20260131_014559
+writeback	Checkout	2026-02-04T18:19:01.6176310Z  * [new branch]      fix/writeback_entry_activate_20260131_015405 -> origin/fix/writeback_entry_activate_20260131_015405
+writeback	Checkout	2026-02-04T18:19:01.6177707Z  * [new branch]      fix/writeback_generate_with_compiler_20260131_021313 -> origin/fix/writeback_generate_with_compiler_20260131_021313
+writeback	Checkout	2026-02-04T18:19:01.6179293Z  * [new branch]      fix/writeback_handoff_bundle_exists_20260131_041528 -> origin/fix/writeback_handoff_bundle_exists_20260131_041528
+writeback	Checkout	2026-02-04T18:19:01.6180832Z  * [new branch]      fix/yaml311_writeback_dispatch_20260131_000136 -> origin/fix/yaml311_writeback_dispatch_20260131_000136
+writeback	Checkout	2026-02-04T18:19:01.6182089Z  * [new branch]      fix/yaml_parse_recover_20260202_011440 -> origin/fix/yaml_parse_recover_20260202_011440
+writeback	Checkout	2026-02-04T18:19:01.6183067Z  * [new branch]      handoff-trigger         -> origin/handoff-trigger
+writeback	Checkout	2026-02-04T18:19:01.6183995Z  * [new branch]      hotfix/revert_pr1505/20260201_023948 -> origin/hotfix/revert_pr1505/20260201_023948
+writeback	Checkout	2026-02-04T18:19:01.6184889Z  * [new branch]      main                    -> origin/main
+writeback	Checkout	2026-02-04T18:19:01.6185712Z  * [new branch]      mep/add-business-sample_temp -> origin/mep/add-business-sample_temp
+writeback	Checkout	2026-02-04T18:19:01.6186622Z  * [new branch]      mep/add-glossary-card   -> origin/mep/add-glossary-card
+writeback	Checkout	2026-02-04T18:19:01.6187595Z  * [new branch]      mep/adopt-bundle-evidence-append -> origin/mep/adopt-bundle-evidence-append
+writeback	Checkout	2026-02-04T18:19:01.6188761Z  * [new branch]      mep/adopt-bundle-evidence-append-only -> origin/mep/adopt-bundle-evidence-append-only
+writeback	Checkout	2026-02-04T18:19:01.6189960Z  * [new branch]      mep/backups-20260107-023020 -> origin/mep/backups-20260107-023020
+writeback	Checkout	2026-02-04T18:19:01.6191476Z  * [new branch]      mep/bundle-append-business-done-definition_20260123_211943 -> origin/mep/bundle-append-business-done-definition_20260123_211943
+writeback	Checkout	2026-02-04T18:19:01.6193202Z  * [new branch]      mep/bundle-append-yorisoidou-workitem-ref_20260123_212705 -> origin/mep/bundle-append-yorisoidou-workitem-ref_20260123_212705
+writeback	Checkout	2026-02-04T18:19:01.6194754Z  * [new branch]      mep/chat-packet-min-stabilize-20260104-185742 -> origin/mep/chat-packet-min-stabilize-20260104-185742
+writeback	Checkout	2026-02-04T18:19:01.6195876Z  * [new branch]      mep/evidence-ops-card   -> origin/mep/evidence-ops-card
+writeback	Checkout	2026-02-04T18:19:01.6197073Z  * [new branch]      mep/fix-chat-packet-min-parsererror-20260104-200805 -> origin/mep/fix-chat-packet-min-parsererror-20260104-200805
+writeback	Checkout	2026-02-04T18:19:01.6198655Z  * [new branch]      mep/idea-integration-timing-contract-20260104-190142 -> origin/mep/idea-integration-timing-contract-20260104-190142
+writeback	Checkout	2026-02-04T18:19:01.6200371Z  * [new branch]      mep/packet-dynamic-trigger-variants-20260104-193501 -> origin/mep/packet-dynamic-trigger-variants-20260104-193501
+writeback	Checkout	2026-02-04T18:19:01.6201774Z  * [new branch]      ops/chat-packet-lf-only-20260104-155320 -> origin/ops/chat-packet-lf-only-20260104-155320
+writeback	Checkout	2026-02-04T18:19:01.6202937Z  * [new branch]      ops/noise-rules-fix-20260104-155715 -> origin/ops/noise-rules-fix-20260104-155715
+writeback	Checkout	2026-02-04T18:19:01.6204100Z  * [new branch]      ops/record_mep_contract_20260107_223812 -> origin/ops/record_mep_contract_20260107_223812
+writeback	Checkout	2026-02-04T18:19:01.6205324Z  * [new branch]      ops/rule-fix-atomic-json-20260104-160515 -> origin/ops/rule-fix-atomic-json-20260104-160515
+writeback	Checkout	2026-02-04T18:19:01.6206515Z  * [new branch]      preserve/crash_backup_20260107015131 -> origin/preserve/crash_backup_20260107015131
+writeback	Checkout	2026-02-04T18:19:01.6207758Z  * [new branch]      preserve/mep_handoff_variants_20260107014140 -> origin/preserve/mep_handoff_variants_20260107014140
+writeback	Checkout	2026-02-04T18:19:01.6209028Z  * [new branch]      recheck/pr-619-20260107015233 -> origin/recheck/pr-619-20260107015233
+writeback	Checkout	2026-02-04T18:19:01.6210393Z  * [new branch]      recovery-auto-20260106-232022-crash-20260106-233201 -> origin/recovery-auto-20260106-232022-crash-20260106-233201
+writeback	Checkout	2026-02-04T18:19:01.6211573Z  * [new branch]      restore-master-spec     -> origin/restore-master-spec
+writeback	Checkout	2026-02-04T18:19:01.6212491Z  * [new branch]      restore/backup-20260107-025822 -> origin/restore/backup-20260107-025822
+writeback	Checkout	2026-02-04T18:19:01.6213467Z  * [new branch]      restore/master_spec/07f023a -> origin/restore/master_spec/07f023a
+writeback	Checkout	2026-02-04T18:19:01.6214637Z  * [new branch]      restore/master_spec_from_b7a60dea_20260107032707 -> origin/restore/master_spec_from_b7a60dea_20260107032707
+writeback	Checkout	2026-02-04T18:19:01.6215949Z  * [new branch]      revert/main-directpush_20260201_154552 -> origin/revert/main-directpush_20260201_154552
+writeback	Checkout	2026-02-04T18:19:01.6216933Z  * [new branch]      revert/pr-1062          -> origin/revert/pr-1062
+writeback	Checkout	2026-02-04T18:19:01.6217766Z  * [new branch]      revert/pr-619-20260107014423 -> origin/revert/pr-619-20260107014423
+writeback	Checkout	2026-02-04T18:19:01.6218702Z  * [new branch]      revert/pr-619-20260107014446 -> origin/revert/pr-619-20260107014446
+writeback	Checkout	2026-02-04T18:19:01.6219841Z  * [new branch]      revert/pr-619-20260107014927 -> origin/revert/pr-619-20260107014927
+writeback	Checkout	2026-02-04T18:19:01.6220801Z  * [new branch]      stash/import_0_20260129_013234 -> origin/stash/import_0_20260129_013234
+writeback	Checkout	2026-02-04T18:19:01.6221783Z  * [new branch]      stash/import_1_20260129_013234 -> origin/stash/import_1_20260129_013234
+writeback	Checkout	2026-02-04T18:19:01.6222739Z  * [new branch]      stash/import_4_20260129_013234 -> origin/stash/import_4_20260129_013234
+writeback	Checkout	2026-02-04T18:19:01.6223722Z  * [new branch]      stash/import_5_20260129_013234 -> origin/stash/import_5_20260129_013234
+writeback	Checkout	2026-02-04T18:19:01.6224674Z  * [new branch]      stash/import_7_20260129_013234 -> origin/stash/import_7_20260129_013234
+writeback	Checkout	2026-02-04T18:19:01.6225801Z  * [new branch]      temp/push-writeback-probe_20260201_051933 -> origin/temp/push-writeback-probe_20260201_051933
+writeback	Checkout	2026-02-04T18:19:01.6227290Z  * [new branch]      temp/push-writeback-probe_force_20260201_052138 -> origin/temp/push-writeback-probe_force_20260201_052138
+writeback	Checkout	2026-02-04T18:19:01.6228523Z  * [new branch]      test/seed-mep-gate-20260103-062802 -> origin/test/seed-mep-gate-20260103-062802
+writeback	Checkout	2026-02-04T18:19:01.6229865Z  * [new branch]      tools/add-progress-contract-20260204_014249 -> origin/tools/add-progress-contract-20260204_014249
+writeback	Checkout	2026-02-04T18:19:01.6231182Z  * [new branch]      tools/entry-env-contract-20260204_030117 -> origin/tools/entry-env-contract-20260204_030117
+writeback	Checkout	2026-02-04T18:19:01.6232511Z  * [new branch]      tools/entry-progress-env-wireup-20260204_032153 -> origin/tools/entry-progress-env-wireup-20260204_032153
+writeback	Checkout	2026-02-04T18:19:01.6233963Z  * [new branch]      tools/entry-progress-env-wireup2-20260204_032546 -> origin/tools/entry-progress-env-wireup2-20260204_032546
+writeback	Checkout	2026-02-04T18:19:01.6235453Z  * [new branch]      tools/fix-mep-chat-packet-min-scope-20260104-200340 -> origin/tools/fix-mep-chat-packet-min-scope-20260104-200340
+writeback	Checkout	2026-02-04T18:19:01.6236787Z  * [new branch]      tools/idea-capture-20260104-211626 -> origin/tools/idea-capture-20260104-211626
+writeback	Checkout	2026-02-04T18:19:01.6237957Z  * [new branch]      tools/mep-fix-param-top-20260103-215224 -> origin/tools/mep-fix-param-top-20260103-215224
+writeback	Checkout	2026-02-04T18:19:01.6239356Z  * [new branch]      tools/mep-handoff-oneliner-20260103-171959 -> origin/tools/mep-handoff-oneliner-20260103-171959
+writeback	Checkout	2026-02-04T18:19:01.6240636Z  * [new branch]      tools/mep-idea-receipt-20260103-214537 -> origin/tools/mep-idea-receipt-20260103-214537
+writeback	Checkout	2026-02-04T18:19:01.6241981Z  * [new branch]      tools/mep-idea-ux-and-no-stockpile-20260103-212835 -> origin/tools/mep-idea-ux-and-no-stockpile-20260103-212835
+writeback	Checkout	2026-02-04T18:19:01.6243392Z  * [new branch]      ui/add-phase1-flow-markers-20260104-205931 -> origin/ui/add-phase1-flow-markers-20260104-205931
+writeback	Checkout	2026-02-04T18:19:01.6244786Z  * [new branch]      ui/alert-label-display-20260104-194620 -> origin/ui/alert-label-display-20260104-194620
+writeback	Checkout	2026-02-04T18:19:01.6245965Z  * [new branch]      ui/expense-ui-master-20260104-052304 -> origin/ui/expense-ui-master-20260104-052304
+writeback	Checkout	2026-02-04T18:19:01.6247086Z  * [new branch]      ui/expense-ui-spec-20260104-052334 -> origin/ui/expense-ui-spec-20260104-052334
+writeback	Checkout	2026-02-04T18:19:01.6248273Z  * [new branch]      ui/issue-dispatch-observe-20260104-191235 -> origin/ui/issue-dispatch-observe-20260104-191235
+writeback	Checkout	2026-02-04T18:19:01.6249690Z  * [new branch]      ui/issue-dispatch-skeleton-20260104-190721 -> origin/ui/issue-dispatch-skeleton-20260104-190721
+writeback	Checkout	2026-02-04T18:19:01.6250898Z  * [new branch]      ui/order-ui-master-20260104-050304 -> origin/ui/order-ui-master-20260104-050304
+writeback	Checkout	2026-02-04T18:19:01.6251959Z  * [new branch]      ui/order-ui-spec-20260104-050613 -> origin/ui/order-ui-spec-20260104-050613
+writeback	Checkout	2026-02-04T18:19:01.6253033Z  * [new branch]      ui/parts-ui-master-20260104-051901 -> origin/ui/parts-ui-master-20260104-051901
+writeback	Checkout	2026-02-04T18:19:01.6254090Z  * [new branch]      ui/parts-ui-spec-20260104-052140 -> origin/ui/parts-ui-spec-20260104-052140
+writeback	Checkout	2026-02-04T18:19:01.6255256Z  * [new branch]      ui/request-open-list-flow-20260104-202848 -> origin/ui/request-open-list-flow-20260104-202848
+writeback	Checkout	2026-02-04T18:19:01.6256434Z  * [new branch]      ui/work-ui-master-20260104-051037 -> origin/ui/work-ui-master-20260104-051037
+writeback	Checkout	2026-02-04T18:19:01.6257523Z  * [new branch]      ui/work-ui-master-20260104-051204 -> origin/ui/work-ui-master-20260104-051204
+writeback	Checkout	2026-02-04T18:19:01.6258557Z  * [new branch]      ui/work-ui-spec-20260104-051311 -> origin/ui/work-ui-spec-20260104-051311
+writeback	Checkout	2026-02-04T18:19:01.6260042Z  * [new branch]      ux-rooftop/enable-dispatch-fullauto-20260110-192521 -> origin/ux-rooftop/enable-dispatch-fullauto-20260110-192521
+writeback	Checkout	2026-02-04T18:19:01.6261328Z  * [new branch]      wip/business-spec-from-stash -> origin/wip/business-spec-from-stash
+writeback	Checkout	2026-02-04T18:19:01.6324764Z  * [new branch]      work/chat-packet-human-20260103-162222 -> origin/work/chat-packet-human-20260103-162222
+writeback	Checkout	2026-02-04T18:19:01.6327630Z  * [new branch]      work/chat-packet-reissue-20260103-161638 -> origin/work/chat-packet-reissue-20260103-161638
+writeback	Checkout	2026-02-04T18:19:01.6329798Z  * [new branch]      work/idea-capture-20260103-215353 -> origin/work/idea-capture-20260103-215353
+writeback	Checkout	2026-02-04T18:19:01.6330994Z  * [new branch]      work/idea-capture-20260103-220645 -> origin/work/idea-capture-20260103-220645
+writeback	Checkout	2026-02-04T18:19:01.6332093Z  * [new branch]      work/idea-capture-20260104-184000 -> origin/work/idea-capture-20260104-184000
+writeback	Checkout	2026-02-04T18:19:01.6333199Z  * [new branch]      work/idea-finalize-20260103-220329 -> origin/work/idea-finalize-20260103-220329
+writeback	Checkout	2026-02-04T18:19:01.6334285Z  * [new branch]      work/idea-receipt-20260103-220025 -> origin/work/idea-receipt-20260103-220025
+writeback	Checkout	2026-02-04T18:19:01.6335362Z  * [new branch]      work/mep-doc-link-20260103-152129 -> origin/work/mep-doc-link-20260103-152129
+writeback	Checkout	2026-02-04T18:19:01.6336874Z  * [new tag]         archive/writeback_bundle_21524401201_1_20260130_172010_637b973_20260202_040645 -> archive/writeback_bundle_21524401201_1_20260130_172010_637b973_20260202_040645
+writeback	Checkout	2026-02-04T18:19:01.6338410Z  * [new tag]         backup/recovery-f0e7624_20260107011639 -> backup/recovery-f0e7624_20260107011639
+writeback	Checkout	2026-02-04T18:19:01.6339923Z  * [new tag]         restore-backup/20260107025209 -> restore-backup/20260107025209
+writeback	Checkout	2026-02-04T18:19:01.6341630Z [command]/usr/bin/git branch --list --remote origin/main
+writeback	Checkout	2026-02-04T18:19:01.6368238Z   origin/main
+writeback	Checkout	2026-02-04T18:19:01.6377546Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+writeback	Checkout	2026-02-04T18:19:01.6397352Z 0f766103d6cccc33d0556e6e93d36cf32dc6b039
+writeback	Checkout	2026-02-04T18:19:01.6402986Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:01.6404297Z ##[group]Determining the checkout info
+writeback	Checkout	2026-02-04T18:19:01.6405710Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:01.6409474Z [command]/usr/bin/git sparse-checkout disable
+writeback	Checkout	2026-02-04T18:19:01.6450549Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+writeback	Checkout	2026-02-04T18:19:01.6476203Z ##[group]Checking out the ref
+writeback	Checkout	2026-02-04T18:19:01.6481508Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+writeback	Checkout	2026-02-04T18:19:01.6850520Z Switched to a new branch 'main'
+writeback	Checkout	2026-02-04T18:19:01.6853262Z branch 'main' set up to track 'origin/main'.
+writeback	Checkout	2026-02-04T18:19:01.6868693Z ##[endgroup]
+writeback	Checkout	2026-02-04T18:19:01.6903782Z [command]/usr/bin/git log -1 --format=%H
+writeback	Checkout	2026-02-04T18:19:01.6925992Z 0f766103d6cccc33d0556e6e93d36cf32dc6b039
+writeback	Configure git identity	﻿2026-02-04T18:19:01.7110001Z ##[group]Run git config user.name  "github-actions[bot]"
+writeback	Configure git identity	2026-02-04T18:19:01.7110849Z [36;1mgit config user.name  "github-actions[bot]"[0m
+writeback	Configure git identity	2026-02-04T18:19:01.7111646Z [36;1mgit config user.email "github-actions[bot]@users.noreply.github.com"[0m
+writeback	Configure git identity	2026-02-04T18:19:01.7148318Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+writeback	Configure git identity	2026-02-04T18:19:01.7149014Z ##[endgroup]
+writeback	Resolve PR number	﻿2026-02-04T18:19:01.7321143Z ##[group]Run set -euo pipefail
+writeback	Resolve PR number	2026-02-04T18:19:01.7321766Z [36;1mset -euo pipefail[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7322245Z [36;1mPR_IN="0"[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7322718Z [36;1mif [ -z "${PR_IN}" ]; then PR_IN="0"; fi[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7323275Z [36;1mif [ "${PR_IN}" = "0" ]; then[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7324499Z [36;1mPR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7325728Z [36;1mfi[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7326185Z [36;1mif [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7326820Z [36;1mecho "[NG] failed to resolve PR number"[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7327344Z [36;1mexit 2[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7327712Z [36;1mfi[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7328136Z [36;1mecho "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7328703Z [36;1mecho "[OK] PR_NUMBER=${PR_IN}"[0m
+writeback	Resolve PR number	2026-02-04T18:19:01.7357863Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+writeback	Resolve PR number	2026-02-04T18:19:01.7358506Z env:
+writeback	Resolve PR number	2026-02-04T18:19:01.7359091Z   GH_TOKEN: ***
+writeback	Resolve PR number	2026-02-04T18:19:01.7359682Z ##[endgroup]
+writeback	Resolve PR number	2026-02-04T18:19:02.9692943Z [OK] PR_NUMBER=1809
+writeback	Bump Bundled version (parent)	﻿2026-02-04T18:19:02.9733470Z ##[group]Run pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:02.9734331Z [36;1mpwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"[0m
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:02.9786676Z shell: /usr/bin/pwsh -command ". '{0}'"
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:02.9786998Z env:
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:02.9787198Z   PR_NUMBER: 1809
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:02.9787426Z ##[endgroup]
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:04.2985574Z UPDATED: docs/MEP/MEP_BUNDLE.md
+writeback	Bump Bundled version (parent)	2026-02-04T18:19:04.2986461Z - BUNDLE_VERSION = v0.0.0+20260204_181904+main_0f76610
+writeback	Append full evidence line into parent Bundled	﻿2026-02-04T18:19:04.9132306Z ##[group]Run pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber 1809 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9133238Z [36;1mpwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber 1809 -BundlePath "docs/MEP/MEP_BUNDLE.md"[0m
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9168978Z shell: /usr/bin/pwsh -command ". '{0}'"
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9169391Z env:
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9169557Z   PR_NUMBER: 1809
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9170076Z   GH_TOKEN: ***
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:04.9170297Z ##[endgroup]
+writeback	Append full evidence line into parent Bundled	2026-02-04T18:19:06.4275264Z [INFO] Appended full evidence for PR #1809 -> docs/MEP/MEP_BUNDLE.md
+writeback	Ensure writeback PR (helper)	﻿2026-02-04T18:19:07.0083806Z ##[group]Run Set-StrictMode -Version Latest
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0084218Z [36;1mSet-StrictMode -Version Latest[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0084496Z [36;1m$ErrorActionPreference = "Stop"[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0084838Z [36;1mfunction Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0085264Z [36;1mfunction Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0085683Z [36;1m$head = (git rev-parse --abbrev-ref HEAD).Trim()[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0085993Z [36;1mInfo ("HEAD=" + $head)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0086240Z [36;1m$repo = $env:GITHUB_REPOSITORY[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0086581Z [36;1m$runId = $env:GITHUB_RUN_ID; if (-not $runId) { $runId = "0" }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0087088Z [36;1m$runUrl = ("{0}/{1}/actions/runs/{2}" -f $env:GITHUB_SERVER_URL, $repo, $env:GITHUB_RUN_ID)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0087482Z [36;1m[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0087916Z [36;1m# If not on auto/writeback-bundle_* and working tree dirty, create writeback branch and push bundle-only commit[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0088532Z [36;1mif ($head -notlike "auto/writeback-bundle_*") {[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0088906Z [36;1m  $dirty = (git status --porcelain).Trim()[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0089918Z [36;1m  if (-not $dirty) { Info "Working tree clean; nothing to write back."; exit 0 }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0090645Z [36;1m  $ts = (Get-Date -Format "yyyyMMdd_HHmmss")[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0091189Z [36;1m  $newHead = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $env:PR_NUMBER, $ts)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0091609Z [36;1m  Info ("Create branch: " + $newHead)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0091895Z [36;1m  git switch -c $newHead | Out-Null[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0092198Z [36;1m  git add -- "docs/MEP/MEP_BUNDLE.md" | Out-Null[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0092535Z [36;1m  if ((git status --porcelain).Trim()) {[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0092998Z [36;1m    $msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $env:PR_NUMBER, $runId)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0093450Z [36;1m    git commit -m $msg | Out-Null[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0093744Z [36;1m    git push -u origin $newHead | Out-Null[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0094014Z [36;1m  }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0094201Z [36;1m  $head = $newHead[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0094414Z [36;1m  Info ("HEAD=" + $head)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0094635Z [36;1m}[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0094794Z [36;1m[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0095122Z [36;1m# Set required checks status contexts on writeback head (avoid "no checks" deadlock)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0095560Z [36;1m$sha = (git rev-parse HEAD).Trim()[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0095833Z [36;1mInfo ("writeback head sha=" + $sha)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0096130Z [36;1m$ep = ("repos/{0}/statuses/{1}" -f $repo, $sha)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0096660Z [36;1mfunction SetStatus([string]$context){[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0096918Z [36;1m  try {[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0097210Z [36;1m    [string]$ep = ("repos/{0}/statuses/{1}" -f $repo, $sha)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0097620Z [36;1m    Info ("status endpoint=" + $ep + " type=" + $ep.GetType().FullName)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0098048Z [36;1m    $desc = ("writeback ok (run {0})" -f $env:GITHUB_RUN_ID)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0098661Z [36;1m    $out = & gh api -X POST "$ep" -f "state=success" -f ("context=" + $context) -f ("description=" + $desc) -f ("target_url=" + $runUrl) 2>&1[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0099452Z [36;1m    if($LASTEXITCODE -ne 0){[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0099911Z [36;1m      throw ("gh api failed (exit={0}) context={1} output={2}" -f $LASTEXITCODE,$context,($out -join " "))[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0100345Z [36;1m    }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0100544Z [36;1m    $json = $out | ConvertFrom-Json[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0100937Z [36;1m    Info ("set status OK: " + $context + " state=" + $json.state + " url=" + $json.url)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0101320Z [36;1m  } catch {[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0101534Z [36;1m    Warn ("set status FAILED: " + $context)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0101796Z [36;1m    throw[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0101968Z [36;1m  }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0102294Z [36;1m}[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0102476Z [36;1mSetStatus "Scope Guard (PR)"[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0102762Z [36;1mSetStatus "business-non-interference-guard"[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0103038Z [36;1m[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0103245Z [36;1m# Ensure PR exists for head; create if missing[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0103686Z [36;1m$exists = gh pr list --state open --head $head --json number --jq ".[0].number" 2>$null[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0104243Z [36;1mif ($exists) { Info ("PR already exists for head " + $head + ": #" + $exists); exit 0 }[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0104696Z [36;1m$title = ("Writeback bundle evidence ({0})" -f $head)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0105151Z [36;1m$body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $head, $runId)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0105673Z [36;1m$url = gh pr create --title $title --body $body --base "main" --head $head[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0106057Z [36;1mInfo ("Created PR: " + $url)[0m
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0140500Z shell: /usr/bin/pwsh -command ". '{0}'"
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0140776Z env:
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0140948Z   PR_NUMBER: 1809
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0141335Z   GH_TOKEN: ***
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.0141525Z ##[endgroup]
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.6868596Z [INFO] HEAD=main
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.7223084Z [INFO] Create branch: auto/writeback-bundle_21683159969_1809_20260204_181907
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:07.7327344Z Switched to a new branch 'auto/writeback-bundle_21683159969_1809_20260204_181907'
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8051631Z remote: 
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8052917Z remote: Create a pull request for 'auto/writeback-bundle_21683159969_1809_20260204_181907' on GitHub by visiting:        
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8054347Z remote:      https://github.com/Osuu-ops/yorisoidou-system/pull/new/auto/writeback-bundle_21683159969_1809_20260204_181907        
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8055297Z remote: 
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8071196Z To https://github.com/Osuu-ops/yorisoidou-system
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8072450Z  * [new branch]      auto/writeback-bundle_21683159969_1809_20260204_181907 -> auto/writeback-bundle_21683159969_1809_20260204_181907
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8132219Z [INFO] HEAD=auto/writeback-bundle_21683159969_1809_20260204_181907
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8242331Z [INFO] writeback head sha=9153d772970d485af019cca36b2351bbd9238e74
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:08.8352094Z [INFO] status endpoint=repos/Osuu-ops/yorisoidou-system/statuses/9153d772970d485af019cca36b2351bbd9238e74 type=System.String
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:09.3760657Z [INFO] set status OK: Scope Guard (PR) state=success url=https://api.github.com/repos/Osuu-ops/yorisoidou-system/statuses/9153d772970d485af019cca36b2351bbd9238e74
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:09.3765141Z [INFO] status endpoint=repos/Osuu-ops/yorisoidou-system/statuses/9153d772970d485af019cca36b2351bbd9238e74 type=System.String
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:09.8340916Z [INFO] set status OK: business-non-interference-guard state=success url=https://api.github.com/repos/Osuu-ops/yorisoidou-system/statuses/9153d772970d485af019cca36b2351bbd9238e74
+writeback	Ensure writeback PR (helper)	2026-02-04T18:19:11.9850119Z [INFO] Created PR: https://github.com/Osuu-ops/yorisoidou-system/pull/1813
+writeback	Post Checkout	﻿2026-02-04T18:19:12.0669525Z Post job cleanup.
+writeback	Post Checkout	2026-02-04T18:19:12.1591153Z [command]/usr/bin/git version
+writeback	Post Checkout	2026-02-04T18:19:12.1625863Z git version 2.52.0
+writeback	Post Checkout	2026-02-04T18:19:12.1667721Z Temporarily overriding HOME='/home/runner/work/_temp/eda6778a-e5ea-44a2-84dc-574ae7b92ebd' before making global git config changes
+writeback	Post Checkout	2026-02-04T18:19:12.1669342Z Adding repository directory to the temporary git global config as a safe directory
+writeback	Post Checkout	2026-02-04T18:19:12.1680279Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/yorisoidou-system/yorisoidou-system
+writeback	Post Checkout	2026-02-04T18:19:12.1712642Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+writeback	Post Checkout	2026-02-04T18:19:12.1744186Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+writeback	Post Checkout	2026-02-04T18:19:12.1972997Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+writeback	Post Checkout	2026-02-04T18:19:12.1992603Z http.https://github.com/.extraheader
+writeback	Post Checkout	2026-02-04T18:19:12.2004780Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+writeback	Post Checkout	2026-02-04T18:19:12.2034443Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+writeback	Post Checkout	2026-02-04T18:19:12.2251762Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+writeback	Post Checkout	2026-02-04T18:19:12.2281686Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+writeback	Complete job	﻿2026-02-04T18:19:12.2600074Z Cleaning up orphan processes
+
