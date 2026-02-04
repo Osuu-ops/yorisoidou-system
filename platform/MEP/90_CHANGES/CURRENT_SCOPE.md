@@ -30,3 +30,5 @@
    - zip/log 等の混入は Scope Guard / 非干渉ガードの対象（docs-only で収束させる）
 注意
 - 一次根拠は “main と gh/git の一次出力” のみ。会話文脈・推測は入れない。
+- .github/workflows/mep_writeback_bundle_on_push.yml
+
