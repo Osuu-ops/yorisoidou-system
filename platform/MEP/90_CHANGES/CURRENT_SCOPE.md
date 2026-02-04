@@ -1,17 +1,19 @@
 ## 変更対象（Scope-IN）
-- .github/workflows/mep_writeback_bundle_manual.yml
 - .github/workflows/mep_writeback_bundle_dispatch_entry.yml
+- .github/workflows/mep_writeback_bundle_dispatch_reborn.yml
+- .github/workflows/mep_writeback_bundle_dispatch.yml
+- .github/workflows/mep_writeback_bundle_evidence_dispatch.yml
+- .github/workflows/mep_writeback_bundle_manual.yml
+- .github/workflows/writeback_required_checks.yml
+- CURRENT_SCOPE.md
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- docs/MEP/**
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+- tools/mep_diag_context.cmd
+- tools/mep_diag_context.ps1
 - tools/mep_fix_bundle_version_suffix_to_head.ps1
 - tools/mep_writeback_create_pr.ps1
-- CURRENT_SCOPE.md
-- .github/workflows/mep_writeback_bundle_dispatch_reborn.yml
-- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
-- .github/workflows/writeback_required_checks.yml
-- .github/workflows/mep_writeback_bundle_dispatch.yml
-- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
-- .github/workflows/mep_writeback_bundle_evidence_dispatch.yml
-- tools/mep_diag_context.ps1
-- tools/mep_diag_context.cmd
+- tools/pre_gate.ps1
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
@@ -36,3 +38,4 @@
 - .github/workflows/mep_writeback_bundle_on_push.yml
 - tools/mep_diag_context.ps1
 - tools/mep_diag_context.cmd
+
