@@ -6,12 +6,6 @@
   "baseline_branch": "main",
   "generated_at_utc": "2026-02-05T11:14:06.2233726Z",
   "enums": {
-    "judge_type": [
-      "STATE_EQUALS",
-      "STATE_DIFF",
-      "FILE_CONTAINS",
-      "GH_CHECKS_ALL_SUCCESS"
-    ],
     "action_type": [
       "REPO_ORIGIN_OK",
       "WORKTREE_CLEAN",
@@ -33,6 +27,13 @@
       "P001",
       "P002",
       "P003"
+    ],
+    "judge_type": [
+      "STATE_EQUALS",
+      "STATE_DIFF",
+      "FILE_CONTAINS",
+      "GH_CHECKS_ALL_SUCCESS",
+      "AND"
     ]
   },
   "evidence_key_dict": {
@@ -50,7 +51,7 @@
     "PR_MERGE_COMMIT": "gh pr view --json mergeCommit",
     "RUN_ID": "gh run list / gh run view"
   },
-  "notes": "固定集合（最小）。未完駆動ループ/表駆動ディスパッチ/DoD機械判定の根。増分はPRで追記。",
+  "notes": "固定集合（最小）。未完駆動ループ/表駆動ディスパッチ/DoD機械判定の根。増分はPRで追記。\n厳密化: WIP-022でTARGET_PRを一次根拠キーとして固定し、WIP-025(親Bundled)・WIP-026(子EVIDENCE)は TARGET_PR_TOKEN='PR #<n>' を含むまで未完。子EVIDENCEが #1825 で止まる等の状況は、TARGET_PR_TOKEN不在として機械的に未完扱い。",
   "items": [
     {
       "id": "WIP-001",
@@ -193,7 +194,8 @@
         "type": "WHEN_JUDGE_TRUE"
       },
       "evidence_keys": [
-        "RUN_ID"
+        "RUN_ID",
+        "RUN_CONCLUSION"
       ],
       "depends_on": [
         "WIP-020"
@@ -204,26 +206,35 @@
       "id": "WIP-022",
       "stage": "P003",
       "owner": "ENTRY",
-      "purpose": "PR 単一確定（追跡対象PRが一意）",
+      "purpose": "追跡対象PRの単一確定（HEAD_SHA由来のPRを一意に固定）",
       "judge": {
         "key": "PR_SINGLE",
-        "expect": "true",
-        "type": "STATE_EQUALS"
+        "type": "STATE_EQUALS",
+        "expect": "true"
       },
       "action": {
-        "type": "GH_COMMIT_PULLS_LOOKUP",
         "params": {
+          "outputs": [
+            "TARGET_PR_NUMBER",
+            "TARGET_PR_URL",
+            "TARGET_PR_MERGED_AT",
+            "TARGET_PR_MERGE_COMMIT",
+            "TARGET_PR_TOKEN"
+          ],
           "commit_key": "HEAD_SHA"
-        }
+        },
+        "type": "GH_COMMIT_PULLS_LOOKUP"
       },
       "done": {
         "type": "WHEN_JUDGE_TRUE"
       },
       "evidence_keys": [
-        "PR_NUMBER",
-        "PR_MERGED_AT",
-        "PR_MERGE_COMMIT",
-        "HEAD_SHA"
+        "HEAD_SHA",
+        "TARGET_PR_NUMBER",
+        "TARGET_PR_URL",
+        "TARGET_PR_MERGED_AT",
+        "TARGET_PR_MERGE_COMMIT",
+        "TARGET_PR_TOKEN"
       ],
       "depends_on": [],
       "is_blocking": true
@@ -246,7 +257,8 @@
         "type": "WHEN_JUDGE_TRUE"
       },
       "evidence_keys": [
-        "PR_NUMBER"
+        "TARGET_PR_NUMBER",
+        "PR_MERGEABLE"
       ],
       "depends_on": [
         "WIP-022"
@@ -285,27 +297,42 @@
       "id": "WIP-025",
       "stage": "P003",
       "owner": "ENTRY",
-      "purpose": "Bundledに対象PR証跡行あり（親Bundled）",
+      "purpose": "親Bundledに追跡対象PRの証跡が存在（PR番号一致）",
       "judge": {
-        "key": "PARENT_BUNDLED_PATH",
-        "expect": "PR #",
-        "type": "FILE_CONTAINS"
+        "clauses": [
+          {
+            "expect_ref": "TARGET_PR_TOKEN",
+            "key": "PARENT_BUNDLED_PATH",
+            "type": "FILE_CONTAINS"
+          },
+          {
+            "key": "PARENT_BUNDLED_PATH",
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP/MEP_BUNDLE.md"
+          }
+        ],
+        "type": "AND"
       },
       "action": {
-        "type": "READ_PARENT_BUNDLE_LAST_COMMIT",
         "params": {
+          "also_read": [
+            "PARENT_BUNDLE_VERSION"
+          ],
           "path": "docs/MEP/MEP_BUNDLE.md"
-        }
+        },
+        "type": "READ_PARENT_BUNDLE_LAST_COMMIT"
       },
       "done": {
         "type": "WHEN_JUDGE_TRUE"
       },
       "evidence_keys": [
-        "PARENT_BUNDLED_LAST_COMMIT",
         "PARENT_BUNDLED_PATH",
-        "PARENT_BUNDLE_VERSION"
+        "PARENT_BUNDLED_LAST_COMMIT",
+        "PARENT_BUNDLE_VERSION",
+        "TARGET_PR_TOKEN"
       ],
       "depends_on": [
+        "WIP-022",
         "WIP-024"
       ],
       "is_blocking": true
@@ -314,27 +341,42 @@
       "id": "WIP-026",
       "stage": "P003",
       "owner": "ENTRY",
-      "purpose": "EVIDENCE（子）に対象PR追随の証跡あり（子EVIDENCE）",
+      "purpose": "子EVIDENCEが追跡対象PRの証跡を含む（追随完了条件）",
       "judge": {
-        "key": "EVIDENCE_BUNDLE_PATH",
-        "expect": "PR #",
-        "type": "FILE_CONTAINS"
+        "clauses": [
+          {
+            "expect_ref": "TARGET_PR_TOKEN",
+            "key": "EVIDENCE_BUNDLE_PATH",
+            "type": "FILE_CONTAINS"
+          },
+          {
+            "key": "EVIDENCE_BUNDLE_PATH",
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+          }
+        ],
+        "type": "AND"
       },
       "action": {
-        "type": "READ_EVIDENCE_FILE_LAST_COMMIT",
         "params": {
+          "also_read": [
+            "EVIDENCE_BUNDLE_VERSION"
+          ],
           "path": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-        }
+        },
+        "type": "READ_EVIDENCE_FILE_LAST_COMMIT"
       },
       "done": {
         "type": "WHEN_JUDGE_TRUE"
       },
       "evidence_keys": [
-        "EVIDENCE_BUNDLE_LAST_COMMIT",
         "EVIDENCE_BUNDLE_PATH",
-        "EVIDENCE_BUNDLE_VERSION"
+        "EVIDENCE_BUNDLE_LAST_COMMIT",
+        "EVIDENCE_BUNDLE_VERSION",
+        "TARGET_PR_TOKEN"
       ],
       "depends_on": [
+        "WIP-022",
         "WIP-024"
       ],
       "is_blocking": true
