@@ -10,14 +10,11 @@ if (-not (Test-Path -LiteralPath $WorkItemsPath)) { throw "WORK_ITEMS not found:
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $wi = Get-Content -LiteralPath $WorkItemsPath -Raw -Encoding utf8 | ConvertFrom-Json
 if (-not $wi.items) { throw "WORK_ITEMS has no items array" }
-# ENTRY接続の最小成果物:
-# - jsonl: 1行=1ID（statusは現時点UNKNOWN。次段でjudge/action/doneを“未完駆動”評価に繋げる）
-# - md: 人間向け一覧
 $now = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK")
 $jsonlPath = Join-Path $OutDir "work_items.jsonl"
 $mdPath    = Join-Path $OutDir "work_items.md"
 $lines = New-Object System.Collections.Generic.List[string]
-$md = New-Object System.Collections.Generic.List[string]
+$md    = New-Object System.Collections.Generic.List[string]
 $md.Add("# ENTRY WORK_ITEMS Report")
 $md.Add("")
 $md.Add("generatedAt: $now")
@@ -26,16 +23,22 @@ $md.Add("| id | purpose | status | evidenceKeys |")
 $md.Add("|---|---|---|---|")
 foreach ($it in $wi.items) {
   $id = [string]$it.id
-  $purpose = ([string]$it.purpose) -replace "\r?\n"," " -replace "\|","／"
+  $purposeRaw = [string]$it.purpose
+  $purpose = ($purposeRaw -replace "\r?\n"," ") -replace "\|","／"
   $keys = ""
   if ($it.primaryEvidenceKeys) { $keys = ($it.primaryEvidenceKeys | ForEach-Object { [string]$_ } ) -join ", " }
+  # notes は optional（無いitemでも落ちない）
+  $notes = ""
+  if (($it.PSObject.Properties.Match('notes') | Measure-Object).Count -gt 0) {
+    $notes = [string]$it.notes
+  }
   $obj = [pscustomobject]@{
     ts = $now
     id = $id
     status = "UNKNOWN"
-    purpose = [string]$it.purpose
+    purpose = $purposeRaw
     primaryEvidenceKeys = @($it.primaryEvidenceKeys)
-    notes = [string]((($it.PSObject.Properties | Where-Object Name -eq 'notes' | Select-Object -First 1).Value) ?? '')
+    notes = $notes
   }
   $lines.Add(($obj | ConvertTo-Json -Depth 20 -Compress))
   $md.Add("| $id | $purpose | UNKNOWN | $keys |")
@@ -45,13 +48,3 @@ $md    | Set-Content -LiteralPath $mdPath    -Encoding utf8NoBOM
 Write-Host "[OK] ENTRY WORK_ITEMS report generated:"
 Write-Host " - $jsonlPath"
 Write-Host " - $mdPath"
-
-# --- MEP SSOT hook (auto-added): emit WORK_ITEMS as ENTRY report artifact ---
-try {
-  if (Test-Path -LiteralPath ".github/scripts/entry_report_work_items.ps1") {
-    pwsh -NoProfile -File ".github/scripts/entry_report_work_items.ps1" -WorkItemsPath "docs/MEP/SSOT/WORK_ITEMS.json" -OutDir ".tmp/ENTRY_REPORT"
-  }
-} catch {
-  Write-Host "[WARN] WORK_ITEMS report hook failed: $($_.Exception.Message)"
-}
-# --- end hook ---
