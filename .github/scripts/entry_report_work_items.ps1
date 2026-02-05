@@ -35,7 +35,7 @@ foreach ($it in $wi.items) {
     status = "UNKNOWN"
     purpose = [string]$it.purpose
     primaryEvidenceKeys = @($it.primaryEvidenceKeys)
-    notes = [string]$it.notes
+    notes = [string]((($it.PSObject.Properties | Where-Object Name -eq 'notes' | Select-Object -First 1).Value) ?? '')
   }
   $lines.Add(($obj | ConvertTo-Json -Depth 20 -Compress))
   $md.Add("| $id | $purpose | UNKNOWN | $keys |")
