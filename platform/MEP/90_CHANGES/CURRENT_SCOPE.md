@@ -14,6 +14,7 @@
 - tools/mep_fix_bundle_version_suffix_to_head.ps1
 - tools/mep_writeback_create_pr.ps1
 - tools/pre_gate.ps1
+- .github/scripts/mep_entry_ssot_report.ps1
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 目的
 - 事故時に CURRENT_SCOPE を「確実に復帰」し、一次根拠（PR/commit/追随行）を採取できる状態を最小で保証する
@@ -38,4 +39,3 @@
 - .github/workflows/mep_writeback_bundle_on_push.yml
 - tools/mep_diag_context.ps1
 - tools/mep_diag_context.cmd
-
