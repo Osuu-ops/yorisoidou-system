@@ -1,46 +1,126 @@
 {
   "version": "v1",
-  "generatedAt": "2026-02-06T00:00:00+09:00",
+  "generatedAt": "2026-02-06T07:27:49+09:00",
   "items": [
     {
       "id": "WIP-020",
       "purpose": "writeback dispatch が実行済みであること",
-      "judge": { "type": "gh", "rule": "workflow_dispatch の run を特定し、run status/conclusion を取得できる" },
-      "action": { "type": "gh", "rule": "必要に応じて workflow_dispatch を起動する（OP-1標準トリガ準拠）" },
-      "done": { "type": "evidence", "rule": "EVIDENCE_BUNDLE_LAST_COMMIT が最新runに対応して更新される" },
-      "primaryEvidenceKeys": ["EVIDENCE_BUNDLE_LAST_COMMIT", "EVIDENCE_BUNDLE_VERSION"]
+      "judge": {
+        "type": "gh",
+        "rule": "workflow_dispatch の run を特定し、run status/conclusion を取得できる"
+      },
+      "action": {
+        "type": "gh",
+        "rule": "必要に応じて workflow_dispatch を起動する（OP-1標準トリガ準拠）"
+      },
+      "done": {
+        "type": "evidence",
+        "rule": "EVIDENCE_BUNDLE_LAST_COMMIT が最新runに対応して更新される"
+      },
+      "primaryEvidenceKeys": [
+        "EVIDENCE_BUNDLE_LAST_COMMIT",
+        "EVIDENCE_BUNDLE_VERSION"
+      ]
     },
     {
       "id": "WIP-021",
       "purpose": "writeback run が completed/success であること（成功条件の一部）",
-      "judge": { "type": "gh", "rule": "対象 run の conclusion==success を確認する" },
-      "action": { "type": "gh", "rule": "失敗時は Machine-Only STOP（再実行/修正の根拠を一次差分で提示）" },
-      "done": { "type": "gh", "rule": "run conclusion==success" },
-      "primaryEvidenceKeys": ["EVIDENCE_BUNDLE_LAST_COMMIT"]
+      "judge": {
+        "type": "gh",
+        "rule": "対象 run の conclusion==success を確認する"
+      },
+      "action": {
+        "type": "gh",
+        "rule": "失敗時は Machine-Only STOP（再実行/修正の根拠を一次差分で提示）"
+      },
+      "done": {
+        "type": "gh",
+        "rule": "run conclusion==success"
+      },
+      "primaryEvidenceKeys": [
+        "EVIDENCE_BUNDLE_LAST_COMMIT"
+      ]
     },
     {
       "id": "WIP-025",
       "purpose": "PARENT_BUNDLED に対象PRの証跡行が存在すること",
-      "judge": { "type": "text", "rule": "docs/MEP/MEP_BUNDLE.md 内に PR番号/mergeCommit 由来の証跡行がある" },
-      "action": { "type": "manual-stop", "rule": "証跡が無い場合は Machine-Only STOP（Bundled更新の不足を一次差分で示す）" },
-      "done": { "type": "bundled", "rule": "PARENT_BUNDLED に証跡行が存在" },
-      "primaryEvidenceKeys": ["PARENT_BUNDLE_VERSION", "HEAD(main)"]
+      "judge": {
+        "type": "text",
+        "rule": "docs/MEP/MEP_BUNDLE.md 内に PR番号/mergeCommit 由来の証跡行がある"
+      },
+      "action": {
+        "type": "manual-stop",
+        "rule": "証跡が無い場合は Machine-Only STOP（Bundled更新の不足を一次差分で示す）"
+      },
+      "done": {
+        "type": "bundled",
+        "rule": "PARENT_BUNDLED に証跡行が存在"
+      },
+      "primaryEvidenceKeys": [
+        "PARENT_BUNDLE_VERSION",
+        "HEAD(main)"
+      ]
     },
     {
       "id": "WIP-026",
       "purpose": "EVIDENCE_BUNDLE に対象PRの証跡行が存在すること（採用集合ルールに従う）",
-      "judge": { "type": "text", "rule": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md に採用集合としての証跡がある" },
-      "action": { "type": "manual-stop", "rule": "採用集合外は仕様としてSTOP（OP-1採用集合ルール固定が必要）" },
-      "done": { "type": "evidence", "rule": "EVIDENCE_BUNDLE に証跡行が存在（採用集合のみ）" },
-      "primaryEvidenceKeys": ["EVIDENCE_BUNDLE_VERSION", "EVIDENCE_BUNDLE_LAST_COMMIT"]
+      "judge": {
+        "type": "text",
+        "rule": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md に採用集合としての証跡がある"
+      },
+      "action": {
+        "type": "manual-stop",
+        "rule": "採用集合外は仕様としてSTOP（OP-1採用集合ルール固定が必要）"
+      },
+      "done": {
+        "type": "evidence",
+        "rule": "EVIDENCE_BUNDLE に証跡行が存在（採用集合のみ）"
+      },
+      "primaryEvidenceKeys": [
+        "EVIDENCE_BUNDLE_VERSION",
+        "EVIDENCE_BUNDLE_LAST_COMMIT"
+      ]
     },
     {
       "id": "WIP-030",
       "purpose": "ENTRYが参照するSSOTがこのWORK_ITEMSで一意に固定されていること",
-      "judge": { "type": "fs", "rule": "ENTRYが WORK_ITEMS.json を読むルートが存在し、他の表定義を参照していない" },
-      "action": { "type": "script", "rule": "次PRで mep_entry を表駆動ディスパッチへ接続する" },
-      "done": { "type": "composite", "rule": "ENTRYが WORK_ITEMS を唯一参照（旧系は実行候補から除外）" },
-      "primaryEvidenceKeys": ["PARENT_BUNDLE_VERSION"]
+      "judge": {
+        "type": "fs",
+        "rule": "ENTRYが WORK_ITEMS.json を読むルートが存在し、他の表定義を参照していない"
+      },
+      "action": {
+        "type": "script",
+        "rule": "次PRで mep_entry を表駆動ディスパッチへ接続する"
+      },
+      "done": {
+        "type": "composite",
+        "rule": "ENTRYが WORK_ITEMS を唯一参照（旧系は実行候補から除外）"
+      },
+      "primaryEvidenceKeys": [
+        "PARENT_BUNDLE_VERSION"
+      ]
+    },
+    {
+      "id": "WIP-900",
+      "purpose": "旧WORK_ID系と新SSOT/WORK_ITEMS系の実行候補としての並立を同時検知し、Machine-Only STOP する（OP-4）",
+      "judge": {
+        "type": "composite",
+        "rule": "ENTRYが参照し得る実行候補データ源（旧/新）をprobeし、両方が実行候補になっていれば conflictDetected=true"
+      },
+      "action": {
+        "type": "manual-stop",
+        "rule": "conflictDetected=true の場合は自動選択禁止でSTOP（STOP_REASONと候補一覧を出力）"
+      },
+      "done": {
+        "type": "composite",
+        "rule": "CONFLICT_SCANが実装され、並立時にMachine-Only STOPし、DoD達成後は旧を実行候補から封印できる"
+      },
+      "primaryEvidenceKeys": [
+        "PARENT_BUNDLE_VERSION",
+        "EVIDENCE_BUNDLE_VERSION",
+        "ENTRY_REPORT"
+      ],
+      "notes": "Spec: docs/MEP/SSOT/OP4_CONFLICT_SCAN_SPEC.md"
     }
   ]
 }
