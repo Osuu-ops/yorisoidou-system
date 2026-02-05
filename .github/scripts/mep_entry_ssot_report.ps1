@@ -97,7 +97,7 @@ $lines += "## WORK_ID Results (SSOT-driven)"
 $lines += ""
 foreach($k in @("WIP-020","WIP-025","WIP-026")){
   $x = $report.work.$k
-  $lines += "- $k: " + ($(if($x.ok){ "OK" } else { "NG" })) + " — " + $x.purpose
+  $lines += "- ${k}: " + ($(if($x.ok){ "OK" } else { "NG" })) + " — " + $x.purpose
 }
 $lines += ""
 $lines += "## Notes"
