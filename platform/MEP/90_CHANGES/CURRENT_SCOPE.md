@@ -32,10 +32,8 @@
 - 一次根拠は “main と gh/git の一次出力” のみ。会話文脈・推測は入れない。
 - .github/workflows/mep_writeback_bundle_on_push.yml
 
-- failure .github:114-114 Process completed with exit code 1.
-- failure .github:108-108  - tools/mep_reporter.ps1
-- failure .github:107-107  - tools/mep_handoff_min.ps1
-- failure .github:106-106  - tools/mep_handoff.ps1
-- failure .github:105-105  - tools/mep_entry.ps1
-- failure .github:104-104  - tools/mep_auto_loop.ps1
-- failure .github:94-94 Scope Guard NG: out-of-scope changes detected
+- tools/mep_reporter.ps1
+- tools/mep_handoff_min.ps1
+- tools/mep_handoff.ps1
+- tools/mep_entry.ps1
+- tools/mep_auto_loop.ps1
