@@ -1,0 +1,416 @@
+{
+  "ssot_kind": "WORK_ID_SSOT",
+  "ssot_version": "1.0",
+  "repo_origin": "https://github.com/Osuu-ops/yorisoidou-system.git",
+  "owner_repo": "Osuu-ops/yorisoidou-system",
+  "baseline_branch": "main",
+  "generated_at_utc": "2026-02-05T21:40:23.3993775Z",
+  "enums": {
+    "action_type": [
+      "REPO_ORIGIN_OK",
+      "WORKTREE_CLEAN",
+      "GIT_PULL_FF_ONLY",
+      "GH_COMMIT_PULLS_LOOKUP",
+      "GH_WORKFLOW_DISPATCH_FIXED",
+      "WAIT_GH_RUN_SUCCESS",
+      "READ_EVIDENCE_FILE_LAST_COMMIT",
+      "READ_PARENT_BUNDLE_LAST_COMMIT",
+      "SSOT_SCAN",
+      "CONFLICT_SCAN"
+    ],
+    "owner": [
+      "ENTRY",
+      "AUTO",
+      "PREGATE"
+    ],
+    "stage": [
+      "P001",
+      "P002",
+      "P003"
+    ],
+    "judge_type": [
+      "STATE_EQUALS",
+      "STATE_DIFF",
+      "FILE_CONTAINS",
+      "GH_CHECKS_ALL_SUCCESS",
+      "AND"
+    ]
+  },
+  "evidence_key_dict": {
+    "REPO_ORIGIN": "git remote get-url origin",
+    "BASELINE_BRANCH": "main",
+    "HEAD_SHA": "git rev-parse HEAD",
+    "PARENT_BUNDLED_PATH": "docs/MEP/MEP_BUNDLE.md",
+    "EVIDENCE_BUNDLE_PATH": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+    "PARENT_BUNDLE_VERSION": "docs/MEP/MEP_BUNDLE.md の BUNDLE_VERSION",
+    "EVIDENCE_BUNDLE_VERSION": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md の BUNDLE_VERSION",
+    "EVIDENCE_BUNDLE_LAST_COMMIT": "git log -n 1 -- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+    "PARENT_BUNDLED_LAST_COMMIT": "git log -n 1 -- docs/MEP/MEP_BUNDLE.md",
+    "PR_NUMBER": "gh pr view / commits/{sha}/pulls",
+    "PR_MERGED_AT": "gh pr view --json mergedAt",
+    "PR_MERGE_COMMIT": "gh pr view --json mergeCommit",
+    "RUN_ID": "gh run list / gh run view"
+  },
+  "notes": "固定集合（最小）。未完駆動ループ/表駆動ディスパッチ/DoD機械判定の根。増分はPRで追記。\n厳密化: WIP-022でTARGET_PRを一次根拠キーとして固定し、WIP-025(親Bundled)・WIP-026(子EVIDENCE)は TARGET_PR_TOKEN='PR #<n>' を含むまで未完。子EVIDENCEが #1825 で止まる等の状況は、TARGET_PR_TOKEN不在として機械的に未完扱い。\nRule: Bundled/EVIDENCE は main の全mergeを列挙しない。子EVIDENCEの採用集合は via=mep_append_evidence_line_full.ps1 / via=mep_append_evidence_line.ps1 と child bundle writeback（例: PR #1834）で観測。PR #1828 は merge 済みだが採用集合外のため Bundled/EVIDENCE に現れない。",
+  "items": [
+    {
+      "id": "WIP-001",
+      "stage": "P001",
+      "owner": "ENTRY",
+      "purpose": "Repo妥当性（originがGitHubで特定可能）",
+      "judge": {
+        "key": "REPO_ORIGIN",
+        "expect": "https://github.com/Osuu-ops/yorisoidou-system.git",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "REPO_ORIGIN_OK",
+        "params": {}
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "REPO_ORIGIN"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-002",
+      "stage": "P001",
+      "owner": "ENTRY",
+      "purpose": "Working tree clean",
+      "judge": {
+        "key": "WORKTREE_CLEAN",
+        "expect": "true",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "WORKTREE_CLEAN",
+        "params": {}
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-003",
+      "stage": "P001",
+      "owner": "ENTRY",
+      "purpose": "main同期（ff-only pull）",
+      "judge": {
+        "key": "HEAD_SHA",
+        "expect": "6c3ef3fb6b84837bad3d1095e604eabdc0bb2016",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "GIT_PULL_FF_ONLY",
+        "params": {
+          "branch": "main"
+        }
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-010",
+      "stage": "P002",
+      "owner": "AUTO",
+      "purpose": "AUTO stage（P002）の位置づけ固定（ENTRYから呼ばれる部品）",
+      "judge": {
+        "key": "AUTO_POSITION",
+        "expect": "P002_PART",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "SSOT_SCAN",
+        "params": {
+          "note": "AUTOはP002の一部として扱う"
+        }
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA"
+      ],
+      "depends_on": [],
+      "is_blocking": false
+    },
+    {
+      "id": "WIP-020",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "writeback dispatch 呼び出し（固定workflow / 固定pr_number=0）",
+      "judge": {
+        "key": "WRITEBACK_DISPATCHED",
+        "expect": "true",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "GH_WORKFLOW_DISPATCH_FIXED",
+        "params": {
+          "pr_number": 0,
+          "ref": "main",
+          "workflow_fixed": {
+            "workflow_path": ".github/workflows/mep_writeback_bundle_evidence_dispatch.yml",
+            "workflow_id": "225692127",
+            "ref": "main",
+            "pr_number": 0,
+            "dispatch_inputs": {},
+            "note": "Fixed: child-evidence writeback dispatch (no inputs detected; pr_number kept as contract=0)"
+          }
+        }
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "RUN_ID"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-021",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "run completed/success",
+      "judge": {
+        "key": "RUN_CONCLUSION",
+        "expect": "success",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "WAIT_GH_RUN_SUCCESS",
+        "params": {}
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "RUN_ID",
+        "RUN_CONCLUSION"
+      ],
+      "depends_on": [
+        "WIP-020"
+      ],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-022",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "追跡対象PRの単一確定（HEAD_SHA由来のPRを一意に固定）",
+      "judge": {
+        "key": "PR_SINGLE",
+        "type": "STATE_EQUALS",
+        "expect": "true"
+      },
+      "action": {
+        "params": {
+          "outputs": [
+            "TARGET_PR_NUMBER",
+            "TARGET_PR_URL",
+            "TARGET_PR_MERGED_AT",
+            "TARGET_PR_MERGE_COMMIT",
+            "TARGET_PR_TOKEN"
+          ],
+          "commit_key": "HEAD_SHA"
+        },
+        "type": "GH_COMMIT_PULLS_LOOKUP"
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA",
+        "TARGET_PR_NUMBER",
+        "TARGET_PR_URL",
+        "TARGET_PR_MERGED_AT",
+        "TARGET_PR_MERGE_COMMIT",
+        "TARGET_PR_TOKEN"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-023",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "PR mergeable==MERGEABLE（または同等の機械条件）",
+      "judge": {
+        "key": "PR_MERGEABLE",
+        "expect": "MERGEABLE",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "GH_COMMIT_PULLS_LOOKUP",
+        "params": {}
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "TARGET_PR_NUMBER",
+        "PR_MERGEABLE"
+      ],
+      "depends_on": [
+        "WIP-022"
+      ],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-024",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "main pull済み（ff-onlyで反映）",
+      "judge": {
+        "key": "HEAD_SHA",
+        "expect": "6c3ef3fb6b84837bad3d1095e604eabdc0bb2016",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "GIT_PULL_FF_ONLY",
+        "params": {
+          "branch": "main"
+        }
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA"
+      ],
+      "depends_on": [
+        "WIP-021",
+        "WIP-022"
+      ],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-025",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "親Bundledに証跡形式（audit=OK,WB0000 / PR行）が存在する（全merge列挙ではない前提）",
+      "judge": {
+        "clauses": [
+          {
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP/MEP_BUNDLE.md",
+            "key": "PARENT_BUNDLED_PATH"
+          },
+          {
+            "type": "FILE_CONTAINS",
+            "expect": "audit=OK,WB0000",
+            "key": "PARENT_BUNDLED_PATH"
+          }
+        ],
+        "type": "AND"
+      },
+      "action": {
+        "params": {
+          "path": "docs/MEP/MEP_BUNDLE.md",
+          "also_read": [
+            "PARENT_BUNDLE_VERSION"
+          ]
+        },
+        "type": "READ_PARENT_BUNDLE_LAST_COMMIT"
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "PARENT_BUNDLED_PATH",
+        "PARENT_BUNDLED_LAST_COMMIT",
+        "PARENT_BUNDLE_VERSION"
+      ],
+      "depends_on": [
+        "WIP-022",
+        "WIP-024"
+      ],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-026",
+      "stage": "P003",
+      "owner": "ENTRY",
+      "purpose": "子EVIDENCEに採用集合(via=...)の証跡形式が存在する（採用集合外PRで未完化しない）",
+      "judge": {
+        "clauses": [
+          {
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+            "key": "EVIDENCE_BUNDLE_PATH"
+          },
+          {
+            "type": "FILE_CONTAINS",
+            "expect": "via=mep_append_evidence_line_full.ps1",
+            "key": "EVIDENCE_BUNDLE_PATH"
+          }
+        ],
+        "type": "AND"
+      },
+      "action": {
+        "params": {
+          "path": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+          "also_read": [
+            "EVIDENCE_BUNDLE_VERSION"
+          ]
+        },
+        "type": "READ_EVIDENCE_FILE_LAST_COMMIT"
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "EVIDENCE_BUNDLE_PATH",
+        "EVIDENCE_BUNDLE_LAST_COMMIT",
+        "EVIDENCE_BUNDLE_VERSION"
+      ],
+      "depends_on": [
+        "WIP-022",
+        "WIP-024"
+      ],
+      "is_blocking": true
+    },
+    {
+      "id": "WIP-900",
+      "stage": "P001",
+      "owner": "ENTRY",
+      "purpose": "CONFLICT_SCAN（旧WORK_ID vs 新SSOT/WORK_ITEMS 並立検知→Machine-Only STOP）",
+      "judge": {
+        "key": "CONFLICT_NONE",
+        "expect": "true",
+        "type": "STATE_EQUALS"
+      },
+      "action": {
+        "type": "CONFLICT_SCAN",
+        "params": {
+          "rule": "OLD_WORK_ID_AND_NEW_SSOT_BOTH_CANDIDATES=>STOP",
+          "seal_trigger": "AFTER_DOD"
+        }
+      },
+      "done": {
+        "type": "WHEN_JUDGE_TRUE"
+      },
+      "evidence_keys": [
+        "HEAD_SHA"
+      ],
+      "depends_on": [],
+      "is_blocking": true
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260204_181117+main_6d5ced1
+BUNDLE_VERSION = v0.0.0+20260205_091102+main_b80518e
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1089,3 +1089,31 @@ OPERATION
 
 * - PR #1808 | mergedAt=02/04/2026 18:03:15 | mergeCommit=6d5ced12d5b526cfa3d769a2a83e5479726884a0 | BUNDLE_VERSION=v0.0.0+20260204_181117+main_6d5ced1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1808
 PR #1808 | audit=OK,WB0000 | appended_at=2026-02-04T18:11:20.2596049+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1823 | mergedAt=02/04/2026 21:25:31 | mergeCommit=478baef42a1b9abdb4ec933477dbe9c8dcda4f63 | BUNDLE_VERSION=v0.0.0+20260204_212555+main_478baef | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1823
+PR #1823 | audit=OK,WB0000 | appended_at=2026-02-04T21:25:57.4032838+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1825 | mergedAt=02/04/2026 21:29:12 | mergeCommit=40573b377431d4ea5ae9407b8188fe8d289884d7 | BUNDLE_VERSION=v0.0.0+20260204_212555+main_478baef | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1825
+PR #1825 | audit=OK,WB0000 | appended_at=2026-02-05T07:31:05.6371227+09:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1827 | mergedAt=02/04/2026 21:39:32 | mergeCommit=c84a32a5b07e006f085cf9ee2b302e7251618ffe | BUNDLE_VERSION=v0.0.0+20260204_212555+main_478baef | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1827
+PR #1827 | audit=OK,WB0000 | appended_at=2026-02-05T07:31:06.7206201+09:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1826 | mergedAt=02/04/2026 22:37:33 | mergeCommit=081286735d61866409198bb8357c9e54e3845233 | BUNDLE_VERSION=v0.0.0+20260205_084249+main_44bad0c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1826
+PR #1826 | audit=OK,WB0000 | appended_at=2026-02-05T08:42:53.0866633+00:00 | via=mep_append_evidence_line_full.ps1
+---
+## CARD｜OP-1｜EVIDENCE writeback 標準トリガ固定（Adopted / 0 approval）
+STATUS
+Adopted
+BASIS（一次根拠の生成物）
+- OP1_workflow_trigger_matrix.json : workflow_dispatch=true が 51件
+- OP1_STANDARD_TRIGGER_CANDIDATES.json : matrix(wd=true) 母集団を keyword_score で順位付け
+- 実行ログ: RECOMMENDED 行にて確定（score=123）
+STANDARD_TRIGGER（運用固定）
+OP-1 STANDARD_TRIGGER_TYPE=workflow_dispatch
+OP-1 STANDARD_WORKFLOW_PATH=.github/workflows/mep_writeback_bundle_dispatch_entry.yml
+OP-1 STANDARD_WORKFLOW_ID=228815143
+INTENT
+- EVIDENCE writeback の「標準トリガ」を一本化し、迷子を排除する。
+NEXT（未完）
+- run検出（run_id採取）→ EVIDENCE 到達の検証手順（子MEPのBUNDLE_VERSION更新/commit確認）を台帳化。
+RECORDED_AT_UTC
+20260205_211340Z
+RECORDED_FROM_HEAD(main)
+66f2e387d0f193318518c5bb1776ba27caa9b9a1
