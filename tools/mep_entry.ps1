@@ -254,3 +254,13 @@ function Invoke-MepReporterSafely {
 }
 # --- MEP_ENTRY_PROGRESS_ENV_END ---
 
+
+# --- MEP SSOT hook (auto-added): emit WORK_ITEMS as ENTRY report artifact ---
+try {
+  if (Test-Path -LiteralPath ".github/scripts/entry_report_work_items.ps1") {
+    pwsh -NoProfile -File ".github/scripts/entry_report_work_items.ps1" -WorkItemsPath "docs/MEP/SSOT/WORK_ITEMS.json" -OutDir ".tmp/ENTRY_REPORT"
+  }
+} catch {
+  Write-Host "[WARN] WORK_ITEMS report hook failed: $($_.Exception.Message)"
+}
+# --- end hook ---

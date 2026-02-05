@@ -110,3 +110,13 @@ Write-Host "[ENTRY_REPORT_DIR] $outDir"
 Write-Host "[ENTRY_LEDGER_JSONL] $ledgerPath"
 Write-Host "[ENTRY_REPORT_MD] $mdPath"
 Write-Host "[ENTRY_REPORT_JSON] $jsonPath"
+
+# --- MEP SSOT hook (auto-added): emit WORK_ITEMS as ENTRY report artifact ---
+try {
+  if (Test-Path -LiteralPath ".github/scripts/entry_report_work_items.ps1") {
+    pwsh -NoProfile -File ".github/scripts/entry_report_work_items.ps1" -WorkItemsPath "docs/MEP/SSOT/WORK_ITEMS.json" -OutDir ".tmp/ENTRY_REPORT"
+  }
+} catch {
+  Write-Host "[WARN] WORK_ITEMS report hook failed: $($_.Exception.Message)"
+}
+# --- end hook ---
