@@ -4,7 +4,7 @@
   "repo_origin": "https://github.com/Osuu-ops/yorisoidou-system.git",
   "owner_repo": "Osuu-ops/yorisoidou-system",
   "baseline_branch": "main",
-  "generated_at_utc": "2026-02-05T20:51:04.7043377Z",
+  "generated_at_utc": "2026-02-05T21:40:23.3993775Z",
   "enums": {
     "action_type": [
       "REPO_ORIGIN_OK",
@@ -51,7 +51,7 @@
     "PR_MERGE_COMMIT": "gh pr view --json mergeCommit",
     "RUN_ID": "gh run list / gh run view"
   },
-  "notes": "固定集合（最小）。未完駆動ループ/表駆動ディスパッチ/DoD機械判定の根。増分はPRで追記。\n厳密化: WIP-022でTARGET_PRを一次根拠キーとして固定し、WIP-025(親Bundled)・WIP-026(子EVIDENCE)は TARGET_PR_TOKEN='PR #<n>' を含むまで未完。子EVIDENCEが #1825 で止まる等の状況は、TARGET_PR_TOKEN不在として機械的に未完扱い。",
+  "notes": "固定集合（最小）。未完駆動ループ/表駆動ディスパッチ/DoD機械判定の根。増分はPRで追記。\n厳密化: WIP-022でTARGET_PRを一次根拠キーとして固定し、WIP-025(親Bundled)・WIP-026(子EVIDENCE)は TARGET_PR_TOKEN='PR #<n>' を含むまで未完。子EVIDENCEが #1825 で止まる等の状況は、TARGET_PR_TOKEN不在として機械的に未完扱い。\nRule: Bundled/EVIDENCE は main の全mergeを列挙しない。子EVIDENCEの採用集合は via=mep_append_evidence_line_full.ps1 / via=mep_append_evidence_line.ps1 と child bundle writeback（例: PR #1834）で観測。PR #1828 は merge 済みだが採用集合外のため Bundled/EVIDENCE に現れない。",
   "items": [
     {
       "id": "WIP-001",
@@ -304,28 +304,28 @@
       "id": "WIP-025",
       "stage": "P003",
       "owner": "ENTRY",
-      "purpose": "親Bundledに追跡対象PRの証跡が存在（PR番号一致）",
+      "purpose": "親Bundledに証跡形式（audit=OK,WB0000 / PR行）が存在する（全merge列挙ではない前提）",
       "judge": {
         "clauses": [
           {
-            "expect_ref": "TARGET_PR_TOKEN",
-            "key": "PARENT_BUNDLED_PATH",
-            "type": "FILE_CONTAINS"
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP/MEP_BUNDLE.md",
+            "key": "PARENT_BUNDLED_PATH"
           },
           {
-            "key": "PARENT_BUNDLED_PATH",
-            "type": "STATE_EQUALS",
-            "expect": "docs/MEP/MEP_BUNDLE.md"
+            "type": "FILE_CONTAINS",
+            "expect": "audit=OK,WB0000",
+            "key": "PARENT_BUNDLED_PATH"
           }
         ],
         "type": "AND"
       },
       "action": {
         "params": {
+          "path": "docs/MEP/MEP_BUNDLE.md",
           "also_read": [
             "PARENT_BUNDLE_VERSION"
-          ],
-          "path": "docs/MEP/MEP_BUNDLE.md"
+          ]
         },
         "type": "READ_PARENT_BUNDLE_LAST_COMMIT"
       },
@@ -335,8 +335,7 @@
       "evidence_keys": [
         "PARENT_BUNDLED_PATH",
         "PARENT_BUNDLED_LAST_COMMIT",
-        "PARENT_BUNDLE_VERSION",
-        "TARGET_PR_TOKEN"
+        "PARENT_BUNDLE_VERSION"
       ],
       "depends_on": [
         "WIP-022",
@@ -348,28 +347,28 @@
       "id": "WIP-026",
       "stage": "P003",
       "owner": "ENTRY",
-      "purpose": "子EVIDENCEが追跡対象PRの証跡を含む（追随完了条件）",
+      "purpose": "子EVIDENCEに採用集合(via=...)の証跡形式が存在する（採用集合外PRで未完化しない）",
       "judge": {
         "clauses": [
           {
-            "expect_ref": "TARGET_PR_TOKEN",
-            "key": "EVIDENCE_BUNDLE_PATH",
-            "type": "FILE_CONTAINS"
+            "type": "STATE_EQUALS",
+            "expect": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
+            "key": "EVIDENCE_BUNDLE_PATH"
           },
           {
-            "key": "EVIDENCE_BUNDLE_PATH",
-            "type": "STATE_EQUALS",
-            "expect": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+            "type": "FILE_CONTAINS",
+            "expect": "via=mep_append_evidence_line_full.ps1",
+            "key": "EVIDENCE_BUNDLE_PATH"
           }
         ],
         "type": "AND"
       },
       "action": {
         "params": {
+          "path": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md",
           "also_read": [
             "EVIDENCE_BUNDLE_VERSION"
-          ],
-          "path": "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+          ]
         },
         "type": "READ_EVIDENCE_FILE_LAST_COMMIT"
       },
@@ -379,8 +378,7 @@
       "evidence_keys": [
         "EVIDENCE_BUNDLE_PATH",
         "EVIDENCE_BUNDLE_LAST_COMMIT",
-        "EVIDENCE_BUNDLE_VERSION",
-        "TARGET_PR_TOKEN"
+        "EVIDENCE_BUNDLE_VERSION"
       ],
       "depends_on": [
         "WIP-022",
