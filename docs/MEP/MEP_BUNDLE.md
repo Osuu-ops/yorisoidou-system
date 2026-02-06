@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260205_091102+main_b80518e
+BUNDLE_VERSION = v0.0.0+20260206_184758+main_bfb1a01
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1149,3 +1149,18 @@ https://github.com/Osuu-ops/yorisoidou-system.git
 - **EVIDENCE_BUNDLE_VERSION は補助情報（best-effort）** とし、更新されない場合でも追随失敗（STOP）とは扱わない。
 - 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
 
+
+
+## Q169（Adopted）：SSOT_SCANのQ順序は厳格（昇順でなければSTOP）【単一解固定】
+* **Q169（Adopted）**：SSOT_SCAN（Q121〜Q128）における **Q整合（Q番号の順序）**の扱いを単一解として固定する。
+  * 目的：Q番号の出現順の扱いが「STOPかAUTO_FIXか」で割れないようにする（実装割れ防止）。
+  * 固定（単一解）：
+    - **PART A（決定台帳）内のQ番号の出現順が昇順でない場合は、SSOT_SCANは必ず STOP とする。**
+    - ここでいう「昇順でない」とは、例として `Q31〜Q35 → Q52〜Q57 → Q36〜…` のような **番号の巻き戻り／飛び込み**を含む。
+  * STOP条件（明文化）：
+    - `Q_order_violation=true`（任意の内部キー）を検知した場合、`SSOT_SCAN=STOP`。
+  * 期待される最小修正：
+    - **SSOT（本ファイル）側でQ番号の出現順を昇順に並べ替える**（AUTO_FIXで整列して継続は許可しない）。
+  * Relates to: Q121, Q122, Q123, Q125, Q145
+* - PR #1868 | mergedAt=02/06/2026 18:40:44 | mergeCommit=bfb1a0184fd14d57230da11fff922b9140fa6cf2 | BUNDLE_VERSION=v0.0.0+20260206_184758+main_bfb1a01 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1868
+PR #1868 | audit=OK,WB0000 | appended_at=2026-02-06T18:48:00.5017557+00:00 | via=mep_append_evidence_line_full.ps1
