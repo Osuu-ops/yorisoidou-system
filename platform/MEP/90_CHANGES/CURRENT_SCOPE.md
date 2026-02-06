@@ -6,3 +6,5 @@
 - .github/workflows/mep_writeback_bundle_dispatch.yml.txt
 - .github/workflows/mep_writeback_bundle_evidence_dispatch.yml.txt
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
+- docs/MEP/MEP_BUNDLE.md
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
