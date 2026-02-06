@@ -1,220 +1,43 @@
-}
-### END PR0_GUARD_V2_FALLBACK (AUTO) ###
-
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 param(
-
-
   [Parameter(Mandatory=$true)]
-
-
-  [int]$PrNumber,
-
-
-
-
-
+  [string]$File,
   [Parameter(Mandatory=$true)]
-
-
-  [string]$BundlePath
-
-
+  [string]$Line
 )
-
-function Fail([string]$m){ throw $m }
-
-
-
-
-
-
-
-
-function Info([string]$m){ Write-Host "[INFO] $m" }
-
-
-
-
-
-
-
-
-function Ok([string]$m){ Write-Host "[OK]   $m" }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# repo root
-
-
-
-
-
-
-
-
-$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-
-
-
-
-
-
-
-
-$abs = Join-Path $RepoRoot $BundlePath
-
-
-
-
-
-
-
-
-if (-not (Test-Path -LiteralPath $abs)) { Fail "Bundle not found: $BundlePath" }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# if already present, no-op
-
-
-
-
-
-
-
-
-$already = Select-String -LiteralPath $abs -Pattern ("PR\s*#"+$PrNumber) -ErrorAction SilentlyContinue | Select-Object -First 1
-
-
-
-
-
-
-
-
-if ($already) {
-
-
-
-
-
-
-
-
-  Ok ("already_present=PR #{0}" -f $PrNumber)
-
-
-
-
-
-
-
-
-  exit 0
-
-
-
-
-
-
-
-
+function _Utf8NoBom() { return [System.Text.UTF8Encoding]::new($false) }
+if ([string]::IsNullOrWhiteSpace($File)) { throw "File is empty" }
+if ([string]::IsNullOrWhiteSpace($Line)) { throw "Line is empty" }
+# Normalize line (no CR/LF)
+$lineNorm = ($Line -replace "`r","" -replace "`n","").TrimEnd()
+if (-not $lineNorm) { throw "Line becomes empty after normalization" }
+# Read existing (UTF-8 best effort), normalize to LF
+$exists = Test-Path -LiteralPath $File
+$text = ""
+if ($exists) {
+  try {
+    $text = Get-Content -LiteralPath $File -Raw -Encoding UTF8
+  } catch {
+    # fallback binary -> UTF8 noBOM strict
+    $bytes = [System.IO.File]::ReadAllBytes($File)
+    $text = [System.Text.UTF8Encoding]::new($false,$true).GetString($bytes)
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# append evidence line (minimal: your verifier searches 'PR #1310' anywhere)
-
-
-
-
-
-
-
-
-$utc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
-
-
-
-
-
-
-
-
-$line = ("PR #{0} | audit=OK,WB0000 | appended_at={1} | via=mep_append_evidence_line.ps1" -f $PrNumber,$utc)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Add-Content -LiteralPath $abs -Value $line -Encoding utf8
-
-
-
-
-
-
-
-
-Ok ("appended={0}" -f $line)
-
-
-
-
-
-
-
+$text = $text -replace "`r",""
+$lines = @()
+if ($text) { $lines = @($text -split "`n", -1) } else { $lines = @() }
+# Remove trailing empty lines for stable append
+while ($lines.Count -gt 0 -and $lines[$lines.Count-1] -eq "") { $lines = $lines[0..($lines.Count-2)] }
+# Check existence (exact match)
+$found = $false
+foreach ($l in $lines) {
+  if ($l -eq $lineNorm) { $found = $true; break }
+}
+if (-not $found) { $lines += $lineNorm }
+# Ensure single trailing LF
+$out = ""
+if ($lines.Count -gt 0) { $out = ($lines -join "`n") + "`n" } else { $out = "`n" }
+$utf8 = _Utf8NoBom
+[System.IO.File]::WriteAllBytes($File, $utf8.GetBytes($out))
+Write-Host "[OK] appended(if-missing): $lineNorm -> $File"
