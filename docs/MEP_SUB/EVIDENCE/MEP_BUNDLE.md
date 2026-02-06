@@ -95,3 +95,10 @@ PR #1848 | audit=OK,WB0000 | appended_at=2026-02-06T07:52:54.1260122+00:00 | via
 
 * - PR #1846 | mergedAt=02/06/2026 07:31:52 | mergeCommit=0d8fd8d3b71b9ee83bccd4a2fb28dad8ddf91d0a | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1846
 PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via=mep_append_evidence_line_full.ps1
+
+<!-- OP-1: evidence-follow-definition (SSOT) -->
+## OP-1（推奨仕様）EVIDENCE追随の定義（SSOT）
+- 追随判定の一次根拠は **EVIDENCE_BUNDLE（docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md）内の証跡行** とする。
+- **EVIDENCE_BUNDLE_VERSION は補助情報（best-effort）** とし、更新されない場合でも追随失敗（STOP）とは扱わない。
+- 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
+
