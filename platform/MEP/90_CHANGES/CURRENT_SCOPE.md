@@ -1,3 +1,3 @@
 ## 変更対象（Scope-IN）
-- _crash_workflow_snip_20260207_020831.txt
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 ## END
