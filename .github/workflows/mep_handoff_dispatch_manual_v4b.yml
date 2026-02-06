@@ -1,0 +1,22 @@
+name: MEP Handoff Dispatch (Manual v4b)
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Target PR number (0=auto-resolve mode)."
+        required: true
+        default: "0"
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: mep-handoff-dispatch-manual-v4b
+  cancel-in-progress: false
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo (smoke)
+        run: |
+          echo "OK: workflow_dispatch is alive"
+          echo "pr_number=${{ inputs.pr_number }}"
