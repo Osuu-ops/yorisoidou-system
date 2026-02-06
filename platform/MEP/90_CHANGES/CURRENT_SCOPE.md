@@ -1,7 +1,5 @@
 ## 変更対象（Scope-IN）
-- CURRENT_SCOPE.md
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - docs/MEP/MEP_BUNDLE.md
 - docs/MEP/MEP_RUNBOOK_MIN_RECOVERY.md
-- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 
