@@ -102,3 +102,5 @@ PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via
 - **EVIDENCE_BUNDLE_VERSION は補助情報（best-effort）** とし、更新されない場合でも追随失敗（STOP）とは扱わない。
 - 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
 
+* - PR #1869 | mergedAt=02/06/2026 19:13:10 | mergeCommit=f733f7cb9aac750d2418f6c54f98eaacd7e96e29 | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1869
+PR #1869 | audit=OK,WB0000 | appended_at=2026-02-06T20:30:28.8061319+00:00 | via=mep_append_evidence_line_full.ps1
