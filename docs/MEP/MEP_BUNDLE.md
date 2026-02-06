@@ -1117,3 +1117,28 @@ RECORDED_AT_UTC
 20260205_211340Z
 RECORDED_FROM_HEAD(main)
 66f2e387d0f193318518c5bb1776ba27caa9b9a1
+---
+## CARD｜OP-3｜事故台帳（repo drift / PSReadLine / writeback迷子 / mergeable収束不全）
+STATUS
+Draft
+INCIDENT_SUMMARY
+- repo drift / 手元状態の不一致が発生
+- PowerShell / PSReadLine 由来のクラッシュが発生
+- EVIDENCE writeback の標準トリガ迷子（どのWFを叩くか）が発生
+- GitHub PR の mergeable=UNKNOWN / BEHIND / BLOCKED の収束に手間取り、auto-merge/update-branch を併用して収束
+PRIMARY_EVIDENCE（一次根拠）
+- PR #1840 : OP-1 標準トリガ固定（workflow_dispatch / mep_writeback_bundle_dispatch_entry.yml / id=228815143）を Bundled に台帳化 → MERGED
+- PR #1822 : PSReadLine crash mitigation 系の作業線 → Scope Guard 失敗 → CURRENT_SCOPE.md を仕様（## 変更対象（Scope-IN） + bullet-only）に復旧し解決 → MERGED
+- main HEAD (at record time): 049e19183fae300fbed363a6939e27feebad2619
+LESSONS
+- CURRENT_SCOPE.md は「## 変更対象（Scope-IN）」ヘッダが必須（Format Guard / Scope Guard が要求）
+- PR の mergeable=UNKNOWN/BEHIND/BLOCKED は API/update-branch/auto-merge で収束させる運用が有効
+- 端末クラッシュ回避として、ページャ無効化・非対話実行・出力最小化が有効（PSReadLine unload 併用）
+ACTION_ITEMS
+- Scope Guard の失敗時、annotations 文字列からの抽出は禁止（PRの変更ファイル一覧を一次情報として scope-in する）
+- CURRENT_SCOPE.md の生成規約を Bundled に明文化（ヘッダ1つ + bullet-only + 空行ゼロ）
+- mergeable=UNKNOWN 収束の標準手順（auto-merge + update-branch + snapshot）を手順化
+RECORDED_AT_UTC
+20260205_223841Z
+RECORDED_FROM
+https://github.com/Osuu-ops/yorisoidou-system.git

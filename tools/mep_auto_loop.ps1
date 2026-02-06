@@ -1,3 +1,11 @@
+# MEP_PSREADLINE_GUARD_v1
+# Purpose: mitigate PSReadLine crash (small console buffer / OutOfRange) by unloading PSReadLine in MEP execution session.
+try {
+  $m = Get-Module -Name PSReadLine -ErrorAction SilentlyContinue
+  if ($m) { Remove-Module PSReadLine -Force -ErrorAction SilentlyContinue }
+} catch {}
+
+
 Set-StrictMode -Version Latest
 
 Set-StrictMode -Version Latest
@@ -140,3 +148,4 @@ if ([string]::IsNullOrWhiteSpace($stageVal)) {
 if ($stageVal -eq "DONE") {
   $ec = 0
 }
+
