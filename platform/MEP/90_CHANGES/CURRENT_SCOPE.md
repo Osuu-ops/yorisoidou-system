@@ -1,5 +1,2 @@
 ## 変更対象（Scope-IN）
-- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
-- docs/MEP/MEP_BUNDLE.md
-- docs/MEP/MEP_RUNBOOK_MIN_RECOVERY.md
 ## END
