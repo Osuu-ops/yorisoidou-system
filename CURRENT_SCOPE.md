@@ -9,3 +9,9 @@
 - CURRENT_SCOPE.md
 - tools/mep_diag_context.ps1
 - tools/mep_diag_context.cmd
+<!-- SCOPE_IN: exact-files (auto) BEGIN -->
+- docs/MEP/MEP_BUNDLE.md
+- docs/MEP/MEP_RUNBOOK_MIN_RECOVERY.md
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+<!-- SCOPE_IN: exact-files (auto) END -->
+
