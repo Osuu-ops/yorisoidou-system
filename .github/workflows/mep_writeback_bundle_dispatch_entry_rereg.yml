@@ -17,7 +17,7 @@ permissions:
 jobs:
   writeback:
     runs-on: ubuntu-latest
-steps:
+    steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
