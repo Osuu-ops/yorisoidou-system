@@ -46,3 +46,4 @@ aws_sdk_*.log
 # auto-ignore: local run artifacts
 logs/
 
+.tmp/
