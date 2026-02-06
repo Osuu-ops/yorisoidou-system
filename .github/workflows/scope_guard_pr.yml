@@ -16,7 +16,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Enforce CURRENT_SCOPE Scope-IN
+            - name: MEP_EVIDENCE_WRITEBACK_EXCEPTION
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SCOPE_GUARD_BYPASS=0" >> "$GITHUB_ENV"
+          title="${{ github.event.pull_request.title }}"
+          head="${{ github.head_ref }}"
+          # allow evidence writeback PRs ONLY if they touch exactly the evidence bundle file
+          case "$title" in
+            chore(evidence):*) allow_title=1 ;;
+            *) allow_title=0 ;;
+          esac
+          case "$head" in
+            auto/writeback-evidence_*) allow_head=1 ;;
+            *) allow_head=0 ;;
+          esac
+          if [ "$allow_title" = "0" ] && [ "$allow_head" = "0" ]; then
+            echo "[info] not evidence-writeback; no bypass"
+            exit 0
+          fi
+          git fetch --no-tags --prune --depth=2 origin "${{ github.base_ref }}" || true
+          files="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD | tr -d '\r' | sed '/^$/d')"
+          echo "[info] changed files:"; echo "$files" | sed 's/^/  - /'
+          # STRICT: ONLY docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+          if [ "$(echo "$files" | wc -l | tr -d ' ')" = "1" ] && [ "$files" = "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md" ]; then
+            echo "[info] bypass scope guard for evidence-writeback (single-file)"
+            echo "SCOPE_GUARD_BYPASS=1" >> "$GITHUB_ENV"
+          else
+            echo "[info] evidence-writeback must be single-file (docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md) -> no bypass"
+          fi
+- name: Enforce CURRENT_SCOPE Scope-IN
+  if: env.SCOPE_GUARD_BYPASS != '1'
         shell: bash
         env:
           SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
@@ -109,3 +140,4 @@ jobs:
 
           print("Scope Guard OK")
           PY
+
