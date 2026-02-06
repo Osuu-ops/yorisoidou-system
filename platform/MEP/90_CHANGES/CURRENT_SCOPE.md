@@ -1,5 +1,6 @@
 ## 変更対象（Scope-IN）
-- docs/MEP_SUB/EVIDENCE/**
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 ## CURRENT_SCOPE 運用（最小復帰手順／一次根拠採取点）
 
 
