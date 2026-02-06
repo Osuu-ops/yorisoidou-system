@@ -17,7 +17,10 @@ permissions:
 jobs:
   writeback:
     runs-on: ubuntu-latest
-    steps:
+steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Resolve PR number
         shell: bash
         env:
@@ -40,22 +43,22 @@ jobs:
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
         run: |
-          pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File ./tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Append full evidence line into parent Bundled
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Ensure writeback PR (helper)
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
-          pwsh -NoProfile -File tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File ./tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File ./tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
 
 
 
