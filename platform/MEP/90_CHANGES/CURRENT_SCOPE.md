@@ -1,4 +1,5 @@
 ## 変更対象（Scope-IN）
+- .github/workflows/mep_writeback_bundle_dispatch_entry.yml
 - .github/scripts/**
 - docs/MEP/SSOT/**
 - platform/MEP/90_CHANGES/**
