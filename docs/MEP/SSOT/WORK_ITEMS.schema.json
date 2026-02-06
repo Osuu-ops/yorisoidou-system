@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MEP WORK_ITEMS SSOT",
+  "type": "object",
+  "required": ["version", "generatedAt", "items"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "purpose",
+          "judge",
+          "action",
+          "done",
+          "primaryEvidenceKeys"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^(WIP|OP|SYS)-[0-9]{3,4}$" },
+          "purpose": { "type": "string", "minLength": 1 },
+          "judge": {
+            "type": "object",
+            "required": ["type", "rule"],
+            "properties": {
+              "type": { "type": "string", "enum": ["git", "gh", "fs", "text", "composite"] },
+              "rule": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          },
+          "action": {
+            "type": "object",
+            "required": ["type", "rule"],
+            "properties": {
+              "type": { "type": "string", "enum": ["none", "git", "gh", "script", "manual-stop"] },
+              "rule": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          },
+          "done": {
+            "type": "object",
+            "required": ["type", "rule"],
+            "properties": {
+              "type": { "type": "string", "enum": ["evidence", "bundled", "fs", "git", "gh", "composite"] },
+              "rule": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          },
+          "primaryEvidenceKeys": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
