@@ -1,4 +1,5 @@
 ## CURRENT_SCOPE Scope-IN
+- docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - tools/**
 - .github/workflows/**
 - docs/MEP/**
