@@ -46,7 +46,6 @@ jobs:
           # ---- Phase1: docs allowlist fast-path (safe)
           DOCS_ALLOW = [
             "docs/MEP/**",
-  "docs/MEP_SUB/EVIDENCE/**",
             "START_HERE.md",
           ]
 
@@ -110,4 +109,3 @@ jobs:
 
           print("Scope Guard OK")
           PY
-
