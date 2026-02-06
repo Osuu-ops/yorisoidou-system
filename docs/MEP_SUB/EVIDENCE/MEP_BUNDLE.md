@@ -102,3 +102,4 @@ PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via
 - **EVIDENCE_BUNDLE_VERSION は補助情報（best-effort）** とし、更新されない場合でも追随失敗（STOP）とは扱わない。
 - 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
 
+e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
