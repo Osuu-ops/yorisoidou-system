@@ -4,4 +4,9 @@
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - .github/workflows/mep_handoff_dispatch_manual.yml
 - .github/workflows/mep_handoff_dispatch_manual_v2.yml
+- .github/workflows/mep_handoff_dispatch_manual_v3.yml
+- .github/workflows/mep_handoff_dispatch_manual_v4.yml
+- .github/workflows/mep_handoff_dispatch_manual_v4b.yml
+- .github/workflows/mep_handoff_dispatch_manual_v4c.yml
+- .github/workflows/mep_handoff_dispatch_manual_v5.yml
 - docs/MEP/HANDOFF.md
