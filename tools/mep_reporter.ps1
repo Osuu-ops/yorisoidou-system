@@ -1,3 +1,11 @@
+# MEP_PSREADLINE_GUARD_v1
+# Purpose: mitigate PSReadLine crash (small console buffer / OutOfRange) by unloading PSReadLine in MEP execution session.
+try {
+  $m = Get-Module -Name PSReadLine -ErrorAction SilentlyContinue
+  if ($m) { Remove-Module PSReadLine -Force -ErrorAction SilentlyContinue }
+} catch {}
+
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference="Stop"
 function Get-GateSymbol {
@@ -167,3 +175,4 @@ try {
   # reporter must never crash just because contract vars are absent
 }
 # --- MEP_REPORTER_PROGRESS_CONTRACT_END ---
+

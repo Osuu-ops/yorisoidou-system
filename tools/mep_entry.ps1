@@ -255,6 +255,14 @@ function Invoke-MepReporterSafely {
 # --- MEP_ENTRY_PROGRESS_ENV_END ---
 
 
+# MEP_PSREADLINE_GUARD_v1
+# Purpose: mitigate PSReadLine crash (small console buffer / OutOfRange) by unloading PSReadLine in MEP execution session.
+try {
+  $m = Get-Module -Name PSReadLine -ErrorAction SilentlyContinue
+  if ($m) { Remove-Module PSReadLine -Force -ErrorAction SilentlyContinue }
+} catch {}
+
+
 # --- MEP SSOT hook (auto-added): emit WORK_ITEMS as ENTRY report artifact ---
 try {
   if (Test-Path -LiteralPath ".github/scripts/entry_report_work_items.ps1") {
