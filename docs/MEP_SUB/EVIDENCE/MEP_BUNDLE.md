@@ -93,8 +93,8 @@ PR #1834 | audit=OK,WB0000 | appended_at=2026-02-05T20:46:29.4597118+00:00 | via
 PR #1848 | audit=OK,WB0000 | appended_at=2026-02-06T07:52:54.1260122+00:00 | via=mep_append_evidence_line_full.ps1
 
 
-* - PR #1846 | mergedAt=02/06/2026 07:31:52 | mergeCommit=0d8fd8d3b71b9ee83bccd4a2fb28dad8ddf91d0a | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1846
-PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1846 | run_id=21742666287 | mergedAt=02/06/2026 07:31:52 | mergeCommit=0d8fd8d3b71b9ee83bccd4a2fb28dad8ddf91d0a | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1846
+PR #1846 | run_id=21742666287 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via=mep_append_evidence_line_full.ps1
 
 <!-- OP-1: evidence-follow-definition (SSOT) -->
 ## OP-1（推奨仕様）EVIDENCE追随の定義（SSOT）
