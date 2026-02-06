@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260205_091102+main_b80518e
+BUNDLE_VERSION = v0.0.0+20260206_184758+main_bfb1a01
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1162,3 +1162,5 @@ https://github.com/Osuu-ops/yorisoidou-system.git
   * 期待される最小修正：
     - **SSOT（本ファイル）側でQ番号の出現順を昇順に並べ替える**（AUTO_FIXで整列して継続は許可しない）。
   * Relates to: Q121, Q122, Q123, Q125, Q145
+* - PR #1868 | mergedAt=02/06/2026 18:40:44 | mergeCommit=bfb1a0184fd14d57230da11fff922b9140fa6cf2 | BUNDLE_VERSION=v0.0.0+20260206_184758+main_bfb1a01 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1868
+PR #1868 | audit=OK,WB0000 | appended_at=2026-02-06T18:48:00.5017557+00:00 | via=mep_append_evidence_line_full.ps1
