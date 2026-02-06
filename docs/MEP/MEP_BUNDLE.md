@@ -1142,3 +1142,10 @@ RECORDED_AT_UTC
 20260205_223841Z
 RECORDED_FROM
 https://github.com/Osuu-ops/yorisoidou-system.git
+
+<!-- OP-1: evidence-follow-definition (SSOT) -->
+## OP-1（推奨仕様）EVIDENCE追随の定義（SSOT）
+- 追随判定の一次根拠は **EVIDENCE_BUNDLE（docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md）内の証跡行** とする。
+- **EVIDENCE_BUNDLE_VERSION は補助情報（best-effort）** とし、更新されない場合でも追随失敗（STOP）とは扱わない。
+- 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
+
