@@ -1,6 +1,12 @@
 name: MEP Handoff Dispatch (Manual v5)
 "on":
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/mep_handoff_dispatch_manual_v5.yml
+
     inputs:
       pr_number:
         description: "Target PR number (0=auto-resolve mode)."
@@ -32,6 +38,7 @@ jobs:
           RUN_ID="${{ github.run_id }}"
           TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           PR_NUMBER="${{ inputs.pr_number }}"
+          if [[ -z "$PR_NUMBER" ]]; then PR_NUMBER="0"; fi
           REPO="${{ github.repository }}"
           BASE_BRANCH="main"
           HEAD_SHA="$(git rev-parse HEAD)"
