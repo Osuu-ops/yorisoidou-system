@@ -5,4 +5,6 @@
 - .github/workflows/mep_writeback_bundle_dispatch_manual.yml.txt
 - .github/workflows/mep_writeback_bundle_dispatch_v2_20260201_035903.yml.txt
 - .github/workflows/mep_writeback_bundle_dispatch.yml.txt
-- .github/workflows/mep_writeback_bundle_evidence_dispatch.yml.txt 
+- .github/workflows/mep_writeback_bundle_evidence_dispatch.yml.txt
+## 変更対象（Scope-IN）
+- platform/MEP/90_CHANGES/CURRENT_SCOPE.md
