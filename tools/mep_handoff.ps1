@@ -80,3 +80,10 @@ try {
   Write-Error ("[HANDOFF] wrapper failed: " + $_.Exception.Message)
   exit 1
 }
+# MEP_PSREADLINE_GUARD_v1
+# Purpose: mitigate PSReadLine crash (small console buffer / OutOfRange) by unloading PSReadLine in MEP execution session.
+try {
+  $m = Get-Module -Name PSReadLine -ErrorAction SilentlyContinue
+  if ($m) { Remove-Module PSReadLine -Force -ErrorAction SilentlyContinue }
+} catch {}
+
