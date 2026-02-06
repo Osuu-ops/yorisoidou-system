@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260206_184758+main_bfb1a01
+BUNDLE_VERSION = v0.0.0+20260206_191703+main_f733f7c
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1164,3 +1164,5 @@ https://github.com/Osuu-ops/yorisoidou-system.git
   * Relates to: Q121, Q122, Q123, Q125, Q145
 * - PR #1868 | mergedAt=02/06/2026 18:40:44 | mergeCommit=bfb1a0184fd14d57230da11fff922b9140fa6cf2 | BUNDLE_VERSION=v0.0.0+20260206_184758+main_bfb1a01 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1868
 PR #1868 | audit=OK,WB0000 | appended_at=2026-02-06T18:48:00.5017557+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1869 | mergedAt=02/06/2026 19:13:10 | mergeCommit=f733f7cb9aac750d2418f6c54f98eaacd7e96e29 | BUNDLE_VERSION=v0.0.0+20260206_191703+main_f733f7c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1869
+PR #1869 | audit=OK,WB0000 | appended_at=2026-02-06T19:17:05.4999978+00:00 | via=mep_append_evidence_line_full.ps1
