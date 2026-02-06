@@ -1,4 +1,4 @@
-}
+
 ### END PR0_GUARD_V2_FALLBACK (AUTO) ###
 
 param(
