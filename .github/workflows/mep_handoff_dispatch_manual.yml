@@ -1,5 +1,5 @@
 name: MEP Handoff Dispatch (Manual)
-on:
+"on":
   workflow_dispatch:
     inputs:
       pr_number:
