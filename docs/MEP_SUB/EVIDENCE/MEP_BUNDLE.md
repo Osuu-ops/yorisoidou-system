@@ -103,3 +103,4 @@ PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via
 - 運用上の同一性確認は、PR番号 / mergeCommit / HEAD の一致を正とする。
 
 e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
+7e4297e2295791c0815ce3adda98b779324eae94 Merge pull request #1900 from Osuu-ops/fix/op2-handoff-recovery_20260207_073847 (mergedAt: 02/07/2026 00:35:06) https://github.com/Osuu-ops/yorisoidou-system/pull/1900
