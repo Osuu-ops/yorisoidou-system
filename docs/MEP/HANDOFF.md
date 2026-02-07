@@ -6,7 +6,7 @@ https://github.com/Osuu-ops/yorisoidou-system.git
 BASE_BRANCH
 main
 HEAD
-84320b0c
+eeb11fe1
 PARENT_BUNDLED
 docs/MEP/MEP_BUNDLE.md
 EVIDENCE_BUNDLE
@@ -16,8 +16,8 @@ v0.0.0+20260206_191703+main_f733f7c
 EVIDENCE_BUNDLE_VERSION
 v0.0.0+20260204_035621+main+evidence-child
 EVIDENCE_BUNDLE_LAST_COMMIT
-84320b0c5dd8b2978bd1170d1558063e5a6b9661 2026-02-07T10:14:02+09:00
-Merge pull request #1906 from Osuu-ops/fix/handoff-generator-no-param_20260207_101025
+eeb11fe125fd1ca8bb602652c942dba1bfcdf607 2026-02-07T10:19:23+09:00
+fix(scope): comply with Scope Guard for PR #1907
 
 PR
 number=1898 mergedAt=2026-02-06T22:42:45Z mergeCommit=e569fa490ef10efdc587c055715515cf4a8ba3ff
