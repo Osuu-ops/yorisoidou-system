@@ -8,12 +8,17 @@ $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
 function Assert-Command($name) { if (-not (Get-Command $name -ErrorAction SilentlyContinue)) { throw "Missing command: $name" } }
 Assert-Command git
 Assert-Command gh
+function Safe-Short8([string]$s) {
+  if ([string]::IsNullOrEmpty($s)) { return "" }
+  if ($s.Length -lt 8) { return $s }
+  return $s.Substring(0,8)
+}
 $repoRoot = (git rev-parse --show-toplevel).Trim()
 if (-not $repoRoot) { Write-Host "STOP: not a git repo"; return }
 Set-Location $repoRoot
 $repoOrigin = (git remote get-url origin).Trim()
 $headFull = (git rev-parse HEAD).Trim()
-$headShort = $headFull.Substring(0,8)
+$headShort = Safe-Short8 $headFull
 $lastCommitSha = (git log -1 --pretty=format:%H).Trim()
 $lastCommitIso = (git log -1 --date=iso-strict --pretty=format:%cd).Trim()
 $lastCommitMsg = (git log -1 --pretty=format:%s).Trim()
@@ -33,7 +38,7 @@ $parentBundleVersion = Try-GetBundleVersion $parentBundledPath
 if (-not $parentBundleVersion) { $parentBundleVersion = "v0.0.0+$(Get-Date -Format yyyyMMdd_HHmmss)+main_$headShort" }
 $evidenceBundleVersion = Try-GetBundleVersion $evidenceBundledPath
 if (-not $evidenceBundleVersion) { $evidenceBundleVersion = "best-effort" }
-# PR best-effort (PrNumber from param wins; otherwise parse merge msg)
+# PR best-effort
 $prNumber = $PrNumber
 if ($prNumber -le 0) {
   $m = [Regex]::Match($lastCommitMsg, 'Merge pull request #(\d+)\b')
@@ -41,20 +46,22 @@ if ($prNumber -le 0) {
 }
 $mergedAt = ""
 $mergeCommitFull = ""
+$mergeCommitShort = ""
 $prUrl = ""
 if ($prNumber -gt 0) {
   try {
     $p = gh pr view $prNumber --json mergedAt,mergeCommit,url 2>$null | ConvertFrom-Json
     $mergedAt = ($p.mergedAt | Out-String).Trim()
     $mergeCommitFull = ($p.mergeCommit.oid | Out-String).Trim()
+    $mergeCommitShort = Safe-Short8 $mergeCommitFull
     $prUrl = ($p.url | Out-String).Trim()
   } catch {}
 }
-# proof scan
+# proof scan (short is safe now)
 $parentTxt  = Get-Content -LiteralPath $parentBundledPath -Raw -Encoding UTF8
 $evidenceTxt = Get-Content -LiteralPath $evidenceBundledPath -Raw -Encoding UTF8
 $needles = @()
-foreach ($n in @($mergeCommitFull, ($mergeCommitFull.Substring(0,8) 2>$null), $headFull, $headShort, $lastCommitSha, $lastCommitSha.Substring(0,8))) {
+foreach ($n in @($mergeCommitFull,$mergeCommitShort,$headFull,$headShort,$lastCommitSha, (Safe-Short8 $lastCommitSha))) {
   if ($n -and $n.Length -ge 7 -and -not ($needles -contains $n)) { $needles += $n }
 }
 function Find-Hit([string]$txt, [string[]]$ns) { foreach ($n in $ns) { if ($txt -match [Regex]::Escape($n)) { return $n } }; return "" }
