@@ -41,6 +41,32 @@ git add $BundlePath $OutPath | Out-Null
 git commit -m "chore(mep): writeback HANDOFF_NEXT to Bundled" | Out-Null
 git push -u origin $br | Out-Null
 
-$prUrl = (gh pr create --title "chore(mep): writeback HANDOFF_NEXT" --body "Automated writeback: embed HANDOFF_NEXT into MEP_BUNDLE." --base "main" --head $br)
+$prUrl = (
+MEP_OP3_OPEN_PR_GUARD_V112
+# --- MEP_OP3_OPEN_PR_GUARD_V112 ---
+try {
+  . "$PSScriptRoot\mep_ssot_v112_lib.ps1" 2>$null
+  if (Get-Command MepV112-StopIfOpenWritebackPrExists -ErrorAction SilentlyContinue){
+    MepV112-StopIfOpenWritebackPrExists
+  } else {
+    $openWriteback = @(gh pr list --state open --json number,title,headRefName,url --limit 200 | ConvertFrom-Json) |
+      Where-Object {
+        ($_.headRefName -match '^(auto/|auto-|auto_)') -or
+        ($_.headRefName -match 'writeback') -or
+        ($_.title -match '(?i)writeback')
+      }
+    if ($openWriteback.Count -gt 0){
+      Write-Host "[STOP] OP-3/B2 guard: open writeback-like PR(s) exist. Do NOT create another." -ForegroundColor Yellow
+      $openWriteback | ForEach-Object { Write-Host ("  - #" + $_.number + " " + $_.headRefName + " " + $_.url) }
+      exit 2
+    }
+  }
+} catch {
+  Write-Host "[WARN] OP-3/B2 guard failed; stopping for safety." -ForegroundColor Yellow
+  Write-Host ("[WARN] " + $_.Exception.Message)
+  exit 2
+}
+# --- /MEP_OP3_OPEN_PR_GUARD_V112 ---
+gh pr create --title "chore(mep): writeback HANDOFF_NEXT" --body "Automated writeback: embed HANDOFF_NEXT into MEP_BUNDLE." --base "main" --head $br)
 Write-Output $prUrl
 try { gh pr merge --auto --merge $prUrl | Out-Null } catch { Write-Output "[INFO] auto-merge not applied" }
