@@ -469,12 +469,12 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 ## 1. 概要（What is MEP）
 
-**MEP（Meaning Enforcement Platform）**とは、  
-採用・反映・固定といった判断を、会話や記憶ではなく  
+**MEP（Meaning Enforcement Platform）**とは、
+採用・反映・固定といった判断を、会話や記憶ではなく
 **Git 上の証跡（PR → main → Bundled）に一本化して扱うための運用基盤**である。
 
-Bundled（`MEP_BUNDLE.md`）は、  
-「main に反映された唯一の正」を前提に、  
+Bundled（`MEP_BUNDLE.md`）は、
+「main に反映された唯一の正」を前提に、
 次回再開時の再現性を最大化するための **生成物（束ね）** として位置付けられている。
 
 ---
@@ -494,7 +494,7 @@ Bundled 本文から、以下の原則が確認できる。
 
 ## 3. Bundled で確認できる「到達条件・判定材料」
 
-本章は「MEP が完成したと断定する定義」ではなく、  
+本章は「MEP が完成したと断定する定義」ではなく、
 **Bundled 本文から確認できる“到達条件・判断材料”** を整理したものである。
 
 ### 3.1 採用・反映に関する到達条件（Bundled記載）
@@ -516,7 +516,7 @@ Bundled では、カード単位で以下の状態表記が確認できる。
 * `[Draft]`
 * `[Adopted]`
 
-また、Evidence Writeback Spec では、  
+また、Evidence Writeback Spec では、
 少なくとも次の **証跡要素が必須** として定義されている。
 
 * PR番号
@@ -524,8 +524,8 @@ Bundled では、カード単位で以下の状態表記が確認できる。
 * BUNDLE_VERSION
 * 監査結果（OK/NG、検出コード）
 
-これらにより、  
-**状態や完了可否を判断するための材料が Bundled 上に固定される**  
+これらにより、
+**状態や完了可否を判断するための材料が Bundled 上に固定される**
 という点までは確認できる。
 
 ---
@@ -552,7 +552,7 @@ Bundled には、更新が
 
 という流れで行われることが明記されている。
 
-個々の Gate の一般仕様（目的・入力・Done 条件の体系定義）については、  
+個々の Gate の一般仕様（目的・入力・Done 条件の体系定義）については、
 本書では Bundled に明記されている範囲を超えて断定しない。
 
 ---
@@ -578,8 +578,8 @@ Bundled の証跡ログには、以下の行が存在する。
 * BUNDLE_VERSION
 * audit=OK,WB0000（他チェック SUCCESS）
 
-Evidence Writeback Spec で定義された必須要素が記載されているため、  
-**Gate 9（反映実装ゲート）が Bundled 記録ベースで Completed 扱いとなっている**  
+Evidence Writeback Spec で定義された必須要素が記載されているため、
+**Gate 9（反映実装ゲート）が Bundled 記録ベースで Completed 扱いとなっている**
 という事実は確認できる。
 
 ---
@@ -593,7 +593,7 @@ Evidence Writeback Spec で定義された必須要素が記載されている�
 
 Bundled 本文に基づき、
 
-**現時点で確認できる原則・到達条件・判定材料を、  
+**現時点で確認できる原則・到達条件・判定材料を、
 誤読が起きない形で整理・固定するための公式説明文書**
 
 として位置付けられる。
@@ -882,27 +882,27 @@ PR #1625 | audit=OK,WB0000 | appended_at=2026-02-02T16:51:22.7222372+00:00 | via
 - head(main): f32a1a9ba8d49b17b10ff3ba38d45b2b604bda7c
 ### Evidence A: Branch protection (classic)
 - protectionEnabled: True
-- required_status_checks.strict: 
+- required_status_checks.strict:
 - required contexts (as required checks): (none detected via branch protection API)
 ### Evidence B: Rulesets (best-effort discovery)
 - id=11525505 name=main-required-checks target=branch enforcement=active required_checks=Scope Guard (PR) | business-non-interference-guard
 ### Evidence C: Observed checks on merged PR (snapshot)
 - sourcePR: #1669
-> self-heal	fail	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060741/job/62253782919	
-update-state-summary	fail	28s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603068087/job/62253807447	
-Business Packet Guard (PR)	pass	10s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060734/job/62253782750	
-Scope Guard (PR)	pass	4s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060727/job/62253782746	
-Text Integrity Guard (PR)	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060697/job/62253782891	
-acceptance	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060673/job/62253782606	
-bom-check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060722/job/62253782652	
-business-non-interference-guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060729/job/62253782479	
-done_check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060680/job/62253782673	
-guard	pass	7s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060685/job/62253782496	
-guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060714/job/62253782581	
-scope-fence	pass	11s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060677/job/62253782523	
-semantic-audit	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782669	
-semantic-audit-business	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782644	
-merge_repair_pr	skipping	0	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060726/job/62253783002	
+> self-heal	fail	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060741/job/62253782919
+update-state-summary	fail	28s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603068087/job/62253807447
+Business Packet Guard (PR)	pass	10s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060734/job/62253782750
+Scope Guard (PR)	pass	4s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060727/job/62253782746
+Text Integrity Guard (PR)	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060697/job/62253782891
+acceptance	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060673/job/62253782606
+bom-check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060722/job/62253782652
+business-non-interference-guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060729/job/62253782479
+done_check	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060680/job/62253782673
+guard	pass	7s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060685/job/62253782496
+guard	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060714/job/62253782581
+scope-fence	pass	11s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060677/job/62253782523
+semantic-audit	pass	5s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782669
+semantic-audit-business	pass	6s	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060659/job/62253782644
+merge_repair_pr	skipping	0	https://github.com/Osuu-ops/yorisoidou-system/actions/runs/21603060726/job/62253783002
 ### Notes
 - “実動制御（ブロックされた証跡）”を一次根拠で固定するには、意図的に required check を未充足にして merge が拒否される証跡を採取する必要がある。
 
@@ -1166,3 +1166,7 @@ https://github.com/Osuu-ops/yorisoidou-system.git
 PR #1868 | audit=OK,WB0000 | appended_at=2026-02-06T18:48:00.5017557+00:00 | via=mep_append_evidence_line_full.ps1
 * - PR #1869 | mergedAt=02/06/2026 19:13:10 | mergeCommit=f733f7cb9aac750d2418f6c54f98eaacd7e96e29 | BUNDLE_VERSION=v0.0.0+20260206_191703+main_f733f7c | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1869
 PR #1869 | audit=OK,WB0000 | appended_at=2026-02-06T19:17:05.4999978+00:00 | via=mep_append_evidence_line_full.ps1
+e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
+7e4297e2295791c0815ce3adda98b779324eae94 Merge pull request #1900 from Osuu-ops/fix/op2-handoff-recovery_20260207_073847 (mergedAt: 02/07/2026 00:35:06) https://github.com/Osuu-ops/yorisoidou-system/pull/1900
+
+
