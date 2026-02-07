@@ -2,32 +2,36 @@
 基準
 - REPO_ORIGIN: https://github.com/Osuu-ops/yorisoidou-system.git
 - baseBranch: main
-- HEAD(main): c512b306993866f138d2facdaa83fe1ab39f6e50
-正本（CANONICAL）
-- canonical_workflow_path: .github/workflows/mep_pregate_handoff_dispatch_v1.yml
-- canonical_workflow_name: .github/workflows/mep_pregate_handoff_dispatch_v1.yml
+- HEAD(main): 4f59bfbd8d78d87d9028185bf9c733ecc664120e
+正本切替（旧→新：両方入ったら新へ）
+- NEW（新正本候補）: .github/workflows/mep_handoff_dispatch.yml
+- LEGACY（旧正本候補）: .github/workflows/mep_pregate_handoff_dispatch_v6.yml
+- canonical_mode: NEW
+- canonical_workflow_path: .github/workflows/mep_handoff_dispatch.yml
+- canonical_workflow_name: mep-handoff-dispatch
+切替ルール（固定）
+- NEW が存在し、かつ workflow_dispatch=YES の場合：NEW を CANONICAL とする（新仕様へ切替）
+- それ以外の場合：LEGACY を CANONICAL とする（旧仕様で継続）
+- ALIAS は「旧互換入口（残置は許可）」であり、運用上の参照先（新規導線）にはしない
+- pregate/manual/dispatch 等の入口が存在しても、それは CANONICAL を呼ぶ“薄い入口（ALIAS）”に限定する
+- CANONICAL 以外が直接生成・直接復旧ループを持つ設計は採用しない（入口乱立による破損を防ぐ）
 入口一覧（CANONICAL/ALIAS）
-- [CANONICAL] .github/workflows/mep_pregate_handoff_dispatch_v1.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v1.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v2.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v2.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v4.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v4.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v6.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v6.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual.yml  (name=.github/workflows/mep_handoff_dispatch_manual.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v2.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v2.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v3.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v3.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4b.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4b.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4c.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4c.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v5.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v5.yml; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_dispatch.yml  (name=mep-handoff-dispatch; state=active; workflow_dispatch=YES; score=70)
-- [ALIAS] .github/workflows/mep_handoff_push_v8.yml  (name=.github/workflows/mep_handoff_push_v8.yml; state=active; workflow_dispatch=YES; score=55)
-- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v3.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v3.yml; state=active; workflow_dispatch=NO; score=20)
-- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v5.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v5.yml; state=active; workflow_dispatch=NO; score=20)
-- [ALIAS] .github/workflows/mep_handoff_repo_dispatch_v7.yml  (name=.github/workflows/mep_handoff_repo_dispatch_v7.yml; state=active; workflow_dispatch=NO; score=20)
-運用契約（OP-2）
-- handoff入口は「正本（CANONICAL）」に収束させる。
-- pregate/manual/dispatch 等の入口が存在しても、それは正本を呼ぶ“薄い入口（ALIAS）”に限定する。
-- version付き入口（*_vN 等）は原則 ALIAS（互換維持）とし、新規運用の参照先にしない。
-- 正本以外が直接生成・直接復旧ループを持つ設計は採用しない（入口乱立による破損を防ぐ）。
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v1.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v1.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v2.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v2.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v3.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v3.yml; state=active; workflow_dispatch=NO)
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v4.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v4.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v5.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v5.yml; state=active; workflow_dispatch=NO)
+- [ALIAS] .github/workflows/mep_pregate_handoff_dispatch_v6.yml  (name=.github/workflows/mep_pregate_handoff_dispatch_v6.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_repo_dispatch_v7.yml  (name=.github/workflows/mep_handoff_repo_dispatch_v7.yml; state=active; workflow_dispatch=NO)
+- [ALIAS] .github/workflows/mep_handoff_push_v8.yml  (name=.github/workflows/mep_handoff_push_v8.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual.yml  (name=.github/workflows/mep_handoff_dispatch_manual.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v2.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v2.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v3.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v3.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4b.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4b.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v4c.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v4c.yml; state=active; workflow_dispatch=YES)
+- [ALIAS] .github/workflows/mep_handoff_dispatch_manual_v5.yml  (name=.github/workflows/mep_handoff_dispatch_manual_v5.yml; state=active; workflow_dispatch=YES)
+- [CANONICAL] .github/workflows/mep_handoff_dispatch.yml  (name=mep-handoff-dispatch; state=active; workflow_dispatch=YES)
 成立の一次根拠（merge証跡）
 - PR #1916
   mergedAt: 02/07/2026 09:07:47
