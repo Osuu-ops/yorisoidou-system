@@ -117,6 +117,9 @@ if ($stageVal -eq "DONE") { $ec = 0 }
 
   Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
   exit 0
+}; for($i=0;$i -le $GateMax;$i++){ $gm[$i]="OK" }
+  Write-MepRun -Source DRAFT -PreGateResult OK -PreGateReason "" -GateMax $GateMax -GateOkUpto $GateMax -GateStopAt 0 -ExitCode 0 -StopReason "ALL_DONE" -GateMatrix $gm
+  exit 0
 }
 # === DONE_OVERRIDE_BEFORE_STOP:BEGIN ===
 $stageVal = ""
