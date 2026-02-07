@@ -86,7 +86,7 @@ if ($stageVal -eq "DONE") { $ec = 0 }
 
   Write-MepRun -Source DRAFT -PreGateResult FAIL -PreGateReason $reason -GateMax $GateMax -GateOkUpto 0 -GateStopAt 0 -ExitCode $exitCode -StopReason $reason -GateMatrix @{}
   if ($exitCode -eq 2) {
-    [void](Read-Host "ENTER（承認）で続行")
+    if ($env:MEP_AUTO_APPROVE -eq '1') { } else { [void](Read-Host "ENTER（承認）で続行") }
   } else {
     exit 1
   }
