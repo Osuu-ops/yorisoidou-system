@@ -11,6 +11,9 @@ PR #1395 | audit=OK,WB0000 | appended_at=2026-01-31T05:15:56Z | via=mep_append_e
 
 
 
+-
+7e4297e2295791c0815ce3adda98b779324eae94 Merge pull request #1900 from Osuu-ops/fix/op2-handoff-recovery_20260207_073847 (mergedAt: 02/07/2026 00:35:06) https://github.com/Osuu-ops/yorisoidou-system/pull/1900
+-
 ## CARD: EVIDENCE / PRE_GATE / SCOPE_IN & DOD  [Draft]
 
 ### 目的
