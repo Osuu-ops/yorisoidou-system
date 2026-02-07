@@ -24,7 +24,7 @@ try {
   if ($status) { Warn "Working tree is dirty. Commit/stash before entering MEP."; exit 2 }
   $tools = Join-Path $root 'tools'
   if (-not (Test-Path -LiteralPath $tools)) { Fail ("Missing tools/: " + $tools); exit 1 }
-  # audit candidates: mep_*(audit|readonly) but  -and # MEP Pre-Gate (入口の手前) - minimal stable
+  # audit candidates: mep_*(audit|readonly) but  } # MEP Pre-Gate (入口の手前) - minimal stable
 # exit 0: OK
 # exit 1: FAIL (tooling/bug)
 # exit 2: NG (state not suitable; approval / fixing required)
@@ -95,7 +95,7 @@ catch {
 }
 
   $candidates = @(Get-ChildItem -Path $tools -File -Filter *.ps1 |
-    Where-Object { $_.Name -match 'mep_.*(audit|readonly)' -and # MEP Pre-Gate (入口の手前) - minimal stable
+    Where-Object { $_.Name -match 'mep_.*(audit|readonly)' -and $_\.Name -notmatch 'entry|pregate' } # MEP Pre-Gate (入口の手前) - minimal stable
 # exit 0: OK
 # exit 1: FAIL (tooling/bug)
 # exit 2: NG (state not suitable; approval / fixing required)
@@ -205,6 +205,7 @@ catch {
   Fail ("Boom: " + $_.Exception.Message)
   exit 1
 }
+
 
 
 
