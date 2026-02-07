@@ -1,7 +1,7 @@
 # v1.12 writeback audit (minimal): WIP-025/026 judge by canonical merge line only
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-. "\mep_ssot_v112_lib.ps1"
+. "$PSScriptRoot\mep_ssot_v112_lib.ps1"
 param(
   [Parameter(Mandatory=$true)][int]$PrNumber
 )
