@@ -1,10 +1,10 @@
+param([int]$PrNumber = 0)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 try { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) } catch {}
 try { $OutputEncoding = [Console]::OutputEncoding } catch {}
 $env:GIT_PAGER="cat"; $env:PAGER="cat"; $env:GH_PAGER="cat"
-param([int]$PrNumber = 0)
 function Assert-Command($name) { if (-not (Get-Command $name -ErrorAction SilentlyContinue)) { throw "Missing command: $name" } }
 Assert-Command git
 Assert-Command gh
@@ -33,7 +33,7 @@ $parentBundleVersion = Try-GetBundleVersion $parentBundledPath
 if (-not $parentBundleVersion) { $parentBundleVersion = "v0.0.0+$(Get-Date -Format yyyyMMdd_HHmmss)+main_$headShort" }
 $evidenceBundleVersion = Try-GetBundleVersion $evidenceBundledPath
 if (-not $evidenceBundleVersion) { $evidenceBundleVersion = "best-effort" }
-# PR best-effort
+# PR best-effort (PrNumber from param wins; otherwise parse merge msg)
 $prNumber = $PrNumber
 if ($prNumber -le 0) {
   $m = [Regex]::Match($lastCommitMsg, 'Merge pull request #(\d+)\b')
