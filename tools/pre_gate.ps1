@@ -93,7 +93,7 @@ catch {
   Fail ("Boom: " + $_.Exception.Message)
   exit 1
 }
-.Name -ne 'mep_audit_writeback_v112.ps1'not entry/pregate
+
   $candidates = @(Get-ChildItem -Path $tools -File -Filter *.ps1 |
     Where-Object { $_.Name -match 'mep_.*(audit|readonly)' -and # MEP Pre-Gate (入口の手前) - minimal stable
 # exit 0: OK
@@ -205,5 +205,6 @@ catch {
   Fail ("Boom: " + $_.Exception.Message)
   exit 1
 }
+
 
 
