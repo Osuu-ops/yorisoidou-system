@@ -1170,3 +1170,29 @@ e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
 7e4297e2295791c0815ce3adda98b779324eae94 Merge pull request #1900 from Osuu-ops/fix/op2-handoff-recovery_20260207_073847 (mergedAt: 02/07/2026 00:35:06) https://github.com/Osuu-ops/yorisoidou-system/pull/1900
 
 
+---
+## CARD_OP5_OP2_EVIDENCE_CHILD_RECOVERY_20260207_181037
+### What
+子EVIDENCE追随が破損した状態（親main進行に対し、子MEPの一次根拠行が欠落/不整合）を、手動復旧ルートで回復した事例を一次根拠つきで固定する。
+### Why (OP-5 / OP-2)
+- OP-5: Ruleset/Required checks の実名固定と同様に、復旧経路も「曖昧さゼロ」で固定し、運用判断を迷わせない。
+- OP-2: handoff 破損や追随破損が起きても、最短で復帰できる runbook を常設する。
+### Primary Evidence
+- HEAD(main): f90f5739e5ba57243c98f93a4dd337fccb3d77d2
+- PR #1917 mergedAt: 2026-02-07
+- PR URL: https://github.com/Osuu-ops/yorisoidou-system/pull/1917
+- EVIDENCE_BUNDLE_VERSION (child): v0.0.0+20260204_035621+main+evidence-child
+- EVIDENCE_BUNDLE_LAST_COMMIT (child): 83816cba638e4dc8230d4f60cfa02b9374389118
+### Fixed Required Checks (Ruleset: main-required-checks)
+- business-non-interference-guard
+- scope-fence
+### Runbook (Shortest Recovery Path)
+1. 親repo(main)を git pull --ff-only origin main で同期し、HEADを固定する（今回: f90f5739e5ba57243c98f93a4dd337fccb3d77d2）。
+2. 子EVIDENCE側の docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md を一次根拠に基づき復旧する（競合/欠落を解消）。
+3. 復旧結果をコミットし、PR化して main にマージする（今回の復旧証跡: PR #1917 / mergeCommit=f90f5739e5ba57243c98f93a4dd337fccb3d77d2）。
+4. 親Bundled側に「事例（一次根拠）＋復旧runbook」を追記し、再発時の判断材料を固定する（このCARD）。
+5. 次回以降の再発防止:
+   - 子EVIDENCE追随破損を検知したら、復旧経路は本runbookを唯一の正とする（別経路は採用しない）。
+   - Required checks 名に不一致が出た場合は STOP_HARD（運用判断に持ち込まない）。
+### Notes
+このCARDは「事例の一次根拠固定」と「最短復旧runbook固定」を目的とし、詳細な経緯ログはEVIDENCE側のコミット/PRを正とする。
