@@ -67,8 +67,15 @@ Info "Found read-only audit candidates:"
 $audits | ForEach-Object { "  - $($_.FullName)" } | Out-Host
 # Run audits sequentially (hard stop on nonzero)
 foreach ($a in $audits) {
+  # Non-interactive default for writeback audit (requires -PrNumber)
+  $wbDefault = $env:MEP_PREGATE_WRITEBACK_PRNUMBER
+  if (-not $wbDefault -or $wbDefault.Trim().Length -eq 0) { $wbDefault = '0' }
   Info ("Running: " + $a.Name)
-  $r = Invoke-ChildFile -File $a.FullName
+  $args = @()
+  if ($a.Name -ieq 'mep_audit_writeback_v112.ps1') {
+    $args = @('-PrNumber', $wbDefault)
+  }
+  $r = Invoke-ChildFile -File $a.FullName -Args $args
   if ($r.ExitCode -eq 0) { continue }
   if ($r.ExitCode -eq 2) {
     Warn ("Audit returned NG(2): " + $a.Name)
@@ -79,3 +86,4 @@ foreach ($a in $audits) {
 }
 Info "OK (pregate passed)"
 exit 0
+
