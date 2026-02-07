@@ -16,7 +16,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Enforce CURRENT_SCOPE Scope-IN
+            - name: MEP_SCOPE_ONLY_CURRENT_SCOPE_EXCEPTION
+              if: env.SCOPE_GUARD_BYPASS != '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SCOPE_GUARD_BYPASS=0" >> "$GITHUB_ENV"
+          # title gate (scope update PR only)
+          title="${{ github.event.pull_request.title }}"
+          case "$title" in
+            chore(scope):*) ;;
+            *) echo "[info] title not matched; no bypass"; exit 0 ;;
+          esac
+          # changed-files gate (allow ONLY CURRENT_SCOPE.md)
+          git fetch --no-tags --prune --depth=2 origin "${{ github.base_ref }}" || true
+          files="$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD | tr -d '\r' | sed '/^$/d')"
+          echo "[info] changed files:"; echo "$files" | sed 's/^/  - /'
+          if [ "$(echo "$files" | wc -l | tr -d ' ')" = "1" ] && [ "$files" = "CURRENT_SCOPE.md" ]; then
+            echo "[info] bypass scope guard for scope-only update"
+            echo "SCOPE_GUARD_BYPASS=1" >> "$GITHUB_ENV"
+          else
+            echo "[info] not scope-only; no bypass"
+          fi
+- name: Enforce CURRENT_SCOPE Scope-IN
         shell: bash
         env:
           SCOPE_FILE: platform/MEP/90_CHANGES/CURRENT_SCOPE.md
@@ -109,3 +131,4 @@ jobs:
 
           print("Scope Guard OK")
           PY
+
