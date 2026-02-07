@@ -1,10 +1,15 @@
+param(
+  [Parameter(Mandatory=$true)
+if ($PrNumber -eq 0) {
+  Write-Host 'STATE=SKIPPED REASON=PRNUMBER_0 NEXT=NONE' -ForegroundColor Yellow
+  exit 0
+}][int]$PrNumber
+)
+
 # v1.12 writeback audit (minimal): WIP-025/026 judge by canonical merge line only
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\mep_ssot_v112_lib.ps1"
-param(
-  [Parameter(Mandatory=$true)][int]$PrNumber
-)
 $repoRoot = (git rev-parse --show-toplevel 2>$null).Trim()
 if (-not $repoRoot){ throw 'Not a git repo' }
 $parent = Join-Path $repoRoot 'docs/MEP/MEP_BUNDLE.md'
@@ -21,3 +26,4 @@ if (-not $okParent -or -not $okEvidence){
 Write-Host 'STATE=ALL_DONE REASON=PROOF_LINES_PRESENT NEXT=NONE' -ForegroundColor Green
 Write-Host ("MERGE_COMMIT_SHA=" + $sha + " PR=" + $PrNumber)
 exit 0
+
