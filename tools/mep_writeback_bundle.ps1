@@ -80,33 +80,7 @@ try {
 
 $prTitle = ("Writeback bundle evidence (PrNumber={0})" -f $PrNumber)
 $prBody  = ("Automated writeback bundle evidence. Mode={0} PrNumber={1} BundleScope={2} BundlePath={3}" -f $Mode,$PrNumber,$BundleScope,$BundlePath)
-$prUrl = (
-MEP_OP3_OPEN_PR_GUARD_V112
-# --- MEP_OP3_OPEN_PR_GUARD_V112 ---
-try {
-  . "$PSScriptRoot\mep_ssot_v112_lib.ps1" 2>$null
-  if (Get-Command MepV112-StopIfOpenWritebackPrExists -ErrorAction SilentlyContinue){
-    MepV112-StopIfOpenWritebackPrExists
-  } else {
-    $openWriteback = @(gh pr list --state open --json number,title,headRefName,url --limit 200 | ConvertFrom-Json) |
-      Where-Object {
-        ($_.headRefName -match '^(auto/|auto-|auto_)') -or
-        ($_.headRefName -match 'writeback') -or
-        ($_.title -match '(?i)writeback')
-      }
-    if ($openWriteback.Count -gt 0){
-      Write-Host "[STOP] OP-3/B2 guard: open writeback-like PR(s) exist. Do NOT create another." -ForegroundColor Yellow
-      $openWriteback | ForEach-Object { Write-Host ("  - #" + $_.number + " " + $_.headRefName + " " + $_.url) }
-      exit 2
-    }
-  }
-} catch {
-  Write-Host "[WARN] OP-3/B2 guard failed; stopping for safety." -ForegroundColor Yellow
-  Write-Host ("[WARN] " + $_.Exception.Message)
-  exit 2
-}
-# --- /MEP_OP3_OPEN_PR_GUARD_V112 ---
-gh pr create --title $prTitle --body $prBody --base "main" --head $branch)
+$prUrl = (gh pr create --title $prTitle --body $prBody --base "main" --head $branch)
 Info ("Created PR: {0}" -f $prUrl)
 
 exit 0

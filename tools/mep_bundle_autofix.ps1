@@ -120,33 +120,7 @@ Notes
 - If non-allowlisted issues exist, this workflow does not change them.
 "@
 
-$prUrl = (Run "
-MEP_OP3_OPEN_PR_GUARD_V112
-# --- MEP_OP3_OPEN_PR_GUARD_V112 ---
-try {
-  . "$PSScriptRoot\mep_ssot_v112_lib.ps1" 2>$null
-  if (Get-Command MepV112-StopIfOpenWritebackPrExists -ErrorAction SilentlyContinue){
-    MepV112-StopIfOpenWritebackPrExists
-  } else {
-    $openWriteback = @(gh pr list --state open --json number,title,headRefName,url --limit 200 | ConvertFrom-Json) |
-      Where-Object {
-        ($_.headRefName -match '^(auto/|auto-|auto_)') -or
-        ($_.headRefName -match 'writeback') -or
-        ($_.title -match '(?i)writeback')
-      }
-    if ($openWriteback.Count -gt 0){
-      Write-Host "[STOP] OP-3/B2 guard: open writeback-like PR(s) exist. Do NOT create another." -ForegroundColor Yellow
-      $openWriteback | ForEach-Object { Write-Host ("  - #" + $_.number + " " + $_.headRefName + " " + $_.url) }
-      exit 2
-    }
-  }
-} catch {
-  Write-Host "[WARN] OP-3/B2 guard failed; stopping for safety." -ForegroundColor Yellow
-  Write-Host ("[WARN] " + $_.Exception.Message)
-  exit 2
-}
-# --- /MEP_OP3_OPEN_PR_GUARD_V112 ---
-gh pr create" { gh pr create --repo $repo --base main --head $branch --title $title --body $body }).Trim()
+$prUrl = (Run "gh pr create" { gh pr create --repo $repo --base main --head $branch --title $title --body $body }).Trim()
 if(-not $prUrl){ Fail "gh pr create did not return URL" }
 
 $prNum = (Run "gh pr view number" { gh pr view $branch --repo $repo --json number -q .number }).Trim()
