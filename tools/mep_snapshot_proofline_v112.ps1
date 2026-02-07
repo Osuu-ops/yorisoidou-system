@@ -1,5 +1,4 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
+
 param(
   [Parameter(Mandatory=$true)][int]$PrNumber
 )

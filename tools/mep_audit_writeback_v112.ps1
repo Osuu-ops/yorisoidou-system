@@ -1,10 +1,10 @@
 # v1.12 writeback audit (minimal): WIP-025/026 judge by canonical merge line only
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-. "$PSScriptRoot\mep_ssot_v112_lib.ps1"
 param(
   [Parameter(Mandatory=$true)][int]$PrNumber
 )
+# lib load (robust): do NOT rely on $PSScriptRoot
+$__scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+. (Join-Path $__scriptDir 'mep_ssot_v112_lib.ps1')
 $repoRoot = (git rev-parse --show-toplevel 2>$null).Trim()
 if (-not $repoRoot){ throw 'Not a git repo' }
 $parent = Join-Path $repoRoot 'docs/MEP/MEP_BUNDLE.md'
