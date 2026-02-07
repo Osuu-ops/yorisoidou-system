@@ -14,5 +14,5 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          echo "TARGET_WORKFLOW_ID=__TARGET_ID__"
-
+          echo "TARGET_WORKFLOW_ID=224990497"
+          gh workflow run 224990497 -r main
