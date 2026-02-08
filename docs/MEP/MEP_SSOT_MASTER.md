@@ -898,11 +898,11 @@ generated_at: (UTC/ISO)
 * AUTO決定の累積はhealthに出す（Q118）。
 
 ## B-6) PR_OUTER_POLICY（外周PR正の固定欄：空欄OK）
-
-* required_checks_expected: []
+* required_checks_expected:
+  - business-non-interference-guard
+  - scope-fence
 * pr_creator_allowlist: []
 * disallow_bot_github_token_pr: true
-
 ---
 
 # PART C: 機械生成物（パス固定｜人間は触らない）
@@ -922,3 +922,4 @@ generated_at: (UTC/ISO)
 * PART Bは **運用入力器（Schema）**であり、空欄は欠落ではない（AUTO補完・不可欠時のみSTOP）。
 * SSOT-A/SSOT-Bの外部ファイルは **抽出物（派生物）**であり、正本は本ファイルのみ。
 * **このファイルに無い決定は採用済みではない。**
+
