@@ -11,8 +11,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Trigger OP-1 target workflow
         env:
-          GH_TOKEN: $${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           set -euo pipefail
-          echo "TARGET_WORKFLOW_ID=225328600"
-          gh workflow run 225328600 -r main
+          TARGET_WORKFLOW_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows" --jq '
+  .workflows
+  | map(select((.name|test("Evidence Writeback";"i")) and (.name|test("Entry";"i")|not)))
+  | sort_by(.id) | reverse | .[0].id
+')"
+if [ -z "${TARGET_WORKFLOW_ID}" ] || [ "${TARGET_WORKFLOW_ID}" = "null" ]; then
+  echo "[NG] failed to resolve TARGET_WORKFLOW_ID"
+  exit 2
+fi
+echo "TARGET_WORKFLOW_ID=${TARGET_WORKFLOW_ID}"
+gh workflow run "${TARGET_WORKFLOW_ID}" -r main
