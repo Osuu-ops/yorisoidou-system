@@ -22,13 +22,15 @@ jobs:
 
       - name: Bump BUNDLE_VERSION
         shell: pwsh
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+        env:
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           pwsh -NoProfile -File tools/mep_bump_bundle_version.ps1
 
       - name: Create PR if diff
         shell: bash
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+        env:
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
@@ -46,4 +48,3 @@ jobs:
           if [ -n "${PRURL:-}" ]; then
             gh pr merge --auto --merge "$PRURL" || true
           fi
-
