@@ -47,3 +47,10 @@ aws_sdk_*.log
 logs/
 
 .tmp/
+
+# local mep outputs (ignore)
+.mep_logs/
+.mep_op2_out/
+MEP_HANDOFF_RECOVERY_*.txt
+docs/MEP/HANDOFF_NEXT.generated.md
+
