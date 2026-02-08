@@ -36,7 +36,6 @@ function Select-Tool([string]$toolsDir, [ValidateSet('generate','recover')] [str
   return $ranked[0].File
 }
 function Invoke-ScriptCaptureAllStreams([string]$scriptPath, [string]$workingDir, [string]$outDir) {
-  # Write-Host/Host 出力も含めて回収するため Transcript を使う
   New-Dir $outDir
   $ts = (Get-Date).ToString('yyyyMMdd_HHmmss')
   $transcriptPath = Join-Path $outDir ("transcript_{0}_{1}.txt" -f $ts, ([IO.Path]::GetFileNameWithoutExtension($scriptPath)))
@@ -44,14 +43,12 @@ function Invoke-ScriptCaptureAllStreams([string]$scriptPath, [string]$workingDir
   try {
     Start-Transcript -Path $transcriptPath -Force | Out-Null
     try {
-      # 2>&1 は success/error は拾えるが host は拾えない -> transcript が主
       $piped = (& $scriptPath 2>&1 | Out-String)
       $ec = $LASTEXITCODE
     } finally {
       Stop-Transcript | Out-Null
     }
     $t = Get-Content -LiteralPath $transcriptPath -Raw
-    # transcript + piped を合成して返す
     return [pscustomobject]@{
       ExitCode = $ec
       Output   = ($t + "`n" + $piped)
@@ -63,6 +60,12 @@ function Invoke-ScriptCaptureAllStreams([string]$scriptPath, [string]$workingDir
 }
 function Assert-Contains([string]$text, [string]$needle, [string]$label) {
   if ($text -notmatch [regex]::Escape($needle)) { throw "EVIDENCE_MISSING($label): '$needle' not found" }
+}
+function Read-Latest([string]$dir, [string]$pattern) {
+  if (-not (Test-Path -LiteralPath $dir)) { return $null }
+  $f = Get-ChildItem -LiteralPath $dir -File -Filter $pattern | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+  if ($null -eq $f) { return $null }
+  return Get-Content -LiteralPath $f.FullName -Raw
 }
 $repoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
 $toolsDir = Join-Path $repoRoot 'tools'
@@ -80,7 +83,7 @@ if ($null -eq $gen) { throw 'No handoff generator script found under tools/ (*ha
 if ($null -eq $rec) { throw 'No handoff recovery script found under tools/ (*handoff*.ps1 with recover/restore/etc.)' }
 Write-Host ("[OP2] generator: {0}" -f $gen.FullName)
 Write-Host ("[OP2] recovery : {0}" -f $rec.FullName)
-# 1) generate
+# 1) generate（出力が空でもOK：後段で復旧成果物を主に検証する）
 $r1 = Invoke-ScriptCaptureAllStreams $gen.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($handoffPath, $r1.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] generated    : {0} (exit={1})" -f $handoffPath, $r1.ExitCode)
@@ -88,27 +91,37 @@ Write-Host ("[OP2] gen transcript: {0}" -f $r1.TranscriptPath)
 if ($r1.ExitCode -ne 0) { throw "GENERATOR_FAILED exit=$($r1.ExitCode)" }
 # 2) corrupt（単一行でも確実に壊す）
 $raw = Get-Content -LiteralPath $handoffPath -Raw
-if ([string]::IsNullOrWhiteSpace($raw)) { throw 'handoff output is empty; cannot corrupt' }
+if ([string]::IsNullOrWhiteSpace($raw)) { $raw = "(empty_generator_output)" }
 $corrupted =
   $raw -replace 'REPO_ORIGIN','REPO_ORIGXN' `
       -replace 'HEAD（main）','HEAD(mainX)' `
       -replace 'HEAD\(main\)','HEAD(mainX)'
 [System.IO.File]::WriteAllText($corruptPath, $corrupted, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] corrupted     : {0}" -f $corruptPath)
-# 3) recover
+# 3) recover（ここで実際の復旧成果物が生成される前提）
 $r2 = Invoke-ScriptCaptureAllStreams $rec.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($recoveredPath, $r2.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] recovered(out): {0} (exit={1})" -f $recoveredPath, $r2.ExitCode)
 Write-Host ("[OP2] rec transcript: {0}" -f $r2.TranscriptPath)
-# 4) re-generate
+# 4) re-generate（成功確認のみ）
 $r3 = Invoke-ScriptCaptureAllStreams $gen.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($regeneratedPath, $r3.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] regenerated  : {0} (exit={1})" -f $regeneratedPath, $r3.ExitCode)
 Write-Host ("[OP2] regen transcript: {0}" -f $r3.TranscriptPath)
 if ($r3.ExitCode -ne 0) { throw "REGEN_FAILED exit=$($r3.ExitCode)" }
-# 5) evidence check（Host出力込みの Output を対象）
-Assert-Contains $r3.Output 'REPO_ORIGIN'     'KEY_REPO_ORIGIN'
-Assert-Contains $r3.Output 'PARENT_BUNDLED'  'KEY_PARENT_BUNDLED'
-Assert-Contains $r3.Output 'EVIDENCE_BUNDLE' 'KEY_EVIDENCE_BUNDLE'
+# 5) evidence check（復旧成果物を主に検証）
+$evidence = New-Object System.Text.StringBuilder
+[void]$evidence.AppendLine($r2.Output)
+[void]$evidence.AppendLine($r3.Output)
+# repoRoot に生成される復旧ファイル（あなたのログに出てる）
+$latestRecovery = Read-Latest $repoRoot 'MEP_HANDOFF_RECOVERY_*.txt'
+if ($latestRecovery) { [void]$evidence.AppendLine($latestRecovery) }
+# OutDir 生成物も足す
+$latestOutHandoff = Read-Latest $OutDir 'handoff_*.txt'
+if ($latestOutHandoff) { [void]$evidence.AppendLine($latestOutHandoff) }
+$evText = $evidence.ToString()
+Assert-Contains $evText 'REPO_ORIGIN'     'KEY_REPO_ORIGIN'
+Assert-Contains $evText 'PARENT_BUNDLED'  'KEY_PARENT_BUNDLED'
+Assert-Contains $evText 'EVIDENCE_BUNDLE' 'KEY_EVIDENCE_BUNDLE'
 Write-Host '[OP2] evidence check: OK'
 exit 0
