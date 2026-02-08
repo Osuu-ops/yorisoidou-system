@@ -1196,3 +1196,11 @@ e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
    - Required checks 名に不一致が出た場合は STOP_HARD（運用判断に持ち込まない）。
 ### Notes
 このCARDは「事例の一次根拠固定」と「最短復旧runbook固定」を目的とし、詳細な経緯ログはEVIDENCE側のコミット/PRを正とする。
+### OP-5: EVIDENCE追随破損 → 回復
+- **目的**: 子EVIDENCEがmainの進行に追随し続けることを保証
+- **完了証跡**: PR #1900の証跡がEVIDENCE_BUNDLEに含まれ、EVIDENCE_BUNDLEの競合を解消
+- **一次根拠**:
+  - PR #1917（マージコミット: f90f5739e5ba57243c98f93a4dd337fccb3d77d2）
+  - EVIDENCE_BUNDLE_LAST_COMMIT（83816cba638e4dc8230d4f60cfa02b9374389118）
+- **アクション**: 今回の「子EVIDENCE追随破損→回復」事例をBundledに追加し、再発防止ルールを固定
+---
