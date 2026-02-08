@@ -108,7 +108,9 @@ PR #1846 | audit=OK,WB0000 | appended_at=2026-02-06T07:37:57.7387869+00:00 | via
 * - PR #1869 | mergedAt=02/06/2026 19:13:10 | mergeCommit=f733f7cb9aac750d2418f6c54f98eaacd7e96e29 | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1869
 PR #1869 | audit=OK,WB0000 | appended_at=2026-02-06T20:31:34.8185939+00:00 | via=mep_append_evidence_line_full.ps1
 PR #1869 | audit=OK,WB0000 | appended_at=2026-02-06T20:32:36.1932837+00:00 | via=mep_append_evidence_line_full.ps1
-PR #1916 - Merged at 2026-02-08 11:00:40
-PR #1921 - Merged at 2026-02-08 11:00:40
-PR #1916 - Merged at 2026-02-08 11:05:17
-PR #1921 - Merged at 2026-02-08 11:05:17
+
+* - PR #1916 | mergedAt=02/07/2026 09:07:47 | mergeCommit=4ddb249bf8292413cc2b2552490cc6cc51431546 | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1916
+PR #1916 | audit=OK,WB0000 | appended_at=2026-02-08T10:33:50.1137989+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #1921 | mergedAt=02/07/2026 09:21:59 | mergeCommit=208b100e8198cd0d2aad18db2cdd788816d1147a | BUNDLE_VERSION=v0.0.0+20260204_035621+main+evidence-child | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1921
+PR #1921 | audit=OK,WB0000 | appended_at=2026-02-08T10:33:50.1137989+00:00 | via=mep_append_evidence_line_full.ps1
+
