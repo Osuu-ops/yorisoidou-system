@@ -1204,3 +1204,7 @@ e569fa490ef10efdc587c055715515cf4a8ba3ff Merge pull request #1898
   - EVIDENCE_BUNDLE_LAST_COMMIT（83816cba638e4dc8230d4f60cfa02b9374389118）
 - **アクション**: 今回の「子EVIDENCE追随破損→回復」事例をBundledに追加し、再発防止ルールを固定
 ---
+
+* - PR #1948 | mergedAt=02/08/2026 11:06:29 | mergeCommit=878ea8a0f81f84e27dc29aa971fd2c87f7f718a6 | BUNDLE_VERSION=v0.0.0+20260204_042728+main_34b5a6e0 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/1948
+PR #1948 | audit=OK,WB0000 | appended_at=2026-02-08T11:21:54.2741312+00:00 | via=mep_append_evidence_line_full.ps1
+
