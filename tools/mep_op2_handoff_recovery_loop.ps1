@@ -19,8 +19,12 @@ function Score-Tool([System.IO.FileInfo]$fi) {
   if ($n -match 'auto|loop') { $score += 1 }
   return $score
 }
-function Select-Tool([string]$toolsDir, [ValidateSet('generate','recover')] [string]$kind) {
+function Select-Tool([string]$toolsDir, [ValidateSet('generate','recover')] [string]$kind, [string]$excludeFullPath) {
   $files = Get-ChildItem -LiteralPath $toolsDir -File -Filter '*.ps1' | Where-Object { $_.Name -match 'handoff' }
+  # 自己参照（このスクリプト）を除外
+  if ($excludeFullPath) {
+    $files = $files | Where-Object { $_.FullName -ne $excludeFullPath }
+  }
   if (-not $files) { return $null }
   $ranked = $files | ForEach-Object {
     $s = Score-Tool $_
@@ -56,8 +60,9 @@ $handoffPath      = Join-Path $OutDir ("handoff_{0}.txt" -f $ts)
 $corruptPath      = Join-Path $OutDir ("handoff_{0}.corrupt.txt" -f $ts)
 $recoveredPath    = Join-Path $OutDir ("handoff_{0}.recovered.txt" -f $ts)
 $regeneratedPath  = Join-Path $OutDir ("handoff_{0}.regenerated.txt" -f $ts)
-$gen = Select-Tool $toolsDir 'generate'
-$rec = Select-Tool $toolsDir 'recover'
+$selfPath = $MyInvocation.MyCommand.Path
+$gen = Select-Tool $toolsDir 'generate' $selfPath
+$rec = Select-Tool $toolsDir 'recover'  $selfPath
 if ($null -eq $gen) { throw 'No handoff generator script found under tools/ (*handoff*.ps1)' }
 if ($null -eq $rec) { throw 'No handoff recovery script found under tools/ (*handoff*.ps1 with recover/restore/etc.)' }
 Write-Host ("[OP2] generator: {0}" -f $gen.FullName)
@@ -67,13 +72,14 @@ $r1 = Invoke-ScriptCapture $gen.FullName $repoRoot
 [System.IO.File]::WriteAllText($handoffPath, $r1.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] generated    : {0} (exit={1})" -f $handoffPath, $r1.ExitCode)
 if ($r1.ExitCode -ne 0) { throw "GENERATOR_FAILED exit=$($r1.ExitCode)" }
-# 2) corrupt
-$lines = Get-Content -LiteralPath $handoffPath
-if ($lines.Count -lt 5) { throw 'handoff output too short to corrupt safely' }
-$lines2 = $lines | ForEach-Object {
-  $_ -replace 'REPO_ORIGIN','REPO_ORIGXN' -replace 'HEAD（main）','HEAD(mainX)' -replace 'HEAD\(main\)','HEAD(mainX)'
-}
-$lines2 | Set-Content -LiteralPath $corruptPath -Encoding UTF8
+# 2) corrupt（単一行でも確実に壊す：全テキストを置換して書き戻す）
+$raw = Get-Content -LiteralPath $handoffPath -Raw
+if ([string]::IsNullOrWhiteSpace($raw)) { throw 'handoff output is empty; cannot corrupt' }
+$corrupted =
+  $raw -replace 'REPO_ORIGIN','REPO_ORIGXN' `
+      -replace 'HEAD（main）','HEAD(mainX)' `
+      -replace 'HEAD\(main\)','HEAD(mainX)'
+[System.IO.File]::WriteAllText($corruptPath, $corrupted, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] corrupted     : {0}" -f $corruptPath)
 # 3) recover（現状は “実行してログを取る”）
 $r2 = Invoke-ScriptCapture $rec.FullName $repoRoot
