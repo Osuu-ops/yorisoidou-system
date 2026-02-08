@@ -1,10 +1,10 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
-$ProgressPreference = 'SilentlyContinue'
 param(
   [string]$RepoRoot = (git rev-parse --show-toplevel).Trim(),
   [string]$OutDir   = (Join-Path (git rev-parse --show-toplevel).Trim() ".mep_op2_out")
 )
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 function New-Dir([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path)) { New-Item -ItemType Directory -Path $Path | Out-Null }
 }
@@ -67,7 +67,7 @@ $r1 = Invoke-ScriptCapture $gen.FullName $repoRoot
 [System.IO.File]::WriteAllText($handoffPath, $r1.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] generated    : {0} (exit={1})" -f $handoffPath, $r1.ExitCode)
 if ($r1.ExitCode -ne 0) { throw "GENERATOR_FAILED exit=$($r1.ExitCode)" }
-# 2) corrupt（重要キーワードを意図的に破壊）
+# 2) corrupt
 $lines = Get-Content -LiteralPath $handoffPath
 if ($lines.Count -lt 5) { throw 'handoff output too short to corrupt safely' }
 $lines2 = $lines | ForEach-Object {
@@ -75,18 +75,18 @@ $lines2 = $lines | ForEach-Object {
 }
 $lines2 | Set-Content -LiteralPath $corruptPath -Encoding UTF8
 Write-Host ("[OP2] corrupted     : {0}" -f $corruptPath)
-# 3) recover（現行の復旧ツール仕様に依存するので、とりあえず “実行してログを取る”）
+# 3) recover（現状は “実行してログを取る”）
 $r2 = Invoke-ScriptCapture $rec.FullName $repoRoot
 [System.IO.File]::WriteAllText($recoveredPath, $r2.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] recovered(out): {0} (exit={1})" -f $recoveredPath, $r2.ExitCode)
-# 4) re-generate（復旧後に生成が成立すること）
+# 4) re-generate
 $r3 = Invoke-ScriptCapture $gen.FullName $repoRoot
 [System.IO.File]::WriteAllText($regeneratedPath, $r3.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] regenerated  : {0} (exit={1})" -f $regeneratedPath, $r3.ExitCode)
 if ($r3.ExitCode -ne 0) { throw "REGEN_FAILED exit=$($r3.ExitCode)" }
-# 5) evidence check（最低限の固定キー）
-Assert-Contains $r3.Output 'REPO_ORIGIN'    'KEY_REPO_ORIGIN'
-Assert-Contains $r3.Output 'PARENT_BUNDLED' 'KEY_PARENT_BUNDLED'
+# 5) evidence check
+Assert-Contains $r3.Output 'REPO_ORIGIN'     'KEY_REPO_ORIGIN'
+Assert-Contains $r3.Output 'PARENT_BUNDLED'  'KEY_PARENT_BUNDLED'
 Assert-Contains $r3.Output 'EVIDENCE_BUNDLE' 'KEY_EVIDENCE_BUNDLE'
 Write-Host '[OP2] evidence check: OK'
 exit 0
