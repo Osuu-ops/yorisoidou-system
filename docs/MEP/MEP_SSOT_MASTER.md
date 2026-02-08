@@ -455,6 +455,19 @@
     * 一意でない場合は `stop_kind=HARD` かつ `stop_class=MACHINE_ONLY` → 環境/主体復旧RECOVERY起票
   * Relates to: Q79, Q88, Q117
 
+
+  * pr_creator_allowlist[]（一次根拠でAUTO補完・固定）:
+    * actor_login: Osuu-ops
+      actor_type: Organization
+      evidence_pr: #1950
+      evidence_merge_commit: 091ca0f2bea764d59cc99473d1d27c50dd01e138
+      evidence_merged_at: 2026-02-08T13:41:29+09:00
+      updated_at: 2026-02-08T23:18:28+09:00
+
+  * TRIGGER_ACTOR_OK（固定）:
+    * if PR.author.login == 'Osuu-ops' then OK
+    * else NG（stop_kind=HARD / stop_class=MACHINE_ONLY）
+
 * **Q154（Adopted）**：`SSOT_VERSION` の定義を固定する（再開パケットのブレ防止）。
 
   * `SSOT_VERSION` は `PARENT_BUNDLE_VERSION` を正とする。
