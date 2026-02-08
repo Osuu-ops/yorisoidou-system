@@ -21,10 +21,7 @@ function Score-Tool([System.IO.FileInfo]$fi) {
 }
 function Select-Tool([string]$toolsDir, [ValidateSet('generate','recover')] [string]$kind, [string]$excludeFullPath) {
   $files = Get-ChildItem -LiteralPath $toolsDir -File -Filter '*.ps1' | Where-Object { $_.Name -match 'handoff' }
-  # 自己参照（このスクリプト）を除外
-  if ($excludeFullPath) {
-    $files = $files | Where-Object { $_.FullName -ne $excludeFullPath }
-  }
+  if ($excludeFullPath) { $files = $files | Where-Object { $_.FullName -ne $excludeFullPath } }
   if (-not $files) { return $null }
   $ranked = $files | ForEach-Object {
     $s = Score-Tool $_
@@ -38,12 +35,28 @@ function Select-Tool([string]$toolsDir, [ValidateSet('generate','recover')] [str
   } | Sort-Object Score -Descending
   return $ranked[0].File
 }
-function Invoke-ScriptCapture([string]$scriptPath, [string]$workingDir) {
+function Invoke-ScriptCaptureAllStreams([string]$scriptPath, [string]$workingDir, [string]$outDir) {
+  # Write-Host/Host 出力も含めて回収するため Transcript を使う
+  New-Dir $outDir
+  $ts = (Get-Date).ToString('yyyyMMdd_HHmmss')
+  $transcriptPath = Join-Path $outDir ("transcript_{0}_{1}.txt" -f $ts, ([IO.Path]::GetFileNameWithoutExtension($scriptPath)))
   Push-Location $workingDir
   try {
-    $out = & $scriptPath 2>&1 | Out-String
-    $ec = $LASTEXITCODE
-    return [pscustomobject]@{ ExitCode = $ec; Output = $out }
+    Start-Transcript -Path $transcriptPath -Force | Out-Null
+    try {
+      # 2>&1 は success/error は拾えるが host は拾えない -> transcript が主
+      $piped = (& $scriptPath 2>&1 | Out-String)
+      $ec = $LASTEXITCODE
+    } finally {
+      Stop-Transcript | Out-Null
+    }
+    $t = Get-Content -LiteralPath $transcriptPath -Raw
+    # transcript + piped を合成して返す
+    return [pscustomobject]@{
+      ExitCode = $ec
+      Output   = ($t + "`n" + $piped)
+      TranscriptPath = $transcriptPath
+    }
   } finally {
     Pop-Location
   }
@@ -68,11 +81,12 @@ if ($null -eq $rec) { throw 'No handoff recovery script found under tools/ (*han
 Write-Host ("[OP2] generator: {0}" -f $gen.FullName)
 Write-Host ("[OP2] recovery : {0}" -f $rec.FullName)
 # 1) generate
-$r1 = Invoke-ScriptCapture $gen.FullName $repoRoot
+$r1 = Invoke-ScriptCaptureAllStreams $gen.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($handoffPath, $r1.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] generated    : {0} (exit={1})" -f $handoffPath, $r1.ExitCode)
+Write-Host ("[OP2] gen transcript: {0}" -f $r1.TranscriptPath)
 if ($r1.ExitCode -ne 0) { throw "GENERATOR_FAILED exit=$($r1.ExitCode)" }
-# 2) corrupt（単一行でも確実に壊す：全テキストを置換して書き戻す）
+# 2) corrupt（単一行でも確実に壊す）
 $raw = Get-Content -LiteralPath $handoffPath -Raw
 if ([string]::IsNullOrWhiteSpace($raw)) { throw 'handoff output is empty; cannot corrupt' }
 $corrupted =
@@ -81,16 +95,18 @@ $corrupted =
       -replace 'HEAD\(main\)','HEAD(mainX)'
 [System.IO.File]::WriteAllText($corruptPath, $corrupted, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] corrupted     : {0}" -f $corruptPath)
-# 3) recover（現状は “実行してログを取る”）
-$r2 = Invoke-ScriptCapture $rec.FullName $repoRoot
+# 3) recover
+$r2 = Invoke-ScriptCaptureAllStreams $rec.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($recoveredPath, $r2.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] recovered(out): {0} (exit={1})" -f $recoveredPath, $r2.ExitCode)
+Write-Host ("[OP2] rec transcript: {0}" -f $r2.TranscriptPath)
 # 4) re-generate
-$r3 = Invoke-ScriptCapture $gen.FullName $repoRoot
+$r3 = Invoke-ScriptCaptureAllStreams $gen.FullName $repoRoot $OutDir
 [System.IO.File]::WriteAllText($regeneratedPath, $r3.Output, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host ("[OP2] regenerated  : {0} (exit={1})" -f $regeneratedPath, $r3.ExitCode)
+Write-Host ("[OP2] regen transcript: {0}" -f $r3.TranscriptPath)
 if ($r3.ExitCode -ne 0) { throw "REGEN_FAILED exit=$($r3.ExitCode)" }
-# 5) evidence check
+# 5) evidence check（Host出力込みの Output を対象）
 Assert-Contains $r3.Output 'REPO_ORIGIN'     'KEY_REPO_ORIGIN'
 Assert-Contains $r3.Output 'PARENT_BUNDLED'  'KEY_PARENT_BUNDLED'
 Assert-Contains $r3.Output 'EVIDENCE_BUNDLE' 'KEY_EVIDENCE_BUNDLE'
