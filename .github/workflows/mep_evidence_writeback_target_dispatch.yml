@@ -26,7 +26,7 @@ jobs:
       - name: Resolve PR number
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           PR_IN="${{ inputs.pr_number }}"
@@ -50,13 +50,13 @@ jobs:
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber $env:PR_NUMBER -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
       - name: Create auto PR for evidence writeback
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
