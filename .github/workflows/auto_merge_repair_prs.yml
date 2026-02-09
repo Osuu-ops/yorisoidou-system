@@ -1,6 +1,7 @@
 name: Auto-merge repair PRs
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -68,4 +69,5 @@ jobs:
           PR="${{ github.event.pull_request.number }}"
           # Best-effort merge (will fail if not mergeable)
           gh pr merge "$PR" --merge --delete-branch
+
 
