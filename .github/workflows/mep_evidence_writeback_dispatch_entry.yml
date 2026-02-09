@@ -13,6 +13,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         run: |
+          gh workflow run mep_evidence_writeback_target_dispatch.yml -r main -f pr_number=0
           set -euo pipefail
           TARGET_WORKFLOW_ID="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows" --jq '
   .workflows

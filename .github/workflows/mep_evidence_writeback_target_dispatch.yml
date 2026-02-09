@@ -1,0 +1,74 @@
+name: OP-1 Evidence Writeback (Target)
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Merged PR number to write back into EVIDENCE bundle (0=auto-resolve latest merged on main)'
+        required: false
+        default: '0'
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  writeback_evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Configure git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Resolve PR number
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          PR_IN="${{ inputs.pr_number }}"
+          if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
+          if [ "${PR_IN}" = "0" ]; then
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          fi
+          if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
+            echo "[NG] failed to resolve PR number"
+            exit 2
+          fi
+          echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "[OK] PR_NUMBER=${PR_IN}"
+      - name: Bump Bundled version (evidence)
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+        run: |
+          pwsh -NoProfile -File ./tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+      - name: Append full evidence line into EVIDENCE Bundled
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+        run: |
+          pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber $env:PR_NUMBER -BundlePath "docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+      - name: Create auto PR for evidence writeback
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "no diff; skip"
+            exit 0
+          fi
+          BR="auto/writeback-evidence_${GITHUB_RUN_ID}_${PR_NUMBER}_$(date -u +%Y%m%d_%H%M%S)"
+          git checkout -b "$BR"
+          git add -A
+          git commit -m "fix(evidence): writeback for PR #${PR_NUMBER}"
+          git push -u origin "$BR"
+          PR_URL="$(gh pr create --base main --head "$BR" --title "Writeback evidence bundle (${BR})" --body "Auto evidence writeback for PR #${PR_NUMBER}." )"
+          echo "PR_URL=${PR_URL}"
+          # Enable auto-merge (squash) and delete branch
+          gh pr merge "$PR_URL" --squash --delete-branch --auto
