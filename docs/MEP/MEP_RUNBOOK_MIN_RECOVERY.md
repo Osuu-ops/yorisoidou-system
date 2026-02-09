@@ -18,3 +18,5 @@
 - mergeCommit
 - main HEAD
 - EVIDENCE_BUNDLE 内の証跡行
+
+<!-- ci: trigger 2026-02-10T04:17:02+09:00 -->
