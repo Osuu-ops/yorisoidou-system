@@ -38,7 +38,7 @@ jobs:
           echo "PR=$PR"
           start="$(date +%s)"
           while true; do
-            out="$(gh pr checks "$PR" 2>&1 || true)"
+            out="$(gh pr checks "$PR" 2>&1 || true)" | grep -Ev '^(Auto-merge repair PRs|merge_repair_pr)\b' || true
             echo "$out"
             if echo "$out" | grep -qiE 'no checks'; then
               echo "No checks detected; wait."
