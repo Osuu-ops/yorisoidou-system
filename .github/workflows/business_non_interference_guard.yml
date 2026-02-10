@@ -13,6 +13,7 @@ permissions:
 jobs:
   merge_repair_pr:
     name: merge_repair_pr
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: no-op success
@@ -101,4 +102,4 @@ jobs:
           else
             echo "No business path changes detected -> OK."
           fi
-# mep-stamp: 2026-02-11T01:42:41+09:00
+# mep-stamp: 2026-02-11T01:53:53+09:00
