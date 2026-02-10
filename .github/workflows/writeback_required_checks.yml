@@ -23,7 +23,7 @@ jobs:
           git fetch origin main --prune || true
           files="$(git diff --name-only origin/main...HEAD || true)"
           echo "$files"
-          bad="$(echo "$files" | awk 'NF' | grep -v '^docs/MEP/MEP_BUNDLE\.md$' || true)"
+          bad="$(echo "$files" | awk 'NF' | grep -Ev '^(docs/MEP/MEP_BUNDLE\.md|docs/MEP/runbook/\.noop_writeback_pr.*)$' || true)" # ALLOW_NOOP_WRITEBACK_MARKER
           if [ -n "$bad" ]; then
             echo "[NG] unexpected changed files:"
             echo "$bad"
