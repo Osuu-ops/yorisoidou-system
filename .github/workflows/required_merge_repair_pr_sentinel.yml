@@ -1,0 +1,16 @@
+name: required-merge-repair-pr-sentinel
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  merge_repair_pr:
+    name: merge_repair_pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: no-op success
+        run: echo "merge_repair_pr required-check sentinel: success"
