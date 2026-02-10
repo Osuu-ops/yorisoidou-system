@@ -1,0 +1,33 @@
+name: EVIDENCE_FOLLOW_GUARD
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: OP-1 guard (EVIDENCE presence + path invariants)
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          function Fail([string]$code, [string]$msg) {
+            Write-Host "::error title=$code::$msg"
+            exit 1
+          }
+          # Minimal OP-1 invariant: evidence bundle path must exist in repo.
+          $evidence = 'docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md'
+          if (-not (Test-Path -LiteralPath $evidence)) {
+            Fail 'WB0001' "OP-1 guard failed: EVIDENCE_BUNDLE not found ($evidence)."
+          }
+          # Minimal sanity: file must contain 'EVIDENCE' keyword (prevents empty placeholder).
+          $raw = Get-Content -LiteralPath $evidence -Raw -ErrorAction SilentlyContinue
+          if (-not $raw -or $raw -notmatch 'EVIDENCE') {
+            Fail 'WB0001' "OP-1 guard failed: EVIDENCE_BUNDLE content sanity check failed."
+          }
+          Write-Host "EVIDENCE_GUARD OK"
