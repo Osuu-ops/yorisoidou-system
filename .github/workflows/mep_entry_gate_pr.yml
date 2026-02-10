@@ -7,7 +7,7 @@ permissions:
   pull-requests: write
 jobs:
   gate:
-    name: gate
+    name: ENTRY_GATE / gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,3 +43,4 @@ jobs:
             Fail 'WB0001' "CONFLICT_SCAN failed: old+new execution candidates detected in parallel (trigger CONFLICT_SCAN STOP)."
           }
           Write-Host "ENTRY OK"
+

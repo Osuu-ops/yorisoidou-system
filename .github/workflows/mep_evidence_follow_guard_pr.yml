@@ -7,7 +7,7 @@ permissions:
   pull-requests: write
 jobs:
   gate:
-    name: gate
+    name: EVIDENCE_FOLLOW_GUARD / gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,3 +31,4 @@ jobs:
             Fail 'WB0001' "OP-1 guard failed: EVIDENCE_BUNDLE content sanity check failed."
           }
           Write-Host "EVIDENCE_GUARD OK"
+
