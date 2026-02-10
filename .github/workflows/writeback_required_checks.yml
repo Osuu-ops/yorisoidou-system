@@ -18,9 +18,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
-          files="$(git diff --name-only "$base" "$head" || true)"
+                    # WRITEBACK_PR_DIFF_MARKER
+          # (base/head removed; use origin/main...HEAD)
+          git fetch origin main --prune || true
+          files="$(git diff --name-only origin/main...HEAD || true)"
           echo "$files"
           bad="$(echo "$files" | awk 'NF' | grep -v '^docs/MEP/MEP_BUNDLE\.md$' || true)"
           if [ -n "$bad" ]; then
@@ -40,9 +41,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="${{ github.event.before }}"
-          head="${{ github.sha }}"
-          files="$(git diff --name-only "$base" "$head" || true)"
+                    # WRITEBACK_PR_DIFF_MARKER
+          # (base/head removed; use origin/main...HEAD)
+          git fetch origin main --prune || true
+          files="$(git diff --name-only origin/main...HEAD || true)"
           bad="$(echo "$files" | awk 'NF' | grep -E '^(platform/MEP/03_BUSINESS/|business/|03_BUSINESS/)' || true)"
           if [ -n "$bad" ]; then
             echo "[NG] business paths changed:"
