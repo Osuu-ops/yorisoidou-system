@@ -25,22 +25,13 @@ jobs:
           if (-not (Test-Path -LiteralPath $ssot)) {
             Fail 'WB0001' ("SSOT_SCAN failed: SSOT not found (" + $ssot + ").")
           }
-          # CONFLICT_SCAN (detect old+new execution candidates in parallel)
-          # Old signal (WORK_ID / WIP / legacy): "WORK_ID" or "WIP-"
-          # New signal (SSOT/WORK_ITEMS): "WORK_ITEMS" or "SSOT_SCAN" or "CONFLICT_SCAN"
-          $textFiles = Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Length -lt 5MB -and $_.Extension -match '^\.(md|txt|yml|yaml|ps1|json)$' }
-          $oldHit = $false
-          $newHit = $false
-          foreach ($f in $textFiles) {
-            $c = Get-Content -LiteralPath $f.FullName -Raw -ErrorAction SilentlyContinue
-            if (-not $c) { continue }
-            if ($c -match 'WORK_ID|WIP-') { $oldHit = $true }
-            if ($c -match 'WORK_ITEMS|SSOT_SCAN|CONFLICT_SCAN') { $newHit = $true }
-            if ($oldHit -and $newHit) { break }
-          }
+          # CONFLICT_SCAN (SSOT-scope only)
+          # Execution candidates must be encoded in SSOT. Repo-wide token presence is NOT a conflict.
+          $c = Get-Content -LiteralPath $ssot -Raw -ErrorAction SilentlyContinue
+          if (-not $c) { Fail 'WB0001' ("SSOT_SCAN failed: cannot read SSOT (" + $ssot + ").") }
+          $oldHit = ($c -match 'WORK_ID|WIP-')
+          $newHit = ($c -match 'WORK_ITEMS|SSOT_SCAN|CONFLICT_SCAN')
           if ($oldHit -and $newHit) {
-            Fail 'WB0001' "CONFLICT_SCAN failed: old+new execution candidates detected in parallel (trigger CONFLICT_SCAN STOP)."
+            Fail 'WB0001' "CONFLICT_SCAN failed (SSOT-scope): old+new execution candidates detected in SSOT."
           }
           Write-Host "ENTRY OK"
-
