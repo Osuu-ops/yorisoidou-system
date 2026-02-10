@@ -1,0 +1,45 @@
+name: ENTRY_GATE
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSOT_SCAN + CONFLICT_SCAN (ENTRY)
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = 'Stop'
+          function Fail([string]$code, [string]$msg) {
+            Write-Host "::error title=$code::$msg"
+            exit 1
+          }
+          # SSOT_SCAN (must exist)
+          $ssot = 'docs/MEP/MEP_SSOT_MASTER.md'
+          if (-not (Test-Path -LiteralPath $ssot)) {
+            Fail 'WB0001' ("SSOT_SCAN failed: SSOT not found (" + $ssot + ").")
+          }
+          # CONFLICT_SCAN (detect old+new execution candidates in parallel)
+          # Old signal (WORK_ID / WIP / legacy): "WORK_ID" or "WIP-"
+          # New signal (SSOT/WORK_ITEMS): "WORK_ITEMS" or "SSOT_SCAN" or "CONFLICT_SCAN"
+          $textFiles = Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Length -lt 5MB -and $_.Extension -match '^\.(md|txt|yml|yaml|ps1|json)$' }
+          $oldHit = $false
+          $newHit = $false
+          foreach ($f in $textFiles) {
+            $c = Get-Content -LiteralPath $f.FullName -Raw -ErrorAction SilentlyContinue
+            if (-not $c) { continue }
+            if ($c -match 'WORK_ID|WIP-') { $oldHit = $true }
+            if ($c -match 'WORK_ITEMS|SSOT_SCAN|CONFLICT_SCAN') { $newHit = $true }
+            if ($oldHit -and $newHit) { break }
+          }
+          if ($oldHit -and $newHit) {
+            Fail 'WB0001' "CONFLICT_SCAN failed: old+new execution candidates detected in parallel (trigger CONFLICT_SCAN STOP)."
+          }
+          Write-Host "ENTRY OK"
