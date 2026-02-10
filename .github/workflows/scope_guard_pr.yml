@@ -11,6 +11,12 @@ jobs:
     name: Scope Guard (PR)
     runs-on: ubuntu-latest
     steps:
+      - name: WRITEBACK_PR_ALLOWLIST (OP-1)
+        if: ${{ startsWith(github.head_ref, 'auto/writeback-bundle_') }}
+        shell: bash
+        run: |
+          echo "WRITEBACK_PR_ALLOWLIST=1" >> $GITHUB_ENV
+          echo "Writeback PR detected: allow docs/MEP/MEP_BUNDLE.md"  # WRITEBACK_PR_ALLOWLIST
       - name: Checkout (full history)
         uses: actions/checkout@v4
         with:
@@ -140,4 +146,5 @@ jobs:
 
           print("Scope Guard OK")
           PY
+
 
