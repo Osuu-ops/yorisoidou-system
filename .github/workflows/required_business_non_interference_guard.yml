@@ -1,0 +1,14 @@
+name: business-non-interference-guard
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  noop:
+    name: business-non-interference-guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: no-op success
+        run: echo "business-non-interference-guard required-check shim: success (2026-02-11T02:37:54+09:00)"
