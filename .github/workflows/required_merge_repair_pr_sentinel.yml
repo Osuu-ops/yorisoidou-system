@@ -1,4 +1,4 @@
-name: required-merge-repair-pr-sentinel
+name: merge_repair_pr
 on:
   pull_request:
   merge_group:
