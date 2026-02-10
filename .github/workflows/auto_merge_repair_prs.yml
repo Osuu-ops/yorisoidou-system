@@ -23,6 +23,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Guard: only run on repair PR branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          ref="${{ github.head_ref }}"
+          if [[ "$ref" != auto/repair-evidence-log_* ]]; then
+            echo "Not a repair PR branch: $ref"
+            echo "No-op success to satisfy required check."
+            exit 0
+          fi
+          echo "Repair PR branch detected: $ref"
       - name: Set up GH auth
         env:
           GH_TOKEN: ${{ github.token }}
