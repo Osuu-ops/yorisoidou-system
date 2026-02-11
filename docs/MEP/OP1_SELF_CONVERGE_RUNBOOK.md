@@ -34,3 +34,13 @@ For each converge attempt, output a Resume Packet (append-only):
 - PR info (number/url/headRefName/headRefOid/remoteRefOid)
 - STOP code/state, reason, next
 - checks snapshot
+
+## Evidence: Full autorun replay (NO_CHECKS -> REISSUE) | 2026-02-11
+
+- Trigger: workflow_dispatch writeback produced PR #2000 (https://github.com/Osuu-ops/yorisoidou-system/pull/2000)
+- STOP: WAIT_NO_CHECKS_REISSUE_NEEDED (NO_CHECKS persisted after push/empty commit)
+- Recovery: REISSUE -> PR #2001 (https://github.com/Osuu-ops/yorisoidou-system/pull/2001)
+- Result: PR #2001 state=MERGED mergedAt=02/11/2026 13:21:19
+- Confirm: HEAD(main)=5e8dcc3252dc071b4da08e4911af8355270c3874
+
+
