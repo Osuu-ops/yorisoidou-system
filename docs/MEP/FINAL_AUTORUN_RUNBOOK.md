@@ -37,3 +37,7 @@ NOTE: This runner intentionally does NOT bypass policies. It drives the loop usi
 ## CONFLICTING auto-retry
 - Runner now closes CONFLICTING PRs and retries workflow_dispatch (bounded attempts) to avoid deadlocks.
 
+
+## CONFLICTING v2 recreate
+- If mergeable=CONFLICTING, runner recreates a new PR from latest main and applies only docs/MEP/MEP_BUNDLE.md from the original head.
+
