@@ -19,14 +19,16 @@ jobs:
         run: |
           set -euo pipefail
                     # WRITEBACK_PR_DIFF_MARKER
-          # (base/head removed; use origin/main...HEAD)
-          git fetch origin main --prune || true
-          files="$(git diff --name-only origin/main...HEAD || true)"
+          # (base/head removed; use refs/remotes/origin/main...HEAD)
+          git fetch origin +refs/heads/main:refs/remotes/origin/main --prune || true # WRITEBACK_REFSPEC_MAIN_MARKER
+          files="$(git diff --name-only refs/remotes/origin/main...HEAD || true)"
           echo "$files"
           bad="$(echo "$files" | awk 'NF' | grep -Ev '^(docs/MEP/MEP_BUNDLE\.md|docs/MEP/runbook/\.noop_writeback_pr.*)$' || true)" # ALLOW_NOOP_WRITEBACK_MARKER
           if [ -n "$bad" ]; then
             echo "[NG] unexpected changed files:"
             echo "$bad"
+            echo "::error title=ScopeGuard::unexpected changed files"
+            echo "::error ::$bad" # WRITEBACK_SCOPE_GUARD_ERROR_MARKER
             exit 1
           fi
           echo "[OK] only bundle file changed"
@@ -42,13 +44,15 @@ jobs:
         run: |
           set -euo pipefail
                     # WRITEBACK_PR_DIFF_MARKER
-          # (base/head removed; use origin/main...HEAD)
-          git fetch origin main --prune || true
-          files="$(git diff --name-only origin/main...HEAD || true)"
+          # (base/head removed; use refs/remotes/origin/main...HEAD)
+          git fetch origin +refs/heads/main:refs/remotes/origin/main --prune || true # WRITEBACK_REFSPEC_MAIN_MARKER
+          files="$(git diff --name-only refs/remotes/origin/main...HEAD || true)"
           bad="$(echo "$files" | awk 'NF' | grep -E '^(platform/MEP/03_BUSINESS/|business/|03_BUSINESS/)' || true)"
           if [ -n "$bad" ]; then
             echo "[NG] business paths changed:"
             echo "$bad"
+            echo "::error title=ScopeGuard::unexpected changed files"
+            echo "::error ::$bad" # WRITEBACK_SCOPE_GUARD_ERROR_MARKER
             exit 1
           fi
           echo "[OK] no business paths changed"
