@@ -109,7 +109,27 @@ if($midLen -lt 0){ _Stop 'H6_UNEXPECTED_STATE' 'COPYPASTE_ZONE_SLICE_FAIL' 'MACH
 $mid = $log.Substring($midStart, $midLen).Trim("`n")
 _OutLine 'ALL_DONE' 'COPYPASTE_ZONE_VERIFIED' 'PASTE_ZONE_TO_CHAT'
 Write-Host $begin
-if($mid){ Write-Host $mid }
+if($mid){
+  $outLines = New-Object System.Collections.Generic.List[string]
+  foreach($ln in ($mid -split "`n")){
+    $t = ($ln | Out-String).Trim()
+    if([string]::IsNullOrWhiteSpace($t)){ continue }
+    # Keep section labels
+    if($t -eq "RESTART_PACKET" -or $t -eq "ENV_STATE_SNAPSHOT"){ $outLines.Add($t) | Out-Null; continue }
+    # Extract last KEY=VALUE occurrence on the line
+    $m = [regex]::Match($t, '([A-Z0-9_]+)=([^=].*)
+Write-Host $end
+Write-Host "exit=0"
+return)
+    if($m.Success){
+      $outLines.Add(($m.Groups[1].Value + "=" + $m.Groups[2].Value).Trim()) | Out-Null
+      continue
+    }
+  }
+  if($outLines.Count -gt 0){
+    Write-Host ($outLines -join "`n")
+  }
+}
 Write-Host $end
 Write-Host "exit=0"
 return
