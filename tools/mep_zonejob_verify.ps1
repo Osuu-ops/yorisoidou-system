@@ -98,32 +98,18 @@ $log = _StripAnsi $rawLog
 $log = $log.Replace("`r","")
 $begin = "===== MEP_COPYPASTE_ZONE BEGIN ====="
 $end   = "===== MEP_COPYPASTE_ZONE END ====="
-# robust extraction: regex between markers (tolerate spaces)
-$re = '(?s)^\s*' + [regex]::Escape($begin) + '\s*\n(.*?)\n\s*' + [regex]::Escape($end) + '\s*$'
-$m = [regex]::Match($log, $re)
-if(-not $m.Success){
-  # fallback: find first/last occurrence anywhere
-  $bi = $log.IndexOf($begin)
-  $ei = $log.LastIndexOf($end)
-  if($bi -lt 0 -or $ei -lt 0 -or $ei -le $bi){
-    _Stop 'H4_EVIDENCE_MISSING' 'COPYPASTE_ZONE_NOT_EMITTED_IN_JOB_LOG' 'MACHINE_ONLY' 'HARD' 2 ("runId="+$runId+" jobId="+$jobId)
-    return
-  }
-  $midStart = $bi + $begin.Length
-  $midLen = $ei - $midStart
-  if($midLen -lt 0){ _Stop 'H6_UNEXPECTED_STATE' 'COPYPASTE_ZONE_SLICE_FAIL' 'MACHINE_ONLY' 'HARD' 2 ("runId="+$runId+" jobId="+$jobId); return }
-  $mid = $log.Substring($midStart, $midLen).Trim("`n")
-  _OutLine 'ALL_DONE' 'COPYPASTE_ZONE_VERIFIED' 'PASTE_ZONE_TO_CHAT'
-  Write-Host $begin
-  if($mid){ Write-Host $mid }
-  Write-Host $end
-  Write-Host "exit=0"
-  return
-}
-$mid2 = $m.Groups[1].Value.TrimEnd("`n")
+# select LAST begin..end block (actual payload)
+$bi = $log.LastIndexOf($begin)
+if($bi -lt 0){ _Stop 'H4_EVIDENCE_MISSING' 'COPYPASTE_ZONE_NOT_EMITTED_IN_JOB_LOG' 'MACHINE_ONLY' 'HARD' 2 ("runId="+$runId+" jobId="+$jobId); return }
+$ei = $log.IndexOf($end, $bi)
+if($ei -lt 0){ _Stop 'H6_UNEXPECTED_STATE' 'COPYPASTE_ZONE_END_NOT_FOUND' 'MACHINE_ONLY' 'HARD' 2 ("runId="+$runId+" jobId="+$jobId); return }
+$midStart = $bi + $begin.Length
+$midLen = $ei - $midStart
+if($midLen -lt 0){ _Stop 'H6_UNEXPECTED_STATE' 'COPYPASTE_ZONE_SLICE_FAIL' 'MACHINE_ONLY' 'HARD' 2 ("runId="+$runId+" jobId="+$jobId); return }
+$mid = $log.Substring($midStart, $midLen).Trim("`n")
 _OutLine 'ALL_DONE' 'COPYPASTE_ZONE_VERIFIED' 'PASTE_ZONE_TO_CHAT'
 Write-Host $begin
-if($mid2){ Write-Host $mid2 }
+if($mid){ Write-Host $mid }
 Write-Host $end
 Write-Host "exit=0"
 return
