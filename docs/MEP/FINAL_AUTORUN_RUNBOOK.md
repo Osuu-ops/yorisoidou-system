@@ -29,3 +29,7 @@ NOTE: This runner intentionally does NOT bypass policies. It drives the loop usi
 - Confirm: HEAD(main)=5e8dcc3252dc071b4da08e4911af8355270c3874
 
 
+
+## NO_CHECKS auto-recovery
+- Runner now performs: push -> empty commit -> REISSUE automatically, then sets auto-merge when checks are visible.
+

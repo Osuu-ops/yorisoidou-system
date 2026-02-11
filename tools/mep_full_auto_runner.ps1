@@ -29,7 +29,59 @@ function _Gh([string]$label,[string[]]$a,[bool]$allowFail=$false){
   if ((-not $allowFail) -and ($r.ec -ne 0)){ throw ("gh failed ({0}) exit={1}" -f $label, $r.ec) }
   return $r
 }
-try {
+function _AutoRecoverNoChecks([int]$prNumber,[string]$prUrl,[string]$headRef,[string]$prHeadOid){
+  # Returns hashtable: { prNumber, prUrl, headRef, prHeadOid }
+  $stamp = (Get-Date).ToString("yyyyMMdd_HHmmss")
+  _Info ("NO_CHECKS detected -> auto-recover start (PR #{0})" -f $prNumber)
+  # fetch + work branch
+  _Git "fetch head" @("fetch","origin",$headRef) | Out-Null
+  $work = "_mep_no_checks_work"
+  _Git "checkout work" @("checkout","-B",$work,("origin/{0}" -f $headRef)) | Out-Null
+  # push (no-op ok)
+  try { _Git "push head" @("push","origin","HEAD:refs/heads/$headRef") | Out-Null } catch {}
+  Start-Sleep -Seconds 3
+  $chk1 = & gh pr checks $prNumber 2>&1
+  $t1 = ($chk1 | Out-String).Trim()
+  if ($t1 -notmatch "no checks reported"){
+    _Info "NO_CHECKS recovered by push."
+    return @{ prNumber=$prNumber; prUrl=$prUrl; headRef=$headRef; prHeadOid=$prHeadOid }
+  }
+  # empty commit + push
+  _Git "empty commit" @("commit","--allow-empty","-m",("chore(mep): trigger checks {0}" -f (Get-Date).ToString("s"))) | Out-Null
+  _Git "push empty commit" @("push","origin","HEAD:refs/heads/$headRef") | Out-Null
+  Start-Sleep -Seconds 4
+  $chk2 = & gh pr checks $prNumber 2>&1
+  $t2 = ($chk2 | Out-String).Trim()
+  if ($t2 -notmatch "no checks reported"){
+    _Info "NO_CHECKS recovered by empty commit."
+    return @{ prNumber=$prNumber; prUrl=$prUrl; headRef=$headRef; prHeadOid=$prHeadOid }
+  }
+  # still NO_CHECKS -> REISSUE
+  _Info "NO_CHECKS persists -> REISSUE"
+  $newBranch = ("auto/reissue_no_checks_pr{0}_{1}" -f $prNumber, $stamp)
+  _Git "checkout reissue branch" @("checkout","-B",$newBranch) | Out-Null
+  _Git "push reissue branch" @("push","-u","origin",$newBranch) | Out-Null
+  $title = ("Reissue: PR #{0} (NO_CHECKS)" -f $prNumber)
+  $body = @(
+    "Reissue reason: NO_CHECKS persisted after push and empty commit.",
+    "",
+    ("Old PR: {0}" -f $prUrl),
+    ("Old headRef: {0}" -f $headRef),
+    ("Old headRefOid: {0}" -f $prHeadOid),
+    ("New headRef: {0}" -f $newBranch)
+  ) -join "
+"
+  $createOut = & gh pr create --base main --head $newBranch --title $title --body $body 2>&1
+  if ($LASTEXITCODE -ne 0){ throw "gh pr create failed (reissue)." }
+  $newUrl = (($createOut | Where-Object { $_ -match "https?://" }) | Select-Object -First 1).Trim()
+  if (-not $newUrl){ $newUrl = ($createOut | Select-Object -First 1).ToString().Trim() }
+  _Info ("Reissue PR created: {0}" -f $newUrl)
+  try { & gh pr close $prNumber --comment ("Closing as reissued: {0}" -f $newUrl) 2>&1 | ForEach-Object { Write-Host $_ } } catch {}
+  Start-Sleep -Seconds 3
+  $newNum = (& gh pr view $newUrl --json number 2>&1 | ConvertFrom-Json).number
+  $newMeta = & gh pr view $newNum --json headRefName,headRefOid,url 2>&1 | ConvertFrom-Json
+  return @{ prNumber=[int]$newNum; prUrl=[string]$newMeta.url; headRef=[string]$newMeta.headRefName; prHeadOid=[string]$newMeta.headRefOid }
+}try {
   _Gh 'gh auth status' @('auth','status') | Out-Null
   _Git 'fetch origin' @('fetch','--prune','origin') | Out-Null
   _Git 'checkout main' @('checkout','main') | Out-Null
@@ -76,8 +128,21 @@ try {
   $txt = ($chk | Out-String).Trim()
   $chk | ForEach-Object { Write-Host $_ }
   if ($txt -match 'no checks reported'){
-    if (_StopOut 'WAIT_NO_CHECKS_REISSUE_NEEDED' 'NO_CHECKS detected. Follow OP-1 runbook: push/empty commit then REISSUE.') { return }
+  # Auto-recover (push -> empty commit -> reissue)
+  $rec = _AutoRecoverNoChecks $prNumber $prUrl $headRef $prHeadOid
+  $prNumber = [int]$rec.prNumber
+  $prUrl    = [string]$rec.prUrl
+  $headRef  = [string]$rec.headRef
+  $prHeadOid= [string]$rec.prHeadOid
+  _Info ("Recovered target PR: #{0} {1}" -f $prNumber, $prUrl)
+  # Re-read checks on the recovered PR
+  $chk = & gh pr checks $prNumber 2>&1
+  $txt = ($chk | Out-String).Trim()
+  $chk | ForEach-Object { Write-Host $_ }
+  if ($txt -match 'no checks reported'){
+    if (_StopOut 'WAIT_NO_CHECKS_STILL' 'NO_CHECKS persists even after auto-recovery. Diagnose workflow trigger / required checks mapping.') { return }
   }
+}
   _Gh 'set auto-merge' @('pr','merge',"$prNumber",'--auto','--squash') $true | Out-Null
   if (_StopOut 'WAIT_MONITOR' 'Checks visible; auto-merge set (best effort). Monitor PR merge.') { return }
 }
@@ -87,5 +152,6 @@ catch {
   Write-Host ('REASON: {0}' -f $_.Exception.Message)
   return
 }
+
 
 
