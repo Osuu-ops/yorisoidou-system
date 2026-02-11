@@ -1,0 +1,131 @@
+name: MEP Autorun (Converge)
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes
+  workflow_dispatch:
+concurrency:
+  group: mep-autorun-converge
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+jobs:
+  converge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Converge latest writeback PR (NO_CHECKS/CONFLICTING)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="${GITHUB_REPOSITORY}"
+          stamp="$(date -u +%Y%m%d_%H%M%S)"
+          echo "== find latest open writeback-like PR =="
+          pr_json="$(gh pr list --state open --base main --limit 200 --json number,url,headRefName,headRefOid,title,updatedAt \
+            | jq -c '[.[] | select((.headRefName|test("writeback")) or (.headRefName|test("^auto/")) or (.title|test("writeback")) or (.title|test("bundle")))] | sort_by(.updatedAt) | reverse | .[0]')"
+          if [[ "${pr_json}" == "null" || -z "${pr_json}" ]]; then
+            echo "No target PR found. Exit."
+            exit 0
+          fi
+          pr_number="$(echo "${pr_json}" | jq -r '.number')"
+          pr_url="$(echo "${pr_json}" | jq -r '.url')"
+          head_ref="$(echo "${pr_json}" | jq -r '.headRefName')"
+          head_oid="$(echo "${pr_json}" | jq -r '.headRefOid')"
+          echo "Target PR: #${pr_number} ${pr_url}"
+          echo "head_ref=${head_ref}"
+          echo "head_oid=${head_oid}"
+          mergeable="$(gh pr view "${pr_number}" --json mergeable,state -q '.mergeable')"
+          state="$(gh pr view "${pr_number}" --json state -q '.state')"
+          echo "state=${state} mergeable=${mergeable}"
+          if [[ "${state}" != "OPEN" ]]; then
+            echo "PR is not OPEN. Exit."
+            exit 0
+          fi
+          recreate_from_main() {
+            local old_pr="$1"
+            local old_url="$2"
+            local old_head_ref="$3"
+            local why="$4"
+            echo "== CONFLICTING v2 recreate =="
+            echo "why=${why}"
+            gh pr close "${old_pr}" --comment "Closed by converge workflow: CONFLICTING v2 recreate. ${why}" || true
+            git fetch --prune origin
+            git checkout main
+            git pull --ff-only origin main
+            # get bundle content from original head ref (or reissue head)
+            mkdir -p docs/MEP
+            gh api "repos/${repo}/contents/docs/MEP/MEP_BUNDLE.md?ref=${old_head_ref}" -q '.content' \
+              | tr -d '\n' | base64 -d > docs/MEP/MEP_BUNDLE.md
+            new_branch="auto/actions_recreate_conflict_pr${old_pr}_${stamp}"
+            git checkout -b "${new_branch}"
+            git add docs/MEP/MEP_BUNDLE.md
+            git commit -m "chore(mep): recreate conflict PR #${old_pr} from latest main"
+            git push -u origin "${new_branch}"
+            new_pr_url="$(gh pr create --base main --head "${new_branch}" \
+              --title "Recreate: PR #${old_pr} (CONFLICTING v2)" \
+              --body "Recreate reason: mergeable=CONFLICTING.\nStrategy: new branch from latest main; apply only docs/MEP/MEP_BUNDLE.md from original head.\n\nOld PR: ${old_url}\nOld headRef: ${old_head_ref}\nNew headRef: ${new_branch}" \
+              | tr -d '\r')"
+            new_pr_number="$(gh pr view "${new_pr_url}" --json number -q '.number')"
+            echo "Recreated PR: #${new_pr_number} ${new_pr_url}"
+            echo "${new_pr_number}"
+          }
+          reissue_pr() {
+            local old_pr="$1"
+            local old_url="$2"
+            local old_head_ref="$3"
+            local old_head_oid="$4"
+            echo "== NO_CHECKS reissue =="
+            new_branch="auto/actions_reissue_no_checks_pr${old_pr}_${stamp}"
+            # create ref on remote to same commit
+            gh api -X POST "repos/${repo}/git/refs" \
+              -f ref="refs/heads/${new_branch}" \
+              -f sha="${old_head_oid}" >/dev/null
+            new_pr_url="$(gh pr create --base main --head "${new_branch}" \
+              --title "Reissue: PR #${old_pr} (NO_CHECKS)" \
+              --body "Reissue reason: NO_CHECKS.\n\nOld PR: ${old_url}\nOld headRef: ${old_head_ref}\nOld headRefOid: ${old_head_oid}\nNew headRef: ${new_branch}\n\nAction: create new PR to restore check-run observation." \
+              | tr -d '\r')"
+            new_pr_number="$(gh pr view "${new_pr_url}" --json number -q '.number')"
+            echo "Reissue PR: #${new_pr_number} ${new_pr_url}"
+            gh pr close "${old_pr}" --comment "Closed by converge workflow: reissued -> ${new_pr_url}" || true
+            echo "${new_pr_number}"
+          }
+          # If CONFLICTING, recreate from latest main (bundle-only), then proceed on recreated PR
+          if [[ "${mergeable}" == "CONFLICTING" ]]; then
+            pr_number="$(recreate_from_main "${pr_number}" "${pr_url}" "${head_ref}" "mergeable=CONFLICTING before checks")"
+            pr_url="$(gh pr view "${pr_number}" --json url -q '.url')"
+            head_ref="$(gh pr view "${pr_number}" --json headRefName -q '.headRefName')"
+            echo "Proceed on recreated PR #${pr_number} ${pr_url}"
+          fi
+          echo "== checks =="
+          checks_txt="$(gh pr checks "${pr_number}" 2>&1 || true)"
+          echo "${checks_txt}"
+          if echo "${checks_txt}" | grep -q "no checks reported"; then
+            # reissue to restore checks
+            pr_number="$(reissue_pr "${pr_number}" "${pr_url}" "${head_ref}" "${head_oid}")"
+            pr_url="$(gh pr view "${pr_number}" --json url -q '.url')"
+            head_ref="$(gh pr view "${pr_number}" --json headRefName -q '.headRefName')"
+            # if reissued PR is CONFLICTING, use v2 recreate from latest main
+            mergeable2="$(gh pr view "${pr_number}" --json mergeable -q '.mergeable')"
+            if [[ "${mergeable2}" == "CONFLICTING" ]]; then
+              pr_number="$(recreate_from_main "${pr_number}" "${pr_url}" "${head_ref}" "mergeable=CONFLICTING after reissue")"
+              pr_url="$(gh pr view "${pr_number}" --json url -q '.url')"
+              echo "Proceed on recreated PR #${pr_number} ${pr_url}"
+            fi
+            # re-check checks after reissue/recreate
+            checks_txt2="$(gh pr checks "${pr_number}" 2>&1 || true)"
+            echo "${checks_txt2}"
+            if echo "${checks_txt2}" | grep -q "no checks reported"; then
+              echo "NO_CHECKS persists even after reissue/recreate. Failing."
+              exit 1
+            fi
+          fi
+          echo "== set auto-merge (best effort) =="
+          gh pr merge "${pr_number}" --auto --squash || true
+          echo "Done. Monitor PR #${pr_number} merge."
