@@ -33,3 +33,7 @@ NOTE: This runner intentionally does NOT bypass policies. It drives the loop usi
 ## NO_CHECKS auto-recovery
 - Runner now performs: push -> empty commit -> REISSUE automatically, then sets auto-merge when checks are visible.
 
+
+## CONFLICTING auto-retry
+- Runner now closes CONFLICTING PRs and retries workflow_dispatch (bounded attempts) to avoid deadlocks.
+
