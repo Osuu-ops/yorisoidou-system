@@ -1,7 +1,9 @@
 name: MEP Autorun (Converge)
 on:
-  schedule:
-    - cron: "*/30 * * * *"   # every 30 minutes
+  workflow_run:
+    workflows: [""MEP Integration Compiler""]
+    types:
+      - completed
   workflow_dispatch:
 concurrency:
   group: mep-autorun-converge
@@ -129,3 +131,4 @@ jobs:
           echo "== set auto-merge (best effort) =="
           gh pr merge "${pr_number}" --auto --squash || true
           echo "Done. Monitor PR #${pr_number} merge."
+

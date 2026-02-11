@@ -1,0 +1,66 @@
+name: MEP Autorun (Daily Health)
+on:
+  schedule:
+    - cron: "30 0 * * *"   # daily at 00:30 UTC (09:30 JST)
+  workflow_dispatch:
+concurrency:
+  group: mep-autorun-daily-health
+  cancel-in-progress: false
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect open writeback-like PRs (read-only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="${GITHUB_REPOSITORY}"
+          prs="$(gh pr list --state open --base main --limit 200 --json number,url,headRefName,title,updatedAt \
+            | jq -c '[.[] | select((.headRefName|test("writeback")) or (.headRefName|test("^auto/")) or (.title|test("writeback")) or (.title|test("bundle")))] | sort_by(.updatedAt) | reverse')"
+          count="$(echo "${prs}" | jq 'length')"
+          echo "count=${count}"
+          echo "${prs}" | jq -r '.[] | "- #\(.number) \(.url) updatedAt=\(.updatedAt) head=\(.headRefName)"' || true
+          if [[ "${count}" -eq 0 ]]; then
+            echo "OK: no open PRs"
+            exit 0
+          fi
+          pr_number="$(echo "${prs}" | jq -r '.[0].number')"
+          pr_url="$(echo "${prs}" | jq -r '.[0].url')"
+          mergeable="$(gh pr view "${pr_number}" --json mergeable -q '.mergeable' || echo 'UNKNOWN')"
+          checks="$(gh pr checks "${pr_number}" 2>&1 || true)"
+          alert=0
+          reason=""
+          if echo "${checks}" | grep -q "no checks reported"; then
+            alert=1
+            reason="NO_CHECKS"
+          fi
+          if [[ "${mergeable}" == "CONFLICTING" ]]; then
+            alert=1
+            reason="${reason} CONFLICTING"
+          fi
+          if [[ "${alert}" -eq 0 ]]; then
+            echo "OK: checks visible and not conflicting."
+            exit 0
+          fi
+          title="MEP Health Alert: ${reason}"
+          body=$(cat <<EOF
+Daily health detected an issue.
+- Newest PR: ${pr_url}
+- mergeable: ${mergeable}
+- symptom: ${reason}
+Note: This job is diagnostics-only (no PR mutation). Event-driven converge handles recovery.
+EOF
+)
+          existing="$(gh issue list --state open --search "\"${title}\" in:title" --json number,title | jq 'length')"
+          if [[ "${existing}" -eq 0 ]]; then
+            gh issue create --title "${title}" --body "${body}" >/dev/null
+            echo "Created issue: ${title}"
+          else
+            echo "Issue already exists: ${title}"
+          fi
