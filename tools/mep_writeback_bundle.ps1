@@ -105,6 +105,24 @@ git push -u origin $branch | Out-Null
 
 # create PR (idempotent: if already exists, skip)
 try {
+
+  # AUTO-CLOSE: close stale/conflicting writeback PRs to avoid pile-up conflicts
+  try {
+    $openWb = gh pr list -R $fullRepo --state open --json number,headRefName,url --jq '.[] | select(.headRefName|startswith("auto/writeback-bundle_")) | "\(.number)\t\(.url)\t\(.headRefName)"' 2>$null
+    if($openWb){
+      foreach($ln in $openWb){
+        $cols = $ln -split "`t"
+        if($cols.Count -ge 1){
+          $n = [int]$cols[0]
+          # close (no merge) with comment; ignore failures
+          gh pr close -R $fullRepo $n --comment "Auto-close: stale writeback PR (regenerate from latest main)." 1>$null 2>$null
+        }
+      }
+    }
+  } catch {
+    Warn ("AUTO_CLOSE_WRITEBACK_FAILED: " + $_.Exception.Message)
+  }
+
   $exists = gh pr list --state open --head $branch --json number --jq '.[0].number' 2>$null
   if ($exists) {
     Info ("PR already exists for head {0}: #{1}" -f $branch,$exists)
