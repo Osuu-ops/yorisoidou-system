@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (phase3 pr-create)
+name: MEP Loop Engine v2 (phase3 writeback)
 "on":
   push:
     branches: [ main ]
@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: SSOT_SCAN (safe-min)
         shell: bash
         run: |
@@ -40,7 +42,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "CONFLICT_SCAN_START"
-          FILES="$(git diff --name-only HEAD~1..HEAD || true)"
+          FILES="$(git diff --name-only HEAD^..HEAD || true)"
           echo "$FILES" | sed -n '1,200p'
           LEGACY=0
           NEW=0
@@ -66,6 +68,8 @@ jobs:
           echo "WRITEBACK_PREFLIGHT_OK"
       - name: PHASE3_WRITEBACK_BUNDLE
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
@@ -80,6 +84,11 @@ jobs:
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
+          $porc = (git status --porcelain | Out-String).Trim()
+          if([string]::IsNullOrWhiteSpace($porc)){
+            Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
+            exit 0
+          }
           Write-Host "PHASE3_CREATE_PR_START"
           if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
           ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
