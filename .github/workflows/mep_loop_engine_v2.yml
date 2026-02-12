@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (restore step5)
+name: MEP Loop Engine v2 (phase3 pr-create)
 "on":
   push:
     branches: [ main ]
@@ -6,8 +6,9 @@ concurrency:
   group: mep-loop-engine-v2
   cancel-in-progress: false
 permissions:
-  contents: read
+  contents: write
   actions: write
+  pull-requests: write
 jobs:
   zone:
     runs-on: ubuntu-latest
@@ -25,7 +26,7 @@ jobs:
             exit 1
           fi
           HASH="$(sha256sum "$SSOT" | awk '{print $1}')"
-          VER="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$SSOT" | head -n 1 || true)"
+          VER="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$SSOT" || true)"
           if [ -z "$VER" ]; then VER="(unknown)"; fi
           {
             echo "SSOT_PATH=$SSOT"
@@ -39,7 +40,6 @@ jobs:
         run: |
           set -euo pipefail
           echo "CONFLICT_SCAN_START"
-          # Changed files in this push (single commit typical for merge commit)
           FILES="$(git diff --name-only HEAD~1..HEAD || true)"
           echo "$FILES" | sed -n '1,200p'
           LEGACY=0
@@ -56,17 +56,35 @@ jobs:
         run: |
           set -euo pipefail
           echo "WRITEBACK_PREFLIGHT_START"
-          # Must-exist targets (later phases will generate/update)
           PARENT="docs/MEP/MEP_BUNDLE.md"
           EVI="docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
           if [ ! -f "$PARENT" ]; then echo "::error::missing $PARENT"; exit 1; fi
           if [ ! -f "$EVI" ]; then echo "::error::missing $EVI"; exit 1; fi
-          # show current versions if present (best-effort)
-          echo "PARENT_BUNDLE_VERSION=$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$PARENT" | head -n 1 || true)"
-          echo "EVIDENCE_BUNDLE_VERSION=$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$EVI" | head -n 1 || true)"
-          # placeholder diff check (no generation yet)
+          echo "PARENT_BUNDLE_VERSION=$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$PARENT" || true)"
+          echo "EVIDENCE_BUNDLE_VERSION=$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$EVI" || true)"
           git status --porcelain || true
           echo "WRITEBACK_PREFLIGHT_OK"
+      - name: PHASE3_PR_CREATE (heartbeat)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo "PHASE3_PR_CREATE_START"
+          mkdir -p docs/MEP
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > docs/MEP/PHASE3_HEARTBEAT_ENGINE.txt
+          git config user.name  "mep-loop-bot"
+          git config user.email "mep-loop-bot@users.noreply.github.com"
+          BR="auto/phase3-heartbeat-engine-${GITHUB_RUN_ID}"
+          git checkout -b "$BR"
+          git add docs/MEP/PHASE3_HEARTBEAT_ENGINE.txt
+          git commit -m "chore(phase3): heartbeat engine ${GITHUB_RUN_ID}"
+          git push origin "$BR"
+          gh pr create --repo "$REPO" --base main --head "$BR" \
+            --title "chore(phase3): heartbeat engine ${GITHUB_RUN_ID}" \
+            --body "PHASE3: engine_v2 proved it can create PRs from inside workflow (dispatch broken)."
+          echo "PHASE3_PR_CREATE_OK"
       - name: Upload RESTART_PACKET
         uses: actions/upload-artifact@v4
         with:
@@ -74,4 +92,4 @@ jobs:
           path: .mep/RESTART_PACKET.txt
           if-no-files-found: error
       - name: Smoke
-        run: echo "ENGINE_V2_STEP5_OK"
+        run: echo "ENGINE_V2_PHASE3_OK"
