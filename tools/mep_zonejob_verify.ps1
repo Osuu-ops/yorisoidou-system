@@ -55,7 +55,7 @@ if($LASTEXITCODE -ne 0){ _Stop "W2_PERMISSION_AUTH" "GH_AUTH_LOGIN" "HUMAN_RESOL
 $origin = (& git config --get remote.origin.url 2>$null | Out-String).Trim()
 if($origin -notmatch "github\.com[:/](?<o>[^/]+)/(?<r>[^/.]+)"){ _Stop "HB0001_VITAL_REPO_ORIGIN_UNPARSEABLE" "FIX_REMOTE_ORIGIN" "HUMAN_RESOLVABLE" "HARD" 2; return }
 $owner=$Matches.o; $repo=$Matches.r
-$wfId="228815143"
+$wfId = "220360954"
 # dispatch
 _OutLine "RUNNING" "DISPATCH_ENTRY" "WORKFLOW_RUN"
 $disp = (& gh workflow run $wfId --ref main 2>&1 | Out-String).Trim()
