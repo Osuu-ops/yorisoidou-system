@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (restore step2)
+name: MEP Loop Engine v2 (restore step3)
 "on":
   push:
     branches: [ main ]
@@ -14,5 +14,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Smoke
-        run: echo "ENGINE_V2_STEP2_OK"
+      - name: Prepare Artifact
+        run: |
+          mkdir -p .mep
+          echo "ENGINE_V2_STEP3_OK" > .mep/STEP3.txt
+      - name: Upload STEP3 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-v2-step3
+          path: .mep/STEP3.txt
+          if-no-files-found: error
