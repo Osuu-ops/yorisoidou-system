@@ -1,12 +1,16 @@
-name: mep_loop_engine_v2_min
+name: MEP Loop Engine v2 (restore step1)
 "on":
   push:
     branches: [ main ]
+concurrency:
+  group: mep-loop-engine-v2
+  cancel-in-progress: false
 permissions:
   contents: read
+  actions: write
 jobs:
-  smoke:
+  zone:
     runs-on: ubuntu-latest
     steps:
-      - name: hello
-        run: echo "ENGINE_V2_MIN_OK"
+      - name: Smoke
+        run: echo "ENGINE_V2_STEP1_OK"
