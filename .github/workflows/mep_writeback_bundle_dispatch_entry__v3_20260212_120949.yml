@@ -1,0 +1,154 @@
+# reindex: force workflow registration refresh 2026-02-07T02:16:51+09:00
+name: MEP Writeback Bundle (Entry v3 20260212_120949)
+on:
+  workflow_dispatch:
+    inputs:
+      
+      ssot_b64:
+        description: "SSOT payload as base64(UTF-8). If set, runner reconstructs file + sha256 stamp."
+        required: false
+        default: ""
+ssot_payload_path:
+        description: "Repo-relative path to SSOT payload file (optional). Example: .mep_tmp/SSOT_PAYLOAD__YYYYMMDD_....md"
+        required: false
+        default: ""
+
+      pr_number:
+        description: "0 = auto latest merged PR"
+        required: false
+        default: "0"
+      write_handoff:
+        description: "write handoff files"
+        required: false
+        default: "false"
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  mep_emit_copypaste_zone:
+name: MEP Writeback Bundle (Entry v3 20260212_120949)
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit MEP_COPYPASTE_ZONE
+        shell: bash
+        run: |
+          echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
+          echo "RESTART_PACKET"
+          echo "RUN_ID=${GITHUB_RUN_ID}"
+          echo "TIMESTAMP=$(date -Iseconds)"
+          echo "RUN_INTENT=EMIT_COPYPASTE_ZONE"
+          echo "RUN_STATE_CODE=RUNNING"
+          echo "MODE=CHECK"
+          echo "NOW_WIP=EMIT_COPYPASTE_ZONE"
+          echo "MICRO_POS=14/14"
+          echo "ROUTE_SET_VERSION=RSV1"
+          echo "MACRO_POS=NORMAL(0/0) RECHECK(0/0) RECOVERY(0/0)"
+          echo "MACRO_PERCENT=0"
+          echo "STABILITY=OK"
+          echo "STOP_KIND="
+          echo "STOP_REASON_CODE="
+          echo "STOP_REASON="
+          echo "NEXT_ACTION=PASTE_ZONE_TO_CHAT"
+          echo "ENV_STATE_SNAPSHOT"
+          echo "REPO_ORIGIN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          echo "BRANCH=${GITHUB_REF_NAME}"
+          echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "SSOT_VERSION=UNKNOWN"
+          echo "WINDOW_RULE: NOW(-80,+160)"
+          echo "ZONE_COMPLETE: YES"
+          echo "===== MEP_COPYPASTE_ZONE END ====="
+  writeback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load SSOT payload (b64 optional)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSOT_B64="${{ inputs.ssot_b64 }}"
+          if [ -z "${SSOT_B64}" ]; then
+            echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
+            echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
+            exit 0
+          fi
+          mkdir -p .mep_tmp
+          SSOT_PATH=".mep_tmp/SSOT_PAYLOAD__${GITHUB_RUN_ID}.md"
+          echo "${SSOT_B64}" | base64 -d > "${SSOT_PATH}"
+          echo "MEP_SSOT_PAYLOAD_PATH=${SSOT_PATH}" >> "${GITHUB_ENV}"
+          SSOT_HASH="$(sha256sum "${SSOT_PATH}" | awk '{print $1}')"
+          echo "MEP_SSOT_VERSION=sha256:${SSOT_HASH}" >> "${GITHUB_ENV}"
+          echo "[OK] SSOT restored: ${SSOT_PATH}"
+      - name: Load SSOT payload (optional)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSOT_PATH_IN="${{ inputs.ssot_payload_path }}"
+          if [ -z "${SSOT_PATH_IN}" ]; then
+            echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
+            echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
+            exit 0
+          fi
+          if [ ! -f "${SSOT_PATH_IN}" ]; then
+            echo "[NG] SSOT payload path not found: ${SSOT_PATH_IN}"
+            exit 2
+          fi
+          echo "MEP_SSOT_PAYLOAD_PATH=${SSOT_PATH_IN}" >> "${GITHUB_ENV}"
+          # sha256 for version stamp (portable on ubuntu runner)
+          SSOT_HASH="$(sha256sum "${SSOT_PATH_IN}" | awk '{print $1}')"
+          echo "MEP_SSOT_VERSION=sha256:${SSOT_HASH}" >> "${GITHUB_ENV}"
+          echo "[OK] SSOT payload loaded: ${SSOT_PATH_IN}"
+
+      - name: Configure git identity (required for writeback commit)
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve PR number
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PR_IN="${{ inputs.pr_number }}"
+          if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
+          if [ "${PR_IN}" = "0" ]; then
+            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+          fi
+          if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
+            echo "[NG] failed to resolve PR number"
+            exit 2
+          fi
+          echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "[OK] PR_NUMBER=${PR_IN}"
+      - name: Bump Bundled version (parent)
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+        run: |
+          pwsh -NoProfile -File ./tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Append full evidence line into parent Bundled
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Ensure writeback PR (helper)
+        shell: pwsh
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pwsh -NoProfile -File ./tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+          pwsh -NoProfile -File ./tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
+
+
+
+# ---- MEP: AI判断完結ゾーン出力（追記） ----
+# registry-refresh: 20260212_111819
+
+# registry-reregister: 20260212_115558 (new filename to force Actions registry refresh)
+
+# registry-reregister: v3 20260212_120949
