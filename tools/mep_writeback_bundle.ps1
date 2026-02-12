@@ -88,6 +88,17 @@ $branch = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $PrNumber, $ts)
 Info ("Create branch: {0}" -f $branch)
 
 git checkout -b $branch | Out-Null
+
+  # PRE-COMMIT GUARD: ensure BundlePath diff exists before commit
+  git add -- $BundlePath | Out-Null
+  $diff2 = (git status --porcelain -- $BundlePath)
+  if (-not $diff2) {
+    Warn "PRECOMMIT_GUARD_NO_DIFF: BundlePath still clean; skip commit/writeback."
+    return
+  } else {
+    Info "PRECOMMIT_GUARD_OK: BundlePath dirty" 
+  }
+
 git add $BundlePath | Out-Null
 git commit -m ("chore(mep): writeback bundle evidence (PrNumber={0})" -f $PrNumber) | Out-Null
 git push -u origin $branch | Out-Null
