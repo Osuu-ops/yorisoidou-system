@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (restore step3)
+name: MEP Loop Engine v2 (restore step4)
 "on":
   push:
     branches: [ main ]
@@ -14,13 +14,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Prepare Artifact
+      - name: SSOT_SCAN (safe-min)
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p .mep
-          echo "ENGINE_V2_STEP3_OK" > .mep/STEP3.txt
-      - name: Upload STEP3 Artifact
+          SSOT="docs/MEP/MEP_SSOT_MASTER.md"
+          if [ ! -f "$SSOT" ]; then
+            echo "::error::SSOT not found: $SSOT"
+            exit 1
+          fi
+          HASH="$(sha256sum "$SSOT" | awk '{print $1}')"
+          VER="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$SSOT" | head -n 1 || true)"
+          if [ -z "$VER" ]; then VER="(unknown)"; fi
+          {
+            echo "SSOT_PATH=$SSOT"
+            echo "SSOT_HASH=$HASH"
+            echo "SSOT_VERSION=$VER"
+            echo "SSOT_VALID=true"
+          } > .mep/RESTART_PACKET.txt
+          echo "SSOT_SCAN_OK"
+      - name: Upload RESTART_PACKET
         uses: actions/upload-artifact@v4
         with:
-          name: engine-v2-step3
-          path: .mep/STEP3.txt
+          name: restart-packet
+          path: .mep/RESTART_PACKET.txt
           if-no-files-found: error
+      - name: Smoke
+        run: echo "ENGINE_V2_STEP4_OK"
