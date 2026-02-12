@@ -1,1 +1,130 @@
-# reindex: force workflow registration refresh 2026-02-07T02:16:51+09:00 name: MEP Writeback Bundle (Entry) on:   workflow_dispatch:     inputs:       pr_number:         description: "0 = auto latest merged PR"         required: false         default: "0"       write_handoff:         description: "write handoff files"         required: false         default: "false" permissions:   contents: write   pull-requests: write jobs:   mep_emit_copypaste_zone:     name: "MEP Emit Copypaste Zone"     if: always()     runs-on: ubuntu-latest     steps:       - name: Emit MEP_COPYPASTE_ZONE         shell: bash         run: |           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="           echo "RESTART_PACKET"           echo "RUN_ID=${GITHUB_RUN_ID}"           echo "TIMESTAMP=$(date -Iseconds)"           echo "RUN_INTENT=EMIT_COPYPASTE_ZONE"           echo "RUN_STATE_CODE=RUNNING"           echo "MODE=CHECK"           echo "NOW_WIP=EMIT_COPYPASTE_ZONE"           echo "MICRO_POS=14/14"           echo "ROUTE_SET_VERSION=RSV1"           echo "MACRO_POS=NORMAL(0/0) RECHECK(0/0) RECOVERY(0/0)"           echo "MACRO_PERCENT=0"           echo "STABILITY=OK"           echo "STOP_KIND="           echo "STOP_REASON_CODE="           echo "STOP_REASON="           echo "NEXT_ACTION=PASTE_ZONE_TO_CHAT"           echo "ENV_STATE_SNAPSHOT"           echo "REPO_ORIGIN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"           echo "BRANCH=${GITHUB_REF_NAME}"           echo "HEAD_SHA=${GITHUB_SHA}"           echo "SSOT_VERSION=UNKNOWN"           echo "WINDOW_RULE: NOW(-80,+160)"           echo "ZONE_COMPLETE: YES"           echo "===== MEP_COPYPASTE_ZONE END ====="   writeback:     runs-on: ubuntu-latest     steps:       - uses: actions/checkout@v4        - name: Configure git identity (required for writeback commit)         shell: bash         run: |           git config user.name "github-actions[bot]"           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"        - name: Resolve PR number         shell: bash         env:           GH_TOKEN: ${{ github.token }}         run: |           set -euo pipefail           PR_IN="${{ inputs.pr_number }}"           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi           if [ "${PR_IN}" = "0" ]; then             PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"           fi           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then             echo "[NG] failed to resolve PR number"             exit 2           fi           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"           echo "[OK] PR_NUMBER=${PR_IN}"       - name: Bump Bundled version (parent)         shell: pwsh         env:           PR_NUMBER: ${{ env.PR_NUMBER }}         run: |           pwsh -NoProfile -File ./tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"       - name: Append full evidence line into parent Bundled         shell: pwsh         env:           PR_NUMBER: ${{ env.PR_NUMBER }}           GH_TOKEN: ${{ github.token }}         run: |           pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"       - name: Ensure writeback PR (helper)         shell: pwsh         env:           PR_NUMBER: ${{ env.PR_NUMBER }}           GH_TOKEN: ${{ github.token }}         run: |           pwsh -NoProfile -File ./tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"           pwsh -NoProfile -File ./tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"    # ---- MEP: AI判断完結ゾーン出力（追記） ----
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "SilentlyContinue"
+$ProgressPreference = "SilentlyContinue"
+$env:GIT_PAGER="cat"
+$env:GH_PAGER="cat"
+function _OutLine([string]$state,[string]$reason,[string]$next){ Write-Host ("STATE={0} REASON={1} NEXT={2}" -f $state,$reason,$next) }
+function _Short([string]$s,[int]$n=240){
+  if([string]::IsNullOrWhiteSpace($s)){ return "" }
+  $t = $s.Replace("`r"," ").Replace("`n"," ").Trim()
+  if($t.Length -le $n){ return $t }
+  return ($t.Substring(0,$n) + "…")
+}
+function _Stop([string]$reason,[string]$next,[string]$stopClass="MACHINE_ONLY",[string]$stopKind="HARD",[int]$exitContract=2,[string]$detail=""){
+  _OutLine "STOP" $reason $next
+  if($detail){ Write-Host ("DETAIL={0}" -f $detail) }
+  Write-Host ("stop_class={0}" -f $stopClass)
+  Write-Host ("stop_kind={0}" -f $stopKind)
+  Write-Host ("exit={0}" -f $exitContract)
+  return
+}
+function _GhApiJson([string]$endpoint){
+  $raw = & gh api $endpoint 2>$null
+  if($LASTEXITCODE -ne 0){ return $null }
+  $t = ($raw | Out-String).Trim()
+  if([string]::IsNullOrWhiteSpace($t)){ return $null }
+  try { return ($t | ConvertFrom-Json) } catch { return $null }
+}
+function _StripAnsi([string]$s){
+  if([string]::IsNullOrWhiteSpace($s)){ return "" }
+  return ([regex]::Replace($s, "`e\[[0-9;]*[A-Za-z]", ""))
+}
+function _NormalizeKvLines([string]$mid){
+  $outLines = New-Object System.Collections.Generic.List[string]
+  foreach($ln in ($mid -split "`n")){
+    $t = ($ln | Out-String).Trim()
+    if([string]::IsNullOrWhiteSpace($t)){ continue }
+    if($t -eq "RESTART_PACKET" -or $t -eq "ENV_STATE_SNAPSHOT"){ $outLines.Add($t) | Out-Null; continue }
+    $m = [regex]::Match($t, "([A-Z0-9_]+)=([^=].*)$")
+    if($m.Success){
+      $outLines.Add(($m.Groups[1].Value + "=" + $m.Groups[2].Value).Trim()) | Out-Null
+    }
+  }
+  return $outLines
+}
+_OutLine "RUNNING" "ZONEJOB_VERIFY_START" "DISPATCH_ENTRY_AND_EXTRACT_ZONE"
+# vital
+if(-not (Get-Command git -ErrorAction SilentlyContinue)){ _Stop "HB0001_VITAL_MISSING_GIT" "INSTALL_GIT" "HUMAN_RESOLVABLE" "HARD" 2; return }
+if(-not (Get-Command gh  -ErrorAction SilentlyContinue)){ _Stop "HB0001_VITAL_MISSING_GH"  "INSTALL_GH_CLI" "HUMAN_RESOLVABLE" "HARD" 2; return }
+& gh auth status 1>$null 2>$null
+if($LASTEXITCODE -ne 0){ _Stop "W2_PERMISSION_AUTH" "GH_AUTH_LOGIN" "HUMAN_RESOLVABLE" "WAIT" 2; return }
+# sync
+& git fetch --all --prune 1>$null 2>$null
+& git checkout main 1>$null 2>$null
+& git pull --ff-only origin main 1>$null 2>$null
+$origin = (& git config --get remote.origin.url 2>$null | Out-String).Trim()
+if($origin -notmatch "github\.com[:/](?<o>[^/]+)/(?<r>[^/.]+)"){ _Stop "HB0001_VITAL_REPO_ORIGIN_UNPARSEABLE" "FIX_REMOTE_ORIGIN" "HUMAN_RESOLVABLE" "HARD" 2; return }
+$owner=$Matches.o; $repo=$Matches.r
+$wfId="228815143"
+# dispatch
+_OutLine "RUNNING" "DISPATCH_ENTRY" "WORKFLOW_RUN"
+$disp = (& gh workflow run $wfId --ref main 2>&1 | Out-String).Trim()
+if($LASTEXITCODE -ne 0){ _Stop "H6_UNEXPECTED_STATE_WORKFLOW_DISPATCH_FAILED" "CHECK_WORKFLOW_YAML_AND_RERUN" "HUMAN_RESOLVABLE" "HARD" 2 (_Short $disp 220); return }
+Start-Sleep -Seconds 2
+# latest run
+$runs = _GhApiJson ("repos/$owner/$repo/actions/workflows/$wfId/runs?branch=main&per_page=1")
+if($null -eq $runs -or -not $runs.workflow_runs -or $runs.workflow_runs.Count -eq 0){ _Stop "W1_NETWORK_EXTERNAL" "RETRY_FETCH_LATEST_RUN" "HUMAN_RESOLVABLE" "WAIT" 2; return }
+$runId=[string]$runs.workflow_runs[0].id
+$runUrl=[string]$runs.workflow_runs[0].html_url
+Write-Host ("RUN_ID={0}" -f $runId)
+Write-Host ("RUN_URL={0}" -f $runUrl)
+# wait completed
+_OutLine "RUNNING" "WAIT_RUN_COMPLETE" "POLL_RUN_STATUS"
+$status=$null
+for($i=0;$i -lt 60;$i++){
+  $run = _GhApiJson ("repos/$owner/$repo/actions/runs/$runId")
+  if($run -and $run.status){
+    $status=[string]$run.status
+    if($status -eq "completed"){ break }
+  }
+  Start-Sleep -Seconds 3
+}
+if($status -ne "completed"){ _Stop "W4_RATE_LIMIT_TIMEOUT" "RUN_STILL_NOT_COMPLETED_RETRY_LATER" "HUMAN_RESOLVABLE" "WAIT" 2 ("runId="+$runId); return }
+# find zone job
+_OutLine "RUNNING" "FIND_ZONE_JOB" "RUN_JOBS_API"
+$jobs = _GhApiJson ("repos/$owner/$repo/actions/runs/$runId/jobs?per_page=100")
+if($null -eq $jobs -or -not $jobs.jobs -or $jobs.jobs.Count -eq 0){ _Stop "H6_UNEXPECTED_STATE" "NO_JOBS_FOUND_FOR_RUN" "MACHINE_ONLY" "HARD" 2 ("runId="+$runId); return }
+$target = $jobs.jobs | Where-Object { ($_.name -as [string]) -match "MEP Emit Copypaste Zone|mep_emit_copypaste_zone" } | Select-Object -First 1
+if(-not $target){ _Stop "H4_EVIDENCE_MISSING" "ZONE_JOB_NOT_PRESENT_IN_RUN" "MACHINE_ONLY" "HARD" 2 ("runId="+$runId); return }
+$jobId=[string]$target.id
+Write-Host ("JOB_ID={0}" -f $jobId)
+Write-Host ("JOB_NAME={0}" -f $target.name)
+Write-Host ("JOB_CONCLUSION={0}" -f $target.conclusion)
+# fetch job log
+_OutLine "RUNNING" "FETCH_JOB_LOG" "RUN_VIEW_JOB_LOG"
+$rawLog = (& gh run view $runId --log --job $jobId 2>&1 | Out-String)
+if($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($rawLog)){ _Stop "H6_UNEXPECTED_STATE" "FAILED_TO_GET_JOB_LOG" "MACHINE_ONLY" "HARD" 2 (_Short $rawLog 220); return }
+$log = _StripAnsi $rawLog
+$log = $log.Replace("`r","")
+$begin="===== MEP_COPYPASTE_ZONE BEGIN ====="
+$end="===== MEP_COPYPASTE_ZONE END ====="
+# choose LAST block
+$bi=$log.LastIndexOf($begin)
+if($bi -lt 0){ _Stop "H4_EVIDENCE_MISSING" "COPYPASTE_ZONE_NOT_EMITTED_IN_JOB_LOG" "MACHINE_ONLY" "HARD" 2 ("runId="+$runId+" jobId="+$jobId); return }
+$ei=$log.IndexOf($end,$bi)
+if($ei -lt 0){ _Stop "H6_UNEXPECTED_STATE" "COPYPASTE_ZONE_END_NOT_FOUND" "MACHINE_ONLY" "HARD" 2 ("runId="+$runId+" jobId="+$jobId); return }
+$midStart=$bi+$begin.Length
+$midLen=$ei-$midStart
+if($midLen -lt 0){ _Stop "H6_UNEXPECTED_STATE" "COPYPASTE_ZONE_SLICE_FAIL" "MACHINE_ONLY" "HARD" 2 ("runId="+$runId+" jobId="+$jobId); return }
+$mid = $log.Substring($midStart,$midLen).Trim("`n")
+$kv = _NormalizeKvLines $mid
+# ALWAYS emit something
+if($kv.Count -eq 0){
+  _OutLine "STOP" "H4_EVIDENCE_MISSING" "COPYPASTE_ZONE_EMPTY_AFTER_NORMALIZE"
+  Write-Host $begin
+  Write-Host "RESTART_PACKET"
+  Write-Host ("RUN_ID=" + $runId)
+  Write-Host ("JOB_ID=" + $jobId)
+  Write-Host "STOP_KIND=HARD"
+  Write-Host "STOP_REASON_CODE=H4_EVIDENCE_MISSING"
+  Write-Host "STOP_REASON=COPYPASTE_ZONE_EMPTY_AFTER_NORMALIZE"
+  Write-Host "NEXT_ACTION=OPEN_JOB_LOG_AND_ADJUST_NORMALIZER"
+  Write-Host $end
+  return
+}
+_OutLine "ALL_DONE" "COPYPASTE_ZONE_VERIFIED" "PASTE_ZONE_TO_CHAT"
+Write-Host $begin
+Write-Host ($kv -join "`n")
+Write-Host $end
+Write-Host "exit=0"
+return
