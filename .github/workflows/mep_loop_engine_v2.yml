@@ -1,5 +1,5 @@
 name: MEP Loop Engine v2 (push-loop)
-on:
+"on":
   push:
     branches: [ main ]
     paths:
