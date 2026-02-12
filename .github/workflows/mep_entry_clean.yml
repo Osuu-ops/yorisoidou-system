@@ -1,0 +1,14 @@
+name: MEP Entry Clean
+on:
+  workflow_dispatch:
+jobs:
+  zone:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit MEP_COPYPASTE_ZONE
+        run: |
+          echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
+          echo "RUN_STATE_CODE=RUNNING"
+          echo "MODE=CLEAN_ENTRY"
+          echo "NEXT_ACTION=PASTE_ZONE_TO_CHAT"
+          echo "===== MEP_COPYPASTE_ZONE END ====="
