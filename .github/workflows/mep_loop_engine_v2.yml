@@ -85,21 +85,10 @@ jobs:
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
           $porc = (git status --porcelain | Out-String).Trim()
-if([string]::IsNullOrWhiteSpace($porc)){
-  # FORCE-DIFF: create_pr 手前で clean なら差分を生成して stage（PR作成を確実にする）
-  $p = "docs/MEP_SUB/HEALTH/engine_v2_force_diff.txt"
-  $d = Split-Path -Parent $p
-  if(-not (Test-Path -LiteralPath $d)){ New-Item -ItemType Directory -Path $d -Force | Out-Null }
-  ("force-diff {0} run_id={1} sha={2}" -f (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK"), $env:GITHUB_RUN_ID, (git rev-parse HEAD)) | Out-File -LiteralPath $p -Encoding UTF8
-  git add $p | Out-Null
-  $porc = (git status --porcelain | Out-String).Trim()
-  if([string]::IsNullOrWhiteSpace($porc)){
-    Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
-    exit 0
-  } else {
-    Write-Host "PHASE3_CREATE_PR_FORCED_DIFF (staged)"
-  }
-}
+          if([string]::IsNullOrWhiteSpace($porc)){
+            Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
+            exit 0
+          }
           Write-Host "PHASE3_CREATE_PR_START"
           if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
           ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
