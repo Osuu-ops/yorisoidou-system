@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (restore step1)
+name: MEP Loop Engine v2 (restore step2)
 "on":
   push:
     branches: [ main ]
@@ -12,5 +12,7 @@ jobs:
   zone:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Smoke
-        run: echo "ENGINE_V2_STEP1_OK"
+        run: echo "ENGINE_V2_STEP2_OK"
