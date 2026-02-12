@@ -1,5 +1,12 @@
-name: MEP Loop Engine v2 (push-loop)
+name: mep_loop_engine_v2_min
 "on":
   push:
     branches: [ main ]
-          git push origin HEAD:main
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: hello
+        run: echo "ENGINE_V2_MIN_OK"
