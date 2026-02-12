@@ -82,7 +82,7 @@ jobs:
           $ErrorActionPreference = "Stop"
           Write-Host "PHASE3_CREATE_PR_START"
           if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
-          ./tools/mep_writeback_create_pr.ps1
+          ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
           Write-Host "PHASE3_CREATE_PR_OK"
       - name: Upload RESTART_PACKET
         uses: actions/upload-artifact@v4
