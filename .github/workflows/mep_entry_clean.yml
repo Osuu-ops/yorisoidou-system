@@ -58,3 +58,4 @@ echo "===== MEP_COPYPASTE_ZONE END ====="
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_engine.yml/dispatches" \
             -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
+# registry-refresh: 20260212_135722
