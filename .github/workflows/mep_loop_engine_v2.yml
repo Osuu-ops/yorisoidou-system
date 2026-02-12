@@ -64,27 +64,26 @@ jobs:
           echo "EVIDENCE_BUNDLE_VERSION=$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$EVI" || true)"
           git status --porcelain || true
           echo "WRITEBACK_PREFLIGHT_OK"
-      - name: PHASE3_PR_CREATE (heartbeat)
-        shell: bash
+      - name: PHASE3_WRITEBACK_BUNDLE
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          Write-Host "PHASE3_WRITEBACK_BUNDLE_START"
+          if(-not (Test-Path -LiteralPath "tools/mep_writeback_bundle.ps1")){ throw "missing tools/mep_writeback_bundle.ps1" }
+          ./tools/mep_writeback_bundle.ps1
+          Write-Host "PHASE3_WRITEBACK_BUNDLE_OK"
+      - name: PHASE3_CREATE_PR
+        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
         run: |
-          set -euo pipefail
-          echo "PHASE3_PR_CREATE_START"
-          mkdir -p docs/MEP
-          date -u +"%Y-%m-%dT%H:%M:%SZ" > docs/MEP/PHASE3_HEARTBEAT_ENGINE.txt
-          git config user.name  "mep-loop-bot"
-          git config user.email "mep-loop-bot@users.noreply.github.com"
-          BR="auto/phase3-heartbeat-engine-${GITHUB_RUN_ID}"
-          git checkout -b "$BR"
-          git add docs/MEP/PHASE3_HEARTBEAT_ENGINE.txt
-          git commit -m "chore(phase3): heartbeat engine ${GITHUB_RUN_ID}"
-          git push origin "$BR"
-          gh pr create --repo "$REPO" --base main --head "$BR" \
-            --title "chore(phase3): heartbeat engine ${GITHUB_RUN_ID}" \
-            --body "PHASE3: engine_v2 proved it can create PRs from inside workflow (dispatch broken)."
-          echo "PHASE3_PR_CREATE_OK"
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          Write-Host "PHASE3_CREATE_PR_START"
+          if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
+          ./tools/mep_writeback_create_pr.ps1
+          Write-Host "PHASE3_CREATE_PR_OK"
       - name: Upload RESTART_PACKET
         uses: actions/upload-artifact@v4
         with:
