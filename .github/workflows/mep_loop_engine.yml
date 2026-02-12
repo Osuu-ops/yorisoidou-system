@@ -10,9 +10,13 @@ on:
         description: "max iterations (hard stop). default 50"
         required: false
         default: "50"
+      sleep_seconds:
+        description: "throttle seconds between hops. default 5"
+        required: false
+        default: "5"
 concurrency:
-  group: mep-loop
-  cancel-in-progress: true
+  group: mep-loop-engine
+  cancel-in-progress: false
 permissions:
   contents: read
   actions: write
@@ -29,11 +33,22 @@ jobs:
           echo "MODE=DISPATCH_LOOP_ENGINE"
           echo "ITER=${{ inputs.iter }}"
           echo "MAX_ITER=${{ inputs.max_iter }}"
+          echo "SLEEP_SECONDS=${{ inputs.sleep_seconds }}"
           echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
           echo "BRANCH=${GITHUB_REF_NAME}"
           echo "HEAD_SHA=${GITHUB_SHA}"
           echo "NEXT_ACTION=DISPATCH_ENTRY"
           echo "===== MEP_COPYPASTE_ZONE END ====="
+      # TODO: ここに「本体処理」を差し込む（writeback/bundle/evidence/health 等）
+      # いったんは“ループが安定して回る”ことを最優先。
+      - name: Throttle
+        shell: bash
+        run: |
+          set -euo pipefail
+          S="${{ inputs.sleep_seconds }}"
+          if [ -z "${S}" ]; then S="5"; fi
+          if [ "${S}" -gt 30 ]; then S="30"; fi
+          sleep "${S}"
       - name: Dispatch Entry (bounded, fail-fast)
         shell: bash
         env:
@@ -51,7 +66,8 @@ jobs:
             exit 0
           fi
           echo "[GO] dispatch Entry: iter=${NEXT}/${MAX}"
-          gh api -X POST "repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
-            -f ref=main \
-            -f "inputs[iter]=${NEXT}" \
-            -f "inputs[max_iter]=${MAX}"
+          curl --fail-with-body -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
+            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\"}}"
