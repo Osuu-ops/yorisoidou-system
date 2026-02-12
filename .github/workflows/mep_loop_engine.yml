@@ -18,9 +18,6 @@ concurrency:
   group: mep-loop-engine
   cancel-in-progress: false
 permissions:
-  contents: write
-  actions: write
-  pull-requests: write
   contents: read
   actions: write
 jobs:
@@ -74,46 +71,3 @@ jobs:
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
             -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\"}}"
-
-      - name: Checkout (for PR)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Prepare heartbeat commit (auto/loop-heartbeat)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          git config user.name  "mep-loop-bot"
-          git config user.email "mep-loop-bot@users.noreply.github.com"
-          BR="auto/loop-heartbeat"
-          git checkout -B "${BR}"
-          mkdir -p docs/MEP_SUB/STATE
-          TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          echo "${TS} ITER=${{ inputs.iter }} MAX=${{ inputs.max_iter }} SHA=${GITHUB_SHA}" >> docs/MEP_SUB/STATE/LOOP_HEARTBEAT.md
-          git add docs/MEP_SUB/STATE/LOOP_HEARTBEAT.md
-          if git diff --cached --quiet; then
-            echo "[OK] no changes"
-            exit 0
-          fi
-          git commit -m "chore(loop): heartbeat iter=${{ inputs.iter }} sha=${GITHUB_SHA}"
-          git push -u origin "${BR}"
-      - name: Open/Update PR (auto/loop-heartbeat)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          BR="auto/loop-heartbeat"
-          # If open PR exists, do nothing (branch push already updates it)
-          PRNUM="$(gh pr list -R "${REPO}" --head "${BR}" --state open --json number --jq '.[0].number' 2>/dev/null || true)"
-          if [ -n "${PRNUM}" ]; then
-            echo "[OK] PR already open: #${PRNUM}"
-            exit 0
-          fi
-          gh pr create -R "${REPO}" --base main --head "${BR}" \
-            --title "chore(loop): heartbeat (auto/loop-heartbeat)" \
-            --body "Auto heartbeat PR from MEP Loop Engine. Merge only when policy allows."
