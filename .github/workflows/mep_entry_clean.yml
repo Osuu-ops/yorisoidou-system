@@ -24,12 +24,16 @@ jobs:
         shell: bash
         run: |
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
-          echo "RUN_STATE_CODE=RUNNING"
-          echo "MODE=DISPATCH_LOOP_ENTRY"
-          echo "ITER=${{ inputs.iter }}"
-          echo "MAX_ITER=${{ inputs.max_iter }}"
-          echo "NEXT_ACTION=ENGINE_DISPATCH_IF_WITHIN_LIMIT"
-          echo "===== MEP_COPYPASTE_ZONE END ====="
+echo "RESTART_PACKET"
+echo "RUN_STATE_CODE=RUNNING"
+echo "MODE=DISPATCH_LOOP_ENTRY"
+echo "ITER=${{ inputs.iter }}"
+echo "MAX_ITER=${{ inputs.max_iter }}"
+echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
+echo "BRANCH=${GITHUB_REF_NAME}"
+echo "HEAD_SHA=${GITHUB_SHA}"
+echo "NEXT_ACTION=ENGINE_DISPATCH_IF_WITHIN_LIMIT"
+echo "===== MEP_COPYPASTE_ZONE END ====="
       - name: Dispatch Engine (bounded)
         shell: bash
         env:
