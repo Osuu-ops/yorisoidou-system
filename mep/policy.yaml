@@ -1,0 +1,24 @@
+# mep/policy.yaml (NORMATIVE minimal template; Phase1)
+# NOTE: YAML is the SSOT (editable). Compiled MD is read-only projection.
+paths_allow: []
+paths_deny: []
+ops_deny: ["delete","rename","move","chmod"]
+diff_deny: ["binary"]
+retry_limits:
+  api: 3
+  claim: 3
+  audit: 2
+stale_limits:
+  wi_in_progress_seconds: 3600
+limits:
+  clock_skew_seconds: 300
+  patch_max_lines: 5000
+  patch_max_bytes: 200000
+  max_extra_work_items_per_run: 50
+  run_id_collision_suffix_max: 9
+  branch_suffix_max: 9
+retention:
+  keep_runs: 20
+  history_k: 10
+  pinned_runs: []
+  pinned_max: 50

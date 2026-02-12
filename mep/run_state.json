@@ -1,0 +1,31 @@
+{
+  "run_id": "RUN_5e80a72dfa04",
+  "run_status": "STILL_OPEN",
+  "next_action": "STATUS",
+  "last_result": {
+    "stop_class": "",
+    "reason_code": "",
+    "next_action": "STATUS",
+    "timestamp_utc": "2026-02-12T19:32:24Z",
+    "action": {
+      "name": "APPLY",
+      "outcome": "OK"
+    },
+    "evidence": {
+      "branch_name": null,
+      "pr_url": null,
+      "commit_sha": null,
+      "workflow_run_url": null
+    }
+  },
+  "work_summary": {
+    "total": "unknown",
+    "ready": "unknown",
+    "in_progress": "unknown",
+    "done": "unknown",
+    "stop": "unknown"
+  },
+  "history": [],
+  "updated_at": "2026-02-12T19:32:24Z",
+  "last_good": null
+}
