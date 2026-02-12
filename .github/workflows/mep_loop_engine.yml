@@ -34,7 +34,7 @@ jobs:
           echo "HEAD_SHA=${GITHUB_SHA}"
           echo "NEXT_ACTION=DISPATCH_ENTRY"
           echo "===== MEP_COPYPASTE_ZONE END ====="
-      - name: Dispatch Entry (bounded)
+      - name: Dispatch Entry (bounded, fail-fast)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,8 +50,8 @@ jobs:
             echo "[STOP] reached max_iter: ${MAX}"
             exit 0
           fi
-          curl -sS -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
-            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
+          echo "[GO] dispatch Entry: iter=${NEXT}/${MAX}"
+          gh api -X POST "repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[iter]=${NEXT}" \
+            -f "inputs[max_iter]=${MAX}"
