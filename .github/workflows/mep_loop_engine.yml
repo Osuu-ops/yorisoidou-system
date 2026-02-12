@@ -62,6 +62,20 @@ jobs:
           echo "HEAD_SHA=${GITHUB_SHA}"
           echo "NEXT_ACTION=DISPATCH_ENTRY"
           echo "===== MEP_COPYPASTE_ZONE END ====="
+        - name: CONFLICT_SCAN (legacy detect -> MACHINE_ONLY STOP)
+          shell: bash
+          run: |
+            set -euo pipefail
+            echo "CONFLICT_SCAN_START"
+            # provisional minimal detection; fix keys once Q3 is evidenced
+            HIT=0
+            if git grep -n -I -E "\bWORK_ID\b|\bWIP-\b|OLD_WORK_ID|LEGACY|旧WORK_ID|旧仕様|work_id" -- . >/dev/null 2>&1; then HIT=1; fi
+            if [ "${HIT}" -eq 1 ]; then
+              echo "[STOP][MACHINE_ONLY] legacy/new parallel detected"
+              exit 2
+            fi
+            echo "CONFLICT_SCAN_OK"
+
       # TODO: ここに「本体処理」を差し込む（writeback/bundle/evidence/health 等）
       # いったんは“ループが安定して回る”ことを最優先。
       - name: Throttle
