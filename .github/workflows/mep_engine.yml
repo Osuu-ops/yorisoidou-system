@@ -1,8 +1,7 @@
-name: MEP Entry Clean
+name: MEP Engine
 on:
-  workflow_dispatch:
   workflow_run:
-    workflows: ["MEP Engine"]
+    workflows: ["MEP Entry Clean"]
     types: [completed]
 concurrency:
   group: mep-loop
@@ -19,6 +18,6 @@ jobs:
         run: |
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
           echo "RUN_STATE_CODE=RUNNING"
-          echo "MODE=AUTO_LOOP_ENTRY"
-          echo "NEXT_ACTION=WAIT_ENGINE_THEN_THIS_RESTARTS"
+          echo "MODE=AUTO_LOOP_ENGINE"
+          echo "NEXT_ACTION=WAIT_ENTRY_THEN_THIS_RESTARTS"
           echo "===== MEP_COPYPASTE_ZONE END ====="
