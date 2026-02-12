@@ -1,4 +1,4 @@
-name: MEP Loop Engine v2 (restore step4)
+name: MEP Loop Engine v2 (restore step5)
 "on":
   push:
     branches: [ main ]
@@ -34,6 +34,23 @@ jobs:
             echo "SSOT_VALID=true"
           } > .mep/RESTART_PACKET.txt
           echo "SSOT_SCAN_OK"
+      - name: CONFLICT_SCAN (safe-min)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CONFLICT_SCAN_START"
+          # Changed files in this push (single commit typical for merge commit)
+          FILES="$(git diff --name-only HEAD~1..HEAD || true)"
+          echo "$FILES" | sed -n '1,200p'
+          LEGACY=0
+          NEW=0
+          echo "$FILES" | grep -E '^docs/MEP/SSOT/WORK_ID|^docs/MEP/WORK_ID/' >/dev/null 2>&1 && LEGACY=1 || true
+          echo "$FILES" | grep -E '^docs/MEP/SSOT/WORK_ITEMS|^docs/MEP/WORK_ITEMS/' >/dev/null 2>&1 && NEW=1 || true
+          if [ "$LEGACY" -eq 1 ] && [ "$NEW" -eq 1 ]; then
+            echo "::error::WB0001 CONFLICT_SCAN failed: legacy+new execution-candidate sources modified together."
+            exit 1
+          fi
+          echo "CONFLICT_SCAN_OK"
       - name: Upload RESTART_PACKET
         uses: actions/upload-artifact@v4
         with:
@@ -41,4 +58,4 @@ jobs:
           path: .mep/RESTART_PACKET.txt
           if-no-files-found: error
       - name: Smoke
-        run: echo "ENGINE_V2_STEP4_OK"
+        run: echo "ENGINE_V2_STEP5_OK"
