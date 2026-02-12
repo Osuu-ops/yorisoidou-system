@@ -1,17 +1,23 @@
 name: MEP Entry Clean
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["MEP Engine"]
-    types: [completed]
+    inputs:
+      iter:
+        description: "current iteration (0..)"
+        required: false
+        default: "0"
+      max_iter:
+        description: "max iterations (hard stop). default 50"
+        required: false
+        default: "50"
 concurrency:
   group: mep-loop
   cancel-in-progress: true
 permissions:
   contents: read
+  actions: write
 jobs:
   zone:
-    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Emit MEP_COPYPASTE_ZONE
@@ -19,6 +25,32 @@ jobs:
         run: |
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
           echo "RUN_STATE_CODE=RUNNING"
-          echo "MODE=AUTO_LOOP_ENTRY"
-          echo "NEXT_ACTION=ENGINE_SHOULD_TRIGGER"
+          echo "MODE=DISPATCH_LOOP_ENTRY"
+          echo "ITER=${{ inputs.iter }}"
+          echo "MAX_ITER=${{ inputs.max_iter }}"
+          echo "NEXT_ACTION=ENGINE_DISPATCH_IF_WITHIN_LIMIT"
           echo "===== MEP_COPYPASTE_ZONE END ====="
+      - name: Dispatch Engine (bounded)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ITER="${{ inputs.iter }}"
+          MAX="${{ inputs.max_iter }}"
+          # hard safety cap
+          if [ -z "${MAX}" ]; then MAX="50"; fi
+          if [ "${MAX}" -gt 200 ]; then MAX="200"; fi
+          # next iteration
+          NEXT=$((ITER+1))
+          if [ "${NEXT}" -gt "${MAX}" ]; then
+            echo "[STOP] reached max_iter: ${MAX}"
+            exit 0
+          fi
+          echo "[GO] dispatch Engine: iter=${NEXT}/${MAX}"
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${REPO}/actions/workflows/mep_engine.yml/dispatches" \
+            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
