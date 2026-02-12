@@ -85,10 +85,19 @@ jobs:
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
           $porc = (git status --porcelain | Out-String).Trim()
-          if([string]::IsNullOrWhiteSpace($porc)){
-            Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
-            exit 0
-          }
+if([string]::IsNullOrWhiteSpace($porc)){
+  # FORCE-DIFF (safe): generate+stage a marker file, then re-check porcelain
+  if(Test-Path -LiteralPath "tools/mep_force_diff_if_clean.ps1"){
+    ./tools/mep_force_diff_if_clean.ps1 -MarkerPath "docs/MEP_SUB/HEALTH/engine_v2_force_diff.txt"
+  } else {
+    Write-Host "FORCE_DIFF_HELPER_MISSING"
+  }
+  $porc = (git status --porcelain | Out-String).Trim()
+}
+if([string]::IsNullOrWhiteSpace($porc)){
+  Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
+  exit 0
+}
           Write-Host "PHASE3_CREATE_PR_START"
           if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
           ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
@@ -101,3 +110,4 @@ jobs:
           if-no-files-found: error
       - name: Smoke
         run: echo "ENGINE_V2_PHASE3_OK"
+
