@@ -3,6 +3,11 @@ name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
     inputs:
+      ssot_payload_path:
+        description: "Repo-relative path to SSOT payload file (optional). Example: .mep_tmp/SSOT_PAYLOAD__YYYYMMDD_....md"
+        required: false
+        default: ""
+
       pr_number:
         description: "0 = auto latest merged PR"
         required: false
@@ -52,6 +57,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Load SSOT payload (optional)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSOT_PATH_IN="${{ inputs.ssot_payload_path }}"
+          if [ -z "${SSOT_PATH_IN}" ]; then
+            echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
+            echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
+            exit 0
+          fi
+          if [ ! -f "${SSOT_PATH_IN}" ]; then
+            echo "[NG] SSOT payload path not found: ${SSOT_PATH_IN}"
+            exit 2
+          fi
+          echo "MEP_SSOT_PAYLOAD_PATH=${SSOT_PATH_IN}" >> "${GITHUB_ENV}"
+          # sha256 for version stamp (portable on ubuntu runner)
+          SSOT_HASH="$(sha256sum "${SSOT_PATH_IN}" | awk '{print $1}')"
+          echo "MEP_SSOT_VERSION=sha256:${SSOT_HASH}" >> "${GITHUB_ENV}"
+          echo "[OK] SSOT payload loaded: ${SSOT_PATH_IN}"
 
       - name: Configure git identity (required for writeback commit)
         shell: bash
