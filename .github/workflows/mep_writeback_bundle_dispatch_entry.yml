@@ -3,7 +3,12 @@ name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
     inputs:
-      ssot_payload_path:
+      
+      ssot_b64:
+        description: "SSOT payload as base64(UTF-8). If set, runner reconstructs file + sha256 stamp."
+        required: false
+        default: ""
+ssot_payload_path:
         description: "Repo-relative path to SSOT payload file (optional). Example: .mep_tmp/SSOT_PAYLOAD__YYYYMMDD_....md"
         required: false
         default: ""
@@ -57,6 +62,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Load SSOT payload (b64 optional)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSOT_B64="${{ inputs.ssot_b64 }}"
+          if [ -z "${SSOT_B64}" ]; then
+            echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
+            echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
+            exit 0
+          fi
+          mkdir -p .mep_tmp
+          SSOT_PATH=".mep_tmp/SSOT_PAYLOAD__${GITHUB_RUN_ID}.md"
+          echo "${SSOT_B64}" | base64 -d > "${SSOT_PATH}"
+          echo "MEP_SSOT_PAYLOAD_PATH=${SSOT_PATH}" >> "${GITHUB_ENV}"
+          SSOT_HASH="$(sha256sum "${SSOT_PATH}" | awk '{print $1}')"
+          echo "MEP_SSOT_VERSION=sha256:${SSOT_HASH}" >> "${GITHUB_ENV}"
+          echo "[OK] SSOT restored: ${SSOT_PATH}"
       - name: Load SSOT payload (optional)
         shell: bash
         run: |
