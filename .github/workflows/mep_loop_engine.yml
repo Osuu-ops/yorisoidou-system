@@ -24,6 +24,29 @@ jobs:
   zone:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: SSOT_SCAN
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SSOT_SCAN_START"
+          CANDIDATES=("MEP_SSOT_MASTER" "MEP_SSOT_MASTER.md" "docs/MEP/MEP_SSOT_MASTER" "docs/MEP/MEP_SSOT_MASTER.md" "docs/MEP/MEP_SSOT_MASTER.txt" ".mep/MEP_BOOT_SPEC.md" "docs/MEP/MEP_BOOT_SPEC.md")
+          SSOT_PATH=""
+          for p in "${CANDIDATES[@]}"; do [ -f "$p" ] && SSOT_PATH="$p" && break; done
+          [ -z "$SSOT_PATH" ] && echo "::error::SSOT not found" && exit 1
+          SSOT_HASH="$(sha256sum "$SSOT_PATH" | awk '{print $1}')"
+          SSOT_VERSION="$(grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$SSOT_PATH" | head -n 1 || true)"
+          [ -z "$SSOT_VERSION" ] && SSOT_VERSION="(unknown)"
+          mkdir -p .mep
+          printf "SSOT_PATH=%s\nSSOT_HASH=%s\nSSOT_VERSION=%s\nSSOT_VALID=true\n" "$SSOT_PATH" "$SSOT_HASH" "$SSOT_VERSION" > .mep/RESTART_PACKET.txt
+          echo "SSOT_SCAN_OK"
+      - name: Upload RESTART_PACKET
+        uses: actions/upload-artifact@v4
+        with:
+          name: restart-packet
+          path: .mep/RESTART_PACKET.txt
+          if-no-files-found: error
       - name: Emit MEP_COPYPASTE_ZONE
         shell: bash
         run: |
