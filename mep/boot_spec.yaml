@@ -1,0 +1,8 @@
+# mep/boot_spec.yaml (NORMATIVE minimal template; Phase1)
+spec_version: "2.1"
+entrypoints:
+  - boot
+  - status
+  - apply
+notes:
+  - "Runner-led. GPT must not write to GitHub."
