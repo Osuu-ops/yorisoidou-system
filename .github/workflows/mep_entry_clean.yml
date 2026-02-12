@@ -20,5 +20,5 @@ jobs:
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
           echo "RUN_STATE_CODE=RUNNING"
           echo "MODE=AUTO_LOOP_ENTRY"
-          echo "NEXT_ACTION=WAIT_ENGINE_THEN_THIS_RESTARTS"
+          echo "NEXT_ACTION=ENGINE_SHOULD_TRIGGER"
           echo "===== MEP_COPYPASTE_ZONE END ====="
