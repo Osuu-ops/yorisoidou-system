@@ -1,6 +1,10 @@
 name: MEP Entry Clean
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["MEP Entry Clean"]
+    types:
+      - completed
 jobs:
   zone:
     runs-on: ubuntu-latest
@@ -9,6 +13,6 @@ jobs:
         run: |
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
           echo "RUN_STATE_CODE=RUNNING"
-          echo "MODE=CLEAN_ENTRY"
-          echo "NEXT_ACTION=PASTE_ZONE_TO_CHAT"
+          echo "MODE=AUTO_LOOP"
+          echo "NEXT_ACTION=AUTO_RESTART"
           echo "===== MEP_COPYPASTE_ZONE END ====="
