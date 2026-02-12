@@ -1,0 +1,57 @@
+name: MEP Loop Engine
+on:
+  workflow_dispatch:
+    inputs:
+      iter:
+        description: "current iteration (0..)"
+        required: false
+        default: "0"
+      max_iter:
+        description: "max iterations (hard stop). default 50"
+        required: false
+        default: "50"
+concurrency:
+  group: mep-loop
+  cancel-in-progress: true
+permissions:
+  contents: read
+  actions: write
+jobs:
+  zone:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit MEP_COPYPASTE_ZONE
+        shell: bash
+        run: |
+          echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
+          echo "RESTART_PACKET"
+          echo "RUN_STATE_CODE=RUNNING"
+          echo "MODE=DISPATCH_LOOP_ENGINE"
+          echo "ITER=${{ inputs.iter }}"
+          echo "MAX_ITER=${{ inputs.max_iter }}"
+          echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
+          echo "BRANCH=${GITHUB_REF_NAME}"
+          echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "NEXT_ACTION=DISPATCH_ENTRY"
+          echo "===== MEP_COPYPASTE_ZONE END ====="
+      - name: Dispatch Entry (bounded)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ITER="${{ inputs.iter }}"
+          MAX="${{ inputs.max_iter }}"
+          if [ -z "${MAX}" ]; then MAX="50"; fi
+          if [ "${MAX}" -gt 200 ]; then MAX="200"; fi
+          NEXT=$((ITER+1))
+          if [ "${NEXT}" -gt "${MAX}" ]; then
+            echo "[STOP] reached max_iter: ${MAX}"
+            exit 0
+          fi
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_entry.yml/dispatches" \
+            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
