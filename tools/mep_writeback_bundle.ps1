@@ -52,6 +52,29 @@ if ($PrNumber -eq 0) {
 
 # if no diff, do nothing (workflow should have produced diff, but we stay safe)
 $diff = (git status --porcelain -- $BundlePath)
+
+  # FORCE-DIFF: BundlePath が clean なら BundlePath 自体にハートビートを入れて差分を作る（non-NOOP用）
+  if (-not $diff) {
+    try {
+      $runId = $env:GITHUB_RUN_ID; if ([string]::IsNullOrWhiteSpace($runId)) { $runId = "unknown" }
+      $sha = (git rev-parse HEAD 2>$null); if ([string]::IsNullOrWhiteSpace($sha)) { $sha = "unknown" }
+      $markerBegin = "<!-- MEP_ENGINE_V2_HEARTBEAT_BEGIN -->"
+      $markerEnd   = "<!-- MEP_ENGINE_V2_HEARTBEAT_END -->"
+      $line = ("<!-- engine_v2_heartbeat ts={0} run_id={1} sha={2} -->" -f (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK"), $runId, $sha)
+      $raw = Get-Content -LiteralPath $BundlePath -Raw
+      if ($raw -match [regex]::Escape($markerBegin)) {
+        $raw2 = [regex]::Replace($raw, "(?ms)\Q$markerBegin\E.*?\Q$markerEnd\E", ($markerBegin + "`n" + $line + "`n" + $markerEnd), 1)
+        Set-Content -LiteralPath $BundlePath -Value $raw2 -Encoding UTF8
+      } else {
+        Add-Content -LiteralPath $BundlePath -Encoding UTF8 -Value ("`n" + $markerBegin + "`n" + $line + "`n" + $markerEnd + "`n")
+      }
+      git add -- $BundlePath | Out-Null
+    } catch {
+      Warn ("FORCE_DIFF_FAILED: " + $_.Exception.Message)
+    }
+    $diff = (git status --porcelain -- $BundlePath)
+    if ($diff) { Info "FORCE_DIFF_OK: BundlePath became dirty" }
+  }
 if (-not $diff) {
   Warn "No diff for bundle file; skip writeback."
   exit 0
