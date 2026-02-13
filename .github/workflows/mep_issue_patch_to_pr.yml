@@ -1,0 +1,96 @@
+name: MEP Issue Patch to PR (NO_LLM)
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: mep-issue-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  patch_to_pr:
+    if: contains(github.event.comment.body, '/mep run')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract diff patch from comment
+        id: extract
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body || "";
+            const m = body.match(/```diff\n([\s\S]*?)\n```/i);
+            if (!m) {
+              core.setFailed("NO_PATCH: comment must include a ```diff fenced block.");
+              return;
+            }
+            const patch = m[1];
+
+            // base64 encode to safely pass multiline data
+            const patchB64 = Buffer.from(patch, "utf8").toString("base64");
+            core.setOutput("patch_b64", patchB64);
+
+      - name: Write patch to file
+        run: |
+          echo "${{ steps.extract.outputs.patch_b64 }}" | base64 -d > /tmp/mep.patch
+          test -s /tmp/mep.patch
+          echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
+
+      - name: Guard (no binary / no delete-rename-move-chmod)
+        run: |
+          set -euo pipefail
+          if grep -nE 'GIT binary patch|^Binary files ' /tmp/mep.patch >/dev/null; then
+            echo "STOP_HARD: BINARY_DIFF_FORBIDDEN"
+            exit 1
+          fi
+          if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then
+            echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN (delete/rename/mode-change)"
+            exit 1
+          fi
+
+      - name: Apply patch (check then apply)
+        run: |
+          set -euo pipefail
+          git apply --check /tmp/mep.patch
+          git apply /tmp/mep.patch
+
+      - name: Create PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "MEP: apply patch from issue #${{ github.event.issue.number }}"
+          body: |
+            Applied by MEP Issue Patch Runner (NO_LLM).
+
+            - Issue: #${{ github.event.issue.number }}
+            - Comment: ${{ github.event.comment.html_url }}
+            - Patch bytes: ${{ env.PATCH_BYTES }}
+          commit-message: "mep: apply patch from issue #${{ github.event.issue.number }}"
+          branch: "auto/mep_issue_${{ github.event.issue.number }}_${{ github.run_id }}"
+          base: "main"
+          delete-branch: true
+
+      - name: Comment back with PR URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.payload.issue.number;
+            const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
+            const msg = prUrl
+              ? `✅ MEP created PR: ${prUrl}\n(mode=NO_LLM)`
+              : `⚠️ MEP finished but PR URL not returned. Check workflow run.\n(mode=NO_LLM)`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: msg,
+            });
