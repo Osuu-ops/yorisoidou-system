@@ -1,0 +1,42 @@
+name: mep_issueops_run
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [edited]
+  pull_request:
+    paths:
+      - '.github/workflows/mep_issueops_run.yml'
+      - 'tools/agent/issueops.py'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  issueops_run:
+    if: >-
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null) ||
+      (github.event_name == 'issues')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run IssueOps bootstrap
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python tools/agent/issueops.py
