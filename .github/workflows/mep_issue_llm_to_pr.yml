@@ -52,6 +52,7 @@ Rules:
 - Output ONLY unified diff. No prose.
 - No binary diffs.
 - No delete/rename/move/chmod.
+- Prefer small, safe changes.
 - Touch only: mep/**, docs/MEP/**, .github/workflows/**, tools/runner/**, README.md
 EOF
 )
