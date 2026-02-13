@@ -22,18 +22,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract diff patch from comment
+      - name: Extract patch from comment (PATCH_START/END preferred)
         id: extract
         uses: actions/github-script@v7
         with:
           script: |
             const body = context.payload.comment.body || "";
-            const m = body.match(/```diff\n([\s\S]*?)\n```/i);
-            if (!m) {
-              core.setFailed("NO_PATCH: comment must include a ```diff fenced block.");
+
+            // Preferred input (no backticks):
+            // /mep run
+            // PATCH_START
+            // <diff text...>
+            // PATCH_END
+            let patch = "";
+            const m = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
+            if (m && m[1]) patch = m[1].trim();
+
+            // Backward-compat: fenced diff block, but WITHOUT literal backticks here.
+            if (!patch) {
+              const FENCE = String.fromCharCode(96, 96, 96); // "```"
+              const re = new RegExp(FENCE + "diff\\n([\\s\\S]*?)\\n" + FENCE, "i");
+              const m2 = body.match(re);
+              if (m2 && m2[1]) patch = m2[1].trim();
+            }
+
+            if (!patch) {
+              core.setFailed("NO_PATCH: Use PATCH_START..PATCH_END (preferred).");
               return;
             }
-            const patch = m[1];
 
             // base64 encode to safely pass multiline data
             const patchB64 = Buffer.from(patch, "utf8").toString("base64");
