@@ -447,7 +447,8 @@ def main() -> int:
     ap_create = sub.add_parser("pr-create")
     ap_create.add_argument("--run-id", required=True)
     ap_asm = sub.add_parser("assemble-pr")
-    ap_asm.add_argument("--run-id", required=True)    args = ap.parse_args()
+    ap_asm.add_argument("--run-id", required=True)
+    args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
     if args.cmd == "status":
@@ -459,7 +460,8 @@ def main() -> int:
     if args.cmd == "pr-create":
         return pr_create(args.run_id)
     if args.cmd == "assemble-pr":
-        return assemble_pr(args.run_id)    return 1
+        return assemble_pr(args.run_id)
+    return 1
 
 if __name__ == "__main__":
     sys.exit(main())
