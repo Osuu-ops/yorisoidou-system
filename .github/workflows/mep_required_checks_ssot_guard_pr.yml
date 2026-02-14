@@ -1,0 +1,112 @@
+name: REQUIRED_CHECKS_SSOT / gate
+on:
+  pull_request:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: required checks ssot vs statusCheckRollup
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const core = require('@actions/core');
+            const SSOT_PATH = 'docs/MEP/REQUIRED_CHECKS_SSOT.md';
+            if (!fs.existsSync(SSOT_PATH)) {
+              core.setFailed(`STOP_HARD REASON_CODE=REQUIRED_CHECKS_SSOT_MISSING path=${SSOT_PATH}`);
+              return;
+            }
+            const md = fs.readFileSync(SSOT_PATH, 'utf8');
+            // Parse lines: - "NAME"
+            const required = [];
+            const re = /^\s*-\s*"([^"]+)"\s*$/gm;
+            let m;
+            while ((m = re.exec(md)) !== null) required.push(m[1]);
+            if (required.length === 0) {
+              core.setFailed('STOP_HARD REASON_CODE=REQUIRED_CHECKS_SSOT_PARSE_FAILED (no - "NAME" entries found)');
+              return;
+            }
+            const pr = context.payload.pull_request;
+            if (!pr || !pr.number) {
+              core.setFailed('STOP_HARD REASON_CODE=NO_PULL_REQUEST_CONTEXT');
+              return;
+            }
+            const query = `
+              query($owner:String!, $name:String!, $number:Int!) {
+                repository(owner:$owner, name:$name) {
+                  pullRequest(number:$number) {
+                    statusCheckRollup {
+                      contexts(first: 100) {
+                        nodes {
+                          __typename
+                          ... on CheckRun {
+                            name
+                            status
+                            conclusion
+                            detailsUrl
+                          }
+                          ... on StatusContext {
+                            context
+                            state
+                            targetUrl
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            const owner = context.repo.owner;
+            const name  = context.repo.repo;
+            const number = pr.number;
+            const res = await github.graphql(query, { owner, name, number });
+            const nodes = res?.repository?.pullRequest?.statusCheckRollup?.contexts?.nodes || [];
+            // Map displayed-name -> {kind,state}
+            const present = new Map();
+            for (const n of nodes) {
+              if (!n) continue;
+              if (n.__typename === 'CheckRun') {
+                const state = (n.conclusion ?? n.status ?? '').toString().toUpperCase();
+                present.set(n.name, { kind: 'CheckRun', state, url: n.detailsUrl || '' });
+              } else if (n.__typename === 'StatusContext') {
+                const state = (n.state ?? '').toString().toUpperCase();
+                present.set(n.context, { kind: 'StatusContext', state, url: n.targetUrl || '' });
+              }
+            }
+            const missing = [];
+            const notSuccess = [];
+            for (const r of required) {
+              const hit = present.get(r);
+              if (!hit) { missing.push(r); continue; }
+              const st = (hit.state || '').toUpperCase();
+              const ok = (st === 'SUCCESS');
+              if (!ok) notSuccess.push(`${r} :: ${hit.kind} :: ${st || 'UNKNOWN'}`);
+            }
+            await core.summary
+              .addHeading('REQUIRED_CHECKS_SSOT / gate')
+              .addRaw(`PR #${number}\n\n`)
+              .addHeading('SSOT required', 2)
+              .addList(required)
+              .addHeading('Observed (statusCheckRollup)', 2)
+              .addList(Array.from(present.keys()).sort())
+              .write();
+            if (missing.length > 0 || notSuccess.length > 0) {
+              const payload = {
+                STOP_KIND: 'HARD',
+                REASON_CODE: (missing.length > 0) ? 'REQUIRED_CHECKS_MISSING_OR_MISMATCH' : 'REQUIRED_CHECKS_NOT_SUCCESS',
+                SSOT_PATH,
+                missing,
+                not_success: notSuccess,
+              };
+              core.error(JSON.stringify(payload, null, 2));
+              core.setFailed(`STOP_HARD REASON_CODE=${payload.REASON_CODE} missing=${missing.length} not_success=${notSuccess.length}`);
+              return;
+            }
+            core.info(`OK: SSOT(${required.length}) fully present and SUCCESS in statusCheckRollup`);
