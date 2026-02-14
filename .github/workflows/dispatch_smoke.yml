@@ -1,97 +1,18 @@
-name: UX Rooftop Entry (FULLAUTO)
-
+name: Dispatch Smoke
 on:
   workflow_dispatch:
     inputs:
-      biz_key:
-        description: "Business key (must exist in businesses/REGISTRY.yml). Default=yorisoidou"
+      note:
+        description: "smoke note"
         required: false
-        default: "yorisoidou"
-      artifact_title:
-        description: "Artifact title (short)"
-        required: true
-      artifact_markdown:
-        description: "Artifact body (markdown)"
-        required: true
-      pr_body:
-        description: "PR body"
-        required: true
-      merge_if_ok:
-        description: "Merge automatically if gate OK (true/false)"
-        required: false
-        default: "true"
-
+        type: string
 permissions:
-  contents: write
-  pull-requests: write
-
+  contents: read
 jobs:
-  full-auto:
+  smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main (fixed)
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-
-      - name: Configure git
-        shell: bash
+      - name: Echo
         run: |
-          set -euo pipefail
-          BIZ="${{ github.event.inputs.biz_key }}"
-          if [ -z "${BIZ}" ]; then BIZ="yorisoidou"; fi
-          if [ ! -f "businesses/REGISTRY.yml" ]; then
-            echo "businesses/REGISTRY.yml not found" >&2
-            exit 1
-          fi
-          if ! grep -Eq "^[[:space:]]*-[[:space:]]*key:[[:space:]]*${BIZ}[[:space:]]*$" "businesses/REGISTRY.yml"; then
-            echo "Unknown biz_key: ${BIZ}" >&2
-            exit 1
-          fi
-          echo "biz_key=${BIZ}"      
-      - name: Create PR (Gate X)
-        shell: bash
-        env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
-          INPUT_BIZ_KEY: ${{ github.event.inputs.biz_key }}
-          INPUT_PR_BODY: ${{ github.event.inputs.pr_body }}
-        run: |
-          set -euo pipefail
-          BIZ="${INPUT_BIZ_KEY:-yorisoidou}"
-          BODY="${INPUT_PR_BODY}"
-          if [ -z "${BODY}" ]; then BODY="Gate X: FULLAUTO PR"; fi
-
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # 変更が無い場合は停止（PR不要）
-          if git diff --quiet; then
-            echo "No changes; nothing to PR."
-            exit 0
-          fi
-
-          BR="auto/${BIZ}/gate-x/${GITHUB_RUN_ID}"
-          git checkout -b "${BR}"
-          git add -A
-          git commit -m "Gate X: FULLAUTO (${BIZ})"
-          git push -u origin "${BR}"
-
-          gh pr create --base main --head "${BR}" --title "Gate X: FULLAUTO (${BIZ})" --body "${BODY}"
-      
-      - name: Enable auto-merge (Gate X)
-        if: ${{ github.event.inputs.merge_if_ok == 'true' }}
-        shell: bash
-        env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
-          INPUT_BIZ_KEY: ${{ github.event.inputs.biz_key }}
-        run: |
-          set -euo pipefail
-          BIZ="${INPUT_BIZ_KEY:-yorisoidou}"
-          PR_URL="$(gh pr list --state open --head "auto/${BIZ}/gate-x/${GITHUB_RUN_ID}" --json url --jq '.[0].url')"
-          if [ -z "${PR_URL}" ]; then
-            echo "PR not found; skip auto-merge."
-            exit 0
-          fi
-          gh pr merge --auto --squash "${PR_URL}"
-
+          echo "OK_DISPATCH_SMOKE"
+          echo "note=${{ inputs.note }}"
