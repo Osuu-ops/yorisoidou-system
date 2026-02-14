@@ -68,25 +68,29 @@ Draft:"
           if grep -nE 'GIT binary patch|^Binary files ' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: BINARY_DIFF_FORBIDDEN"; exit 1; fi
           if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN"; exit 1; fi
 
-      - name: Guard (scope/size/keywords)
+      - name: Load P4 thresholds (SSOT -> GITHUB_ENV)
+  shell: bash
+  run: |
+    set -euo pipefail
+    bash tools/runner/p4_thresholds_load.sh --github-env "$GITHUB_ENV" docs/MEP/P4_THRESHOLDS_SSOT.md- name: Guard (scope/size/keywords)
         run: |
           set -euo pipefail
           PATCH=/tmp/mep.patch
           test -s "$PATCH"
           # ---- size limits (anti-runaway) ----
-          max_bytes=250000
+          max_bytes=$P4_MAX_BYTES
           bytes=$(wc -c < "$PATCH" | tr -d ' ')
           if [ "$bytes" -gt "$max_bytes" ]; then
             echo "STOP_HARD: PATCH_TOO_LARGE bytes=$bytes max=$max_bytes"
             exit 1
           fi
-          max_files=60
+          max_files=$P4_MAX_FILES
           files=$(grep -E '^diff --git ' "$PATCH" | wc -l | tr -d ' ')
           if [ "$files" -gt "$max_files" ]; then
             echo "STOP_HARD: TOO_MANY_FILES files=$files max=$max_files"
             exit 1
           fi
-          max_added=2000
+          max_added=$P4_MAX_ADDED
           added=$(grep -E '^\+' "$PATCH" | grep -vE '^\+\+\+' | wc -l | tr -d ' ')
           if [ "$added" -gt "$max_added" ]; then
             echo "STOP_HARD: TOO_MANY_ADDED_LINES added=$added max=$max_added"
