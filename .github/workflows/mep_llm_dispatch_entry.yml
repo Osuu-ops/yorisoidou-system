@@ -17,14 +17,16 @@ jobs:
   entry:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout (PAT)
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          token: ${{ secrets.MEP_PR_TOKEN }}
+          persist-credentials: true
+          fetch-depth: 1
       - name: Hello github-script
         uses: actions/github-script@v7
         with:
-          token: ${{ secrets.MEP_PR_TOKEN }}
+          github-token: ${{ secrets.MEP_PR_TOKEN }}
           script: |
             core.info("hello");
       - name: Long bash (no network)
@@ -57,4 +59,4 @@ jobs:
           git push -u origin "$BR"
           gh pr create --base main --head "$BR" \
             --title "MEP: apply (Dispatch Entry) run ${{ github.run_id }}" \
-            --body "Applied by MEP LLM Dispatch Entry.\n- Event: ${{ github.event_name }}\n- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"          delete-branch: true
+            --body "Applied by MEP LLM Dispatch Entry.\n- Event: ${{ github.event_name }}\n- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
