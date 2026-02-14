@@ -39,16 +39,22 @@ jobs:
           set -euo pipefail
           mkdir -p mep
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
-      - name: Create PR (create-pull-request)
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.MEP_PR_TOKEN }}
-          title: "MEP: apply (Dispatch Entry) run ${{ github.run_id }}"
-          body: |
-            Applied by MEP LLM Dispatch Entry.
-            - Event: ${{ github.event_name }}
-            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          commit-message: "mep: dispatch-entry smoke ${{ github.run_id }}"
-          branch: "auto/mep_dispatch_entry_${{ github.run_id }}"
-          base: "main"
-          delete-branch: true
+      - name: Create PR (gh)
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BR="auto/mep_dispatch_entry_${{ github.run_id }}"
+          git checkout -b "$BR"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "NO_DIFF: nothing to commit"
+            exit 0
+          fi
+          git commit -m "mep: dispatch-entry smoke ${{ github.run_id }}"
+          git push -u origin "$BR"
+          gh pr create --base main --head "$BR" \
+            --title "MEP: apply (Dispatch Entry) run ${{ github.run_id }}" \
+            --body "Applied by MEP LLM Dispatch Entry.\n- Event: ${{ github.event_name }}\n- Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"          delete-branch: true
