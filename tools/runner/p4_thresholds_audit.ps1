@@ -2,20 +2,18 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 param(
-  [string]$RepoRoot = "",
-  [string]$SsotPath = "docs/MEP/P4_THRESHOLDS_SSOT.md"
+  [string]$RepoRoot,
+  [string]$SsotPath
 )
 if (-not $RepoRoot) {
   $RepoRoot = (git rev-parse --show-toplevel).Trim()
 }
 if (-not $RepoRoot) { throw "REPO_ROOT_NOT_FOUND" }
+if (-not $SsotPath) {
+  $SsotPath = "docs/MEP/P4_THRESHOLDS_SSOT.md"
+}
 Set-Location $RepoRoot
-$targets = @(
-  ".github/workflows",
-  "tools",
-  "mep",
-  "docs"
-)
+$targets = @(".github/workflows","tools","mep","docs")
 $patterns = @(
   "max_bytes\s*=\s*250000",
   "max_files\s*=\s*60",
