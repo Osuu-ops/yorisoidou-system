@@ -2,9 +2,12 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 param(
-  [string]$RepoRoot = (git rev-parse --show-toplevel),
+  [string]$RepoRoot = "",
   [string]$SsotPath = "docs/MEP/P4_THRESHOLDS_SSOT.md"
 )
+if (-not $RepoRoot) {
+  $RepoRoot = (git rev-parse --show-toplevel).Trim()
+}
 if (-not $RepoRoot) { throw "REPO_ROOT_NOT_FOUND" }
 Set-Location $RepoRoot
 $targets = @(
