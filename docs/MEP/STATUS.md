@@ -1,36 +1,11 @@
-
 # STATUS
-
-
-
 RUN_ID: RUN_5e80a72dfa04
-
-
 RUN_STATUS: STILL_OPEN
-
-
 STOP_CLASS: 
-
-
 REASON_CODE: 
-
-
-NEXT_ACTION: STATUS
-
-
-TIMESTAMP_UTC: 2026-02-12T19:32:24Z
-
-
-
+NEXT_ACTION: READY_TO_APPLY_SAFE_PATH
+TIMESTAMP_UTC: 2026-02-14T21:39:23Z
 EVIDENCE:
-
-
 - branch_name: 
-
-
 - pr_url: 
-
-
-- commit_sha: 
-
-
+- commit_sha:
