@@ -265,6 +265,7 @@ def main() -> int:
         return status()
     if args.cmd == "apply":
         return apply(Path(args.draft_file))
-    return 1
+    if args.cmd == "pr-probe":
+        return pr_probe(args.run_id)    return 1
 if __name__ == "__main__":
     sys.exit(main())
