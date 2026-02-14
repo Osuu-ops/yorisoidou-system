@@ -522,6 +522,80 @@ def apply_safe(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url,"commit_sha":sha}, ensure_ascii=False))
     return 0
+def merge_finish(run_id: str) -> int:
+    # Phase4 minimal: wait checks, request auto-merge, wait merged, mark DONE
+    def _run(cmd: list[str]) -> str:
+        import subprocess
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        if p.returncode != 0:
+            raise RuntimeError(p.stderr.strip() or "command failed")
+        return p.stdout
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "MERGE_FINISH", "outcome": "OK"}
+    ev = rs.get("last_result", {}).get("evidence", {}) or {}
+    pr_url = ev.get("pr_url") or ""
+    if not pr_url:
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "EVIDENCE_REQUIRED_BUT_UNAVAILABLE"
+        rs["next_action"] = "PROVIDE_EVIDENCE_OR_ABORT"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
+        return 2
+    try:
+        pr_num = int(pr_url.rstrip("/").split("/")[-1])
+    except Exception:
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "EVIDENCE_MALFORMED"
+        rs["next_action"] = "FIX_EVIDENCE"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 1
+    repo = os.environ.get("GH_REPO","")
+    if not repo:
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "REPO_NOT_SET"
+        rs["next_action"] = "SET_GH_REPO"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 1
+    # wait checks (up to ~30min)
+    for _ in range(360):
+        out = _run(["gh","pr","checks",str(pr_num),"--repo",repo])
+        if "0 pending checks" in out and "0 failing" in out:
+            break
+        import time; time.sleep(5)
+    else:
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "CHECKS_TIMEOUT"
+        rs["next_action"] = "WAIT_FOR_CHECKS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 2
+    # request auto-merge
+    _run(["gh","pr","merge",str(pr_num),"--repo",repo,"--auto","--squash"])
+    # wait merged
+    for _ in range(360):
+        j = _run(["gh","pr","view",str(pr_num),"--repo",repo,"--json","state,mergedAt,url","-q","{state:.state,mergedAt:(.mergedAt//\"\"),url:.url}"])
+        if '"state":"MERGED"' in j:
+            break
+        import time; time.sleep(5)
+    else:
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "MERGE_TIMEOUT"
+        rs["next_action"] = "WAIT_FOR_MERGE"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 2
+    rs["run_status"] = "DONE"
+    rs["last_result"]["stop_class"] = ""
+    rs["last_result"]["reason_code"] = ""
+    rs["next_action"] = "ALL_DONE"
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    print(json.dumps({"state":"OK","pr_url":pr_url,"run_status":rs["run_status"]}, ensure_ascii=False))
+    return 0
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -537,6 +611,8 @@ def main() -> int:
     ap_asm.add_argument("--run-id", required=True)
     ap_safe = sub.add_parser("apply-safe")
     ap_safe.add_argument("--run-id", required=True)
+    ap_finish = sub.add_parser("merge-finish")
+    ap_finish.add_argument("--run-id", required=True)
     args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
@@ -552,6 +628,8 @@ def main() -> int:
         return assemble_pr(args.run_id)
     if args.cmd == "apply-safe":
         return apply_safe(args.run_id)
+    if args.cmd == "merge-finish":
+        return merge_finish(args.run_id)
     return 1
 
 if __name__ == "__main__":
