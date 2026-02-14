@@ -27,7 +27,10 @@ jobs:
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
       - name: Create PR (gh)
         env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+      P3_MAX_RETRIES: "3"
+      P3_BACKOFF_SEC: "4"
+      P3_CHECKS_TIMEOUT_SEC: "900"
+      P3_CHECKS_POLL_SEC: "10"          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
