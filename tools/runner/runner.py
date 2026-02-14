@@ -251,6 +251,91 @@ def pr_probe(run_id: str) -> int:
     update_compiled(rs)
     print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"],"branch_name":branch}, ensure_ascii=False))
     return 1
+def pr_create(run_id: str) -> int:
+    # Phase2.5 minimal: create/open PR for canonical branch and persist evidence pointers
+    branch = f"mep/run_{run_id}"
+    if RUN_STATE.exists():
+        rs = load_json(RUN_STATE)
+    else:
+        rs = default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "PR_CREATE", "outcome": "OK"}
+    rs["next_action"] = "STATUS"
+    def _run(cmd: list[str]) -> str:
+        import subprocess
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        if p.returncode != 0:
+            raise RuntimeError(p.stderr.strip() or "command failed")
+        return p.stdout
+    repo = os.environ.get("GH_REPO","")
+    if not repo:
+        rs["last_result"]["action"] = {"name": "PR_CREATE", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "REPO_NOT_SET"
+        rs["next_action"] = "SET_GH_REPO"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 1
+    # Ensure local branch exists (idempotent)
+    try:
+        _run(["git","rev-parse","--verify",branch])
+    except Exception:
+        _run(["git","checkout","-b",branch])
+        _run(["git","push","-u","origin",branch])
+    else:
+        # ensure remote exists
+        try:
+            _run(["git","ls-remote","--exit-code","--heads","origin",branch])
+        except Exception:
+            _run(["git","push","-u","origin",branch])
+    # If open PR exists for branch, use it
+    open_json = _run(["gh","pr","list","--repo",repo,"--head",branch,"--state","open","--json","number,url","-q","."])
+    open_prs = json.loads(open_json) if open_json.strip() else []
+    if len(open_prs) > 1:
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
+        rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+        rs["last_result"]["evidence"] = {"branch_name": branch}
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"branch_name":branch}, ensure_ascii=False))
+        return 1
+    if len(open_prs) == 1:
+        pr_url = open_prs[0].get("url")
+        rs["last_result"]["evidence"] = {"branch_name": branch, "pr_url": pr_url}
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
+        rs["next_action"] = "STATUS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url}, ensure_ascii=False))
+        return 0
+    # Create PR (idempotent-ish: if fails because exists, probe again)
+    title = f"MEP RUN {run_id}"
+    body = f"Runner created PR for RUN_ID={run_id}"
+    try:
+        pr_url = _run(["gh","pr","create","--repo",repo,"--head",branch,"--base","main","--title",title,"--body",body]).strip()
+    except Exception:
+        # re-probe
+        open_json = _run(["gh","pr","list","--repo",repo,"--head",branch,"--state","open","--json","number,url","-q","."])
+        open_prs = json.loads(open_json) if open_json.strip() else []
+        if len(open_prs) == 1:
+            pr_url = open_prs[0].get("url")
+        else:
+            rs["last_result"]["stop_class"] = "WAIT"
+            rs["last_result"]["reason_code"] = "EVIDENCE_REQUIRED_BUT_UNAVAILABLE"
+            rs["next_action"] = "PROVIDE_EVIDENCE_OR_ABORT"
+            rs["last_result"]["evidence"] = {"branch_name": branch}
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"branch_name":branch}, ensure_ascii=False))
+            return 2
+    rs["last_result"]["evidence"] = {"branch_name": branch, "pr_url": pr_url}
+    rs["last_result"]["stop_class"] = ""
+    rs["last_result"]["reason_code"] = ""
+    rs["next_action"] = "STATUS"
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url}, ensure_ascii=False))
+    return 0
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -260,7 +345,8 @@ def main() -> int:
     ap_apply.add_argument("--draft-file", required=True)
     ap_probe = sub.add_parser("pr-probe")
     ap_probe.add_argument("--run-id", required=True)
-    args = ap.parse_args()
+    ap_create = sub.add_parser("pr-create")
+    ap_create.add_argument("--run-id", required=True)    args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
     if args.cmd == "status":
@@ -269,7 +355,8 @@ def main() -> int:
         return apply(Path(args.draft_file))
     if args.cmd == "pr-probe":
         return pr_probe(args.run_id)
-    return 1
+    if args.cmd == "pr-create":
+        return pr_create(args.run_id)    return 1
 
 if __name__ == "__main__":
     sys.exit(main())
