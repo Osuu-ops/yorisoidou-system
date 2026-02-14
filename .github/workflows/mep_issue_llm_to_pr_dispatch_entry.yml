@@ -67,6 +67,46 @@ Draft:"
           set -euo pipefail
           if grep -nE 'GIT binary patch|^Binary files ' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: BINARY_DIFF_FORBIDDEN"; exit 1; fi
           if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN"; exit 1; fi
+
+      - name: Guard (scope/size/keywords)
+        run: |
+          set -euo pipefail
+          PATCH=/tmp/mep.patch
+          test -s "$PATCH"
+          # ---- size limits (anti-runaway) ----
+          max_bytes=250000
+          bytes=$(wc -c < "$PATCH" | tr -d ' ')
+          if [ "$bytes" -gt "$max_bytes" ]; then
+            echo "STOP_HARD: PATCH_TOO_LARGE bytes=$bytes max=$max_bytes"
+            exit 1
+          fi
+          max_files=60
+          files=$(grep -E '^diff --git ' "$PATCH" | wc -l | tr -d ' ')
+          if [ "$files" -gt "$max_files" ]; then
+            echo "STOP_HARD: TOO_MANY_FILES files=$files max=$max_files"
+            exit 1
+          fi
+          max_added=2000
+          added=$(grep -E '^\+' "$PATCH" | grep -vE '^\+\+\+' | wc -l | tr -d ' ')
+          if [ "$added" -gt "$max_added" ]; then
+            echo "STOP_HARD: TOO_MANY_ADDED_LINES added=$added max=$max_added"
+            exit 1
+          fi
+          # ---- allowed path fence (deny by default) ----
+          # Allowed: mep/**, docs/MEP/**, .github/workflows/**, tools/runner/**, README.md
+          bad=$(grep -E '^diff --git ' "$PATCH" | sed -E 's/^diff --git a\/([^ ]+) b\/.*/\1/' | \
+            grep -vE '^(mep/|docs/MEP/|\.github/workflows/|tools/runner/|README\.md$)' || true)
+          if [ -n "$bad" ]; then
+            echo "STOP_HARD: SCOPE_VIOLATION (disallowed paths)"
+            echo "$bad"
+            exit 1
+          fi
+          # ---- keyword fence (very conservative) ----
+          if grep -nE 'secrets\.|OPENAI_API_KEY|Authorization:\s*Bearer|curl\s+.*\|\s*sh' "$PATCH" >/dev/null; then
+            echo "STOP_HARD: DANGEROUS_KEYWORD_DETECTED"
+            grep -nE 'secrets\.|OPENAI_API_KEY|Authorization:\s*Bearer|curl\s+.*\|\s*sh' "$PATCH" | head -n 50
+            exit 1
+          fi
       - name: Apply patch (check then apply)
         run: |
           set -euo pipefail
