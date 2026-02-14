@@ -74,6 +74,82 @@ def default_run_state() -> dict:
         "updated_at": now,
         "last_good": None,
     }
+import re
+def _sha256_hex(s: str) -> str:
+    import hashlib
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
+def compute_handoff_digest(head_sha: str, rs: dict) -> str:
+    lr = rs.get("last_result", {}) or {}
+    parts = [
+        head_sha or "",
+        rs.get("run_id","") or "",
+        rs.get("run_status","") or "",
+        rs.get("next_action","") or "",
+        lr.get("stop_class","") or "",
+        lr.get("reason_code","") or "",
+        rs.get("updated_at","") or "",
+    ]
+    return _sha256_hex("\n".join(parts))
+def compiled_min_check(status_md: Path, audit_md: Path, work_md: Path) -> tuple[bool,str]:
+    # A章最小必須：簡易チェック（欠落ならNG）
+    try:
+        s = status_md.read_text(encoding="utf-8")
+        a = audit_md.read_text(encoding="utf-8")
+        w = work_md.read_text(encoding="utf-8")
+    except Exception:
+        return (False, "COMPILED_READ_FAILED")
+    need_status = ["RUN_ID:", "RUN_STATUS:", "STOP_CLASS:", "REASON_CODE:", "NEXT_ACTION:", "TIMESTAMP_UTC:", "EVIDENCE:"]
+    if any(x not in s for x in need_status):
+        return (False, "COMPILED_TEMPLATE_INCOMPLETE_STATUS")
+    need_audit = ["SSOT_PATHS:", "mep/boot_spec.yaml", "mep/policy.yaml", "mep/run_state.json", "LATEST_EVIDENCE_POINTERS:"]
+    if any(x not in a for x in need_audit):
+        return (False, "COMPILED_TEMPLATE_INCOMPLETE_AUDIT")
+    need_work = ["NEXT_ACTION:", "REASON_CODE:", "STOP_CLASS:"]
+    if any(x not in w for x in need_work):
+        return (False, "COMPILED_TEMPLATE_INCOMPLETE_WORK")
+    return (True, "")
+def update_handoff_packet_and_ack(rs: dict) -> dict:
+    # packet
+    head_sha = _run(["git","rev-parse","HEAD"]).strip()
+    packet_id = f"HP_{utc_now_z().replace(':','').replace('-','')}"
+    ssot_paths = ["mep/boot_spec.yaml","mep/policy.yaml","mep/run_state.json"]
+    compiled_paths = ["docs/MEP/STATUS.md","docs/MEP/HANDOFF_AUDIT.md","docs/MEP/HANDOFF_WORK.md"]
+    rs["handoff"] = {
+        "packet_id": packet_id,
+        "generated_at_utc": utc_now_z(),
+        "head_sha": head_sha,
+        "ssot_paths": ssot_paths,
+        "compiled_paths": compiled_paths,
+        "digest": compute_handoff_digest(head_sha, rs),
+    }
+    ok, reason = compiled_min_check(STATUS_MD, HANDOFF_AUDIT_MD, HANDOFF_WORK_MD)
+    if ok:
+        rs["handoff_ack"] = {
+            "status": "ACK",
+            "checked_at_utc": utc_now_z(),
+            "reason_code": None,
+            "packet_id": packet_id,
+        }
+    else:
+        rs["handoff_ack"] = {
+            "status": "NACK",
+            "checked_at_utc": utc_now_z(),
+            "reason_code": reason,
+            "packet_id": packet_id,
+        }
+        # force STOP_WAIT-like state
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "HANDOFF_ACK_REQUIRED"
+        rs["next_action"] = "NEED_HANDOFF_ACK"
+    return rs
+def require_handoff_ack(rs: dict) -> tuple[bool,dict]:
+    ha = rs.get("handoff_ack") or {}
+    if ha.get("status") == "ACK":
+        return (True, rs)
+    rs["last_result"]["stop_class"] = "WAIT"
+    rs["last_result"]["reason_code"] = "HANDOFF_ACK_REQUIRED"
+    rs["next_action"] = "NEED_HANDOFF_ACK"
+    return (False, rs)
 def update_compiled(rs: dict) -> None:
     run_id = rs.get("run_id") or "NONE"
     run_status = rs.get("run_status", "")
