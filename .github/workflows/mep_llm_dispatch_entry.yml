@@ -22,6 +22,40 @@ jobs:
           persist-credentials: false
       - name: Make diff (smoke)
         run: |
+set -euo pipefail
+# =========================
+# P3_SELF_HEAL (reason_code + retry + checks-wait)
+# =========================
+P3_MAX_RETRIES="${P3_MAX_RETRIES:-3}"
+P3_BACKOFF_SEC="${P3_BACKOFF_SEC:-4}"
+P3_CHECKS_TIMEOUT_SEC="${P3_CHECKS_TIMEOUT_SEC:-900}"
+P3_CHECKS_POLL_SEC="${P3_CHECKS_POLL_SEC:-10}"
+_reason() { echo "STOP_KIND=run: |
+ REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"; }
+_sleep_backoff() { local n="run: |
+"; sleep "$(( P3_BACKOFF_SEC * n ))"; }
+_retry() {
+  local what="run: |
+"; shift
+  local i=1
+  while true; do
+    echo "[P3] try=$i what=$what" | tee -a "$GITHUB_STEP_SUMMARY"
+    if "$@"; then return 0; fi
+    rc=$?
+    if [ "$i" -ge "$P3_MAX_RETRIES" ]; then
+      echo "[P3] FAIL what=$what rc=$rc" | tee -a "$GITHUB_STEP_SUMMARY"
+      return $rc
+    fi
+    _sleep_backoff "$i"
+    i=$((i+1))
+  done
+}
+SSOT_PATH="docs/MEP/REQUIRED_CHECKS_SSOT.md"
+_required_from_ssot() {
+  [ -f "$SSOT_PATH" ] || return 1
+  sed -n 's/^[[:space:]]*-[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$SSOT_PATH"
+}
+echo "[P3] P3_SELF_HEAL scaffold installed" | tee -a "$GITHUB_STEP_SUMMARY"
           set -euo pipefail
           mkdir -p mep
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
@@ -32,6 +66,40 @@ jobs:
       P3_CHECKS_TIMEOUT_SEC: "900"
       P3_CHECKS_POLL_SEC: "10"          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
+set -euo pipefail
+# =========================
+# P3_SELF_HEAL (reason_code + retry + checks-wait)
+# =========================
+P3_MAX_RETRIES="${P3_MAX_RETRIES:-3}"
+P3_BACKOFF_SEC="${P3_BACKOFF_SEC:-4}"
+P3_CHECKS_TIMEOUT_SEC="${P3_CHECKS_TIMEOUT_SEC:-900}"
+P3_CHECKS_POLL_SEC="${P3_CHECKS_POLL_SEC:-10}"
+_reason() { echo "STOP_KIND=run: |
+ REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"; }
+_sleep_backoff() { local n="run: |
+"; sleep "$(( P3_BACKOFF_SEC * n ))"; }
+_retry() {
+  local what="run: |
+"; shift
+  local i=1
+  while true; do
+    echo "[P3] try=$i what=$what" | tee -a "$GITHUB_STEP_SUMMARY"
+    if "$@"; then return 0; fi
+    rc=$?
+    if [ "$i" -ge "$P3_MAX_RETRIES" ]; then
+      echo "[P3] FAIL what=$what rc=$rc" | tee -a "$GITHUB_STEP_SUMMARY"
+      return $rc
+    fi
+    _sleep_backoff "$i"
+    i=$((i+1))
+  done
+}
+SSOT_PATH="docs/MEP/REQUIRED_CHECKS_SSOT.md"
+_required_from_ssot() {
+  [ -f "$SSOT_PATH" ] || return 1
+  sed -n 's/^[[:space:]]*-[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$SSOT_PATH"
+}
+echo "[P3] P3_SELF_HEAL scaffold installed" | tee -a "$GITHUB_STEP_SUMMARY"
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
