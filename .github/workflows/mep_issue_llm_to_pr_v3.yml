@@ -1,4 +1,4 @@
-name: MEP Issue LLM to PR (LLM v3)
+name: MEP Issue LLM to PR (LLM v3.1)
 
 on:
   workflow_dispatch:
