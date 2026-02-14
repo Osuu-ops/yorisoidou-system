@@ -1,10 +1,10 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
-$ProgressPreference = "SilentlyContinue"
 param(
   [string]$RepoRoot,
   [string]$SsotPath
 )
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
 if (-not $RepoRoot) {
   $RepoRoot = (git rev-parse --show-toplevel).Trim()
 }
