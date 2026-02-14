@@ -740,7 +740,9 @@ def compact() -> int:
     rs["next_action"] = "STATUS"
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","run_count_detected":len(run_ids),"keep_runs":keep_runs}, ensure_ascii=False))
-    return 0def main() -> int:
+    return 0
+
+def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("boot")
