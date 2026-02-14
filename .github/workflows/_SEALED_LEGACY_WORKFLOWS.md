@@ -10,3 +10,4 @@ Sealed files:
 - mep_writeback_bundle_evidence_dispatch.yml.txt
 
 Do not restore these back to *.yml unless explicitly authorized by SSOT/CONFLICT_SCAN.
+- SEALED (dispatch 422): mep_issue_llm_to_pr_issue_entry.yml / mep_issue_llm_to_pr_dispatch_entry.yml / v2/v5 variants (use mep_llm_dispatch_entry.yml instead) @ 2026-02-14T23:54:53+09:00

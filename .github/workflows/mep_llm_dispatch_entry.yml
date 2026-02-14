@@ -1,0 +1,42 @@
+name: MEP LLM Dispatch Entry (ACTIVE)
+on:
+  workflow_dispatch:
+    inputs:
+      body:
+        description: "payload body"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: mep-min8-${{ github.event_name }}-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Hello github-script
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.info("hello");
+      - name: Long bash (no network)
+        run: |
+          set -euo pipefail
+          echo "BODY=${{ inputs.body }}" > /tmp/in.txt
+          # emulate jq usage without network
+          jq -n --arg v "x" '{ok:true,val:$v}' > /tmp/out.json
+          test -s /tmp/out.json
+          cat /tmp/out.json
+      - name: Create PR (noop if no changes)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "MIN8 noop PR run ${{ github.run_id }}"
+          commit-message: "min8 noop"
+          branch: "auto/min8_${{ github.run_id }}"
+          base: "main"
+          delete-branch: true
