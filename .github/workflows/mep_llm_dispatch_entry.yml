@@ -31,7 +31,13 @@ jobs:
           # emulate jq usage without network
           jq -n --arg v "x" '{ok:true,val:$v}' > /tmp/out.json
           test -s /tmp/out.json
-          cat /tmp/out.json
+          cat /tmp/out.json      - name: Make diff (smoke)
+        run: |
+          set -euo pipefail
+          mkdir -p mep
+          echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
+
+
       - name: Create PR (noop if no changes)
         uses: peter-evans/create-pull-request@v6
         with:
