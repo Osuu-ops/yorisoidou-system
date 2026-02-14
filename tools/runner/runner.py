@@ -336,6 +336,105 @@ def pr_create(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url}, ensure_ascii=False))
     return 0
+def assemble_pr(run_id: str) -> int:
+    # Phase3 minimal: scan results patches and validate (no PR update yet)
+    results_dir = MEP_DIR / "results" / run_id
+    if not results_dir.exists():
+        # STOP_WAIT: nothing to assemble
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
+        rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
+        return 2
+    patches = sorted(results_dir.glob("*.patch"))
+    if not patches:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
+        rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
+        return 2
+    # read policy limits (required)
+    pol = load_yaml(POLICY) if POLICY.exists() else {}
+    limits = (pol.get("limits") or {})
+    max_bytes = int(limits.get("patch_max_bytes", 0) or 0)
+    max_lines = int(limits.get("patch_max_lines", 0) or 0)
+    if max_bytes <= 0 or max_lines <= 0:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "POLICY_SCHEMA_INVALID"
+        rs["next_action"] = "FIX_POLICY_SCHEMA"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
+        return 1
+    # validate all patches
+    total_bytes = 0
+    total_lines = 0
+    deny_patterns = [
+        "GIT binary patch",
+        "Binary files ",
+        "deleted file mode",
+        "rename from",
+        "rename to",
+        "old mode",
+        "new mode",
+    ]
+    for p in patches:
+        txt = p.read_text(encoding="utf-8", errors="replace")
+        total_bytes += len(txt.encode("utf-8", errors="replace"))
+        total_lines += txt.count("\n") + 1
+        for pat in deny_patterns:
+            if pat in txt:
+                rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+                rs["run_id"] = run_id
+                rs["updated_at"] = utc_now_z()
+                rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+                rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "FAIL"}
+                rs["last_result"]["stop_class"] = "HARD"
+                rs["last_result"]["reason_code"] = "DANGEROUS_DIFF_FORBIDDEN"
+                rs["next_action"] = "SPLIT_PATCH_OR_REDUCE_SCOPE"
+                write_json(RUN_STATE, rs); update_compiled(rs)
+                print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"file":str(p)}, ensure_ascii=False))
+                return 1
+    if total_bytes > max_bytes or total_lines > max_lines:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "PATCH_TOO_LARGE"
+        rs["next_action"] = "SPLIT_PATCH_OR_REDUCE_SCOPE"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"bytes":total_bytes,"lines":total_lines}, ensure_ascii=False))
+        return 2
+    # OK (still no PR update in Phase3 minimal)
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "OK"}
+    rs["last_result"]["stop_class"] = ""
+    rs["last_result"]["reason_code"] = ""
+    rs["next_action"] = "READY_TO_APPLY_SAFE_PATH"
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    print(json.dumps({"state":"OK","patches":len(patches),"bytes":total_bytes,"lines":total_lines,"next_action":rs["next_action"]}, ensure_ascii=False))
+    return 0
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -347,7 +446,8 @@ def main() -> int:
     ap_probe.add_argument("--run-id", required=True)
     ap_create = sub.add_parser("pr-create")
     ap_create.add_argument("--run-id", required=True)
-    args = ap.parse_args()
+    ap_asm = sub.add_parser("assemble-pr")
+    ap_asm.add_argument("--run-id", required=True)    args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
     if args.cmd == "status":
@@ -358,7 +458,8 @@ def main() -> int:
         return pr_probe(args.run_id)
     if args.cmd == "pr-create":
         return pr_create(args.run_id)
-    return 1
+    if args.cmd == "assemble-pr":
+        return assemble_pr(args.run_id)    return 1
 
 if __name__ == "__main__":
     sys.exit(main())
