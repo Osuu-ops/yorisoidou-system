@@ -1,0 +1,21 @@
+name: MEP Dispatch Entry (MIN3)
+on:
+  workflow_dispatch:
+    inputs:
+      body:
+        description: "payload body"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+jobs:
+  entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show input
+        run: |
+          echo "BODY_BEGIN"
+          echo "${{ inputs.body }}"
+          echo "BODY_END"
