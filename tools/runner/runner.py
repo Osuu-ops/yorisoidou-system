@@ -258,6 +258,8 @@ def main() -> int:
     sub.add_parser("status")
     ap_apply = sub.add_parser("apply")
     ap_apply.add_argument("--draft-file", required=True)
+    ap_probe = sub.add_parser("pr-probe")
+    ap_probe.add_argument("--run-id", required=True)
     args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
@@ -266,6 +268,6 @@ def main() -> int:
     if args.cmd == "apply":
         return apply(Path(args.draft_file))
     if args.cmd == "pr-probe":
-        return pr_probe(args.run_id)    return 1
-if __name__ == "__main__":
+        return pr_probe(args.run_id)
+    return 1if __name__ == "__main__":
     sys.exit(main())
