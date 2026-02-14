@@ -232,6 +232,9 @@ def boot() -> int:
     rs["next_action"] = "STATUS"
     write_json(RUN_STATE, rs)
     update_compiled(rs)
+    rs = update_handoff_packet_and_ack(rs)
+    write_json(RUN_STATE, rs)
+    update_compiled(rs)
     print(json.dumps({"run_id": rs.get("run_id",""), "run_status": rs.get("run_status",""), "next_action": rs.get("next_action","")}, ensure_ascii=False))
     return 0
 def status() -> int:
@@ -242,6 +245,9 @@ def status() -> int:
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "STATUS", "outcome": "OK"}
     rs["next_action"] = "STATUS"
+    write_json(RUN_STATE, rs)
+    update_compiled(rs)
+    rs = update_handoff_packet_and_ack(rs)
     write_json(RUN_STATE, rs)
     update_compiled(rs)
     print(json.dumps({"run_id": rs.get("run_id",""), "run_status": rs.get("run_status",""), "next_action": rs.get("next_action","")}, ensure_ascii=False))
@@ -265,6 +271,9 @@ def apply(draft_file: Path) -> int:
     rs["last_result"]["stop_class"] = ""
     rs["last_result"]["reason_code"] = ""
     rs["next_action"] = "STATUS"
+    write_json(RUN_STATE, rs)
+    update_compiled(rs)
+    rs = update_handoff_packet_and_ack(rs)
     write_json(RUN_STATE, rs)
     update_compiled(rs)
     print(json.dumps({"run_id": run_id, "next_action": rs["next_action"]}, ensure_ascii=False))
