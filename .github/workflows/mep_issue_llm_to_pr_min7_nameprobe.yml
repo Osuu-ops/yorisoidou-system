@@ -1,0 +1,39 @@
+name: MEP Issue LLM to PR (MIN7 NameProbe)
+on:
+  workflow_dispatch:
+    inputs:
+      body:
+        description: "payload body"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: mep-min7-${{ github.event_name }}-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Hello github-script
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.info("hello");
+      - name: Create PR (noop if no changes)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "MIN7 noop PR run ${{ github.run_id }}"
+          commit-message: "min7 noop"
+          branch: "auto/min7_${{ github.run_id }}"
+          base: "main"
+          delete-branch: true
+      - name: Show input
+        run: |
+          echo "BODY_BEGIN"
+          echo "${{ inputs.body }}"
+          echo "BODY_END"
