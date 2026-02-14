@@ -23,6 +23,11 @@ jobs:
       - name: Make diff (smoke)
         run: |
           set -euo pipefail
+          _reason() {
+            echo "STOP_KIND=${1} REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "REF: docs/MEP/P3_REASON_CODE_SSOT.md" | tee -a "$GITHUB_STEP_SUMMARY"
+          }
           mkdir -p mep
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
       - name: P3 Self-Heal + Create PR + checks-wait (gh pr checks) + auto-merge
@@ -34,6 +39,11 @@ jobs:
           P3_CHECKS_POLL_SEC: "10"
         run: |
           set -euo pipefail
+          _reason() {
+            echo "STOP_KIND=${1} REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "REF: docs/MEP/P3_REASON_CODE_SSOT.md" | tee -a "$GITHUB_STEP_SUMMARY"
+          }
           _reason() { echo "STOP_KIND=${1} REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"; }
           _sleep_backoff() { local n="$1"; sleep "$(( P3_BACKOFF_SEC * n ))"; }
           _retry() {
