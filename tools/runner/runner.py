@@ -22,14 +22,18 @@ HANDOFF_AUDIT_MD = DOCS_MEP / "HANDOFF_AUDIT.md"
 HANDOFF_WORK_MD = DOCS_MEP / "HANDOFF_WORK.md"
 def utc_now_z() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
 def ensure_parent(p: Path) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
+
 def load_yaml(p: Path) -> dict:
     with p.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
+
 def load_json(p: Path) -> dict:
     with p.open("r", encoding="utf-8") as f:
         return json.load(f)
+
 def write_json(p: Path, obj: dict) -> None:
     ensure_parent(p)
     tmp = p.with_suffix(p.suffix + ".tmp")
@@ -37,9 +41,11 @@ def write_json(p: Path, obj: dict) -> None:
         json.dump(obj, f, ensure_ascii=False, indent=2, sort_keys=True)
         f.write("\n")
     tmp.replace(p)
+
 def write_md(p: Path, text: str) -> None:
     ensure_parent(p)
     p.write_text(text.rstrip() + "\n", encoding="utf-8")
+
 def default_run_state() -> dict:
     return {
         "run_id": "",
@@ -121,7 +127,9 @@ LATEST_EVIDENCE_POINTERS:
         lines.append("DELETE_CANDIDATES_SAMPLE:")
         for x in cands[:10]:
             lines.append(f"- {x}")
-    write_md(HANDOFF_WORK_MD, "\n".join(lines))def boot() -> int:
+    write_md(HANDOFF_WORK_MD, "\n".join(lines))
+
+def boot() -> int:
     # existence checks (auto-generate minimal if missing)
     if not BOOT_SPEC.exists():
         ensure_parent(BOOT_SPEC)
@@ -147,6 +155,7 @@ LATEST_EVIDENCE_POINTERS:
         "next_action": rs.get("next_action",""),
     }, ensure_ascii=False))
     return 0
+
 def status() -> int:
     if not RUN_STATE.exists():
         return boot()
@@ -165,6 +174,7 @@ def status() -> int:
         "next_action": rs.get("next_action",""),
     }, ensure_ascii=False))
     return 0
+
 def apply(draft_file: Path) -> int:
     if not draft_file.exists():
         print("STOP_HARD: DRAFT_FILE_NOT_FOUND", file=sys.stderr)
@@ -192,6 +202,7 @@ def apply(draft_file: Path) -> int:
     update_compiled(rs)
     print(json.dumps({"run_id": run_id, "next_action": rs["next_action"]}, ensure_ascii=False))
     return 0
+
 def pr_probe(run_id: str) -> int:
     # Phase2 minimal: identify branch/pr and persist evidence pointers (no PR creation)
     # Spec 5.3: canonical branch = mep/run_<RUN_ID>
@@ -269,6 +280,7 @@ def pr_probe(run_id: str) -> int:
     update_compiled(rs)
     print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"],"branch_name":branch}, ensure_ascii=False))
     return 1
+
 def pr_create(run_id: str) -> int:
     # Phase2.5 minimal: create/open PR for canonical branch and persist evidence pointers
     branch = f"mep/run_{run_id}"
@@ -354,6 +366,7 @@ def pr_create(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url}, ensure_ascii=False))
     return 0
+
 def assemble_pr(run_id: str) -> int:
     # Phase3 minimal: scan results patches and validate (no PR update yet)
     results_dir = MEP_DIR / "results" / run_id
@@ -453,6 +466,7 @@ def assemble_pr(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","patches":len(patches),"bytes":total_bytes,"lines":total_lines,"next_action":rs["next_action"]}, ensure_ascii=False))
     return 0
+
 def apply_safe(run_id: str) -> int:
     # Phase3.5: apply patches to branch and update/open PR (safe path via PR)
     branch = f"mep/run_{run_id}"
@@ -470,7 +484,8 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
         return 2
-    def _run(cmd: list[str]) -> str:
+
+def _run(cmd: list[str]) -> str:
         import subprocess
         p = subprocess.run(cmd, capture_output=True, text=True)
         if p.returncode != 0:
@@ -540,6 +555,7 @@ def apply_safe(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url,"commit_sha":sha}, ensure_ascii=False))
     return 0
+
 def merge_finish(run_id: str) -> int:
     # Phase4 minimal: wait checks, request auto-merge, wait merged, mark DONE
     def _run(cmd: list[str]) -> str:
@@ -614,6 +630,7 @@ def merge_finish(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","pr_url":pr_url,"run_status":rs["run_status"]}, ensure_ascii=False))
     return 0
+
 def compact() -> int:
     # Phase5 full: history retention + pinned_overflow + keep_runs overflow handling
     # Safety: deletion is performed ONLY when retention.allow_delete == true.
@@ -666,7 +683,8 @@ def compact() -> int:
     inbox = (MEP_DIR / "inbox")
     work_items = (MEP_DIR / "work_items")
     results = (MEP_DIR / "results")
-    def _scan_dir(d: Path) -> set[str]:
+
+def _scan_dir(d: Path) -> set[str]:
         out=set()
         if not d.exists():
             return out
