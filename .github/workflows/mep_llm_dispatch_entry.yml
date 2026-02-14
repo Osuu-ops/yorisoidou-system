@@ -25,6 +25,94 @@ jobs:
           set -euo pipefail
           mkdir -p mep
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
+
+# =========================
+# P3_SELF_HEAL_EXEC (reason_code + retry + checks-wait + auto-merge)
+# =========================
+P3_MAX_RETRIES="${P3_MAX_RETRIES:-3}"
+P3_BACKOFF_SEC="${P3_BACKOFF_SEC:-4}"
+P3_CHECKS_TIMEOUT_SEC="${P3_CHECKS_TIMEOUT_SEC:-900}"
+P3_CHECKS_POLL_SEC="${P3_CHECKS_POLL_SEC:-10}"
+_reason() { echo "STOP_KIND=${1} REASON_CODE=${2} NEXT=${3}" | tee -a "$GITHUB_STEP_SUMMARY"; }
+_sleep_backoff() { local n="$1"; sleep "$(( P3_BACKOFF_SEC * n ))"; }
+_retry() {
+  local what="$1"; shift
+  local i=1
+  while true; do
+    echo "[P3] try=$i what=$what" | tee -a "$GITHUB_STEP_SUMMARY"
+    if "$@"; then return 0; fi
+    rc=$?
+    if [ "$i" -ge "$P3_MAX_RETRIES" ]; then
+      echo "[P3] FAIL what=$what rc=$rc" | tee -a "$GITHUB_STEP_SUMMARY"
+      return $rc
+    fi
+    _sleep_backoff "$i"
+    i=$((i+1))
+  done
+}
+SSOT_PATH="docs/MEP/REQUIRED_CHECKS_SSOT.md"
+_required_from_ssot() {
+  [ -f "$SSOT_PATH" ] || return 1
+  sed -n 's/^[[:space:]]*-[[:space:]]*"\(.*\)"[[:space:]]*$/\1/p' "$SSOT_PATH"
+}
+# ---- push retry ----
+if ! _retry "git_push" git push -u origin "$BR"; then
+  _reason "HARD" "P3_PUSH_FAILED" "RETRY_DISPATCH_AFTER_TOKEN_CHECK"
+  exit 1
+fi
+# ---- PR create idempotent retry ----
+_pr_url="$(gh pr list --base main --head "$BR" --state open --json url -q '.[0].url' 2>/dev/null || true)"
+_try_create_pr() {
+  if [ -n "$_pr_url" ]; then return 0; fi
+  _pr_url="$(gh pr create --base main --head "$BR" --title "$TITLE" --body "$BODY" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY" | tail -n 1)"
+  echo "$_pr_url" | grep -E '^https://github\.com/.+/pull/[0-9]+$' >/dev/null
+}
+if ! _retry "gh_pr_create" _try_create_pr; then
+  _reason "HARD" "P3_PR_CREATE_FAILED" "RETRY_DISPATCH_OR_OPEN_MANUAL_PR"
+  exit 1
+fi
+echo "[P3] PR_URL=$_pr_url" | tee -a "$GITHUB_STEP_SUMMARY"
+# ---- checks wait (SSOT vs rollup) ----
+required="$( _required_from_ssot || true )"
+if [ -z "$required" ]; then
+  _reason "HARD" "P3_REQUIRED_CHECKS_SSOT_PARSE_FAILED" "FIX_SSOT_FORMAT"
+  exit 1
+fi
+deadline=$(( $(date +%s) + P3_CHECKS_TIMEOUT_SEC ))
+while true; do
+  now=$(date +%s)
+  if [ "$now" -gt "$deadline" ]; then
+    _reason "WAIT" "P3_NO_CHECKS_TIMEOUT" "RETRY_DISPATCH_LATER"
+    exit 1
+  fi
+  rollup="$(gh pr view "$_pr_url" --json statusCheckRollup -q '.statusCheckRollup.contexts[]
+    | if .__typename=="CheckRun"
+      then "\(.name)\t\(.conclusion // .status)"
+      else "\(.context)\t\(.state)"
+      end' 2>/dev/null || true)"
+  [ -z "$rollup" ] && sleep "$P3_CHECKS_POLL_SEC" && continue
+  missing=""
+  notsuccess=""
+  while IFS= read -r r; do
+    [ -z "$r" ] && continue
+    line="$(printf "%s\n" "$rollup" | grep -F -m1 "$r"$'\t' || true)"
+    if [ -z "$line" ]; then missing="${missing}${r};"; continue; fi
+    res="$(printf "%s" "$line" | awk -F'\t' '{print $2}')"
+    if [ "${res^^}" != "SUCCESS" ]; then notsuccess="${notsuccess}${r}=${res};"; fi
+  done <<< "$required"
+  if [ -z "$missing" ] && [ -z "$notsuccess" ]; then
+    echo "[P3] checks OK" | tee -a "$GITHUB_STEP_SUMMARY"
+    break
+  fi
+  echo "[P3] waiting... missing=$missing notsuccess=$notsuccess" | tee -a "$GITHUB_STEP_SUMMARY"
+  sleep "$P3_CHECKS_POLL_SEC"
+done
+# ---- auto-merge request ----
+if ! gh pr merge "$_pr_url" --auto --merge --delete-branch 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"; then
+  _reason "WAIT" "P3_AUTOMERGE_REQUEST_FAILED" "RETRY_MERGE_REQUEST"
+  exit 1
+fi
+echo "[P3] Auto-merge requested." | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Create PR (gh)
         env:
       P3_MAX_RETRIES: "3"
