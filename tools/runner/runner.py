@@ -98,12 +98,30 @@ LATEST_EVIDENCE_POINTERS:
 - commit_sha: {commit_sha}
 - workflow_run_url: {wf_url}
 """)
-    write_md(HANDOFF_WORK_MD, f"""# HANDOFF_WORK
-NEXT_ACTION: {next_action}
-REASON_CODE: {reason_code}
-STOP_CLASS: {stop_class}
-""")
-def boot() -> int:
+    # WORK view with optional guidance
+    lines = []
+    lines.append("# HANDOFF_WORK")
+    lines.append(f"NEXT_ACTION: {next_action}")
+    lines.append(f"REASON_CODE: {reason_code}")
+    lines.append(f"STOP_CLASS: {stop_class}")
+    # options (if present)
+    opts = lr.get("options") or []
+    if isinstance(opts, list) and len(opts) > 0:
+        lines.append("")
+        lines.append("OPTIONS:")
+        for o in opts:
+            try:
+                lines.append(f"- {o.get('id','')}: {o.get('label','')} -> {o.get('action','')}")
+            except Exception:
+                continue
+    # candidate list (if present)
+    cands = lr.get("delete_candidates_sample") or []
+    if isinstance(cands, list) and len(cands) > 0:
+        lines.append("")
+        lines.append("DELETE_CANDIDATES_SAMPLE:")
+        for x in cands[:10]:
+            lines.append(f"- {x}")
+    write_md(HANDOFF_WORK_MD, "\n".join(lines))def boot() -> int:
     # existence checks (auto-generate minimal if missing)
     if not BOOT_SPEC.exists():
         ensure_parent(BOOT_SPEC)
@@ -597,34 +615,26 @@ def merge_finish(run_id: str) -> int:
     print(json.dumps({"state":"OK","pr_url":pr_url,"run_status":rs["run_status"]}, ensure_ascii=False))
     return 0
 def compact() -> int:
-    # Phase5 minimal: history retention + pinned_overflow detection + (optional) delete if explicitly allowed
+    # Phase5 full: history retention + pinned_overflow + keep_runs overflow handling
+    # Safety: deletion is performed ONLY when retention.allow_delete == true.
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     rs["updated_at"] = utc_now_z()
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "COMPACTION", "outcome": "OK"}
     pol = load_yaml(POLICY) if POLICY.exists() else {}
     retention = (pol.get("retention") or {})
-    limits = (pol.get("limits") or {})
-    keep_runs = int(retention.get("keep_runs", 0) or 0)
-    history_k = int(retention.get("history_k", 0) or 0)
+    keep_runs = int(retention.get("keep_runs", 20) or 20)
+    history_k = int(retention.get("history_k", 10) or 10)
     pinned_runs = retention.get("pinned_runs", []) or []
-    pinned_max = int(retention.get("pinned_max", 0) or 0)
+    pinned_max = int(retention.get("pinned_max", 50) or 50)
     allow_delete = bool(retention.get("allow_delete", False))
-    # Safety defaults (if missing)
-    if keep_runs <= 0:
-        keep_runs = 20
-    if history_k <= 0:
-        history_k = 10
-    if pinned_max <= 0:
-        pinned_max = 50
-    # Maintain run_state.history as append-only summary (best-effort)
+    # history append (best-effort)
     hist = rs.get("history") or []
     if not isinstance(hist, list):
         hist = []
-    # build summary entry for current run_state
     lr = rs.get("last_result") or {}
     ev = lr.get("evidence") or {}
-    entry = {
+    hist.append({
         "run_id": rs.get("run_id","") or "",
         "result_state": rs.get("run_status","") or "",
         "stop_class": lr.get("stop_class","") or "",
@@ -636,90 +646,84 @@ def compact() -> int:
             "branch_name": ev.get("branch_name"),
         },
         "timestamp_utc": lr.get("timestamp_utc") or rs.get("updated_at") or utc_now_z(),
-    }
-    hist.append(entry)
-    # Keep last K
+    })
     if len(hist) > history_k:
         hist = hist[-history_k:]
     rs["history"] = hist
-    # pinned overflow detection
-    pinned_total = len(pinned_runs)
-    if pinned_total > pinned_max:
+    # pinned overflow
+    if len(pinned_runs) > pinned_max:
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "PINNED_OVERFLOW"
         rs["next_action"] = "RESOLVE_PINNED_OVERFLOW"
+        rs["last_result"]["options"] = [
+            {"id":"A","label":"Reduce pinned_runs in mep/policy.yaml retention.pinned_runs","action":"EDIT_POLICY"},
+            {"id":"B","label":"Increase retention.pinned_max (with justification)","action":"EDIT_POLICY"},
+        ]
         write_json(RUN_STATE, rs); update_compiled(rs)
-        print(json.dumps({
-            "state":"STOP",
-            "reason_code":rs["last_result"]["reason_code"],
-            "next_action":rs["next_action"],
-            "pinned_total":pinned_total,
-            "pinned_max":pinned_max
-        }, ensure_ascii=False))
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
         return 2
-    # NOTE: Actual deletion of old runs is not implemented as file deletions here (runner is repo-level).
-    # Instead we enforce policy contract:
-    # - If allow_delete is false: emit STOP_WAIT with candidate guidance when keep_runs threshold would be exceeded.
-    # In this codebase, "runs" are represented externally (folders under mep/inbox/work_items/results). We'll scan those.
-    # scan local run folders
+    # detect run_ids present in filesystem (results/work_items only; inbox drafts are preserved)
     inbox = (MEP_DIR / "inbox")
     work_items = (MEP_DIR / "work_items")
     results = (MEP_DIR / "results")
-    def _list_runs_from_dir(d: Path) -> set[str]:
+    def _scan_dir(d: Path) -> set[str]:
         out=set()
         if not d.exists():
             return out
         for p in d.iterdir():
-            name = p.name
-            # draft_<RUN_ID>.md in inbox
-            if d == inbox and name.startswith("draft_RUN_") and name.endswith(".md"):
-                rid = name[len("draft_"):-len(".md")]
-                out.add(rid)
-            # mep/work_items/<RUN_ID>/
-            if d == work_items and p.is_dir() and name.startswith("RUN_"):
-                out.add(name)
-            # mep/results/<RUN_ID>/
-            if d == results and p.is_dir() and name.startswith("RUN_"):
-                out.add(name)
+            if p.is_dir() and p.name.startswith("RUN_"):
+                out.add(p.name)
         return out
     run_ids = set()
-    run_ids |= _list_runs_from_dir(inbox)
-    run_ids |= _list_runs_from_dir(work_items)
-    run_ids |= _list_runs_from_dir(results)
-    # exclude STILL_OPEN (cannot know precisely without per-run state store; so we exclude current run_id and any pinned)
+    run_ids |= _scan_dir(work_items)
+    run_ids |= _scan_dir(results)
+    # current run protected
     current = rs.get("run_id","") or ""
-    candidates = sorted([r for r in run_ids if r and r != current and r not in pinned_runs])
-    # If exceeds keep_runs, we would delete oldest "DONE/FAILED/SKIPPED" ideally; but we don't have per-run status store.
-    # Therefore we only stop and ask for enabling allow_delete after wiring per-run state.
-    if len(run_ids) > keep_runs and not allow_delete:
-        rs["last_result"]["stop_class"] = "WAIT"
-        rs["last_result"]["reason_code"] = "RETENTION_ACTION_REQUIRED"
-        rs["next_action"] = "SET_retention.allow_delete_true_OR_IMPLEMENT_PER_RUN_STATE"
-        write_json(RUN_STATE, rs); update_compiled(rs)
-        print(json.dumps({
-            "state":"STOP",
-            "reason_code":rs["last_result"]["reason_code"],
-            "next_action":rs["next_action"],
-            "run_count_detected":len(run_ids),
-            "keep_runs":keep_runs,
-            "delete_candidates_sample":candidates[:10],
-        }, ensure_ascii=False))
-        return 2
-    # If allow_delete is true, perform conservative deletion: delete only results/work_items for the oldest candidates (lexicographic)
-    # This is a placeholder safety implementation (no inbox deletion) to avoid losing original draft evidence.
-    if len(run_ids) > keep_runs and allow_delete:
+    protected = set([current]) | set(pinned_runs)
+    # build candidates using history timestamps (oldest first), fallback to lexicographic
+    def _ts(x: dict) -> str:
+        return str(x.get("timestamp_utc","") or "")
+    seen = set()
+    ordered = []
+    for h in sorted(hist, key=_ts):
+        rid = h.get("run_id","") or ""
+        if not rid or rid in seen:
+            continue
+        seen.add(rid)
+        if rid in run_ids and rid not in protected:
+            ordered.append(rid)
+    # add any remaining (unknown history) as lexicographic tail
+    tail = sorted([r for r in run_ids if r not in protected and r not in ordered])
+    ordered += tail
+    if len(run_ids) > keep_runs:
         overflow = len(run_ids) - keep_runs
-        to_delete = candidates[:overflow]
+        to_delete = ordered[:overflow]
+        rs["last_result"]["delete_candidates_sample"] = to_delete[:10]
+        if not allow_delete:
+            rs["last_result"]["stop_class"] = "WAIT"
+            rs["last_result"]["reason_code"] = "RETENTION_ACTION_REQUIRED"
+            rs["next_action"] = "SET_retention.allow_delete_true_OR_REDUCE_KEEP_RUNS"
+            rs["last_result"]["options"] = [
+                {"id":"A","label":"Set retention.allow_delete: true to allow auto deletion of results/work_items only","action":"EDIT_POLICY"},
+                {"id":"B","label":"Increase retention.keep_runs to avoid deletion","action":"EDIT_POLICY"},
+            ]
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            print(json.dumps({
+                "state":"STOP",
+                "reason_code":rs["last_result"]["reason_code"],
+                "next_action":rs["next_action"],
+                "run_count_detected":len(run_ids),
+                "keep_runs":keep_runs,
+                "delete_candidates_sample":to_delete[:10],
+            }, ensure_ascii=False))
+            return 2
+        # allow_delete==true : delete results/work_items only
         for rid in to_delete:
-            # remove results and work_items folders only
-            d1 = results / rid
-            d2 = work_items / rid
-            for d in (d1,d2):
+            for d in (results / rid, work_items / rid):
                 if d.exists() and d.is_dir():
                     for child in d.rglob("*"):
                         if child.is_file():
                             child.unlink()
-                    # remove dirs bottom-up
                     for child in sorted([x for x in d.rglob("*") if x.is_dir()], key=lambda x: len(str(x)), reverse=True):
                         try: child.rmdir()
                         except Exception: pass
@@ -736,8 +740,7 @@ def compact() -> int:
     rs["next_action"] = "STATUS"
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","run_count_detected":len(run_ids),"keep_runs":keep_runs}, ensure_ascii=False))
-    return 0
-def main() -> int:
+    return 0def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("boot")
