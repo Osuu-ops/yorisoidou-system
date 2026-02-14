@@ -1,0 +1,39 @@
+name: MEP Dispatch Entry (MIN6)
+on:
+  workflow_dispatch:
+    inputs:
+      body:
+        description: "payload body"
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: mep-min6-${{ github.event_name }}-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  entry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Hello github-script
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.info("hello");
+      - name: Create PR (noop if no changes)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "MIN6 noop PR run ${{ github.run_id }}"
+          commit-message: "min6 noop"
+          branch: "auto/min6_${{ github.run_id }}"
+          base: "main"
+          delete-branch: true
+      - name: Show input
+        run: |
+          echo "BODY_BEGIN"
+          echo "${{ inputs.body }}"
+          echo "BODY_END"
