@@ -22,6 +22,7 @@ jobs:
       - name: Hello github-script
         uses: actions/github-script@v7
         with:
+          token: ${{ secrets.MEP_PR_TOKEN }}
           script: |
             core.info("hello");
       - name: Long bash (no network)
@@ -39,6 +40,7 @@ jobs:
       - name: Create PR (create-pull-request)
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.MEP_PR_TOKEN }}
           title: "MEP: apply (Dispatch Entry) run ${{ github.run_id }}"
           body: |
             Applied by MEP LLM Dispatch Entry.
