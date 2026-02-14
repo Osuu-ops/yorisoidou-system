@@ -174,6 +174,83 @@ def apply(draft_file: Path) -> int:
     update_compiled(rs)
     print(json.dumps({"run_id": run_id, "next_action": rs["next_action"]}, ensure_ascii=False))
     return 0
+def pr_probe(run_id: str) -> int:
+    # Phase2 minimal: identify branch/pr and persist evidence pointers (no PR creation)
+    # Spec 5.3: canonical branch = mep/run_<RUN_ID>
+    branch = f"mep/run_{run_id}"
+    # load run_state (or init)
+    if RUN_STATE.exists():
+        rs = load_json(RUN_STATE)
+    else:
+        rs = default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "PR_PROBE", "outcome": "OK"}
+    rs["next_action"] = "STATUS"
+    # gh pr list (open and closed)
+    # NOTE: this is observation only; creation is later phase.
+    def _run(cmd: list[str]) -> str:
+        import subprocess
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        if p.returncode != 0:
+            raise RuntimeError(p.stderr.strip() or "gh failed")
+        return p.stdout
+    try:
+        open_json = _run(["gh","pr","list","--repo",os.environ.get("GH_REPO",""),"--head",branch,"--state","open","--json","number,url","-q","."])
+        closed_json = _run(["gh","pr","list","--repo",os.environ.get("GH_REPO",""),"--head",branch,"--state","closed","--json","number,url","-q","."])
+        open_prs = json.loads(open_json) if open_json.strip() else []
+        closed_prs = json.loads(closed_json) if closed_json.strip() else []
+    except Exception as e:
+        rs["last_result"]["action"] = {"name": "PR_PROBE", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "EVIDENCE_REQUIRED_BUT_UNAVAILABLE"
+        rs["next_action"] = "PROVIDE_EVIDENCE_OR_ABORT"
+        write_json(RUN_STATE, rs)
+        update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"]}, ensure_ascii=False))
+        return 2
+    # decide evidence pointers
+    ev = rs["last_result"].get("evidence", {}) or {}
+    ev["branch_name"] = branch
+    if len(open_prs) == 1:
+        ev["pr_url"] = open_prs[0].get("url")
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
+        rs["next_action"] = "STATUS"
+        rs["last_result"]["evidence"] = ev
+        write_json(RUN_STATE, rs)
+        update_compiled(rs)
+        print(json.dumps({"state":"OK","branch_name":branch,"pr_url":ev["pr_url"]}, ensure_ascii=False))
+        return 0
+    if len(open_prs) == 0 and len(closed_prs) >= 1:
+        # Spec 5.3: closed only => STOP_WAIT PR_CLOSED_FOR_RUN (open new PR later phase)
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "PR_CLOSED_FOR_RUN"
+        rs["next_action"] = "OPEN_NEW_PR_FOR_RUN"
+        rs["last_result"]["evidence"] = ev
+        write_json(RUN_STATE, rs)
+        update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"],"branch_name":branch}, ensure_ascii=False))
+        return 2
+    if len(open_prs) == 0 and len(closed_prs) == 0:
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "PR_NOT_FOUND_FOR_RUN"
+        rs["next_action"] = "CREATE_PR_FOR_RUN"
+        rs["last_result"]["evidence"] = ev
+        write_json(RUN_STATE, rs)
+        update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"],"branch_name":branch}, ensure_ascii=False))
+        return 2
+    # multiple PRs => HARD
+    rs["last_result"]["stop_class"] = "HARD"
+    rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
+    rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+    rs["last_result"]["evidence"] = ev
+    write_json(RUN_STATE, rs)
+    update_compiled(rs)
+    print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"],"next_action":rs["next_action"],"branch_name":branch}, ensure_ascii=False))
+    return 1
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
