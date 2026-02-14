@@ -1,2 +1,4 @@
 name: MEP Issue LLM to PR (LLM v2 X)
 on:
+  issue_comment:
+    types: [created]
