@@ -30,8 +30,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // workflow_dispatch は inputs を使わず、固定のテスト本文を注入（422回避）
-            const body =
+            // workflow_dispatch 縺ｯ inputs 繧剃ｽｿ繧上★縲∝崋螳壹・繝・せ繝域悽譁・ｒ豕ｨ蜈･・・22蝗樣∩・・            const body =
               (context.payload.comment && context.payload.comment.body) ? context.payload.comment.body :
               "/mep run\nMODE: LLM\nDRAFT_START\nPING_LLM_DISPATCH_V3\nDRAFT_END\n";
 
@@ -104,5 +103,5 @@ Draft:"
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number,
-              body: prUrl ? `✅ MEP created PR: ${prUrl}\n(mode=LLM v3)` : `⚠️ PR URL not returned (mode=LLM v3)`,
+              body: prUrl ? `笨・MEP created PR: ${prUrl}\n(mode=LLM v3)` : `笞・・PR URL not returned (mode=LLM v3)`,
             });

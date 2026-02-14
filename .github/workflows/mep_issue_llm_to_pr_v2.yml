@@ -95,5 +95,5 @@ Draft:"
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number,
-              body: prUrl ? `✅ MEP created PR: ${prUrl}\n(mode=LLM v2)` : `⚠️ PR URL not returned (mode=LLM v2)`,
+              body: prUrl ? `笨・MEP created PR: ${prUrl}\n(mode=LLM v2)` : `笞・・PR URL not returned (mode=LLM v2)`,
             });
