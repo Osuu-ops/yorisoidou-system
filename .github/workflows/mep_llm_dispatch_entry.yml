@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
   issues: write
 concurrency:
-  group: mep-min8-${{ github.event_name }}-${{ github.run_id }}
+  group: mep-llm-dispatch-entry-${{ github.event_name }}-${{ github.run_id }}
   cancel-in-progress: false
 jobs:
   entry:
@@ -28,25 +28,23 @@ jobs:
         run: |
           set -euo pipefail
           echo "BODY=${{ inputs.body }}" > /tmp/in.txt
-          # emulate jq usage without network
           jq -n --arg v "x" '{ok:true,val:$v}' > /tmp/out.json
           test -s /tmp/out.json
-          cat /tmp/out.json      - name: Make diff (smoke)
-        run: |
-          set -euo pipefail
-          mkdir -p mep
-          echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
+          cat /tmp/out.json
       - name: Make diff (smoke)
         run: |
           set -euo pipefail
           mkdir -p mep
           echo "SMOKE ${{ github.run_id }} $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> mep/_dispatch_entry_smoke.txt
-
-      - name: Create PR (noop if no changes)
+      - name: Create PR (create-pull-request)
         uses: peter-evans/create-pull-request@v6
         with:
-          title: "MIN8 noop PR run ${{ github.run_id }}"
-          commit-message: "min8 noop"
-          branch: "auto/min8_${{ github.run_id }}"
+          title: "MEP: apply (Dispatch Entry) run ${{ github.run_id }}"
+          body: |
+            Applied by MEP LLM Dispatch Entry.
+            - Event: ${{ github.event_name }}
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-message: "mep: dispatch-entry smoke ${{ github.run_id }}"
+          branch: "auto/mep_dispatch_entry_${{ github.run_id }}"
           base: "main"
           delete-branch: true
