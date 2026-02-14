@@ -435,6 +435,93 @@ def assemble_pr(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     print(json.dumps({"state":"OK","patches":len(patches),"bytes":total_bytes,"lines":total_lines,"next_action":rs["next_action"]}, ensure_ascii=False))
     return 0
+def apply_safe(run_id: str) -> int:
+    # Phase3.5: apply patches to branch and update/open PR (safe path via PR)
+    branch = f"mep/run_{run_id}"
+    results_dir = MEP_DIR / "results" / run_id
+    patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
+    if not patches:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
+        rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 2
+    def _run(cmd: list[str]) -> str:
+        import subprocess
+        p = subprocess.run(cmd, capture_output=True, text=True)
+        if p.returncode != 0:
+            raise RuntimeError(p.stderr.strip() or "command failed")
+        return p.stdout
+    repo = os.environ.get("GH_REPO","")
+    if not repo:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "REPO_NOT_SET"
+        rs["next_action"] = "SET_GH_REPO"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 1
+    # checkout branch (create if missing)
+    try:
+        _run(["git","checkout",branch])
+    except Exception:
+        _run(["git","checkout","-b",branch])
+        _run(["git","push","-u","origin",branch])
+    # apply all patches
+    for p in patches:
+        _run(["git","apply","--check",str(p)])
+    for p in patches:
+        _run(["git","apply",str(p)])
+    # commit + push
+    _run(["git","add","-A"])
+    _run(["git","commit","-m",f"mep: apply patches for {run_id}"])
+    _run(["git","push","origin",branch])
+    # open PR exists?
+    open_json = _run(["gh","pr","list","--repo",repo,"--head",branch,"--state","open","--json","number,url","-q","."])
+    open_prs = json.loads(open_json) if open_json.strip() else []
+    if len(open_prs) > 1:
+        rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+        rs["run_id"] = run_id
+        rs["updated_at"] = utc_now_z()
+        rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+        rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "FAIL"}
+        rs["last_result"]["stop_class"] = "HARD"
+        rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
+        rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+        rs["last_result"]["evidence"] = {"branch_name": branch}
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        print(json.dumps({"state":"STOP","reason_code":rs["last_result"]["reason_code"]}, ensure_ascii=False))
+        return 1
+    if len(open_prs) == 1:
+        pr_url = open_prs[0].get("url")
+    else:
+        title = f"MEP RUN {run_id} (apply)"
+        body = f"Runner applied patches and updated branch for RUN_ID={run_id}"
+        pr_url = _run(["gh","pr","create","--repo",repo,"--head",branch,"--base","main","--title",title,"--body",body]).strip()
+    # commit sha
+    sha = _run(["git","rev-parse","HEAD"]).strip()
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "OK"}
+    rs["last_result"]["stop_class"] = ""
+    rs["last_result"]["reason_code"] = ""
+    rs["last_result"]["evidence"] = {"branch_name": branch, "pr_url": pr_url, "commit_sha": sha}
+    rs["next_action"] = "STATUS"
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    print(json.dumps({"state":"OK","branch_name":branch,"pr_url":pr_url,"commit_sha":sha}, ensure_ascii=False))
+    return 0
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -448,6 +535,8 @@ def main() -> int:
     ap_create.add_argument("--run-id", required=True)
     ap_asm = sub.add_parser("assemble-pr")
     ap_asm.add_argument("--run-id", required=True)
+    ap_safe = sub.add_parser("apply-safe")
+    ap_safe.add_argument("--run-id", required=True)
     args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
@@ -461,6 +550,8 @@ def main() -> int:
         return pr_create(args.run_id)
     if args.cmd == "assemble-pr":
         return assemble_pr(args.run_id)
+    if args.cmd == "apply-safe":
+        return apply_safe(args.run_id)
     return 1
 
 if __name__ == "__main__":
