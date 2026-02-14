@@ -1,5 +1,11 @@
 name: MEP Issue LLM to PR (Issue Entry)
 on:
+  workflow_dispatch:
+    inputs:
+      body:
+        description: "Simulated issue_comment body"
+        required: true
+        type: string
   issue_comment:
     types:
       - created
@@ -23,7 +29,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = (context.payload.comment && context.payload.comment.body) ? context.payload.comment.body : "";
+            const isDispatch = context.eventName === "workflow_dispatch";
+            const body =
+              isDispatch
+                ? (context.payload.inputs && context.payload.inputs.body ? context.payload.inputs.body : "")
+                : (context.payload.comment && context.payload.comment.body ? context.payload.comment.body : "");
             if (!body) { core.setFailed("BODY_EMPTY"); return; }
             core.setOutput("body", body);
       - name: Extract draft (DRAFT_START/END)
