@@ -43,7 +43,7 @@ PARENT_CHAT_ID: （ここに前チャットが提示した NEXT_CHAT_ID を貼�
 ### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
 
 ### EXEC_AUTO（EXEC専用一括｜AUTO_BOOTSTRAP_EXEC）
-アンカー優先順位：PrimaryAnchor指定 > PR(HEADに紐づく) > COMMIT(main HEAD)
+アンカー優先順位：PrimaryAnchor指定 > PR(OPEN/HEADに紐づく) > PR(MERGED/HEADに紐づく) > COMMIT(main HEAD)
 目的：実装中（EXEC_MODE）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（作業ツリーはクリーン必須）。
 使い方（PowerShell）
 - リポジトリ直下で実行（main HEADを一次根拠に ledger-in/out → MEP_BOOT）：
