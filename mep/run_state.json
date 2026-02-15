@@ -1,31 +1,53 @@
 {
-  "run_id": "RUN_5e80a72dfa04",
-  "run_status": "STILL_OPEN",
-  "next_action": "STATUS",
+  "handoff": {
+    "compiled_paths": [
+      "docs/MEP/STATUS.md",
+      "docs/MEP/HANDOFF_AUDIT.md",
+      "docs/MEP/HANDOFF_WORK.md"
+    ],
+    "digest": "b1ae4a2b3d58e7743d7673b631ec4b24f27af9077f4ca6ac39d35756394962d8",
+    "generated_at_utc": "2026-02-14T21:39:23Z",
+    "head_sha": "826f4f6f1fd73ca89264211349d1b160312a826c",
+    "packet_id": "HP_20260214T213923Z",
+    "ssot_paths": [
+      "mep/boot_spec.yaml",
+      "mep/policy.yaml",
+      "mep/run_state.json"
+    ]
+  },
+  "handoff_ack": {
+    "checked_at_utc": "2026-02-14T21:39:23Z",
+    "packet_id": "HP_20260214T213923Z",
+    "reason_code": null,
+    "status": "ACK"
+  },
+  "history": [],
+  "last_good": null,
   "last_result": {
-    "stop_class": "",
-    "reason_code": "",
-    "next_action": "STATUS",
-    "timestamp_utc": "2026-02-12T19:32:24Z",
     "action": {
-      "name": "APPLY",
+      "name": "ASSEMBLE_PR",
       "outcome": "OK"
     },
     "evidence": {
       "branch_name": null,
-      "pr_url": null,
       "commit_sha": null,
+      "pr_url": null,
       "workflow_run_url": null
-    }
+    },
+    "next_action": "STATUS",
+    "reason_code": "",
+    "stop_class": "",
+    "timestamp_utc": "2026-02-14T21:39:23Z"
   },
+  "next_action": "READY_TO_APPLY_SAFE_PATH",
+  "run_id": "RUN_5e80a72dfa04",
+  "run_status": "STILL_OPEN",
+  "updated_at": "2026-02-14T21:39:23Z",
   "work_summary": {
-    "total": "unknown",
-    "ready": "unknown",
-    "in_progress": "unknown",
     "done": "unknown",
-    "stop": "unknown"
-  },
-  "history": [],
-  "updated_at": "2026-02-12T19:32:24Z",
-  "last_good": null
+    "in_progress": "unknown",
+    "ready": "unknown",
+    "stop": "unknown",
+    "total": "unknown"
+  }
 }
