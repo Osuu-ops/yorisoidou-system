@@ -319,6 +319,30 @@ def pr_probe(run_id: str) -> int:
     rs["last_result"]["evidence"] = ev
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 1
+
+    # EVIDENCE_FOLLOW_A2
+    # Detect stale PR headRefOid vs branch tip and auto-replace PR.
+    repo = os.environ.get("GH_REPO", "")
+    if repo and open_prs:
+        try:
+            pr_url = open_prs[0].get("url")
+            pr_number = open_prs[0].get("number")
+            head_ref = branch
+            # read PR headRefOid
+            pr_head = json.loads(_run(["gh","pr","view",str(pr_number),"--repo",repo,"--json","headRefOid","-q","."]))["headRefOid"]
+            # read branch tip from refs
+            ref_json = json.loads(_run(["gh","api","-H","Accept: application/vnd.github+json",f"/repos/{repo}/git/matching-refs/heads/{head_ref}"]))
+            ref_sha = ref_json[0]["object"]["sha"] if ref_json else ""
+            if pr_head and ref_sha and pr_head != ref_sha:
+                # create replacement branch from ref_sha
+                new_branch = f"{head_ref}_replace"
+                _run(["git","fetch","origin"])
+                _run(["git","checkout","-B",new_branch,ref_sha])
+                _run(["git","push","-u","origin",new_branch,"--force-with-lease"])
+                new_pr = _run(["gh","pr","create","--repo",repo,"--head",new_branch,"--base","main","--title",f"REPLACE PR #{pr_number}: stale headRefOid","--body","Auto-replace due to stale headRefOid"])
+                rs["last_result"]["evidence"]["pr_url"] = new_pr.strip()
+        except Exception:
+            pass
 def pr_create(run_id: str) -> int:
     branch = f"mep/run_{run_id}"
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
