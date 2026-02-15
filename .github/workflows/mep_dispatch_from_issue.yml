@@ -2,7 +2,7 @@ name: MEP Dispatch (from Issue)
 
 on:
   issues:
-    types: [opened, edited, labeled]
+    types: [labeled]
 
 permissions:
   contents: read
@@ -147,3 +147,4 @@ jobs:
                 "- Next PR: implement UPDATE_SPEC/REGENERATE with safe two-step (draft -> approve label -> PR)."
               ].join("\n")
             });
+

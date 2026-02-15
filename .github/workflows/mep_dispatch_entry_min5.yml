@@ -7,8 +7,8 @@ on:
         required: true
         type: string
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
   issues: write
 concurrency:
   group: mep-min5-${{ github.event_name }}-${{ github.run_id }}
