@@ -15,12 +15,25 @@ if ($dirty) {
   Write-Error "Working tree is dirty. Commit/stash first (EXEC bootstrap requires clean tree)."
   exit 1
 }
-# main同期（一次根拠は main HEAD を使う）
+# main同期（一次根拠は main HEAD を基準）
 git fetch --prune origin
 git switch main
 git reset --hard origin/main
-$sha = git rev-parse HEAD
-if (-not $PrimaryAnchor) { $PrimaryAnchor = "COMMIT:$sha" }
+$sha = (git rev-parse HEAD).Trim()
+function Get-PrimaryAnchor([string]$given, [string]$commitSha) {
+  if ($given) { return $given }
+  # 1) PR(HEADに紐づく) が取れれば PR:URL を優先
+  try {
+    $apiPath = "/repos/Osuu-ops/yorisoidou-system/commits/$commitSha/pulls"
+    $prs = gh api -H "Accept: application/vnd.github+json" $apiPath 2>$null | ConvertFrom-Json
+    if ($prs -and $prs.Count -ge 1 -and $prs[0].html_url) {
+      return ("PR:" + $prs[0].html_url)
+    }
+  } catch { }
+  # 2) 取れなければ COMMIT
+  return ("COMMIT:" + $commitSha)
+}
+$PrimaryAnchor = Get-PrimaryAnchor $PrimaryAnchor $sha
 Write-Host "PRIMARY_ANCHOR: $PrimaryAnchor"
 # CHECKPOINT_IN
 $ledgerIn = python tools/runner/runner.py ledger-in `
