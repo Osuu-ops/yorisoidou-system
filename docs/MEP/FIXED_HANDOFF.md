@@ -180,3 +180,18 @@ PARENT_CHAT_ID: <前チャットが提示した NEXT_CHAT_ID>
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
 <!-- END MEP_FIXED_HANDOFF_V3 -->
+
+## RUNNER_LEDGER_COMMANDS（NORMATIVE｜RUNNER_LEDGER_COMMANDS_V1）
+台帳（CHAT_CHAIN_LEDGER）の追記は **手打ち禁止**。必ず runner コマンドで行う。
+（これにより ID衝突/時刻/HEAD取り違え/JSON崩れ を最小化する）
+### CHECKPOINT_IN（新チャット冒頭）
+- 実行：
+  python tools/runner/runner.py ledger-in --parent-chat-id <PARENT_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
+- 出力：this_chat_id（JSON）を返す → これを THIS_CHAT_ID として以後保持
+### CHECKPOINT_OUT（チャット終端）
+- 実行：
+  python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
+- 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
+注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
+
+
