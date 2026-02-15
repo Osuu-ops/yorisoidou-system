@@ -69,3 +69,43 @@ PARENT_CHAT_ID: CHAT_...（前チャットの NEXT_CHAT_ID）
 - CHECKPOINT_OUT を docs/MEP/CHAT_CHAIN_LEDGER.md に append-only 追記
 - [MEP_BOOT] を出力（次チャット冒頭貼付用）
 更新: 2026-02-15T16:00:34Z
+
+## PRE_HANDOFF_GATE（草案/実装 両対応｜NORMATIVE｜PRE_HANDOFF_GATE_V2_DUALMODE）
+目的：草案中（DRAFT）でも実装中（EXEC）でも、最終的に「固定→次へ渡す」が必ず通るようにする。
+Issue注入の“行為”を常時必須にせず、代わりに「一次根拠アンカー最低1つ」を必須とする。
+### モード判定（AIが決める）
+- DRAFT_MODE（草案系）：Issue URL が一次根拠の中心
+- EXEC_MODE（実装系）：PR/commit が一次根拠の中心
+判定基準（推奨）：
+- ユーザーが Issue URL を提示 → DRAFT_MODE
+- run_state に PR/commit が入っている／RunnerでPRが見える → EXEC_MODE
+- どちらも無い → DRAFT_MODE（＝一次根拠ゼロを防ぐため）
+### チェック0：PORTFOLIO_ID（並走対策）
+- 未指定でも進行可（UNSELECTED）
+- 並走（A/B/C）の場合は必須（BIZ_A/BIZ_B/BIZ_C 等）
+### チェック1：一次根拠アンカー（最低1つ必須）
+アンカー候補（どれか1つでOK）：
+- Issue URL（草案の一次根拠）
+- PR URL（実装の一次根拠）
+- merge commit / commit sha（実装の一次根拠）
+- run_state.json の evidence（pr_url/commit_sha が埋まっている）
+不足時：
+- STOP_REASON: NO_PRIMARY_ANCHOR
+- AI次アクション：『Issue URL か PR/commit のどちらか1つを提示してから再実行』
+### チェック2：RUN収束（未収束のまま次へ行かない）
+- STILL_OPEN 放置や、必要なPRがOPEN放置でないこと
+不足時：
+- STOP_REASON: RUN_NOT_CONVERGED
+- AI次アクション：runner status → assemble-pr → apply-safe → merge-finish の「どこで止まってるか」だけ返す
+### チェック3：CHECKPOINT_OUT 準備（終端で次に渡せる状態）
+- NEXT_CHAT_ID を発行
+- docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を append-only 追記
+- [MEP_BOOT] を出力（次チャット冒頭貼付用、プレースホルダ禁止）
+不足時：
+- STOP_REASON: CHECKPOINT_OUT_MISSING
+- AI次アクション：『NEXT_CHAT_ID→台帳追記→[MEP_BOOT]出力』だけ返す
+### 全チェックOKの場合のみ（終端アクション）
+- NEXT_CHAT_ID を発行
+- CHECKPOINT_OUT を台帳へ追記
+- [MEP_BOOT] を出力
+更新: 2026-02-15T16:21:03Z
