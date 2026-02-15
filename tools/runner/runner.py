@@ -337,13 +337,13 @@ def pr_create(run_id: str) -> int:
     try:
         _run(["git", "rev-parse", "--verify", branch])
     except Exception:
-        _run(["git","checkout","-B",branch])
-        _run(["git", "push", "-u", "origin", branch])
+        _run(["git","checkout","-B",branch,"origin/main"])
+        _run(["git","push","-u","origin",branch,"--force-with-lease"])
     else:
         try:
             _run(["git", "ls-remote", "--exit-code", "--heads", "origin", branch])
         except Exception:
-            _run(["git", "push", "-u", "origin", branch])
+            _run(["git","push","-u","origin",branch,"--force-with-lease"])
     open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
     open_prs = json.loads(open_json) if open_json.strip() else []
     if len(open_prs) > 1:
@@ -440,10 +440,10 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
     try:
-        _run(["git","checkout","-f",branch])
+            # APPLY_SAFE_BASE_ON_ORIGIN_MAIN`n    _run(["git","fetch","origin","main"])`n_run(["git","checkout","-B",branch,"origin/main"])
     except Exception:
-        _run(["git","checkout","-B",branch])
-        _run(["git", "push", "-u", "origin", branch])
+        _run(["git","checkout","-B",branch,"origin/main"])
+        _run(["git","push","-u","origin",branch,"--force-with-lease"])
     for p in patches:
         _run(["git", "apply", "--check", str(p)])
     for p in patches:
@@ -677,3 +677,4 @@ def main() -> int:
     return 1
 if __name__ == "__main__":
     sys.exit(main())
+
