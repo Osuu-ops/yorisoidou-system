@@ -22,6 +22,12 @@
 - destructive ops（apply-safe/merge-finish/compact delete）は handoff_ack.status == ACK が無い限り進めない
 
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
+
+### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
+台帳が GitHub に反映されていない事故に備え、[MEP_BOOT] には必ず
+PARENT_CHECKPOINT_OUT_JSONL（親のCHECKPOINT_OUT 1行）を同梱する。
+新チャットが台帳から復元できない場合、この1行を貼るだけで復元できる。
+
 各チャットは「引継ぎタイミング（終端）」で必ず次を行う：
 1) NEXT_CHAT_ID を生成（衝突しない形式：例 CHAT_YYYYMMDDTHHMMSSZ_xxx）
 2) docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を追記（append-only）
@@ -170,6 +176,12 @@ Issue注入の“行為”を常時必須にせず、代わりに「一次根拠
 - CHECKPOINT_OUT を台帳へ追記
 - [MEP_BOOT] を出力（次チャット冒頭貼付用）
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
+
+### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
+台帳が GitHub に反映されていない事故に備え、[MEP_BOOT] には必ず
+PARENT_CHECKPOINT_OUT_JSONL（親のCHECKPOINT_OUT 1行）を同梱する。
+新チャットが台帳から復元できない場合、この1行を貼るだけで復元できる。
+
 各チャットは「引継ぎタイミング（終端）」で必ず次を行う：
 1) NEXT_CHAT_ID を生成（具体値で埋める。プレースホルダ禁止）
 2) docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を追記（append-only）
@@ -177,6 +189,7 @@ Issue注入の“行為”を常時必須にせず、代わりに「一次根拠
 ### 次チャット冒頭に貼る本文（固定）
 [MEP_BOOT]
 PARENT_CHAT_ID: <前チャットが提示した NEXT_CHAT_ID>
+PARENT_CHECKPOINT_OUT_JSONL: <親のCHECKPOINT_OUT 1行JSONL（next_chat_id==PARENT_CHAT_ID）>
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
 <!-- END MEP_FIXED_HANDOFF_V3 -->
@@ -193,5 +206,6 @@ PARENT_CHAT_ID: <前チャットが提示した NEXT_CHAT_ID>
   python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
 - 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
 注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
+
 
 
