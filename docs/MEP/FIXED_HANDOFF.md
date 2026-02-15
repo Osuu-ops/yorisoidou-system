@@ -32,3 +32,40 @@
 PARENT_CHAT_ID: （ここに前チャットが提示した NEXT_CHAT_ID を貼る）
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
+## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
+ユーザーが貼る指示は「最短1行」で成立させる。
+### 最短1行（PORTFOLIO未指定でも開始可）
+引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+### 2行（推奨：並走A/B/Cの迷子防止）
+引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+PORTFOLIO_ID: BIZ_A  （例）
+### 継続（FOLLOW）
+引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+PARENT_CHAT_ID: CHAT_...（前チャットの NEXT_CHAT_ID）
+分岐規則：
+- PARENT_CHAT_ID が空 → GENESIS（新規）
+- PARENT_CHAT_ID がある → FOLLOW（継続）## PRE_HANDOFF_GATE（NORMATIVE｜PRE_HANDOFF_GATE_V1）
+ユーザーが「引継ぎしたい」と言ったら、AIは必ず以下3点を機械的にチェックし、
+不足があれば STOP_REASON を明示して止め、分岐指示（最小の追加情報）だけ返すこと。
+### チェック1：草案の Issue 注入（一次根拠化）
+- 最新草案が Issue に保存されていること（Issue URL が提示されること）
+- Issue が PORTFOLIO_ID と整合すること（BIZ_A/BIZ_B/BIZ_C 等）
+不足時：
+- STOP_REASON: DRAFT_NOT_INJECTED_TO_ISSUE
+- AIの次アクション：『草案を Issue に注入して URL を出してください（PORTFOLIO_ID も必要なら明示）』
+### チェック2：RUN が収束していること（未収束のまま次へ行かない）
+- run_state / evidence が STILL_OPEN 放置ではない
+- PR が OPEN のままではない（必要なら merge-finish まで）
+不足時：
+- STOP_REASON: RUN_NOT_CONVERGED
+- AIの次アクション：『runner status → assemble-pr → apply-safe → merge-finish のどこで止まっているかを示し、次の1手だけ提示』
+### チェック3：CHECKPOINT_OUT の準備（終端で次チャットへ渡せる状態）
+- THIS_CHAT_ID / NEXT_CHAT_ID を確定し、CHAT_CHAIN_LEDGER に CHECKPOINT_OUT を追記できる状態
+不足時：
+- STOP_REASON: CHECKPOINT_OUT_MISSING
+- AIの次アクション：『NEXT_CHAT_ID を発行し、CHECKPOINT_OUT を台帳に追記してから [MEP_BOOT] を出力』
+### 全チェックOKの場合のみ
+- NEXT_CHAT_ID を発行
+- CHECKPOINT_OUT を docs/MEP/CHAT_CHAIN_LEDGER.md に append-only 追記
+- [MEP_BOOT] を出力（次チャット冒頭貼付用）
+更新: 2026-02-15T16:00:34Z
