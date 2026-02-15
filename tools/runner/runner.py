@@ -772,7 +772,7 @@ def compact() -> int:
 
 # LEDGER_IN_OUT_V2
 def _utc_now_compact() -> str:
-    return datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    return datetime.now(datetime.UTC).strftime("%Y%m%dT%H%M%SZ")
 def _rand_hex4() -> str:
     return secrets.token_hex(2).upper()
 def gen_chat_id() -> str:
@@ -841,9 +841,11 @@ def ledger_out(this_chat_id: str, portfolio_id: str, mode: str, primary_anchor: 
         "next_item": next_item or "UNSPECIFIED",
     }
     ledger_append(entry)
+    parent_jsonl = json.dumps(entry, ensure_ascii=False)
     boot = "\n".join([
         "[MEP_BOOT]",
         f"PARENT_CHAT_ID: {next_id}",
+        f"PARENT_CHECKPOINT_OUT_JSONL: {parent_jsonl}",
         "@github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。",
         "開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。",
         ""
@@ -916,4 +918,5 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
