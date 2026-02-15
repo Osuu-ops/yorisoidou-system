@@ -41,6 +41,16 @@ PARENT_CHAT_ID: （ここに前チャットが提示した NEXT_CHAT_ID を貼�
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
 
 ### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
+
+### EXEC_AUTO（EXEC専用一括｜AUTO_BOOTSTRAP_EXEC）
+目的：実装中（EXEC_MODE）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（作業ツリーはクリーン必須）。
+使い方（PowerShell）
+- リポジトリ直下で実行（main HEADを一次根拠に ledger-in/out → MEP_BOOT）：
+  .\tools\runner\bootstrap_exec.ps1
+備考：
+- 作業ツリーが汚れていると停止（誤アンカー防止）。
+- DRAFT_MODE は GENESIS_AUTO（bootstrap.ps1）を使う。
+
 目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
 使い方（PowerShell）
 - リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
@@ -133,6 +143,16 @@ v3.0 （更新: 2026-02-15T16:31:33Z）
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
 
 ### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
+
+### EXEC_AUTO（EXEC専用一括｜AUTO_BOOTSTRAP_EXEC）
+目的：実装中（EXEC_MODE）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（作業ツリーはクリーン必須）。
+使い方（PowerShell）
+- リポジトリ直下で実行（main HEADを一次根拠に ledger-in/out → MEP_BOOT）：
+  .\tools\runner\bootstrap_exec.ps1
+備考：
+- 作業ツリーが汚れていると停止（誤アンカー防止）。
+- DRAFT_MODE は GENESIS_AUTO（bootstrap.ps1）を使う。
+
 目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
 使い方（PowerShell）
 - リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
@@ -228,6 +248,7 @@ PARENT_CHECKPOINT_OUT_JSONL: <親のCHECKPOINT_OUT 1行JSONL（next_chat_id==PAR
   python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
 - 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
 注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
+
 
 
 
