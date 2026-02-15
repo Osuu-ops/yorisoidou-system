@@ -4,38 +4,26 @@ param(
   [string]$NextItem = "CONTINUE",
   [string]$PrimaryAnchor = ""
 )
-# repo root前提（ここで実行）
-if (-not (Test-Path ".git")) {
-  Write-Error "Not inside repository root. cd into yorisoidou-system first."
-  exit 1
-}
-# 実装系は「作業ツリー汚れ禁止」
+if (-not (Test-Path ".git")) { Write-Error "Not inside repo root"; exit 1 }
 $dirty = git status --porcelain
-if ($dirty) {
-  Write-Error "Working tree is dirty. Commit/stash first (EXEC bootstrap requires clean tree)."
-  exit 1
-}
-# main同期（一次根拠は main HEAD を基準）
+if ($dirty) { Write-Error "Working tree is dirty (EXEC bootstrap requires clean)"; exit 1 }
 git fetch --prune origin
 git switch main
 git reset --hard origin/main
 $sha = (git rev-parse HEAD).Trim()
 function Get-PrimaryAnchor([string]$given, [string]$commitSha) {
   if ($given) { return $given }
-  # 1) PR(HEADに紐づく) が取れれば PR:URL を優先
+  # 1) PR検索（commit sha を GitHub search で拾う。squashでも拾える）
   try {
-    $apiPath = "/repos/Osuu-ops/yorisoidou-system/commits/$commitSha/pulls"
-    $prs = gh api -H "Accept: application/vnd.github+json" $apiPath 2>$null | ConvertFrom-Json
-    if ($prs -and $prs.Count -ge 1 -and $prs[0].html_url) {
-      return ("PR:" + $prs[0].html_url)
-    }
+    $q = "$commitSha repo:Osuu-ops/yorisoidou-system"
+    $prUrl = (gh pr list -R Osuu-ops/yorisoidou-system --search $q --state merged --limit 1 --json url --jq '.[0].url' 2>$null).Trim()
+    if ($prUrl) { return ("PR:" + $prUrl) }
   } catch { }
-  # 2) 取れなければ COMMIT
+  # 2) フォールバック
   return ("COMMIT:" + $commitSha)
 }
 $PrimaryAnchor = Get-PrimaryAnchor $PrimaryAnchor $sha
 Write-Host "PRIMARY_ANCHOR: $PrimaryAnchor"
-# CHECKPOINT_IN
 $ledgerIn = python tools/runner/runner.py ledger-in `
   --parent-chat-id GENESIS `
   --portfolio-id $PortfolioId `
@@ -45,7 +33,6 @@ $ledgerIn = python tools/runner/runner.py ledger-in `
   --next-item $NextItem | ConvertFrom-Json
 $thisChatId = $ledgerIn.this_chat_id
 Write-Host "THIS_CHAT_ID: $thisChatId"
-# CHECKPOINT_OUT（runner が [MEP_BOOT] を出す）
 python tools/runner/runner.py ledger-out `
   --this-chat-id $thisChatId `
   --portfolio-id $PortfolioId `
