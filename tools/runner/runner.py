@@ -366,6 +366,89 @@ def pr_create(run_id: str) -> int:
 def assemble_pr(run_id: str) -> int:
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
+
+    # PATCH_TYPE_SCAN_A1
+    # Preflight patch type/target checks to stop early with reason_code instead of failing in apply-safe.
+    # - NEW FILE patch targeting an existing path => HARD (NEW_FILE_TARGET_EXISTS)
+    # - UPDATE patch targeting a missing path => HARD (UPDATE_TARGET_MISSING)
+    # Uses origin/main as the reference base.
+    created_paths = set()
+    def _cat_exists(rev: str, p: str) -> bool:
+        try:
+            _run(["git", "cat-file", "-e", f"{rev}:{p}"])
+            return True
+        except Exception:
+            return False
+    def _scan_patch_paths(txt: str):
+        # returns list of tuples (path, kind) where kind in {"NEW","UPD"}
+        out = []
+        cur = None
+        kind = None
+        for line in txt.splitlines():
+            if line.startswith("diff --git "):
+                # diff --git a/xxx b/xxx
+                parts = line.split()
+                if len(parts) >= 4:
+                    a = parts[2][2:] if parts[2].startswith("a/") else parts[2]
+                    b = parts[3][2:] if parts[3].startswith("b/") else parts[3]
+                    cur = b
+                    kind = None
+            elif line.startswith("new file mode") or line.startswith("--- /dev/null"):
+                if cur:
+                    kind = "NEW"
+            elif line.startswith("deleted file mode") or line.startswith("rename from") or line.startswith("rename to"):
+                # treat as dangerous/unsupported at higher layer; leave to denylist
+                pass
+            elif line.startswith("--- a/") and cur and kind is None:
+                kind = "UPD"
+        # finalize
+        if cur and kind:
+            out.append((cur, kind))
+        # multi-file patches: naive fallback, capture all occurrences
+        # capture every diff block:
+        out2 = []
+        cur = None
+        kind = None
+        for line in txt.splitlines():
+            if line.startswith("diff --git "):
+                if cur and kind:
+                    out2.append((cur, kind))
+                parts = line.split()
+                if len(parts) >= 4:
+                    b = parts[3][2:] if parts[3].startswith("b/") else parts[3]
+                    cur = b
+                    kind = None
+            elif line.startswith("new file mode") or line.startswith("--- /dev/null"):
+                if cur:
+                    kind = "NEW"
+            elif line.startswith("--- a/") and cur and kind is None:
+                kind = "UPD"
+        if cur and kind:
+            out2.append((cur, kind))
+        return out2
+    # evaluate patches against origin/main
+    for p in patches:
+        txt = p.read_text(encoding="utf-8", errors="replace")
+        for (tpath, tkind) in _scan_patch_paths(txt):
+            # if earlier patch creates it, allow subsequent updates in same batch
+            exists_in_base = _cat_exists("origin/main", tpath)
+            exists_effective = exists_in_base or (tpath in created_paths)
+            if tkind == "NEW":
+                if exists_effective:
+                    rs["last_result"]["stop_class"] = "HARD"
+                    rs["last_result"]["reason_code"] = "NEW_FILE_TARGET_EXISTS"
+                    rs["next_action"] = "REGENERATE_PATCH_AS_UPDATE"
+                    write_json(RUN_STATE, rs); update_compiled(rs)
+                    return 1
+                created_paths.add(tpath)
+            elif tkind == "UPD":
+                if not exists_effective:
+                    rs["last_result"]["stop_class"] = "HARD"
+                    rs["last_result"]["reason_code"] = "UPDATE_TARGET_MISSING"
+                    rs["next_action"] = "REGENERATE_PATCH_AS_NEWFILE_OR_FIX_PATH"
+                    write_json(RUN_STATE, rs); update_compiled(rs)
+                    return 1
+
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     rs["run_id"] = run_id
     rs["updated_at"] = utc_now_z()
