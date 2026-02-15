@@ -1,0 +1,8 @@
+diff --git a/docs/MEP/SYSTEM_MAP.md b/docs/MEP/SYSTEM_MAP.md
+index fbfb8b14..056d066e 100644
+--- a/docs/MEP/SYSTEM_MAP.md
++++ b/docs/MEP/SYSTEM_MAP.md
+@@ -21,0 +22,3 @@ D) Self-heal完全版：push retry / gh fallback / check再取得 / reason_code
++
++<!-- mep: system_map_touch 2026-02-15T11:55:47Z -->
++

@@ -5,10 +5,10 @@
       "docs/MEP/HANDOFF_AUDIT.md",
       "docs/MEP/HANDOFF_WORK.md"
     ],
-    "digest": "b1ae4a2b3d58e7743d7673b631ec4b24f27af9077f4ca6ac39d35756394962d8",
-    "generated_at_utc": "2026-02-14T21:39:23Z",
-    "head_sha": "826f4f6f1fd73ca89264211349d1b160312a826c",
-    "packet_id": "HP_20260214T213923Z",
+    "digest": "77cf37f04178677b34c9d604f983926c822b34e312cef815c746b0ec2d01c4db",
+    "generated_at_utc": "2026-02-15T11:55:47Z",
+    "head_sha": "e5e09bbc5baafe5947bc389c06f30f6dfeb676b1",
+    "packet_id": "HP_20260215T115547Z",
     "ssot_paths": [
       "mep/boot_spec.yaml",
       "mep/policy.yaml",
@@ -16,8 +16,8 @@
     ]
   },
   "handoff_ack": {
-    "checked_at_utc": "2026-02-14T21:39:23Z",
-    "packet_id": "HP_20260214T213923Z",
+    "checked_at_utc": "2026-02-15T11:55:47Z",
+    "packet_id": "HP_20260215T115547Z",
     "reason_code": null,
     "status": "ACK"
   },
@@ -37,12 +37,12 @@
     "next_action": "STATUS",
     "reason_code": "",
     "stop_class": "",
-    "timestamp_utc": "2026-02-14T21:39:23Z"
+    "timestamp_utc": "2026-02-15T11:55:48Z"
   },
   "next_action": "READY_TO_APPLY_SAFE_PATH",
   "run_id": "RUN_5e80a72dfa04",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-02-14T21:39:23Z",
+  "updated_at": "2026-02-15T11:55:48Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",

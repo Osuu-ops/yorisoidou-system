@@ -19,3 +19,6 @@ A) SSOT_SCAN：MEP_SSOT_MASTER(Q整合/RULE-0単一解化/PATCH競合/business-s
 B) CONFLICT_SCAN：旧WORK_ID系 vs 新RUN系 / forbidden path / allowed_paths逸脱
 C) EXTRACT生成：DECISION_LEDGER.md / INPUT_PACKET.md / health.md / cards
 D) Self-heal完全版：push retry / gh fallback / check再取得 / reason_code→自動復帰
+
+<!-- mep: system_map_touch 2026-02-15T11:55:47Z -->
+
