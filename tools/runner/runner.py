@@ -419,8 +419,6 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs_guard); update_compiled(rs_guard)
         return 2
     branch = f"mep/run_{run_id}"
-    # APPLY_SAFE_REBASE_ON_ORIGIN_MAIN
-    _run(["git","fetch","origin","main"])
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
@@ -444,8 +442,8 @@ def apply_safe(run_id: str) -> int:
     try:
         _run(["git","checkout","-f",branch])
     except Exception:
-    _run(["git","checkout","-B",branch,"origin/main"])
-    _run(["git","push","-u","origin",branch,"--force-with-lease"])
+        _run(["git","checkout","-B",branch])
+        _run(["git", "push", "-u", "origin", branch])
     for p in patches:
         _run(["git", "apply", "--check", str(p)])
     for p in patches:
@@ -679,4 +677,3 @@ def main() -> int:
     return 1
 if __name__ == "__main__":
     sys.exit(main())
-
