@@ -630,6 +630,28 @@ def merge_finish(run_id: str) -> int:
     rs["next_action"] = "ALL_DONE"
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
+
+    # MERGE_FINISH_A3_AUTODONE
+    # If PR already MERGED, automatically finalize run_state (no manual backfill).
+    repo = os.environ.get("GH_REPO", "")
+    if repo:
+        try:
+            pr_url = rs.get("last_result", {}).get("evidence", {}).get("pr_url")
+            if pr_url:
+                pr_json = json.loads(_run(["gh","pr","view",pr_url,"--repo",repo,"--json","state,mergeCommit","-q","."]))
+                if pr_json.get("state") == "MERGED":
+                    merge_oid = (pr_json.get("mergeCommit") or {}).get("oid")
+                    rs["last_result"]["action"] = {"name":"MERGE_FINISH","outcome":"OK"}
+                    rs["last_result"]["stop_class"] = ""
+                    rs["last_result"]["reason_code"] = ""
+                    rs["last_result"]["timestamp_utc"] = utc_now_z()
+                    rs["last_result"]["evidence"]["commit_sha"] = merge_oid
+                    rs["run_status"] = "DONE"
+                    rs["next_action"] = "STATUS"
+                    write_json(RUN_STATE, rs); update_compiled(rs)
+                    return 0
+        except Exception:
+            pass
 def compact() -> int:
     rs_guard = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     ok, rs_guard = require_handoff_ack(rs_guard)
