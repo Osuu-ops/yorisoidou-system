@@ -129,7 +129,7 @@ LATEST_EVIDENCE_POINTERS:
             lines.append(f"- {x}")
     write_md(HANDOFF_WORK_MD, "\n".join(lines))
 def _run(cmd: list[str]) -> str:
-    p = subprocess.run(cmd, capture_output=True, text=True)
+    p = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if p.returncode != 0:
         raise RuntimeError(p.stderr.strip() or "command failed")
     return p.stdout
@@ -278,7 +278,7 @@ def pr_probe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
     try:
-        open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "open", "--json", "number,url", "-q", "."])
+        open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
         closed_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "closed", "--json", "number,url", "-q", "."])
         open_prs = json.loads(open_json) if open_json.strip() else []
         closed_prs = json.loads(closed_json) if closed_json.strip() else []
@@ -337,14 +337,14 @@ def pr_create(run_id: str) -> int:
     try:
         _run(["git", "rev-parse", "--verify", branch])
     except Exception:
-        _run(["git", "checkout", "-b", branch])
+        _run(["git","checkout","-B",branch])
         _run(["git", "push", "-u", "origin", branch])
     else:
         try:
             _run(["git", "ls-remote", "--exit-code", "--heads", "origin", branch])
         except Exception:
             _run(["git", "push", "-u", "origin", branch])
-    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "open", "--json", "number,url", "-q", "."])
+    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
     open_prs = json.loads(open_json) if open_json.strip() else []
     if len(open_prs) > 1:
         rs["last_result"]["stop_class"] = "HARD"
@@ -440,9 +440,9 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
     try:
-        _run(["git", "checkout", branch])
+        _run(["git","checkout","-f",branch])
     except Exception:
-        _run(["git", "checkout", "-b", branch])
+        _run(["git","checkout","-B",branch])
         _run(["git", "push", "-u", "origin", branch])
     for p in patches:
         _run(["git", "apply", "--check", str(p)])
@@ -451,7 +451,7 @@ def apply_safe(run_id: str) -> int:
     _run(["git", "add", "-A"])
     _run(["git", "commit", "-m", f"mep: apply patches for {run_id}"])
     _run(["git", "push", "origin", branch])
-    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "open", "--json", "number,url", "-q", "."])
+    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
     open_prs = json.loads(open_json) if open_json.strip() else []
     if len(open_prs) > 1:
         rs["last_result"]["stop_class"] = "HARD"
