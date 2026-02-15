@@ -21,3 +21,4 @@ B-4 Self-heal 完全版（reason_code辞書→自動復帰）：未
 CURRENT_PHASE: A_DONE -> 次は B-1
 NEXT_ITEM: B-1 SSOT_SCAN
 更新: 2026-02-15T14:09:16Z
+
