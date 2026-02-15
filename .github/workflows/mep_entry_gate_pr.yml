@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   entry_gate:
+  name: ENTRY_GATE / gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,4 +29,5 @@ jobs:
           set -euo pipefail
           git fetch origin main --prune
           python3 tools/checks/conflict_scan.py origin/main HEAD
+
 
