@@ -8,6 +8,8 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+import re
+import secrets
 try:
     import yaml  # type: ignore
 except Exception:
@@ -767,6 +769,90 @@ def compact() -> int:
     rs["next_action"] = "STATUS"
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
+
+# LEDGER_IN_OUT_V2
+def _utc_now_compact() -> str:
+    return datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+def _rand_hex4() -> str:
+    return secrets.token_hex(2).upper()
+def gen_chat_id() -> str:
+    return f"CHAT_{_utc_now_compact()}_{_rand_hex4()}"
+def _mep_root_dir() -> Path:
+    # runner.py は tools/runner/runner.py にある前提
+    return Path(__file__).resolve().parents[2]
+def _ledger_path() -> Path:
+    return _mep_root_dir() / "docs" / "MEP" / "CHAT_CHAIN_LEDGER.md"
+def _fixed_handoff_path() -> Path:
+    return _mep_root_dir() / "docs" / "MEP" / "FIXED_HANDOFF.md"
+def read_fixed_handoff_version() -> str:
+    p = _fixed_handoff_path()
+    if not p.exists():
+        return "unknown"
+    txt = p.read_text(encoding="utf-8", errors="replace")
+    m = re.search(r"^##\s*FIXED_HANDOFF_VERSION\s*$\s*^\s*([vV]\d+(?:\.\d+)*)", txt, flags=re.M)
+    if m:
+        return m.group(1)
+    m2 = re.search(r"FIXED_HANDOFF_VERSION\s*[:=]\s*([vV]\d+(?:\.\d+)*)", txt)
+    return m2.group(1) if m2 else "unknown"
+def git_head_sha() -> str:
+    try:
+        return _run(["git","rev-parse","HEAD"]).strip()
+    except Exception:
+        return ""
+def ledger_append(entry: dict) -> None:
+    p = _ledger_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(entry, ensure_ascii=False)
+    with open(p, "a", encoding="utf-8", newline="\n") as f:
+        f.write(line + "\n")
+def ledger_in(parent_chat_id: str, portfolio_id: str, mode: str, primary_anchor: str, current_phase: str, next_item: str) -> int:
+    this_id = gen_chat_id()
+    entry = {
+        "kind": "CHECKPOINT_IN",
+        "this_chat_id": this_id,
+        "parent_chat_id": parent_chat_id,
+        "portfolio_id": portfolio_id or "UNSELECTED",
+        "checked_at_utc": utc_now_z(),
+        "main_head": git_head_sha(),
+        "fixed_handoff_version": read_fixed_handoff_version(),
+        "mode": mode or "UNSPECIFIED",
+        "primary_anchor": primary_anchor or "UNSPECIFIED",
+        "current_phase": current_phase or "UNSPECIFIED",
+        "next_item": next_item or "UNSPECIFIED",
+    }
+    ledger_append(entry)
+    print(json.dumps({"kind":"CHECKPOINT_IN","this_chat_id": this_id}, ensure_ascii=False))
+    return 0
+def ledger_out(this_chat_id: str, portfolio_id: str, mode: str, primary_anchor: str, current_phase: str, next_item: str) -> int:
+    if not this_chat_id:
+        this_chat_id = gen_chat_id()
+    next_id = gen_chat_id()
+    entry = {
+        "kind": "CHECKPOINT_OUT",
+        "this_chat_id": this_chat_id,
+        "next_chat_id": next_id,
+        "portfolio_id": portfolio_id or "UNSELECTED",
+        "checked_at_utc": utc_now_z(),
+        "main_head": git_head_sha(),
+        "fixed_handoff_version": read_fixed_handoff_version(),
+        "mode": mode or "UNSPECIFIED",
+        "primary_anchor": primary_anchor or "UNSPECIFIED",
+        "current_phase": current_phase or "UNSPECIFIED",
+        "next_item": next_item or "UNSPECIFIED",
+    }
+    ledger_append(entry)
+    boot = "\n".join([
+        "[MEP_BOOT]",
+        f"PARENT_CHAT_ID: {next_id}",
+        "@github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。",
+        "開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。",
+        ""
+    ])
+    print(json.dumps({"kind":"CHECKPOINT_OUT","this_chat_id": this_chat_id, "next_chat_id": next_id}, ensure_ascii=False))
+    print(boot)
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -785,6 +871,22 @@ def main() -> int:
     ap_finish = sub.add_parser("merge-finish")
     ap_finish.add_argument("--run-id", required=True)
     sub.add_parser("compact")
+
+    ap_li = sub.add_parser("ledger-in")
+    ap_li.add_argument("--parent-chat-id", required=True)
+    ap_li.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_li.add_argument("--mode", default="UNSPECIFIED")
+    ap_li.add_argument("--primary-anchor", default="UNSPECIFIED")
+    ap_li.add_argument("--current-phase", default="UNSPECIFIED")
+    ap_li.add_argument("--next-item", default="UNSPECIFIED")
+    ap_lo = sub.add_parser("ledger-out")
+    ap_lo.add_argument("--this-chat-id", default="")
+    ap_lo.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_lo.add_argument("--mode", default="UNSPECIFIED")
+    ap_lo.add_argument("--primary-anchor", default="UNSPECIFIED")
+    ap_lo.add_argument("--current-phase", default="UNSPECIFIED")
+    ap_lo.add_argument("--next-item", default="UNSPECIFIED")
+
     args = ap.parse_args()
     if args.cmd == "boot":
         return boot()
@@ -804,6 +906,11 @@ def main() -> int:
         return merge_finish(args.run_id)
     if args.cmd == "compact":
         return compact()
+
+    if args.cmd == "ledger-in":
+        return ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+    if args.cmd == "ledger-out":
+        return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
     return 1
 if __name__ == "__main__":
     sys.exit(main())
