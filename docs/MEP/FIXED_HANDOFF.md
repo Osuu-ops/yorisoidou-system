@@ -39,6 +39,17 @@ PARENT_CHAT_ID: （ここに前チャットが提示した NEXT_CHAT_ID を貼�
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
+
+### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
+目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
+使い方（PowerShell）
+- リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
+  .\tools\runner\bootstrap.ps1 -Draft docs/system/MEP_SYSTEM_PACK_v1.md
+備考：
+- Rulesetにより main 直pushは禁止。反映はPR経由。
+- EXEC_MODE（PR/merge起点）は別途拡張する（本節はDRAFT専用）。
+
+
 ユーザーが貼る指示は「最短1行」で成立させる。
 ### 最短1行（PORTFOLIO未指定でも開始可）
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
@@ -120,6 +131,17 @@ Issue注入の“行為”を常時必須にせず、代わりに「一次根拠
 ## FIXED_HANDOFF_VERSION
 v3.0 （更新: 2026-02-15T16:31:33Z）
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
+
+### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
+目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
+使い方（PowerShell）
+- リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
+  .\tools\runner\bootstrap.ps1 -Draft docs/system/MEP_SYSTEM_PACK_v1.md
+備考：
+- Rulesetにより main 直pushは禁止。反映はPR経由。
+- EXEC_MODE（PR/merge起点）は別途拡張する（本節はDRAFT専用）。
+
+
 ユーザーは最短1行で開始できる（未指定は UNSELECTED）。
 ### 最短1行（GENESIS/FOLLOW 自動判定）
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
@@ -206,6 +228,7 @@ PARENT_CHECKPOINT_OUT_JSONL: <親のCHECKPOINT_OUT 1行JSONL（next_chat_id==PAR
   python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
 - 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
 注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
+
 
 
 
