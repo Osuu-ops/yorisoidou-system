@@ -441,6 +441,8 @@ def apply_safe(run_id: str) -> int:
         return 1
         # APPLY_SAFE_BASE_ORIGIN_MAIN
         _run(["git","fetch","origin","main"])
+        # APPLY_SAFE_BASE_ORIGIN_MAIN
+        _run(["git","fetch","origin","main"])
         _run(["git","checkout","-f","-B",branch,"origin/main"])
         _run(["git","push","-u","origin",branch,"--force-with-lease"])
     for p in patches:
@@ -676,3 +678,6 @@ def main() -> int:
     return 1
 if __name__ == "__main__":
     sys.exit(main())
+
+# mep: ci-retrigger 2026-02-15T11:16:08Z
+
