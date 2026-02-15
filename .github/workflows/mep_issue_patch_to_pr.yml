@@ -1,67 +1,70 @@
 name: MEP Issue Patch to PR (NO_LLM)
-
 on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to read latest /mep run comment from"
+        required: true
+        type: string
   issue_comment:
     types: [created, edited]
-
 permissions:
   contents: write
   pull-requests: write
   issues: write
-
 concurrency:
-  group: mep-issue-${{ github.event.issue.number }}
+  group: mep-issue-${{ github.event.issue.number || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   patch_to_pr:
-    if: contains(github.event.comment.body, '/mep run') && (contains(github.event.comment.body, 'MODE: NO_LLM') || !contains(github.event.comment.body, 'MODE:'))
-
+    if: ${{ github.event_name == 'workflow_dispatch' || (contains(github.event.comment.body, '/mep run') && (contains(github.event.comment.body, 'MODE: NO_LLM') || !contains(github.event.comment.body, 'MODE:'))) }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Extract patch from comment (PATCH_START/END preferred)
+      - name: Resolve body (issue_comment or workflow_dispatch)
+        id: body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isDispatch = context.eventName === "workflow_dispatch";
+            if (!isDispatch) {
+              core.setOutput("body", (context.payload.comment && context.payload.comment.body) ? context.payload.comment.body : "");
+              return;
+            }
+            const n = parseInt((context.payload.inputs && context.payload.inputs.issue_number) ? context.payload.inputs.issue_number : "0", 10);
+            if (!n) { core.setFailed("ISSUE_NUMBER_REQUIRED"); return; }
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: n, per_page: 100 });
+            const mine = comments.reverse().find(c => (c.body || "").includes("/mep run"));
+            core.setOutput("body", mine ? (mine.body || "") : "");
+            core.setOutput("issue_number", String(n));
+      - name: Extract patch from body (PATCH_START/END preferred)
         id: extract
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.comment.body || "";
-
-            // Preferred input (no backticks):
-            // /mep run
-            // PATCH_START
-            // <diff text...>
-            // PATCH_END
+            const body = `${{ steps.body.outputs.body }}` || "";
             let patch = "";
             const m = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
             if (m && m[1]) patch = m[1].trim();
-
-            // Backward-compat: fenced diff block, but WITHOUT literal backticks here.
             if (!patch) {
               const FENCE = String.fromCharCode(96, 96, 96); // "```"
               const re = new RegExp(FENCE + "diff\\n([\\s\\S]*?)\\n" + FENCE, "i");
               const m2 = body.match(re);
               if (m2 && m2[1]) patch = m2[1].trim();
             }
-
             if (!patch) {
               core.setFailed("NO_PATCH: Use PATCH_START..PATCH_END (preferred).");
               return;
             }
-
-            // base64 encode to safely pass multiline data
-            const patchB64 = Buffer.from(patch, "utf8").toString("base64");
-            core.setOutput("patch_b64", patchB64);
-
+            core.setOutput("patch_b64", Buffer.from(patch, "utf8").toString("base64"));
       - name: Write patch to file
         run: |
           echo "${{ steps.extract.outputs.patch_b64 }}" | base64 -d > /tmp/mep.patch
           test -s /tmp/mep.patch
           echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
-
       - name: Guard (no binary / no delete-rename-move-chmod)
         run: |
           set -euo pipefail
@@ -73,34 +76,31 @@ jobs:
             echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN (delete/rename/mode-change)"
             exit 1
           fi
-
       - name: Apply patch (check then apply)
         run: |
           set -euo pipefail
           git apply --check /tmp/mep.patch
           git apply /tmp/mep.patch
-
       - name: Create PR
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          title: "MEP: apply patch from issue #${{ github.event.issue.number }}"
+          title: "MEP: apply patch from issue #${{ github.event.issue.number || steps.body.outputs.issue_number }}"
           body: |
             Applied by MEP Issue Patch Runner (NO_LLM).
-
-            - Issue: #${{ github.event.issue.number }}
-            - Comment: ${{ github.event.comment.html_url }}
+            - Event: ${{ github.event_name }}
+            - Issue: #${{ github.event.issue.number || steps.body.outputs.issue_number }}
             - Patch bytes: ${{ env.PATCH_BYTES }}
-          commit-message: "mep: apply patch from issue #${{ github.event.issue.number }}"
-          branch: "auto/mep_issue_${{ github.event.issue.number }}_${{ github.run_id }}"
+          commit-message: "mep: apply patch from issue #${{ github.event.issue.number || steps.body.outputs.issue_number }}"
+          branch: "auto/mep_issue_${{ github.event.issue.number || steps.body.outputs.issue_number }}_${{ github.run_id }}"
           base: "main"
           delete-branch: true
-
       - name: Comment back with PR URL
         uses: actions/github-script@v7
         with:
           script: |
-            const issue_number = context.payload.issue.number;
+            const isDispatch = context.eventName === "workflow_dispatch";
+            const issue_number = isDispatch ? parseInt("${{ steps.body.outputs.issue_number || '0' }}", 10) : context.payload.issue.number;
             const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
             const msg = prUrl
               ? `✅ MEP created PR: ${prUrl}\n(mode=NO_LLM)`
