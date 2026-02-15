@@ -772,7 +772,7 @@ def compact() -> int:
 
 # LEDGER_IN_OUT_V2
 def _utc_now_compact() -> str:
-    return datetime.now(datetime.UTC).strftime("%Y%m%dT%H%M%SZ")
+    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 def _rand_hex4() -> str:
     return secrets.token_hex(2).upper()
 def gen_chat_id() -> str:
@@ -918,5 +918,6 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
