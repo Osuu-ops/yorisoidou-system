@@ -451,7 +451,7 @@ def apply_safe(run_id: str) -> int:
         _run(["git", "apply", str(p)])
     _run(["git", "add", "-A"])
     _run(["git", "commit", "-m", f"mep: apply patches for {run_id}"])
-    _run(["git", "push", "origin", branch])
+    _run(["git","push","origin",branch,"--force-with-lease"])
     open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
     open_prs = json.loads(open_json) if open_json.strip() else []
     if len(open_prs) > 1:
