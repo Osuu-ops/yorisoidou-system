@@ -439,7 +439,8 @@ def apply_safe(run_id: str) -> int:
         rs["next_action"] = "SET_GH_REPO"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
-    try:
+        # APPLY_SAFE_BASE_ORIGIN_MAIN
+        _run(["git","fetch","origin","main"])
         # APPLY_SAFE_BASE_ORIGIN_MAIN
         _run(["git","fetch","origin","main"])
         _run(["git","checkout","-f","-B",branch,"origin/main"])
@@ -677,3 +678,6 @@ def main() -> int:
     return 1
 if __name__ == "__main__":
     sys.exit(main())
+
+# mep: ci-retrigger 2026-02-15T11:16:08Z
+
