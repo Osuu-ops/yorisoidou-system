@@ -440,10 +440,10 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
     try:
-        _run(["git","checkout","-f",branch])
-    except Exception:
-        _run(["git","checkout","-B",branch])
-        _run(["git", "push", "-u", "origin", branch])
+        # APPLY_SAFE_BASE_ORIGIN_MAIN
+        _run(["git","fetch","origin","main"])
+        _run(["git","checkout","-f","-B",branch,"origin/main"])
+        _run(["git","push","-u","origin",branch,"--force-with-lease"])
     for p in patches:
         _run(["git", "apply", "--check", str(p)])
     for p in patches:
