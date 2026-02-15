@@ -14,7 +14,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.11"
       - name: SSOT_SCAN
         shell: bash
         run: |
@@ -28,3 +28,4 @@ jobs:
           set -euo pipefail
           git fetch origin main --prune
           python3 tools/checks/conflict_scan.py origin/main HEAD
+

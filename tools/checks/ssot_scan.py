@@ -40,7 +40,7 @@ def main():
                 ref = int(mm.group(1))
                 ref_qs.add(ref)
                 if cur is not None:
-                    edges.setdefault(cur, set()).add(ref)
+                    if (cur is not None) and (ref != cur): edges.setdefault(cur, set()).add(ref)
     missing_refs = [rq for rq in sorted(ref_qs) if rq not in qs]
     if missing_refs:
         findings.append({"type":"SUPERSEDE_REF_MISSING","severity":"STOP","detail":"Referenced Q not found: " + ",".join(str(x) for x in missing_refs[:200])})
@@ -73,3 +73,4 @@ def main():
     return 0 if status == "GO" else 1
 if __name__ == "__main__":
     raise SystemExit(main())
+
