@@ -1,0 +1,87 @@
+# reindex: force workflow registration refresh 2026-02-16T17:11:06Z
+name: MEP Writeback Bundle (Entry + SystemPack Gate) v2
+on:
+  workflow_dispatch:
+    inputs:
+      pack_path:
+        description: SYSTEM_PACK markdown path for pre-gate (system_pack_engine).
+        required: true
+        default: docs/MEP/system_packs/MEP_SYSTEM_PACK_v1_FULL_CONVERGENCE_2026-02-16.md
+      pr_number:
+        description: 0 = auto latest merged PR
+        required: false
+        default: "0"
+      write_handoff:
+        description: write handoff files
+        required: false
+        default: "false"
+      ssot_b64:
+        description: SSOT payload as base64(UTF-8).
+        required: false
+        default: ""
+      ssot_payload_path:
+        description: Repo-relative path to SSOT payload file (optional).
+        required: false
+        default: ""
+permissions:
+  contents: read
+  actions: write
+jobs:
+  system_pack_gate_then_dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run SystemPack Engine (gate)
+        env:
+          PYTHONPATH: tools/system_pack_engine/src
+        run: |
+          python -m system_pack_engine.cli --pack "${{ github.event.inputs.pack_path }}" --out ./_system_pack_out
+      - name: Gate decision (must be DONE)
+        run: |
+          python - << 'PY'
+          import json, sys
+          p = "./_system_pack_out/resolved_spec.json"
+          with open(p, "r", encoding="utf-8") as f:
+            d = json.load(f)
+          st = d.get("state")
+          if st != "DONE":
+            print("STOP: system_pack_engine state != DONE:", st)
+            sys.exit(1)
+          print("OK: system_pack_engine gate DONE")
+          PY
+      - name: Dispatch canonical writeback entry workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          REF: ${{ github.ref_name }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          WRITE_HANDOFF: ${{ github.event.inputs.write_handoff }}
+          SSOT_B64: ${{ github.event.inputs.ssot_b64 }}
+          SSOT_PAYLOAD_PATH: ${{ github.event.inputs.ssot_payload_path }}
+        run: |
+          API="https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/mep_writeback_bundle_dispatch_entry.yml/dispatches"
+          body=$(cat <<JSON
+          {
+            "ref": "${REF}",
+            "inputs": {
+              "ssot_b64": "${SSOT_B64}",
+              "ssot_payload_path": "${SSOT_PAYLOAD_PATH}",
+              "pr_number": "${PR_NUMBER}",
+              "write_handoff": "${WRITE_HANDOFF}"
+            }
+          }
+JSON
+          )
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            --data "${body}" \
+            "${API}"
+          echo "OK: dispatched mep_writeback_bundle_dispatch_entry.yml"
