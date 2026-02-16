@@ -32,6 +32,7 @@ jobs:
           print("OK: system_pack_engine gate DONE")
           PY
       - name: Upload SystemPack Outputs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: system_pack_out
