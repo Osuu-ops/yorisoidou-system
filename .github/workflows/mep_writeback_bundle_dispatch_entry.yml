@@ -3,22 +3,20 @@ name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
     inputs:
-      
-      ssot_b64:
-        description: "SSOT payload as base64(UTF-8). If set, runner reconstructs file + sha256 stamp."
-        required: false
-        default: ""
-ssot_payload_path:
-        description: "Repo-relative path to SSOT payload file (optional). Example: .mep_tmp/SSOT_PAYLOAD__YYYYMMDD_....md"
-        required: false
-        default: ""
-
       pr_number:
         description: "0 = auto latest merged PR"
         required: false
         default: "0"
+      ssot_b64:
+        description: "SSOT payload as base64(UTF-8) (optional)"
+        required: false
+        default: ""
+      ssot_payload_path:
+        description: "Repo-relative path to SSOT payload file (optional)"
+        required: false
+        default: ""
       write_handoff:
-        description: "write handoff files"
+        description: "write handoff files (optional)"
         required: false
         default: "false"
 permissions:
@@ -148,3 +146,4 @@ jobs:
 
 # ---- MEP: AI判断完結ゾーン出力（追記） ----
 # registry-refresh: 20260212_111819
+
