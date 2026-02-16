@@ -1,0 +1,21 @@
+{
+  "doctrine_version": "v1",
+  "core_doctrine": "MEP_SYSTEM_PACK_v1",
+  "norms": [
+    {"strength": "MUST", "text": "Input MUST include TITLE, SYSTEM_ID, BUSINESS_ID in that order."},
+    {"strength": "MUST", "text": "Convergence MUST produce the return set even for STOP_WAIT/STOP_HARD (best-effort set)."},
+    {"strength": "MUST", "text": "SAFE_BIAS must be computed from diff_report sections as specified."}
+  ],
+  "prohibitions": [
+    {"strength": "MUST_NOT", "text": "Do not modify existing 8-gate orchestration files in this parallel-safe track."},
+    {"strength": "MUST_NOT", "text": "Do not commit directly to main; PR only."}
+  ],
+  "priority_rules": [
+    "doctrine > behavior",
+    "Adopted > Draft",
+    "Supersedes resolves to single answer",
+    "Unresolvable conflicts -> MANUAL_REQUIRED and STOP_WAIT",
+    "STOP_HARD must have hard_kind (FATAL/RECOVERABLE)"
+  ],
+  "auto_commit_on_safe_bias": false
+}
