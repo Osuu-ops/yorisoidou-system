@@ -1,3 +1,4 @@
+# reindex: force workflow registration refresh 2026-02-16T16:47:29Z
 name: MEP Writeback Bundle (Entry + SystemPack Gate)
 on:
   workflow_dispatch:
@@ -88,3 +89,4 @@ JSON
             --data "${body}" \
             "${API}"
           echo "OK: dispatched mep_writeback_bundle_dispatch_entry.yml"
+
