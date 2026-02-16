@@ -1,242 +1,103 @@
-# MEP_SYSTEM_PACK_v1｜入口＋2レイヤー正本（FULL CONVERGENCE + SAFETY INTEGRATION 2026-02-16）
-TITLE: MEP_SYSTEM_PACK_v1_入口＋2レイヤー正本（2026-02-16）
-SYSTEM_ID: SYS-MEP
+# MEP_SYSTEM_PACK_v1・懷・蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・ULL CONVERGENCE + SAFETY INTEGRATION 2026-02-16・・TITLE: MEP_SYSTEM_PACK_v1_蜈･蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・026-02-16・・SYSTEM_ID: SYS-MEP
 BUSINESS_ID: NONE
 ============================================================
 === DOC 1: ENTRY_GOVERNANCE ================================
 ============================================================
-FROZEN（仕様正文）
-## 1. 目的
-本仕様は、草案＋PATCHの投入から保存先確定（System/Business）、
-ID付与、統合、監査、返却までを一貫して安全に運用するための入口ガバナンスを定義する。
-本仕様は入力が以下のいずれであっても処理を開始できることを前提とする。
-- 草案のみ
-- 草案＋PATCH
-- STOP_WAIT 状態
-- STOP_HARD 状態（STOP_HARD_FATAL でない限り。STOP_HARD_FATAL の定義は DOC 2 #9 参照）
-（追記）本仕様における「完成品1セット」は DONEのみを意味しない。
-STOP_WAIT / STOP_HARD でも、現時点の最善として「返却物1セット」を生成し返却する（DOC2参照）。
-2. ヘッダー規約（必須）
-草案の最上段は以下順序で固定する。
-1. TITLE: <案件名>_<目的>（YYYY-MM-DD）
-2. SYSTEM_ID: SYS-MEP
+FROZEN・井ｻ墓ｧ俶ｭ｣譁・ｼ・## 1. 逶ｮ逧・譛ｬ莉墓ｧ倥・縲∬拷譯茨ｼ輝ATCH縺ｮ謚募・縺九ｉ菫晏ｭ伜・遒ｺ螳夲ｼ・ystem/Business・峨・ID莉倅ｸ弱∫ｵｱ蜷医∫屮譟ｻ縲∬ｿ泌唆縺ｾ縺ｧ繧剃ｸ雋ｫ縺励※螳牙・縺ｫ驕狗畑縺吶ｋ縺溘ａ縺ｮ蜈･蜿｣繧ｬ繝舌リ繝ｳ繧ｹ繧貞ｮ夂ｾｩ縺吶ｋ縲・譛ｬ莉墓ｧ倥・蜈･蜉帙′莉･荳九・縺・★繧後〒縺ゅ▲縺ｦ繧ょ・逅・ｒ髢句ｧ九〒縺阪ｋ縺薙→繧貞燕謠舌→縺吶ｋ縲・- 闕画｡医・縺ｿ
+- 闕画｡茨ｼ輝ATCH
+- STOP_WAIT 迥ｶ諷・- STOP_HARD 迥ｶ諷具ｼ・TOP_HARD_FATAL 縺ｧ縺ｪ縺・剞繧翫４TOP_HARD_FATAL 縺ｮ螳夂ｾｩ縺ｯ DOC 2 #9 蜿ら・・・・郁ｿｽ險假ｼ画悽莉墓ｧ倥↓縺翫￠繧九悟ｮ梧・蜩・繧ｻ繝・ヨ縲阪・ DONE縺ｮ縺ｿ繧呈э蜻ｳ縺励↑縺・・STOP_WAIT / STOP_HARD 縺ｧ繧ゅ∫樟譎らせ縺ｮ譛蝟・→縺励※縲瑚ｿ泌唆迚ｩ1繧ｻ繝・ヨ縲阪ｒ逕滓・縺苓ｿ泌唆縺吶ｋ・・OC2蜿ら・・峨・2. 繝倥ャ繝繝ｼ隕冗ｴ・ｼ亥ｿ・茨ｼ・闕画｡医・譛荳頑ｮｵ縺ｯ莉･荳矩・ｺ上〒蝗ｺ螳壹☆繧九・1. TITLE: <譯井ｻｶ蜷・_<逶ｮ逧・・・YYY-MM-DD・・2. SYSTEM_ID: SYS-MEP
 3. BUSINESS_ID: NONE | BIZ-...
-TITLEはローカル保存時のファイル名の基礎とする。
-3. 初回（IDなし）の挙動
-Step1：保存先選択（必須）
-数値入力は禁止（0＝承認との衝突回避のため）。
-S = SYSTEM
+TITLE縺ｯ繝ｭ繝ｼ繧ｫ繝ｫ菫晏ｭ俶凾縺ｮ繝輔ぃ繧､繝ｫ蜷阪・蝓ｺ遉弱→縺吶ｋ縲・3. 蛻晏屓・・D縺ｪ縺暦ｼ峨・謖吝虚
+Step1・壻ｿ晏ｭ伜・驕ｸ謚橸ｼ亥ｿ・茨ｼ・謨ｰ蛟､蜈･蜉帙・遖∵ｭ｢・・・晄価隱阪→縺ｮ陦晉ｪ∝屓驕ｿ縺ｮ縺溘ａ・峨・S = SYSTEM
 B = BUSINESS
-Step2：BUSINESSの場合
-既存候補がある場合
-1..n = 既存候補
-N = 新規ID作成（即作成で進行）
-候補なし
-N = 新規ID作成（即作成で進行）
-4. 2回目以降（IDあり）
-BUSINESS_IDが存在する場合はオート確定。
-選択肢は出さない。
-5. 保存規約（Vault）
-BUSINESS_ID: NONE → System Vault
-BUSINESS_ID: BIZ-... → Business Vault
-Vault Root Key（固定）
-System: vault/system/
+Step2・咤USINESS縺ｮ蝣ｴ蜷・譌｢蟄伜呵｣懊′縺ゅｋ蝣ｴ蜷・1..n = 譌｢蟄伜呵｣・N = 譁ｰ隕終D菴懈・・亥叉菴懈・縺ｧ騾ｲ陦鯉ｼ・蛟呵｣懊↑縺・N = 譁ｰ隕終D菴懈・・亥叉菴懈・縺ｧ騾ｲ陦鯉ｼ・4. 2蝗樒岼莉･髯搾ｼ・D縺ゅｊ・・BUSINESS_ID縺悟ｭ伜惠縺吶ｋ蝣ｴ蜷医・繧ｪ繝ｼ繝育｢ｺ螳壹・驕ｸ謚櫁い縺ｯ蜃ｺ縺輔↑縺・・5. 菫晏ｭ倩ｦ冗ｴ・ｼ・ault・・BUSINESS_ID: NONE 竊・System Vault
+BUSINESS_ID: BIZ-... 竊・Business Vault
+Vault Root Key・亥崋螳夲ｼ・System: vault/system/
 Business: vault/business/
-6. BUSINESS ID生成規則（確定）
-形式：
-BIZ-YYYYMMDD-XXXX
-YYYYMMDD = UTC日付
-XXXX = 16進大文字4桁
-衝突回避：
-最大16回再生成
-16回失敗 → STOP_HARD_FATAL
-7. エラー検知
-TITLE欠落 → STOP_WAIT
-SYSTEM_ID/BUSINESS_ID不整合 → STOP_WAIT
-BUSINESS_ID形式不正 → STOP_HARD_FATAL
-STOPは終了ではない（DOC2参照）。
-============================================================
+6. BUSINESS ID逕滓・隕丞援・育｢ｺ螳夲ｼ・蠖｢蠑擾ｼ・BIZ-YYYYMMDD-XXXX
+YYYYMMDD = UTC譌･莉・XXXX = 16騾ｲ螟ｧ譁・ｭ・譯・陦晉ｪ∝屓驕ｿ・・譛螟ｧ16蝗槫・逕滓・
+16蝗槫､ｱ謨・竊・STOP_HARD_FATAL
+7. 繧ｨ繝ｩ繝ｼ讀懃衍
+TITLE谺關ｽ 竊・STOP_WAIT
+SYSTEM_ID/BUSINESS_ID荳肴紛蜷・竊・STOP_WAIT
+BUSINESS_ID蠖｢蠑丈ｸ肴ｭ｣ 竊・STOP_HARD_FATAL
+STOP縺ｯ邨ゆｺ・〒縺ｯ縺ｪ縺・ｼ・OC2蜿ら・・峨・============================================================
 === DOC 2: TWO_LAYER_SSOT =================================
 ============================================================
-FROZEN（2レイヤー正本）
-1. 目的
-文章が統合・監査・校正で薄まらないため、
-正本を文章ではなくデータ構造で保持する。
-正本は以下2レイヤーとする。
-doctrine.json（思想・規範の正）
-behavior.json（挙動・状態の正）
-formal.md は生成物であり正本ではない。
-（追記）「収束（CONVERGENCE）」は、正本（doctrine/behavior）そのものを必ず更新することを意味しない。
-収束は、resolved_spec.json 上で完結して「返却物1セット」を生成することを最小義務とする（7章参照）。
-2. Doctrine（doctrine.json）
-必須フィールド
-doctrine_version
+FROZEN・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・1. 逶ｮ逧・譁・ｫ縺檎ｵｱ蜷医・逶｣譟ｻ繝ｻ譬｡豁｣縺ｧ阮・∪繧峨↑縺・◆繧√・豁｣譛ｬ繧呈枚遶縺ｧ縺ｯ縺ｪ縺上ョ繝ｼ繧ｿ讒矩縺ｧ菫晄戟縺吶ｋ縲・豁｣譛ｬ縺ｯ莉･荳・繝ｬ繧､繝､繝ｼ縺ｨ縺吶ｋ縲・doctrine.json・域晄Φ繝ｻ隕冗ｯ・・豁｣・・behavior.json・域嫌蜍輔・迥ｶ諷九・豁｣・・formal.md 縺ｯ逕滓・迚ｩ縺ｧ縺ゅｊ豁｣譛ｬ縺ｧ縺ｯ縺ｪ縺・・・郁ｿｽ險假ｼ峨悟庶譚滂ｼ・ONVERGENCE・峨阪・縲∵ｭ｣譛ｬ・・octrine/behavior・峨◎縺ｮ繧ゅ・繧貞ｿ・★譖ｴ譁ｰ縺吶ｋ縺薙→繧呈э蜻ｳ縺励↑縺・・蜿取據縺ｯ縲〉esolved_spec.json 荳翫〒螳檎ｵ舌＠縺ｦ縲瑚ｿ泌唆迚ｩ1繧ｻ繝・ヨ縲阪ｒ逕滓・縺吶ｋ縺薙→繧呈怙蟆冗ｾｩ蜍吶→縺吶ｋ・・遶蜿ら・・峨・2. Doctrine・・octrine.json・・蠢・医ヵ繧｣繝ｼ繝ｫ繝・doctrine_version
 core_doctrine
 norms
 prohibitions
 priority_rules
-強度（固定4値）
-MUST
+蠑ｷ蠎ｦ・亥崋螳・蛟､・・MUST
 MUST_NOT
 SHOULD
 MAY
-強度変更の扱い
-MUST→SHOULD 等の強度低下は停止しない。
-必ず diff_report に記録する。
-（追記）正本更新ポリシー（採用＝コミット/統合）を doctrine 側で制御できるよう、以下の設定を規範として保持してよい：
-auto_commit_on_safe_bias（TRUE/FALSE）
-TRUE：SAFE_BIAS=TRUE の場合、正本更新（doctrine/behavior 反映）まで自動で行ってよい
-FALSE：SAFE_BIAS=TRUE でも、正本更新は行わず resolved_spec のみで収束して返却する
-（追記）auto_commit_on_safe_bias の既定値は FALSE とする。
-3. Behavior（behavior.json）
-必須フィールド
-behavior_version
+蠑ｷ蠎ｦ螟画峩縺ｮ謇ｱ縺・MUST竊担HOULD 遲峨・蠑ｷ蠎ｦ菴惹ｸ九・蛛懈ｭ｢縺励↑縺・・蠢・★ diff_report 縺ｫ險倬鹸縺吶ｋ縲・・郁ｿｽ險假ｼ画ｭ｣譛ｬ譖ｴ譁ｰ繝昴Μ繧ｷ繝ｼ・域治逕ｨ・昴さ繝溘ャ繝・邨ｱ蜷茨ｼ峨ｒ doctrine 蛛ｴ縺ｧ蛻ｶ蠕｡縺ｧ縺阪ｋ繧医≧縲∽ｻ･荳九・險ｭ螳壹ｒ隕冗ｯ・→縺励※菫晄戟縺励※繧医＞・・auto_commit_on_safe_bias・・RUE/FALSE・・TRUE・售AFE_BIAS=TRUE 縺ｮ蝣ｴ蜷医∵ｭ｣譛ｬ譖ｴ譁ｰ・・octrine/behavior 蜿肴丐・峨∪縺ｧ閾ｪ蜍輔〒陦後▲縺ｦ繧医＞
+FALSE・售AFE_BIAS=TRUE 縺ｧ繧ゅ∵ｭ｣譛ｬ譖ｴ譁ｰ縺ｯ陦後ｏ縺・resolved_spec 縺ｮ縺ｿ縺ｧ蜿取據縺励※霑泌唆縺吶ｋ
+・郁ｿｽ險假ｼ餌uto_commit_on_safe_bias 縺ｮ譌｢螳壼､縺ｯ FALSE 縺ｨ縺吶ｋ縲・3. Behavior・・ehavior.json・・蠢・医ヵ繧｣繝ｼ繝ｫ繝・behavior_version
 states
 transitions
 invariants
 wait_limit_count
 wait_limit_duration_minutes
-状態集合
-RUNNING
+迥ｶ諷矩寔蜷・RUNNING
 WAIT
 STOP_WAIT
 STOP_HARD
 RECOVERY
 DONE
-（追記）STOP_HARD は曖昧性を排除するため 2分類を持つ：
-STOP_HARD_FATAL：自動修正禁止領域（RECOVERYへ遷移しない）
-STOP_HARD_RECOVERABLE：自動修正可能領域（RECOVERYへ遷移してよい）
-（追記）STOP_HARD を返す場合は、必ず hard_kind を併記する（FATAL/RECOVERABLE のいずれか）。
-WAIT上限（自己完結）
-wait_limit_count = 2
+・郁ｿｽ險假ｼ唄TOP_HARD 縺ｯ譖匁乂諤ｧ繧呈賜髯､縺吶ｋ縺溘ａ 2蛻・｡槭ｒ謖√▽・・STOP_HARD_FATAL・夊・蜍穂ｿｮ豁｣遖∵ｭ｢鬆伜沺・・ECOVERY縺ｸ驕ｷ遘ｻ縺励↑縺・ｼ・STOP_HARD_RECOVERABLE・夊・蜍穂ｿｮ豁｣蜿ｯ閭ｽ鬆伜沺・・ECOVERY縺ｸ驕ｷ遘ｻ縺励※繧医＞・・・郁ｿｽ險假ｼ唄TOP_HARD 繧定ｿ斐☆蝣ｴ蜷医・縲∝ｿ・★ hard_kind 繧剃ｽｵ險倥☆繧具ｼ・ATAL/RECOVERABLE 縺ｮ縺・★繧後°・峨・WAIT荳企剞・郁・蟾ｱ螳檎ｵ撰ｼ・wait_limit_count = 2
 wait_limit_duration_minutes = 30
-WAITがいずれかを超えた場合 → STOP_WAIT
-（追記）修正ループ全体（RECOVERY含む）にも WAIT上限を適用してよい。
-4. 監査と自動修正
+WAIT縺後＞縺壹ｌ縺九ｒ雜・∴縺溷ｴ蜷・竊・STOP_WAIT
+・郁ｿｽ險假ｼ我ｿｮ豁｣繝ｫ繝ｼ繝怜・菴難ｼ・ECOVERY蜷ｫ繧・峨↓繧・WAIT荳企剞繧帝←逕ｨ縺励※繧医＞縲・4. 逶｣譟ｻ縺ｨ閾ｪ蜍穂ｿｮ豁｣
 AUTO_APPLIED
-形式補正
-Draft排除
-Supersedes解決
-並び整理
-formal再生成
-MEANING_OR_STRENGTH_CHANGED
-強度変更
-規範変更
-禁止集合変更
-停止はしないが必ず記録する。
-（追記）AUTO_APPLIED は 正本の更新（doctrine/behaviorのコミット）を必須としない。
-AUTO_APPLIED は resolved_spec 上で反映し、返却物の整合を満たすことを最小要件とする。
-5. 差分レポート構造（固定）
-DIFF REPORT
+蠖｢蠑剰｣懈ｭ｣
+Draft謗帝勁
+Supersedes隗｣豎ｺ
+荳ｦ縺ｳ謨ｴ逅・formal蜀咲函謌・MEANING_OR_STRENGTH_CHANGED
+蠑ｷ蠎ｦ螟画峩
+隕冗ｯ・､画峩
+遖∵ｭ｢髮・粋螟画峩
+蛛懈ｭ｢縺ｯ縺励↑縺・′蠢・★險倬鹸縺吶ｋ縲・・郁ｿｽ險假ｼ陰UTO_APPLIED 縺ｯ 豁｣譛ｬ縺ｮ譖ｴ譁ｰ・・octrine/behavior縺ｮ繧ｳ繝溘ャ繝茨ｼ峨ｒ蠢・医→縺励↑縺・・AUTO_APPLIED 縺ｯ resolved_spec 荳翫〒蜿肴丐縺励∬ｿ泌唆迚ｩ縺ｮ謨ｴ蜷医ｒ貅縺溘☆縺薙→繧呈怙蟆剰ｦ∽ｻｶ縺ｨ縺吶ｋ縲・5. 蟾ｮ蛻・Ξ繝昴・繝域ｧ矩・亥崋螳夲ｼ・DIFF REPORT
 AUTO_APPLIED
 MEANING_OR_STRENGTH_CHANGED
 MANUAL_REQUIRED
 SAFE_BIAS
-SAFE_BIAS = TRUE 条件
-MEANING_OR_STRENGTH_CHANGED が空
-MANUAL_REQUIRED が空
-（追記）STOP_WAIT / STOP_HARD の場合でも diff_report は必ず生成する。
-（追記）STOP_HARD の場合は MANUAL_REQUIRED に「hard_kind」「理由」「禁止領域（自動修正不可理由）」を必ず記録する。
-6. 返却物（1セット固定）
-formal.md
+SAFE_BIAS = TRUE 譚｡莉ｶ
+MEANING_OR_STRENGTH_CHANGED 縺檎ｩｺ
+MANUAL_REQUIRED 縺檎ｩｺ
+・郁ｿｽ險假ｼ唄TOP_WAIT / STOP_HARD 縺ｮ蝣ｴ蜷医〒繧・diff_report 縺ｯ蠢・★逕滓・縺吶ｋ縲・・郁ｿｽ險假ｼ唄TOP_HARD 縺ｮ蝣ｴ蜷医・ MANUAL_REQUIRED 縺ｫ縲敬ard_kind縲阪檎炊逕ｱ縲阪檎ｦ∵ｭ｢鬆伜沺・郁・蜍穂ｿｮ豁｣荳榊庄逅・罰・峨阪ｒ蠢・★險倬鹸縺吶ｋ縲・6. 霑泌唆迚ｩ・・繧ｻ繝・ヨ蝗ｺ螳夲ｼ・formal.md
 diff_report.md
 invariant_report.md
-doctrine.json（変更時）
-behavior.json（変更時）
-resolved_spec.json（任意）
-（追記）AUTO_PATCH を採用する場合、返却物セットに以下を 追加してよい：
-auto_patch.json（機械適用用）
-auto_patch.md（人間監査用）
-7. CONVERGENCE（収束責務：本PACKの核心）
-7.1 収束義務（MUST）
-入力が以下のいずれであっても、
-MEPは「返却物1セット」を生成するまで処理を継続する。
-草案のみ
-草案＋PATCH
-STOP_WAIT状態
-STOP_HARD状態（STOP_HARD_FATAL でない限り。定義は DOC2 #9 参照）
-STOPは終了ではない。
-STOPは修正ループの状態である。
-（追記）ここでいう「返却物1セット」は、DONEのみを指さない。
-DONE：完成（最終収束）
-STOP_WAIT：人間入力待ちの最善セット（現時点で確定できる範囲を最大化して返却）
-STOP_HARD：修正不能の最善セット（理由・禁止領域を明示して返却）
-7.2 自動PATCH生成
-diff_report生成後、以下を行う。
-SAFE_BIAS = TRUE
-→ AUTO_PATCH生成
-→ resolved_spec へ自動適用
-→ 再監査
+doctrine.json・亥､画峩譎ゑｼ・behavior.json・亥､画峩譎ゑｼ・resolved_spec.json・井ｻｻ諢擾ｼ・・郁ｿｽ險假ｼ陰UTO_PATCH 繧呈治逕ｨ縺吶ｋ蝣ｴ蜷医∬ｿ泌唆迚ｩ繧ｻ繝・ヨ縺ｫ莉･荳九ｒ 霑ｽ蜉縺励※繧医＞・・auto_patch.json・域ｩ滓｢ｰ驕ｩ逕ｨ逕ｨ・・auto_patch.md・井ｺｺ髢鍋屮譟ｻ逕ｨ・・7. CONVERGENCE・亥庶譚溯ｲｬ蜍呻ｼ壽悽PACK縺ｮ譬ｸ蠢・ｼ・7.1 蜿取據鄒ｩ蜍呻ｼ・UST・・蜈･蜉帙′莉･荳九・縺・★繧後〒縺ゅ▲縺ｦ繧ゅ・MEP縺ｯ縲瑚ｿ泌唆迚ｩ1繧ｻ繝・ヨ縲阪ｒ逕滓・縺吶ｋ縺ｾ縺ｧ蜃ｦ逅・ｒ邯咏ｶ壹☆繧九・闕画｡医・縺ｿ
+闕画｡茨ｼ輝ATCH
+STOP_WAIT迥ｶ諷・STOP_HARD迥ｶ諷具ｼ・TOP_HARD_FATAL 縺ｧ縺ｪ縺・剞繧翫ょｮ夂ｾｩ縺ｯ DOC2 #9 蜿ら・・・STOP縺ｯ邨ゆｺ・〒縺ｯ縺ｪ縺・・STOP縺ｯ菫ｮ豁｣繝ｫ繝ｼ繝励・迥ｶ諷九〒縺ゅｋ縲・・郁ｿｽ險假ｼ峨％縺薙〒縺・≧縲瑚ｿ泌唆迚ｩ1繧ｻ繝・ヨ縲阪・縲．ONE縺ｮ縺ｿ繧呈欠縺輔↑縺・・DONE・壼ｮ梧・・域怙邨ょ庶譚滂ｼ・STOP_WAIT・壻ｺｺ髢灘・蜉帛ｾ・■縺ｮ譛蝟・そ繝・ヨ・育樟譎らせ縺ｧ遒ｺ螳壹〒縺阪ｋ遽・峇繧呈怙螟ｧ蛹悶＠縺ｦ霑泌唆・・STOP_HARD・壻ｿｮ豁｣荳崎・縺ｮ譛蝟・そ繝・ヨ・育炊逕ｱ繝ｻ遖∵ｭ｢鬆伜沺繧呈・遉ｺ縺励※霑泌唆・・7.2 閾ｪ蜍姫ATCH逕滓・
+diff_report逕滓・蠕後∽ｻ･荳九ｒ陦後≧縲・SAFE_BIAS = TRUE
+竊・AUTO_PATCH逕滓・
+竊・resolved_spec 縺ｸ閾ｪ蜍暮←逕ｨ
+竊・蜀咲屮譟ｻ
 SAFE_BIAS = FALSE
-→ PATCH案生成
-→ MANUAL_REQUIRED記録
-→ STOP_WAIT
-（追記）AUTO_PATCH のフォーマットは固定し、機械適用と人間監査を分離する：
-auto_patch.json：機械適用用（機械がそのまま適用できる形式）
-auto_patch.md：人間監査用（要点／理由／影響範囲を記述）
-（追記）AUTO_PATCH の適用先は、優先規則に従い resolved_spec を作ることを最小要件とする。
-doctrine/behavior への正本更新（コミット・統合）は、doctrine の auto_commit_on_safe_bias に従う。
-7.3 修正ループ
-修正ループは以下で制限される。
-wait_limit_count
+竊・PATCH譯育函謌・竊・MANUAL_REQUIRED險倬鹸
+竊・STOP_WAIT
+・郁ｿｽ險假ｼ陰UTO_PATCH 縺ｮ繝輔か繝ｼ繝槭ャ繝医・蝗ｺ螳壹＠縲∵ｩ滓｢ｰ驕ｩ逕ｨ縺ｨ莠ｺ髢鍋屮譟ｻ繧貞・髮｢縺吶ｋ・・auto_patch.json・壽ｩ滓｢ｰ驕ｩ逕ｨ逕ｨ・域ｩ滓｢ｰ縺後◎縺ｮ縺ｾ縺ｾ驕ｩ逕ｨ縺ｧ縺阪ｋ蠖｢蠑擾ｼ・auto_patch.md・壻ｺｺ髢鍋屮譟ｻ逕ｨ・郁ｦ∫せ・冗炊逕ｱ・丞ｽｱ髻ｿ遽・峇繧定ｨ倩ｿｰ・・・郁ｿｽ險假ｼ陰UTO_PATCH 縺ｮ驕ｩ逕ｨ蜈医・縲∝━蜈郁ｦ丞援縺ｫ蠕薙＞ resolved_spec 繧剃ｽ懊ｋ縺薙→繧呈怙蟆剰ｦ∽ｻｶ縺ｨ縺吶ｋ縲・doctrine/behavior 縺ｸ縺ｮ豁｣譛ｬ譖ｴ譁ｰ・医さ繝溘ャ繝医・邨ｱ蜷茨ｼ峨・縲‥octrine 縺ｮ auto_commit_on_safe_bias 縺ｫ蠕薙≧縲・7.3 菫ｮ豁｣繝ｫ繝ｼ繝・菫ｮ豁｣繝ｫ繝ｼ繝励・莉･荳九〒蛻ｶ髯舌＆繧後ｋ縲・wait_limit_count
 wait_limit_duration_minutes
-上限到達 → STOP_WAIT
-（追記）STOP_WAIT に落ちる場合、diff_report の MANUAL_REQUIRED に 不足情報（例：TITLE欠落等） を必ず列挙する。
-7.4 DONE条件
-以下すべて満たす場合
-SAFE_BIAS = TRUE
-MANUAL_REQUIRED = 空
-invariants違反なし
-→ 状態 = DONE
-DONE時に返却物1セットを確定出力する。
-（追記）DONE でも doctrine の auto_commit_on_safe_bias = FALSE の場合、正本（doctrine/behavior）の更新は行わず、resolved_spec を正として返却する。
-7.5 POST_CONVERGENCE_NEXT（完成品後の次アクション提示：追加規定）
-完成品（返却物1セット）を生成した後、MEPは次アクションを以下の規則で決定し、必要に応じて選択肢を提示する。
-7.5.1 原則（MUST）
-* 次アクション提示は「常に選ばせる」のではなく、状態により自動分岐する。
-* ただし STOP_WAIT / STOP_HARD（特にFATAL）は人間判断が不可避なため、必ず選択肢を提示する。
-* DONE であっても、正本更新（doctrine/behaviorへのコミット・統合）が伴う場合は、doctrine の auto_commit_on_safe_bias に従う。
-7.5.2 状態別ルール（MUST）
-A) DONE（かつ SAFE_BIAS=TRUE）
-* auto_commit_on_safe_bias = TRUE
-  → 自動で次の実装ループへ投入してよい（次サイクルへ進行）。
-* auto_commit_on_safe_bias = FALSE
-  → 正本更新は行わず、resolved_spec を正として返却し、次の実装ループへ投入するかは選択肢として提示する。
-B) STOP_WAIT
-* 必ず選択肢を提示する。
-* MANUAL_REQUIRED に列挙された不足情報・未解決衝突を提示し、入力が得られ次第、RECOVERY → 再監査 → 再収束へ進む。
-C) STOP_HARD_FATAL
-* 必ず選択肢を提示する。
-* 自動で実装ループへ投入してはならない。
-* MANUAL_REQUIRED に hard_kind（FATAL）・理由・禁止領域（自動修正不可理由）を必ず記録する。
-D) STOP_HARD_RECOVERABLE
-* 原則として RECOVERY へ遷移し、修正ループを実行してよい。
-* ただし wait_limit により収束できない場合は STOP_WAIT に落とし、選択肢を提示する。
-7.5.3 選択肢（UI）最小セット（固定）
-DONE（SAFE_BIAS=TRUE かつ auto_commit_on_safe_bias=FALSE）
-1. 実装ループへ投入（次サイクルへ進行）
-2. 今回はここで停止（resolved_specのみ確定）
-STOP_WAIT
-1. 不足情報を入力して再収束（RECOVERYへ）
-2. 今回は固定して停止（次回へ持越し）
-STOP_HARD_FATAL
-1. 修正方針を選ぶ（入力差し替え／禁止領域回避等）
-2. 中止（安全停止）
-8. PRIORITY_RULES（衝突時の単一解化：追加規定）
-本PACKは「単一解化」を必須とし、衝突は以下の優先規則で処理する。
-本規則は doctrine.json の priority_rules にも同内容を持つ。
-doctrine が behavior に優先する
-Adopted（確定）扱いのPATCHが Draft より優先する
-Supersedes が存在する場合、Supersedes により単一解化する
-競合が解消できない場合、MANUAL_REQUIRED に記録し STOP_WAIT とする
-STOP_HARD は必ず hard_kind（FATAL/RECOVERABLE）に分類し、FATAL は自動修正を禁止する
-9. STOP_HARD_FATAL（自動修正禁止領域：追加規定）
-以下のいずれかに該当する場合、STOP_HARD_FATAL とし自動修正を禁止する：
-BUSINESS_ID形式破壊（規定の形式に復元できない）
-doctrine/behavior/resolved_spec のJSONが破損し、機械的復旧が不可能
-prohibitions（禁止集合）で明示された「自動修正禁止」に抵触
-返却物セットを生成すると安全上のリスクが増大すると判定される（安全規約違反）
-（追記）STOP_HARD_RECOVERABLE は上記に該当しない STOP_HARD とする。
-============================================================
+荳企剞蛻ｰ驕・竊・STOP_WAIT
+・郁ｿｽ險假ｼ唄TOP_WAIT 縺ｫ關ｽ縺｡繧句ｴ蜷医‥iff_report 縺ｮ MANUAL_REQUIRED 縺ｫ 荳崎ｶｳ諠・ｱ・井ｾ具ｼ啜ITLE谺關ｽ遲会ｼ・繧貞ｿ・★蛻玲嫌縺吶ｋ縲・7.4 DONE譚｡莉ｶ
+莉･荳九☆縺ｹ縺ｦ貅縺溘☆蝣ｴ蜷・SAFE_BIAS = TRUE
+MANUAL_REQUIRED = 遨ｺ
+invariants驕募渚縺ｪ縺・竊・迥ｶ諷・= DONE
+DONE譎ゅ↓霑泌唆迚ｩ1繧ｻ繝・ヨ繧堤｢ｺ螳壼・蜉帙☆繧九・・郁ｿｽ險假ｼ吋ONE 縺ｧ繧・doctrine 縺ｮ auto_commit_on_safe_bias = FALSE 縺ｮ蝣ｴ蜷医∵ｭ｣譛ｬ・・octrine/behavior・峨・譖ｴ譁ｰ縺ｯ陦後ｏ縺壹〉esolved_spec 繧呈ｭ｣縺ｨ縺励※霑泌唆縺吶ｋ縲・7.5 POST_CONVERGENCE_NEXT・亥ｮ梧・蜩∝ｾ後・谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ謠千､ｺ・夊ｿｽ蜉隕丞ｮ夲ｼ・螳梧・蜩・ｼ郁ｿ泌唆迚ｩ1繧ｻ繝・ヨ・峨ｒ逕滓・縺励◆蠕後｀EP縺ｯ谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ繧剃ｻ･荳九・隕丞援縺ｧ豎ｺ螳壹＠縲∝ｿ・ｦ√↓蠢懊§縺ｦ驕ｸ謚櫁い繧呈署遉ｺ縺吶ｋ縲・7.5.1 蜴溷援・・UST・・* 谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ謠千､ｺ縺ｯ縲悟ｸｸ縺ｫ驕ｸ縺ｰ縺帙ｋ縲阪・縺ｧ縺ｯ縺ｪ縺上∫憾諷九↓繧医ｊ閾ｪ蜍募・蟯舌☆繧九・* 縺溘□縺・STOP_WAIT / STOP_HARD・育音縺ｫFATAL・峨・莠ｺ髢灘愛譁ｭ縺御ｸ榊庄驕ｿ縺ｪ縺溘ａ縲∝ｿ・★驕ｸ謚櫁い繧呈署遉ｺ縺吶ｋ縲・* DONE 縺ｧ縺ゅ▲縺ｦ繧ゅ∵ｭ｣譛ｬ譖ｴ譁ｰ・・octrine/behavior縺ｸ縺ｮ繧ｳ繝溘ャ繝医・邨ｱ蜷茨ｼ峨′莨ｴ縺・ｴ蜷医・縲‥octrine 縺ｮ auto_commit_on_safe_bias 縺ｫ蠕薙≧縲・7.5.2 迥ｶ諷句挨繝ｫ繝ｼ繝ｫ・・UST・・A) DONE・医°縺､ SAFE_BIAS=TRUE・・* auto_commit_on_safe_bias = TRUE
+  竊・閾ｪ蜍輔〒谺｡縺ｮ螳溯｣・Ν繝ｼ繝励∈謚募・縺励※繧医＞・域ｬ｡繧ｵ繧､繧ｯ繝ｫ縺ｸ騾ｲ陦鯉ｼ峨・* auto_commit_on_safe_bias = FALSE
+  竊・豁｣譛ｬ譖ｴ譁ｰ縺ｯ陦後ｏ縺壹〉esolved_spec 繧呈ｭ｣縺ｨ縺励※霑泌唆縺励∵ｬ｡縺ｮ螳溯｣・Ν繝ｼ繝励∈謚募・縺吶ｋ縺九・驕ｸ謚櫁い縺ｨ縺励※謠千､ｺ縺吶ｋ縲・B) STOP_WAIT
+* 蠢・★驕ｸ謚櫁い繧呈署遉ｺ縺吶ｋ縲・* MANUAL_REQUIRED 縺ｫ蛻玲嫌縺輔ｌ縺滉ｸ崎ｶｳ諠・ｱ繝ｻ譛ｪ隗｣豎ｺ陦晉ｪ√ｒ謠千､ｺ縺励∝・蜉帙′蠕励ｉ繧梧ｬ｡隨ｬ縲ヽECOVERY 竊・蜀咲屮譟ｻ 竊・蜀榊庶譚溘∈騾ｲ繧縲・C) STOP_HARD_FATAL
+* 蠢・★驕ｸ謚櫁い繧呈署遉ｺ縺吶ｋ縲・* 閾ｪ蜍輔〒螳溯｣・Ν繝ｼ繝励∈謚募・縺励※縺ｯ縺ｪ繧峨↑縺・・* MANUAL_REQUIRED 縺ｫ hard_kind・・ATAL・峨・逅・罰繝ｻ遖∵ｭ｢鬆伜沺・郁・蜍穂ｿｮ豁｣荳榊庄逅・罰・峨ｒ蠢・★險倬鹸縺吶ｋ縲・D) STOP_HARD_RECOVERABLE
+* 蜴溷援縺ｨ縺励※ RECOVERY 縺ｸ驕ｷ遘ｻ縺励∽ｿｮ豁｣繝ｫ繝ｼ繝励ｒ螳溯｡後＠縺ｦ繧医＞縲・* 縺溘□縺・wait_limit 縺ｫ繧医ｊ蜿取據縺ｧ縺阪↑縺・ｴ蜷医・ STOP_WAIT 縺ｫ關ｽ縺ｨ縺励・∈謚櫁い繧呈署遉ｺ縺吶ｋ縲・7.5.3 驕ｸ謚櫁い・・I・画怙蟆上そ繝・ヨ・亥崋螳夲ｼ・DONE・・AFE_BIAS=TRUE 縺九▽ auto_commit_on_safe_bias=FALSE・・1. 螳溯｣・Ν繝ｼ繝励∈謚募・・域ｬ｡繧ｵ繧､繧ｯ繝ｫ縺ｸ騾ｲ陦鯉ｼ・2. 莉雁屓縺ｯ縺薙％縺ｧ蛛懈ｭ｢・・esolved_spec縺ｮ縺ｿ遒ｺ螳夲ｼ・STOP_WAIT
+1. 荳崎ｶｳ諠・ｱ繧貞・蜉帙＠縺ｦ蜀榊庶譚滂ｼ・ECOVERY縺ｸ・・2. 莉雁屓縺ｯ蝗ｺ螳壹＠縺ｦ蛛懈ｭ｢・域ｬ｡蝗槭∈謖∬ｶ翫＠・・STOP_HARD_FATAL
+1. 菫ｮ豁｣譁ｹ驥昴ｒ驕ｸ縺ｶ・亥・蜉帛ｷｮ縺玲崛縺茨ｼ冗ｦ∵ｭ｢鬆伜沺蝗樣∩遲会ｼ・2. 荳ｭ豁｢・亥ｮ牙・蛛懈ｭ｢・・8. PRIORITY_RULES・郁｡晉ｪ∵凾縺ｮ蜊倅ｸ隗｣蛹厄ｼ夊ｿｽ蜉隕丞ｮ夲ｼ・譛ｬPACK縺ｯ縲悟腰荳隗｣蛹悶阪ｒ蠢・医→縺励∬｡晉ｪ√・莉･荳九・蜆ｪ蜈郁ｦ丞援縺ｧ蜃ｦ逅・☆繧九・譛ｬ隕丞援縺ｯ doctrine.json 縺ｮ priority_rules 縺ｫ繧ょ酔蜀・ｮｹ繧呈戟縺､縲・doctrine 縺・behavior 縺ｫ蜆ｪ蜈医☆繧・Adopted・育｢ｺ螳夲ｼ画桶縺・・PATCH縺・Draft 繧医ｊ蜆ｪ蜈医☆繧・Supersedes 縺悟ｭ伜惠縺吶ｋ蝣ｴ蜷医ヾupersedes 縺ｫ繧医ｊ蜊倅ｸ隗｣蛹悶☆繧・遶ｶ蜷医′隗｣豸医〒縺阪↑縺・ｴ蜷医｀ANUAL_REQUIRED 縺ｫ險倬鹸縺・STOP_WAIT 縺ｨ縺吶ｋ
+STOP_HARD 縺ｯ蠢・★ hard_kind・・ATAL/RECOVERABLE・峨↓蛻・｡槭＠縲：ATAL 縺ｯ閾ｪ蜍穂ｿｮ豁｣繧堤ｦ∵ｭ｢縺吶ｋ
+9. STOP_HARD_FATAL・郁・蜍穂ｿｮ豁｣遖∵ｭ｢鬆伜沺・夊ｿｽ蜉隕丞ｮ夲ｼ・莉･荳九・縺・★繧後°縺ｫ隧ｲ蠖薙☆繧句ｴ蜷医ヾTOP_HARD_FATAL 縺ｨ縺苓・蜍穂ｿｮ豁｣繧堤ｦ∵ｭ｢縺吶ｋ・・BUSINESS_ID蠖｢蠑冗ｴ螢奇ｼ郁ｦ丞ｮ壹・蠖｢蠑上↓蠕ｩ蜈・〒縺阪↑縺・ｼ・doctrine/behavior/resolved_spec 縺ｮJSON縺檎ｴ謳阪＠縲∵ｩ滓｢ｰ逧・ｾｩ譌ｧ縺御ｸ榊庄閭ｽ
+prohibitions・育ｦ∵ｭ｢髮・粋・峨〒譏守､ｺ縺輔ｌ縺溘瑚・蜍穂ｿｮ豁｣遖∵ｭ｢縲阪↓謚ｵ隗ｦ
+霑泌唆迚ｩ繧ｻ繝・ヨ繧堤函謌舌☆繧九→螳牙・荳翫・繝ｪ繧ｹ繧ｯ縺悟｢怜､ｧ縺吶ｋ縺ｨ蛻､螳壹＆繧後ｋ・亥ｮ牙・隕冗ｴ・＆蜿搾ｼ・・郁ｿｽ險假ｼ唄TOP_HARD_RECOVERABLE 縺ｯ荳願ｨ倥↓隧ｲ蠖薙＠縺ｪ縺・STOP_HARD 縺ｨ縺吶ｋ縲・============================================================
 END OF PACK
 ============================================================
