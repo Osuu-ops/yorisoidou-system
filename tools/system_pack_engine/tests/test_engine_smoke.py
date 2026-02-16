@@ -61,3 +61,29 @@ def test_safe_bias_false_on_stop_wait(tmp_path: Path):
     assert rr.state == "STOP_WAIT"
     assert rr.safe_bias is False
     assert "SAFE_BIAS: FALSE" in rr.diff_report
+def test_wait_limit_count_exceeded(tmp_path: Path):
+    # STOP_WAITを同一out_dirで3回発生させ、3回目でカウント超過理由が入ることを確認
+    pack = tmp_path / "pack.md"
+    pack.write_text("SYSTEM_ID: SYS-MEP\nTITLE: X\nBUSINESS_ID: NONE\n", encoding="utf-8")  # header order violation => STOP_WAIT
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr1 = converge(pack, out_dir)
+    rr2 = converge(pack, out_dir)
+    rr3 = converge(pack, out_dir)
+    assert rr1.state == "STOP_WAIT"
+    assert rr2.state == "STOP_WAIT"
+    assert rr3.state == "STOP_WAIT"
+    assert "INV_WAIT_LIMIT_COUNT" in rr3.invariant_report
+def test_wait_limit_duration_exceeded(tmp_path: Path):
+    # wait_stateを過去にして duration 超過を作る
+    pack = tmp_path / "pack.md"
+    pack.write_text("SYSTEM_ID: SYS-MEP\nTITLE: X\nBUSINESS_ID: NONE\n", encoding="utf-8")  # STOP_WAIT
+    out_dir = tmp_path / "out"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    # prewrite wait_state with old timestamp
+    ws = out_dir / ".wait_state.json"
+    ws.write_text('{"first_seen_utc":"2000-01-01T00:00:00Z","wait_count":1}', encoding="utf-8")
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_WAIT"
+    assert "INV_WAIT_LIMIT_DURATION" in rr.invariant_report
