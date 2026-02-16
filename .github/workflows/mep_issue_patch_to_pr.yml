@@ -51,10 +51,13 @@ jobs:
             const patch = (m && m[1]) ? m[1].trim() : "";
             if (!patch) { core.setFailed("NO_PATCH: Use PATCH_START..PATCH_END."); return; }
             core.setOutput("patch_b64", Buffer.from(patch, "utf8").toString("base64"));
-      - name: Write patch to file
+      - name: Write patch to file (normalize CRLF)
         run: |
-          echo "${{ steps.extract.outputs.patch_b64 }}" | base64 -d | tr -d '\r' > /tmp/mep.patch
+          set -euo pipefail
+          printf '%s' "${{ steps.extract.outputs.patch_b64 }}" | base64 -d | tr -d '\r' > /tmp/mep.patch
           test -s /tmp/mep.patch
+          echo "MEP_PATCH_PREVIEW_HEAD"
+          head -n 12 /tmp/mep.patch || true
           echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
       - name: Guard (no binary / no delete-rename-move/chmod)
         run: |
@@ -63,7 +66,6 @@ jobs:
           if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN"; exit 1; fi
       - name: Apply patch
         run: |
-          echo "MEP_PATCH_PREVIEW_HEAD" ; head -n 5 /tmp/mep.patch || true
           set -euo pipefail
           git apply --check /tmp/mep.patch
           git apply /tmp/mep.patch
@@ -93,4 +95,3 @@ jobs:
               ? `✅ MEP created PR: ${prUrl}\n(run: ${runUrl})`
               : `⚠️ PR URL not returned\n(run: ${runUrl})`;
             if (n) await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg });
-
