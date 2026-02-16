@@ -1,26 +1,26 @@
-# reindex: force workflow registration refresh 2026-02-16T16:47:29Z
+# reindex: force workflow registration refresh 2026-02-16T17:04:45Z
 name: MEP Writeback Bundle (Entry + SystemPack Gate)
 on:
   workflow_dispatch:
     inputs:
       pack_path:
-        description: "SYSTEM_PACK markdown path for pre-gate (system_pack_engine)."
+        description: SYSTEM_PACK markdown path for pre-gate (system_pack_engine).
         required: true
-        default: "docs/MEP/system_packs/MEP_SYSTEM_PACK_v1_FULL_CONVERGENCE_2026-02-16.md"
+        default: docs/MEP/system_packs/MEP_SYSTEM_PACK_v1_FULL_CONVERGENCE_2026-02-16.md
       ssot_b64:
-        description: "SSOT payload as base64(UTF-8). If set, runner reconstructs file + sha256 stamp."
+        description: SSOT payload as base64(UTF-8).
         required: false
         default: ""
       ssot_payload_path:
-        description: "Repo-relative path to SSOT payload file (optional)."
+        description: Repo-relative path to SSOT payload file (optional).
         required: false
         default: ""
       pr_number:
-        description: "0 = auto latest merged PR"
+        description: 0 = auto latest merged PR
         required: false
         default: "0"
       write_handoff:
-        description: "write handoff files"
+        description: write handoff files
         required: false
         default: "false"
 permissions:
@@ -36,9 +36,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
       - name: Run SystemPack Engine (gate)
         env:
           PYTHONPATH: tools/system_pack_engine/src
@@ -81,7 +78,6 @@ jobs:
           }
 JSON
           )
-          echo "POST $API"
           curl -sS -X POST \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
@@ -89,5 +85,3 @@ JSON
             --data "${body}" \
             "${API}"
           echo "OK: dispatched mep_writeback_bundle_dispatch_entry.yml"
-
-
