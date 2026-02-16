@@ -1,0 +1,20 @@
+{
+  "behavior_version": "v1",
+  "states": ["RUNNING","WAIT","STOP_WAIT","STOP_HARD","RECOVERY","DONE"],
+  "transitions": [
+    {"from": "RUNNING", "to": "WAIT"},
+    {"from": "WAIT", "to": "RECOVERY"},
+    {"from": "WAIT", "to": "STOP_WAIT"},
+    {"from": "RECOVERY", "to": "RUNNING"},
+    {"from": "RECOVERY", "to": "STOP_WAIT"},
+    {"from": "RECOVERY", "to": "STOP_HARD"},
+    {"from": "RUNNING", "to": "DONE"}
+  ],
+  "invariants": [
+    {"id": "INV_TITLE_REQUIRED", "if": "TITLE missing", "then": "STOP_WAIT"},
+    {"id": "INV_ID_FORMAT", "if": "BUSINESS_ID invalid format", "then": "STOP_HARD", "hard_kind": "FATAL"},
+    {"id": "INV_SAFE_BIAS", "if": "SAFE_BIAS==FALSE", "then": "STOP_WAIT"}
+  ],
+  "wait_limit_count": 2,
+  "wait_limit_duration_minutes": 30
+}

@@ -1,0 +1,35 @@
+name: System Pack Engine (Isolated)
+on:
+  workflow_dispatch:
+    inputs:
+      pack_path:
+        description: "Path to SYSTEM_PACK markdown"
+        required: true
+        default: "docs/MEP/system_packs/MEP_SYSTEM_PACK_v1_FULL_CONVERGENCE_2026-02-16.md"
+jobs:
+  run-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+      - name: Run Pytest
+        run: |
+          export PYTHONPATH=tools/system_pack_engine/src
+          python -m pytest -q tools/system_pack_engine/tests
+      - name: Run Engine
+        run: |
+          export PYTHONPATH=tools/system_pack_engine/src
+          python -m system_pack_engine.cli --pack "${{ github.event.inputs.pack_path }}" --out ./_engine_out
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-pack-engine-output
+          path: ./_engine_out
