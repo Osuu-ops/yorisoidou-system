@@ -28,3 +28,17 @@ def test_business_id_invalid(tmp_path: Path):
     rr = converge(pack, out_dir)
     assert rr.state == "STOP_HARD"
     assert rr.hard_kind == "FATAL"
+def test_header_order_bad_systemid_first(tmp_path: Path):
+    pack = tmp_path / "pack.md"
+    pack.write_text("SYSTEM_ID: SYS-MEP\nTITLE: X\nBUSINESS_ID: NONE\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_WAIT"
+def test_header_order_bad_businessid_first(tmp_path: Path):
+    pack = tmp_path / "pack.md"
+    pack.write_text("TITLE: X\nBUSINESS_ID: NONE\nSYSTEM_ID: SYS-MEP\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_WAIT"

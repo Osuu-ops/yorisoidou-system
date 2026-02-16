@@ -23,14 +23,36 @@ def parse_headers(text: str) -> Dict[str, str]:
     for m in HEADER_RE.finditer(text):
         found[m.group(1).strip()] = m.group(2).strip()
     return found
-def evaluate_invariants(headers: Dict[str, str]) -> Tuple[str, Optional[str], List[str]]:
+def header_order_ok(text: str) -> bool:
+    """
+    PACK準拠（最上段ヘッダー順序固定）：
+      TITLE -> SYSTEM_ID -> BUSINESS_ID
+    実装は「出現順」で判定する（最初の3つのヘッダーがこの順になること）。
+    """
+    order: List[str] = []
+    for line in text.splitlines():
+        m = re.match(r"^(TITLE|SYSTEM_ID|BUSINESS_ID):\s*", line)
+        if m:
+            order.append(m.group(1))
+            if len(order) >= 3:
+                break
+        else:
+            # ヘッダー以外の行は無視（現段階は順序のみ固定）
+            continue
+    return order[:3] == ["TITLE", "SYSTEM_ID", "BUSINESS_ID"]
+def evaluate_invariants(pack_text: str, headers: Dict[str, str]) -> Tuple[str, Optional[str], List[str]]:
     """
     PACK準拠（現時点の最小セット）
+    - ヘッダー順序 TITLE->SYSTEM_ID->BUSINESS_ID 以外 -> STOP_WAIT
     - TITLE/SYSTEM_ID/BUSINESS_ID 欠落 -> STOP_WAIT
     - SYSTEM_ID は SYS-MEP 固定 -> STOP_WAIT
     - BUSINESS_ID は NONE or BIZ-* -> それ以外は STOP_HARD/FATAL
     """
     reasons: List[str] = []
+    # 順序チェック
+    if not header_order_ok(pack_text):
+        reasons.append("INV_HEADER_ORDER: header order must be TITLE->SYSTEM_ID->BUSINESS_ID -> STOP_WAIT")
+        return ("STOP_WAIT", None, reasons)
     title = headers.get("TITLE", "").strip()
     system_id = headers.get("SYSTEM_ID", "").strip()
     business_id = headers.get("BUSINESS_ID", "").strip()
@@ -88,12 +110,12 @@ def render_auto_patch_md(safe_bias: bool) -> str:
 def converge(pack_path: Path, out_dir: Path) -> RunResult:
     pack_text = _read_text(pack_path)
     headers = parse_headers(pack_text)
-    inv_state, inv_hard_kind, inv_reasons = evaluate_invariants(headers)
+    inv_state, inv_hard_kind, inv_reasons = evaluate_invariants(pack_text, headers)
     auto: List[str] = []
     meaning: List[str] = []
     manual: List[str] = []
     if inv_state == "STOP_WAIT":
-        manual.append("MANUAL_REQUIRED: Fix required headers or SYSTEM_ID mismatch.")
+        manual.append("MANUAL_REQUIRED: Fix header order/required headers/SYSTEM_ID mismatch.")
     if inv_state == "STOP_HARD" and inv_hard_kind == "FATAL":
         manual.append("MANUAL_REQUIRED: Fix BUSINESS_ID format (NONE or BIZ-...).")
     safe_bias = compute_safe_bias(meaning, manual)
