@@ -1,0 +1,8 @@
+name: SystemPack Gate Dispatch Smoke v4
+on:
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "OK: workflow_dispatch works"
