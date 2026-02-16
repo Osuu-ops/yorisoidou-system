@@ -22,6 +22,7 @@ $wfDir = Join-Path $repoRoot ".github/workflows"
 if (-not (Test-Path $wfDir)) { Fail "workflows dir not found: $wfDir" }
 # 全 workflow_dispatch（参考）
 $all = @()
+$all = @()
 Get-ChildItem -LiteralPath $wfDir -Recurse -File -Include *.yml,*.yaml | ForEach-Object {
   $p = $_.FullName
   $rel = $p.Substring($repoRoot.Length+1)
