@@ -1,12 +1,73 @@
-name: MEP Issue Patch to PR (NO_LLM) [HELLO_MIN]
+name: MEP Issue Patch to PR (NO_LLM) [STEP1_PR_ONLY]
 on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  issues: write
 jobs:
-  hello:
+  patch_to_pr:
+    if: ${{ contains(github.event.comment.body, '/mep run') && (contains(github.event.comment.body, 'MODE: NO_LLM') || !contains(github.event.comment.body, 'MODE:')) }}
     runs-on: ubuntu-latest
     steps:
-      - name: hello
-        run: echo "HELLO_MIN_OK"
+      - name: Observe start (comment run URL)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = context.payload.issue.number;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
+              body: `MEP NO_LLM observe (start)\n- run: ${runUrl}`
+            });
+      - uses: actions/checkout@v4
+      - name: Extract patch (PATCH_START/END)
+        id: extract
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body || "";
+            const m = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
+            const patch = (m && m[1]) ? m[1].trim() : "";
+            if (!patch) { core.setFailed("NO_PATCH: Use PATCH_START..PATCH_END."); return; }
+            core.setOutput("patch_b64", Buffer.from(patch, "utf8").toString("base64"));
+            core.setOutput("issue_number", String(context.payload.issue.number));
+      - name: Write patch to file
+        run: |
+          echo "${{ steps.extract.outputs.patch_b64 }}" | base64 -d > /tmp/mep.patch
+          test -s /tmp/mep.patch
+          echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
+      - name: Apply patch (check then apply)
+        run: |
+          set -euo pipefail
+          git apply --check /tmp/mep.patch
+          git apply /tmp/mep.patch
+      - name: Create PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "MEP: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
+          body: |
+            Applied by MEP NO_LLM STEP1 (PR only).
+            - Issue: #${{ steps.extract.outputs.issue_number }}
+            - Patch bytes: ${{ env.PATCH_BYTES }}
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-message: "mep: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
+          branch: "auto/mep_issue_${{ steps.extract.outputs.issue_number }}_${{ github.run_id }}"
+          base: "main"
+          delete-branch: true
+      - name: Comment result (always)
+        if: ${{ always() }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const n = parseInt("${{ steps.extract.outputs.issue_number || '0' }}", 10);
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
+            const msg = prUrl
+              ? `✅ MEP created PR: ${prUrl}\n(run: ${runUrl})`
+              : `⚠️ PR URL not returned\n(run: ${runUrl})`;
+            if (n) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg });
+            }
