@@ -1,5 +1,5 @@
 name: MEP Issue Patch to PR (NO_LLM) [MIN_STABLE]
-on:
+"on":
   issue_comment:
     types: [created, edited]
 permissions:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: OBSERVE_START (always)
-        if: always()
+        if: ${{ always() }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -65,7 +65,7 @@ jobs:
           base: "main"
           delete-branch: true
       - name: COMMENT_RESULT (always)
-        if: always()
+        if: ${{ always() }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -77,3 +77,4 @@ jobs:
             const msg2 = `MEP NO_LLM observe (end)\n- run: ${runUrl}\n- job.status: ${{ job.status }}`;
             await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg1 });
             await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg2 });
+
