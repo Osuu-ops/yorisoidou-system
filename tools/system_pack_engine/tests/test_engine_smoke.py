@@ -13,3 +13,18 @@ def test_converge_smoke(tmp_path: Path):
 
     assert (out_dir / "auto_patch.json").exists()
     assert (out_dir / "auto_patch.md").exists()
+def test_system_id_mismatch(tmp_path: Path):
+    pack = tmp_path / "pack.md"
+    pack.write_text("TITLE: X\nSYSTEM_ID: WRONG\nBUSINESS_ID: NONE\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_WAIT"
+def test_business_id_invalid(tmp_path: Path):
+    pack = tmp_path / "pack.md"
+    pack.write_text("TITLE: X\nSYSTEM_ID: SYS-MEP\nBUSINESS_ID: INVALID\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_HARD"
+    assert rr.hard_kind == "FATAL"

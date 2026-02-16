@@ -28,6 +28,7 @@ def evaluate_invariants(headers: Dict[str, str]) -> Tuple[str, Optional[str], Li
     title = headers.get("TITLE", "").strip()
     system_id = headers.get("SYSTEM_ID", "").strip()
     business_id = headers.get("BUSINESS_ID", "").strip()
+    # HEADER必須
     if not title:
         reasons.append("INV_TITLE_REQUIRED: TITLE missing -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
@@ -37,12 +38,16 @@ def evaluate_invariants(headers: Dict[str, str]) -> Tuple[str, Optional[str], Li
     if not business_id:
         reasons.append("INV_BUSINESS_ID_REQUIRED: BUSINESS_ID missing -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
+    # SYSTEM_ID固定
+    if system_id != "SYS-MEP":
+        reasons.append("INV_SYSTEM_ID_VALUE: SYSTEM_ID must be SYS-MEP -> STOP_WAIT")
+        return ("STOP_WAIT", None, reasons)
+    # BUSINESS_ID形式
     if business_id != "NONE" and not business_id.startswith("BIZ-"):
         reasons.append("INV_BUSINESS_ID_FORMAT: invalid format -> STOP_HARD_FATAL")
         return ("STOP_HARD", "FATAL", reasons)
     reasons.append("INV_OK")
-    return ("RUNNING", None, reasons)
-def compute_safe_bias(meaning: List[str], manual: List[str]) -> bool:
+    return ("RUNNING", None, reasons)def compute_safe_bias(meaning: List[str], manual: List[str]) -> bool:
     return len(meaning) == 0 and len(manual) == 0
 def render_diff_report(auto: List[str], meaning: List[str], manual: List[str]) -> str:
     safe = compute_safe_bias(meaning, manual)
@@ -125,3 +130,4 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
         diff_report="",
         invariant_report=""
     )
+
