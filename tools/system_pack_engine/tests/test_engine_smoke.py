@@ -10,3 +10,6 @@ def test_converge_smoke(tmp_path: Path):
     assert (out_dir / "diff_report.md").exists()
     assert (out_dir / "invariant_report.md").exists()
     assert (out_dir / "formal.md").exists()
+assert (out_dir / "auto_patch.json").exists()
+assert (out_dir / "auto_patch.md").exists()
+
