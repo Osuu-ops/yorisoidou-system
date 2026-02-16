@@ -31,3 +31,8 @@ jobs:
             sys.exit(1)
           print("OK: system_pack_engine gate DONE")
           PY
+      - name: Upload SystemPack Outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: system_pack_out
+          path: ./_system_pack_out
