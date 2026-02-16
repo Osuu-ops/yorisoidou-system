@@ -1,5 +1,6 @@
-# MEP_SYSTEM_PACK_v1・懷・蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・ULL CONVERGENCE + SAFETY INTEGRATION 2026-02-16・・TITLE: MEP_SYSTEM_PACK_v1_蜈･蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・026-02-16・・SYSTEM_ID: SYS-MEP
-BUSINESS_ID: NONE
+TITLE: MEP_SYSTEM_PACK_v1_入口＋2レイヤー正本（2026-02-16）
+SYSTEM_ID: SYS-MEP
+BUSINESS_ID: NONE# MEP_SYSTEM_PACK_v1・懷・蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・ULL CONVERGENCE + SAFETY INTEGRATION 2026-02-16・・TITLE: MEP_SYSTEM_PACK_v1_蜈･蜿｣・・繝ｬ繧､繝､繝ｼ豁｣譛ｬ・・026-02-16・・SYSTEM_ID: SYS-MEP
 ============================================================
 === DOC 1: ENTRY_GOVERNANCE ================================
 ============================================================
@@ -11,7 +12,6 @@ TITLE縺ｯ繝ｭ繝ｼ繧ｫ繝ｫ菫晏ｭ俶凾縺ｮ繝輔ぃ繧､繝ｫ蜷
 Step1・壻ｿ晏ｭ伜・驕ｸ謚橸ｼ亥ｿ・茨ｼ・謨ｰ蛟､蜈･蜉帙・遖∵ｭ｢・・・晄価隱阪→縺ｮ陦晉ｪ∝屓驕ｿ縺ｮ縺溘ａ・峨・S = SYSTEM
 B = BUSINESS
 Step2・咤USINESS縺ｮ蝣ｴ蜷・譌｢蟄伜呵｣懊′縺ゅｋ蝣ｴ蜷・1..n = 譌｢蟄伜呵｣・N = 譁ｰ隕終D菴懈・・亥叉菴懈・縺ｧ騾ｲ陦鯉ｼ・蛟呵｣懊↑縺・N = 譁ｰ隕終D菴懈・・亥叉菴懈・縺ｧ騾ｲ陦鯉ｼ・4. 2蝗樒岼莉･髯搾ｼ・D縺ゅｊ・・BUSINESS_ID縺悟ｭ伜惠縺吶ｋ蝣ｴ蜷医・繧ｪ繝ｼ繝育｢ｺ螳壹・驕ｸ謚櫁い縺ｯ蜃ｺ縺輔↑縺・・5. 菫晏ｭ倩ｦ冗ｴ・ｼ・ault・・BUSINESS_ID: NONE 竊・System Vault
-BUSINESS_ID: BIZ-... 竊・Business Vault
 Vault Root Key・亥崋螳夲ｼ・System: vault/system/
 Business: vault/business/
 6. BUSINESS ID逕滓・隕丞援・育｢ｺ螳夲ｼ・蠖｢蠑擾ｼ・BIZ-YYYYMMDD-XXXX
@@ -101,3 +101,4 @@ prohibitions・育ｦ∵ｭ｢髮・粋・峨〒譏守､ｺ縺輔ｌ縺溘瑚
 霑泌唆迚ｩ繧ｻ繝・ヨ繧堤函謌舌☆繧九→螳牙・荳翫・繝ｪ繧ｹ繧ｯ縺悟｢怜､ｧ縺吶ｋ縺ｨ蛻､螳壹＆繧後ｋ・亥ｮ牙・隕冗ｴ・＆蜿搾ｼ・・郁ｿｽ險假ｼ唄TOP_HARD_RECOVERABLE 縺ｯ荳願ｨ倥↓隧ｲ蠖薙＠縺ｪ縺・STOP_HARD 縺ｨ縺吶ｋ縲・============================================================
 END OF PACK
 ============================================================
+
