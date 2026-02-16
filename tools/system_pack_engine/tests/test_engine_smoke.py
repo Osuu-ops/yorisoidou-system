@@ -42,3 +42,22 @@ def test_header_order_bad_businessid_first(tmp_path: Path):
     from system_pack_engine.engine import converge
     rr = converge(pack, out_dir)
     assert rr.state == "STOP_WAIT"
+def test_safe_bias_true_on_done(tmp_path: Path):
+    pack = tmp_path / "pack.md"
+    pack.write_text("TITLE: X\nSYSTEM_ID: SYS-MEP\nBUSINESS_ID: NONE\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "DONE"
+    assert rr.safe_bias is True
+    assert "SAFE_BIAS: TRUE" in rr.diff_report
+def test_safe_bias_false_on_stop_wait(tmp_path: Path):
+    # header order violation -> STOP_WAIT -> MANUAL_REQUIRED non-empty -> SAFE_BIAS FALSE
+    pack = tmp_path / "pack.md"
+    pack.write_text("SYSTEM_ID: SYS-MEP\nTITLE: X\nBUSINESS_ID: NONE\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    from system_pack_engine.engine import converge
+    rr = converge(pack, out_dir)
+    assert rr.state == "STOP_WAIT"
+    assert rr.safe_bias is False
+    assert "SAFE_BIAS: FALSE" in rr.diff_report

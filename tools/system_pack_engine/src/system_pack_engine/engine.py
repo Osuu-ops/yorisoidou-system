@@ -24,11 +24,6 @@ def parse_headers(text: str) -> Dict[str, str]:
         found[m.group(1).strip()] = m.group(2).strip()
     return found
 def header_order_ok(text: str) -> bool:
-    """
-    PACK準拠（最上段ヘッダー順序固定）：
-      TITLE -> SYSTEM_ID -> BUSINESS_ID
-    実装は「出現順」で判定する（最初の3つのヘッダーがこの順になること）。
-    """
     order: List[str] = []
     for line in text.splitlines():
         m = re.match(r"^(TITLE|SYSTEM_ID|BUSINESS_ID):\s*", line)
@@ -36,20 +31,9 @@ def header_order_ok(text: str) -> bool:
             order.append(m.group(1))
             if len(order) >= 3:
                 break
-        else:
-            # ヘッダー以外の行は無視（現段階は順序のみ固定）
-            continue
     return order[:3] == ["TITLE", "SYSTEM_ID", "BUSINESS_ID"]
 def evaluate_invariants(pack_text: str, headers: Dict[str, str]) -> Tuple[str, Optional[str], List[str]]:
-    """
-    PACK準拠（現時点の最小セット）
-    - ヘッダー順序 TITLE->SYSTEM_ID->BUSINESS_ID 以外 -> STOP_WAIT
-    - TITLE/SYSTEM_ID/BUSINESS_ID 欠落 -> STOP_WAIT
-    - SYSTEM_ID は SYS-MEP 固定 -> STOP_WAIT
-    - BUSINESS_ID は NONE or BIZ-* -> それ以外は STOP_HARD/FATAL
-    """
     reasons: List[str] = []
-    # 順序チェック
     if not header_order_ok(pack_text):
         reasons.append("INV_HEADER_ORDER: header order must be TITLE->SYSTEM_ID->BUSINESS_ID -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
@@ -73,18 +57,19 @@ def evaluate_invariants(pack_text: str, headers: Dict[str, str]) -> Tuple[str, O
         return ("STOP_HARD", "FATAL", reasons)
     reasons.append("INV_OK")
     return ("RUNNING", None, reasons)
-def compute_safe_bias(meaning: List[str], manual: List[str]) -> bool:
-    return len(meaning) == 0 and len(manual) == 0
-def render_diff_report(auto: List[str], meaning: List[str], manual: List[str]) -> str:
-    safe = compute_safe_bias(meaning, manual)
+def compute_safe_bias(meaning_or_strength_changed: List[str], manual_required: List[str]) -> bool:
+    # PACK規則：両方空なら TRUE、それ以外 FALSE
+    return (len(meaning_or_strength_changed) == 0) and (len(manual_required) == 0)
+def render_diff_report(auto_applied: List[str], meaning_or_strength_changed: List[str], manual_required: List[str]) -> str:
+    safe = compute_safe_bias(meaning_or_strength_changed, manual_required)
     def sec(name: str, items: List[str]) -> str:
         if not items:
             return f"## {name}\n\n- (empty)\n"
         return "## " + name + "\n\n" + "\n".join([f"- {x}" for x in items]) + "\n"
     out = "# DIFF REPORT\n\n"
-    out += sec("AUTO_APPLIED", auto) + "\n"
-    out += sec("MEANING_OR_STRENGTH_CHANGED", meaning) + "\n"
-    out += sec("MANUAL_REQUIRED", manual) + "\n"
+    out += sec("AUTO_APPLIED", auto_applied) + "\n"
+    out += sec("MEANING_OR_STRENGTH_CHANGED", meaning_or_strength_changed) + "\n"
+    out += sec("MANUAL_REQUIRED", manual_required) + "\n"
     out += "## SAFE_BIAS\n\n"
     out += f"- SAFE_BIAS: {'TRUE' if safe else 'FALSE'}\n"
     return out
@@ -98,11 +83,7 @@ def render_invariant_report(reasons: List[str], state: str, hard_kind: Optional[
 def render_formal_md(pack_text: str) -> str:
     return "# FORMAL (GENERATED)\n\n" + pack_text + "\n"
 def render_auto_patch_json(safe_bias: bool) -> Dict:
-    return {
-        "type": "AUTO_PATCH",
-        "safe_bias": safe_bias,
-        "operations": []
-    }
+    return {"type": "AUTO_PATCH", "safe_bias": safe_bias, "operations": []}
 def render_auto_patch_md(safe_bias: bool) -> str:
     if safe_bias:
         return "# AUTO PATCH\n\n- No changes required (SAFE_BIAS=TRUE)\n"
@@ -111,15 +92,25 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
     pack_text = _read_text(pack_path)
     headers = parse_headers(pack_text)
     inv_state, inv_hard_kind, inv_reasons = evaluate_invariants(pack_text, headers)
-    auto: List[str] = []
-    meaning: List[str] = []
-    manual: List[str] = []
+    auto_applied: List[str] = []
+    meaning_or_strength_changed: List[str] = []
+    manual_required: List[str] = []
+    # PACK: STOP_WAIT / STOP_HARD でも返却物セットは出す。MANUAL_REQUIRED に理由を入れる。
     if inv_state == "STOP_WAIT":
-        manual.append("MANUAL_REQUIRED: Fix header order/required headers/SYSTEM_ID mismatch.")
+        manual_required.append("MANUAL_REQUIRED: Fix header order/required headers/SYSTEM_ID mismatch.")
     if inv_state == "STOP_HARD" and inv_hard_kind == "FATAL":
-        manual.append("MANUAL_REQUIRED: Fix BUSINESS_ID format (NONE or BIZ-...).")
-    safe_bias = compute_safe_bias(meaning, manual)
-    final_state = "DONE" if (inv_state == "RUNNING" and safe_bias) else inv_state
+        manual_required.append("MANUAL_REQUIRED: Fix BUSINESS_ID format (NONE or BIZ-...).")
+    safe_bias = compute_safe_bias(meaning_or_strength_changed, manual_required)
+    # PACK運用：SAFE_BIASがFALSEなら STOP_WAIT（RUNNINGでも落とす）
+    final_state = inv_state
+    final_hard_kind = inv_hard_kind
+    if inv_state == "RUNNING" and safe_bias:
+        final_state = "DONE"
+        final_hard_kind = None
+    elif inv_state == "RUNNING" and not safe_bias:
+        final_state = "STOP_WAIT"
+        final_hard_kind = None
+        inv_reasons.append("INV_SAFE_BIAS: SAFE_BIAS is FALSE -> STOP_WAIT")
     out_dir.mkdir(parents=True, exist_ok=True)
     resolved_path = out_dir / "resolved_spec.json"
     diff_path = out_dir / "diff_report.md"
@@ -127,21 +118,23 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
     formal_path = out_dir / "formal.md"
     auto_json_path = out_dir / "auto_patch.json"
     auto_md_path = out_dir / "auto_patch.md"
+    diff_report = render_diff_report(auto_applied, meaning_or_strength_changed, manual_required)
+    invariant_report = render_invariant_report(inv_reasons, final_state, final_hard_kind)
     resolved = {
         "headers": headers,
         "state": final_state,
-        "hard_kind": inv_hard_kind
+        "hard_kind": final_hard_kind,
+        "safe_bias": safe_bias,
+        "auto_applied": auto_applied,
+        "meaning_or_strength_changed": meaning_or_strength_changed,
+        "manual_required": manual_required,
     }
-    diff_report = render_diff_report(auto, meaning, manual)
-    invariant_report = render_invariant_report(inv_reasons, final_state, inv_hard_kind)
     _write_text(resolved_path, json.dumps(resolved, ensure_ascii=False, indent=2))
     _write_text(diff_path, diff_report)
     _write_text(inv_path, invariant_report)
     _write_text(formal_path, render_formal_md(pack_text))
-    auto_patch_json = render_auto_patch_json(safe_bias)
-    auto_patch_md = render_auto_patch_md(safe_bias)
-    _write_text(auto_json_path, json.dumps(auto_patch_json, ensure_ascii=False, indent=2))
-    _write_text(auto_md_path, auto_patch_md)
+    _write_text(auto_json_path, json.dumps(render_auto_patch_json(safe_bias), ensure_ascii=False, indent=2))
+    _write_text(auto_md_path, render_auto_patch_md(safe_bias))
     outputs = {
         "resolved_spec.json": str(resolved_path),
         "diff_report.md": str(diff_path),
@@ -152,9 +145,9 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
     }
     return RunResult(
         state=final_state,
-        hard_kind=inv_hard_kind,
+        hard_kind=final_hard_kind,
         safe_bias=safe_bias,
         outputs=outputs,
         diff_report=diff_report,
-        invariant_report=invariant_report
+        invariant_report=invariant_report,
     )
