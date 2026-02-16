@@ -5,15 +5,12 @@ name: SystemPack Gate (Push Trigger)
       - "vault/system/_TRIGGERS/system_pack_gate.trigger"
 permissions:
   contents: read
-  actions: write
 jobs:
-  gate_then_dispatch:
+  gate_only:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Run SystemPack Engine (gate)
@@ -34,30 +31,3 @@ jobs:
             sys.exit(1)
           print("OK: system_pack_engine gate DONE")
           PY
-      - name: Dispatch canonical writeback entry workflow
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
-          REF: ${{ github.ref_name }}
-        run: |
-          API="https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/mep_writeback_bundle_dispatch_entry.yml/dispatches"
-          body=$(cat <<JSON
-          {
-            "ref": "${REF}",
-            "inputs": {
-              "pr_number": "0",
-              "write_handoff": "false",
-              "ssot_b64": "",
-              "ssot_payload_path": ""
-            }
-          }
-JSON
-          )
-          curl -sS -X POST \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            --data "${body}" \
-            "${API}"
-          echo "OK: dispatched mep_writeback_bundle_dispatch_entry.yml"
