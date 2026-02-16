@@ -134,3 +134,19 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
         diff_report=diff_report,
         invariant_report=invariant_report,
     )
+def render_auto_patch_json(headers: Dict[str, str], safe_bias: bool) -> Dict:
+    """
+    Minimal AUTO_PATCH generator.
+    For now:
+    - If SAFE_BIAS=TRUE and no manual_required -> no-op patch
+    - If SAFE_BIAS=FALSE -> patch suggestion only (no mutation)
+    """
+    return {
+        "type": "AUTO_PATCH",
+        "safe_bias": safe_bias,
+        "operations": []
+    }
+def render_auto_patch_md(safe_bias: bool) -> str:
+    if safe_bias:
+        return "# AUTO PATCH\n\n- No changes required (SAFE_BIAS=TRUE)\n"
+    return "# AUTO PATCH\n\n- Patch suggestions generated (SAFE_BIAS=FALSE)\n"
