@@ -41,13 +41,13 @@ jobs:
             if (!body) { core.setFailed("NO_MEP_RUN_COMMENT_FOUND"); return; }
             core.setOutput("body", body);
             core.setOutput("issue_number", String(n));
-      - name: Extract patch (PATCH_START/END or PATCH_B64_START/END)
+      - name: Extract patch (PATCH_B64_START/END preferred; fallback PATCH_START/END)
         id: extract
         uses: actions/github-script@v7
         with:
           script: |
             const body = `${{ steps.load.outputs.body }}` || "";
-            // A) PATCH_B64_START/END (preferred: ASCII-safe)
+            // A) PATCH_B64_START/END
             let b64 = "";
             const mb = body.match(/PATCH_B64_START\s*\n([\s\S]*?)\nPATCH_B64_END\s*/i);
             if (mb && mb[1]) b64 = mb[1].trim().replace(/\s+/g, "");
@@ -56,7 +56,7 @@ jobs:
               core.setOutput("patch_src", "PATCH_B64");
               return;
             }
-            // B) PATCH_START/END (raw diff)
+            // B) PATCH_START/END
             let patch = "";
             const mp = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
             if (mp && mp[1]) patch = mp[1].trim();
@@ -66,24 +66,34 @@ jobs:
             }
             core.setOutput("patch_b64", Buffer.from(patch, "utf8").toString("base64"));
             core.setOutput("patch_src", "PATCH_RAW");
-      - name: Write patch to file (normalize CRLF)
+      - name: Write patch to file (normalize CRLF + ensure trailing newline)
         run: |
           set -euo pipefail
           printf '%s' "${{ steps.extract.outputs.patch_b64 }}" | base64 -d | tr -d '\r' > /tmp/mep.patch
+          # ensure file ends with newline (some git apply paths are picky)
+          printf '\n' >> /tmp/mep.patch
           test -s /tmp/mep.patch
           echo "MEP_PATCH_SRC=${{ steps.extract.outputs.patch_src }}" >> $GITHUB_ENV
-          echo "MEP_PATCH_PREVIEW_HEAD"
-          head -n 12 /tmp/mep.patch || true
           echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
+          echo "MEP_PATCH_PREVIEW_HEAD"
+          nl -ba /tmp/mep.patch | sed -n '1,80p' || true
       - name: Guard (no binary / no delete-rename-move/chmod)
         run: |
           set -euo pipefail
           if grep -nE 'GIT binary patch|^Binary files ' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: BINARY_DIFF_FORBIDDEN"; exit 1; fi
           if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN"; exit 1; fi
-      - name: Apply patch
+      - name: Apply patch (dump on failure)
         run: |
           set -euo pipefail
-          git apply --check /tmp/mep.patch
+          echo "MEP_APPLY_CHECK_BEGIN"
+          if ! git apply --check /tmp/mep.patch 2> /tmp/apply_err.txt; then
+            echo "MEP_APPLY_CHECK_FAILED"
+            echo "--- apply_err ---"
+            cat /tmp/apply_err.txt || true
+            echo "--- patch (numbered) ---"
+            nl -ba /tmp/mep.patch | sed -n '1,220p' || true
+            exit 128
+          fi
           git apply /tmp/mep.patch
       - name: Create PR
         id: cpr
