@@ -24,11 +24,16 @@ def parse_headers(text: str) -> Dict[str, str]:
         found[m.group(1).strip()] = m.group(2).strip()
     return found
 def evaluate_invariants(headers: Dict[str, str]) -> Tuple[str, Optional[str], List[str]]:
+    """
+    PACK準拠（現時点の最小セット）
+    - TITLE/SYSTEM_ID/BUSINESS_ID 欠落 -> STOP_WAIT
+    - SYSTEM_ID は SYS-MEP 固定 -> STOP_WAIT
+    - BUSINESS_ID は NONE or BIZ-* -> それ以外は STOP_HARD/FATAL
+    """
     reasons: List[str] = []
     title = headers.get("TITLE", "").strip()
     system_id = headers.get("SYSTEM_ID", "").strip()
     business_id = headers.get("BUSINESS_ID", "").strip()
-    # HEADER必須
     if not title:
         reasons.append("INV_TITLE_REQUIRED: TITLE missing -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
@@ -38,16 +43,15 @@ def evaluate_invariants(headers: Dict[str, str]) -> Tuple[str, Optional[str], Li
     if not business_id:
         reasons.append("INV_BUSINESS_ID_REQUIRED: BUSINESS_ID missing -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
-    # SYSTEM_ID固定
     if system_id != "SYS-MEP":
         reasons.append("INV_SYSTEM_ID_VALUE: SYSTEM_ID must be SYS-MEP -> STOP_WAIT")
         return ("STOP_WAIT", None, reasons)
-    # BUSINESS_ID形式
     if business_id != "NONE" and not business_id.startswith("BIZ-"):
         reasons.append("INV_BUSINESS_ID_FORMAT: invalid format -> STOP_HARD_FATAL")
         return ("STOP_HARD", "FATAL", reasons)
     reasons.append("INV_OK")
-    return ("RUNNING", None, reasons)def compute_safe_bias(meaning: List[str], manual: List[str]) -> bool:
+    return ("RUNNING", None, reasons)
+def compute_safe_bias(meaning: List[str], manual: List[str]) -> bool:
     return len(meaning) == 0 and len(manual) == 0
 def render_diff_report(auto: List[str], meaning: List[str], manual: List[str]) -> str:
     safe = compute_safe_bias(meaning, manual)
@@ -85,15 +89,15 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
     pack_text = _read_text(pack_path)
     headers = parse_headers(pack_text)
     inv_state, inv_hard_kind, inv_reasons = evaluate_invariants(headers)
-    auto = []
-    meaning = []
-    manual = []
+    auto: List[str] = []
+    meaning: List[str] = []
+    manual: List[str] = []
     if inv_state == "STOP_WAIT":
-        manual.append("Provide missing required headers.")
+        manual.append("MANUAL_REQUIRED: Fix required headers or SYSTEM_ID mismatch.")
     if inv_state == "STOP_HARD" and inv_hard_kind == "FATAL":
-        manual.append("Fix BUSINESS_ID format.")
+        manual.append("MANUAL_REQUIRED: Fix BUSINESS_ID format (NONE or BIZ-...).")
     safe_bias = compute_safe_bias(meaning, manual)
-    final_state = "DONE" if inv_state == "RUNNING" and safe_bias else inv_state
+    final_state = "DONE" if (inv_state == "RUNNING" and safe_bias) else inv_state
     out_dir.mkdir(parents=True, exist_ok=True)
     resolved_path = out_dir / "resolved_spec.json"
     diff_path = out_dir / "diff_report.md"
@@ -106,13 +110,15 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
         "state": final_state,
         "hard_kind": inv_hard_kind
     }
-    _write_text(resolved_path, json.dumps(resolved, indent=2))
-    _write_text(diff_path, render_diff_report(auto, meaning, manual))
-    _write_text(inv_path, render_invariant_report(inv_reasons, final_state, inv_hard_kind))
+    diff_report = render_diff_report(auto, meaning, manual)
+    invariant_report = render_invariant_report(inv_reasons, final_state, inv_hard_kind)
+    _write_text(resolved_path, json.dumps(resolved, ensure_ascii=False, indent=2))
+    _write_text(diff_path, diff_report)
+    _write_text(inv_path, invariant_report)
     _write_text(formal_path, render_formal_md(pack_text))
     auto_patch_json = render_auto_patch_json(safe_bias)
     auto_patch_md = render_auto_patch_md(safe_bias)
-    _write_text(auto_json_path, json.dumps(auto_patch_json, indent=2))
+    _write_text(auto_json_path, json.dumps(auto_patch_json, ensure_ascii=False, indent=2))
     _write_text(auto_md_path, auto_patch_md)
     outputs = {
         "resolved_spec.json": str(resolved_path),
@@ -127,7 +133,6 @@ def converge(pack_path: Path, out_dir: Path) -> RunResult:
         hard_kind=inv_hard_kind,
         safe_bias=safe_bias,
         outputs=outputs,
-        diff_report="",
-        invariant_report=""
+        diff_report=diff_report,
+        invariant_report=invariant_report
     )
-
