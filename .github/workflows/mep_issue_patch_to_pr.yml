@@ -1,26 +1,17 @@
-name: MEP Issue Patch to PR (NO_LLM)
+name: MEP Issue Patch to PR (NO_LLM) [MIN_STABLE]
 on:
   issue_comment:
     types: [created, edited]
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: "Issue number to read latest /mep run comment from"
-        required: true
-        type: string
 permissions:
   contents: write
   pull-requests: write
   issues: write
-concurrency:
-  group: mep-issue-${{ github.run_id }}
-  cancel-in-progress: false
 jobs:
-  issue_comment_to_pr:
-    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/mep run') && (contains(github.event.comment.body, 'MODE: NO_LLM') || !contains(github.event.comment.body, 'MODE:')) }}
+  patch_to_pr:
+    if: ${{ contains(github.event.comment.body, '/mep run') && (contains(github.event.comment.body, 'MODE: NO_LLM') || !contains(github.event.comment.body, 'MODE:')) }}
     runs-on: ubuntu-latest
     steps:
-      - name: OBSERVE_START (issue_comment)
+      - name: OBSERVE_START (always)
         if: always()
         uses: actions/github-script@v7
         with:
@@ -29,15 +20,15 @@ jobs:
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
-              body: `MEP NO_LLM observe (start)\n- run: ${runUrl}\n- event: ${context.eventName}\n- job: ${context.job}`
+              body: `MEP NO_LLM observe (start)\n- run: ${runUrl}\n- job: ${context.job}`
             });
       - uses: actions/checkout@v4
-      - name: Extract patch from comment (PATCH_START/END)
+      - name: Extract patch (PATCH_START/END)
         id: extract
         uses: actions/github-script@v7
         with:
           script: |
-            const body = (context.payload.comment && context.payload.comment.body) ? context.payload.comment.body : "";
+            const body = context.payload.comment.body || "";
             let patch = "";
             const m = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
             if (m && m[1]) patch = m[1].trim();
@@ -65,109 +56,24 @@ jobs:
         with:
           title: "MEP: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
           body: |
-            Applied by MEP Issue Patch Runner (NO_LLM).
-            - Event: ${{ github.event_name }}
+            Applied by MEP Issue Patch Runner (NO_LLM) [MIN_STABLE].
             - Issue: #${{ steps.extract.outputs.issue_number }}
             - Patch bytes: ${{ env.PATCH_BYTES }}
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           commit-message: "mep: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
           branch: "auto/mep_issue_${{ steps.extract.outputs.issue_number }}_${{ github.run_id }}"
           base: "main"
           delete-branch: true
-      - name: Comment PR URL + END (issue_comment)
+      - name: COMMENT_RESULT (always)
         if: always()
         uses: actions/github-script@v7
         with:
           script: |
             const n = parseInt("${{ steps.extract.outputs.issue_number || '0' }}", 10);
+            if (!n) return;
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
             const msg1 = prUrl ? `✅ MEP created PR: ${prUrl}\n(run: ${runUrl})` : `⚠️ MEP did not return PR URL.\n(run: ${runUrl})`;
             const msg2 = `MEP NO_LLM observe (end)\n- run: ${runUrl}\n- job.status: ${{ job.status }}`;
             await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg1 });
             await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg2 });
-  dispatch_to_pr:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: OBSERVE_START (dispatch)
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const n = parseInt((context.payload.inputs && context.payload.inputs.issue_number) ? context.payload.inputs.issue_number : "0", 10);
-            if (!n) { core.setFailed("ISSUE_NUMBER_REQUIRED"); return; }
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner, repo: context.repo.repo, issue_number: n,
-              body: `MEP NO_LLM observe (start)\n- run: ${runUrl}\n- event: ${context.eventName}\n- job: ${context.job}`
-            });
-      - uses: actions/checkout@v4
-      - name: Load latest /mep run comment from issue
-        id: load
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const n = parseInt((context.payload.inputs && context.payload.inputs.issue_number) ? context.payload.inputs.issue_number : "0", 10);
-            if (!n) { core.setFailed("ISSUE_NUMBER_REQUIRED"); return; }
-            const owner = context.repo.owner;
-            const repo  = context.repo.repo;
-            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: n, per_page: 100 });
-            const mine = comments.reverse().find(c => (c.body || "").includes("/mep run"));
-            const body = mine ? (mine.body || "") : "";
-            if (!body) { core.setFailed("NO_MEP_RUN_COMMENT_FOUND"); return; }
-            core.setOutput("body", body);
-            core.setOutput("issue_number", String(n));
-      - name: Extract patch from loaded body
-        id: extract
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const body = `${{ steps.load.outputs.body }}` || "";
-            let patch = "";
-            const m = body.match(/PATCH_START\s*\n([\s\S]*?)\nPATCH_END\s*/i);
-            if (m && m[1]) patch = m[1].trim();
-            if (!patch) { core.setFailed("NO_PATCH: Use PATCH_START..PATCH_END."); return; }
-            core.setOutput("patch_b64", Buffer.from(patch, "utf8").toString("base64"));
-            core.setOutput("issue_number", "${{ steps.load.outputs.issue_number }}");
-      - name: Write patch to file
-        run: |
-          echo "${{ steps.extract.outputs.patch_b64 }}" | base64 -d > /tmp/mep.patch
-          test -s /tmp/mep.patch
-          echo "PATCH_BYTES=$(wc -c < /tmp/mep.patch)" >> $GITHUB_ENV
-      - name: Guard (no binary / no delete-rename-move/chmod)
-        run: |
-          set -euo pipefail
-          if grep -nE 'GIT binary patch|^Binary files ' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: BINARY_DIFF_FORBIDDEN"; exit 1; fi
-          if grep -nE '^deleted file mode|^rename from|^rename to|^old mode|^new mode' /tmp/mep.patch >/dev/null; then echo "STOP_HARD: DANGEROUS_DIFF_FORBIDDEN"; exit 1; fi
-      - name: Apply patch (check then apply)
-        run: |
-          set -euo pipefail
-          git apply --check /tmp/mep.patch
-          git apply /tmp/mep.patch
-      - name: Create PR
-        id: cpr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          title: "MEP: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
-          body: |
-            Applied by MEP Issue Patch Runner (NO_LLM) via workflow_dispatch.
-            - Event: ${{ github.event_name }}
-            - Issue: #${{ steps.extract.outputs.issue_number }}
-            - Patch bytes: ${{ env.PATCH_BYTES }}
-          commit-message: "mep: apply patch from issue #${{ steps.extract.outputs.issue_number }}"
-          branch: "auto/mep_issue_${{ steps.extract.outputs.issue_number }}_${{ github.run_id }}"
-          base: "main"
-          delete-branch: true
-      - name: Comment PR URL + END (dispatch)
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const n = parseInt("${{ steps.extract.outputs.issue_number || '0' }}", 10);
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
-            const msg1 = prUrl ? `✅ MEP created PR: ${prUrl}\n(run: ${runUrl})` : `⚠️ MEP did not return PR URL.\n(run: ${runUrl})`;
-            const msg2 = `MEP NO_LLM observe (end)\n- run: ${runUrl}\n- job.status: ${{ job.status }}`;
-            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg1 });
-            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: n, body: msg2 });
-
