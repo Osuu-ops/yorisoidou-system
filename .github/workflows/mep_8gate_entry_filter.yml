@@ -1,0 +1,18 @@
+name: MEP 8-Gate Entry (Packet Filter)
+on:
+  workflow_dispatch:
+    inputs:
+      packet_path:
+        description: "Path to INPUT_PACKET.md"
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  validate-packet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate INPUT_PACKET contract
+        run: |
+          python3 tools/validate_input_packet.py "${{ inputs.packet_path }}"
