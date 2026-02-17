@@ -567,8 +567,12 @@ def apply_safe(run_id: str) -> int:
                 after_lines.append(line[1:])
             elif c == "-":
                 pass
-        after = "\n".join(after_lines) + ("\n" if after_lines else "")
+        after = "\n".join(after_lines)
+        after = after.replace("\r\n", "\n").replace("\r", "\n")
+        # canonicalize: treat trailing newlines as a single \n (prevents false diffs at EOF)
+        after = (after.rstrip("\n") + ("\n" if after_lines else ""))
         base_norm = base.replace("\r\n", "\n").replace("\r", "\n")
+        base_norm = (base_norm.rstrip("\n") + ("\n" if base_norm else ""))
         if base_norm == after:
             return ""  # identical => skip
         # convert to UPDATE patch (git apply compatible)
@@ -625,7 +629,15 @@ def apply_safe(run_id: str) -> int:
     _run(["git", "push", "-u", "origin", branch, "--force-with-lease"])
 
     for p in patches:
-        _run(["git", "apply", "--check", str(p)])
+        try:
+            _run(["git", "apply", "--check", str(p)])
+        except Exception as e:
+            rs["last_result"]["stop_class"] = "HARD"
+            rs["last_result"]["reason_code"] = "PATCH_DOES_NOT_APPLY"
+            rs["next_action"] = "REGENERATE_PATCH_AS_UPDATE"
+            rs["last_result"]["evidence"] = {"branch_name": branch, "failing_patch": str(p)}
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 1
     for p in patches:
         _run(["git", "apply", str(p)])
 
