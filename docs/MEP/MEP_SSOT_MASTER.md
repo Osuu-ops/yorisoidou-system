@@ -1,6 +1,6 @@
 # MEP_SSOT_MASTER（単一正本｜省略ゼロ｜コピペ1回）v1.12
 
-（この1ファイルに、決定台帳（Q1〜Q169）と、運用入力器（IDEA_NOTE：Schema＋入力欄）を内包する）
+（この1ファイルに、決定台帳（Q1〜Q170）と、運用入力器（IDEA_NOTE：Schema＋入力欄）を内包する）
 （人間が触るのはこのファイル投入＝正本投入のみ。以後は機械が Bundled/health/handoff/spec/cards を生成・更新する）
 
 ---
@@ -23,7 +23,7 @@
 
 ---
 
-# PART A: DECISION_LEDGER（決定台帳｜SSOT-B）完全本文 v1.12（Q1〜Q169）
+# PART A: DECISION_LEDGER（決定台帳｜SSOT-B）完全本文 v1.12（Q1〜Q170）
 
 （ここが決定の唯一の正。PART Bは入力器であり決定ではない）
 
@@ -929,10 +929,35 @@ generated_at: (UTC/ISO)
 
 ---
 
+---
+
+### Gate8（RESTART_PACKET）出力先固定（追加）
+
+* **Q170（Draft）**：最小必須8ゲートのうち **Gate8（RESTART_PACKET）** の正規出力先（証跡の正）を **PR conversation comment（当該PRスレッドのトップコメント群）**に固定する。
+
+  * 目的：次サイクル起動情報を **GitHub上に一意・永続・参照容易**な形で残す（workflow実行条件やartifact有無に依存しない）。
+  * 正規フォーマット（固定キー）：
+
+    - `[MEP][Gate8][RESTART_PACKET]`
+    - `SSOT_VERSION`
+    - `HEAD_SHA`
+    - `BUNDLE_VERSION`
+    - `LAST_STOP_STATE`
+    - `LAST_STOP_REASON`
+    - `LAST_STOP_NEXT`
+    - `RESTART_KEY`（冪等性キー：同一キーは重複投稿禁止）
+    - `STOP_KIND`
+    - `STOP_REASON_CODE`
+    - `ANCHOR`（例：`main`）
+
+  * 失敗時固定（必須）：`STOP_KIND=HARD` かつ `STOP_REASON_CODE=G8_RESTART_PACKET_FAILED` を必ず出力し、証跡を残す。
+
 ## 末尾宣言（監査基準の明確化）
 
-* 採用済み決定の正本は **PART A（Q1〜Q169）**のみ。
+* 採用済み決定の正本は **PART A（Q1〜Q170）**のみ。
 * PART Bは **運用入力器（Schema）**であり、空欄は欠落ではない（AUTO補完・不可欠時のみSTOP）。
 * SSOT-A/SSOT-Bの外部ファイルは **抽出物（派生物）**であり、正本は本ファイルのみ。
 * **このファイルに無い決定は採用済みではない。**
+
+
 
