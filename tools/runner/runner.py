@@ -514,6 +514,89 @@ def apply_safe(run_id: str) -> int:
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
 
+
+    # APPLY_SAFE_A2_NORMALIZE_NEWFILE
+    # Normalize "new file" patches whose target already exists on origin/main.
+    # - If patch would create a file that already exists, compare content:
+    #   - identical => skip (NOOP)
+    #   - different => convert to UPDATE patch (git-applyable) and continue
+    def _normalize_newfile_patch(patch_text: str):
+        import difflib
+        import re as _re
+        is_new = ("new file mode" in patch_text) or ("\n--- /dev/null\n" in patch_text) or ("\nindex 00000000.." in patch_text)
+        if not is_new:
+            return patch_text
+        mm = _re.search(r"^diff --git a/(.+?) b/(.+?)$", patch_text, flags=_re.M)
+        if not mm:
+            return patch_text
+        target = mm.group(2).strip()
+        if not target:
+            return patch_text
+        # check existence on origin/main
+        try:
+            _run(["git", "cat-file", "-e", f"origin/main:{target}"])
+        except Exception:
+            return patch_text  # truly new
+        # base content
+        try:
+            base = _run(["git", "show", f"origin/main:{target}"])
+        except Exception:
+            base = ""
+        # reconstruct "after" content (best-effort for new-file patch)
+        after_lines = []
+        in_hunk = False
+        for line in patch_text.splitlines():
+            if line.startswith("+++ b/"):
+                in_hunk = True
+                continue
+            if not in_hunk:
+                continue
+            if line.startswith("@@"):
+                continue
+            if line.startswith("diff --git "):
+                break
+            if line.startswith("new file mode") or line.startswith("index ") or line.startswith("--- "):
+                continue
+            if line.startswith("\\ No newline at end of file"):
+                continue
+            if line == "":
+                continue
+            c = line[0]
+            if c == "+" and not line.startswith("+++"):
+                after_lines.append(line[1:])
+            elif c == " ":
+                after_lines.append(line[1:])
+            elif c == "-":
+                pass
+        after = "\n".join(after_lines) + ("\n" if after_lines else "")
+        base_norm = base.replace("\r\n", "\n").replace("\r", "\n")
+        if base_norm == after:
+            return ""  # identical => skip
+        # convert to UPDATE patch (git apply compatible)
+        base_lines = base_norm.splitlines(keepends=False)
+        after_lines2 = after.splitlines(keepends=False)
+        ud = list(difflib.unified_diff(
+            base_lines, after_lines2,
+            fromfile=f"a/{target}",
+            tofile=f"b/{target}",
+            lineterm=""
+        ))
+        out = [f"diff --git a/{target} b/{target}"]
+        out.extend(ud)
+        return "\n".join(out) + "\n"
+    norm = []
+    for pp in patches:
+        t = pp.read_text(encoding="utf-8", errors="replace")
+        nt = _normalize_newfile_patch(t)
+        if nt == "":
+            continue  # skip NOOP
+        if nt != t:
+            np = pp.with_name(pp.name + ".normalized.patch")
+            np.write_text(nt, encoding="utf-8")
+            norm.append(np)
+        else:
+            norm.append(pp)
+    patches = norm
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     rs["run_id"] = run_id
     rs["updated_at"] = utc_now_z()
