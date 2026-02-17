@@ -46,23 +46,23 @@ jobs:
         with:
           script: |
             const issue = context.payload.issue.number;
-            const runUrl = process.env.GITHUB_RUN_URL;
+            const runUrl = process.env.GITHUB_RUN_URL || "";
             const labels = (context.payload.issue.labels || []).map(x => x.name);
             const lane = labels.includes("mep-biz") ? "BUSINESS" : "SYSTEM";
             const body = [
-              "できました（Standalone AutoLoop / Dual）",
+              "[MEP][STANDALONE_AUTOLOOP] DONE",
               "",
               `- Lane: ${lane}`,
               `- Run: ${runUrl}`,
-              `- Download: Actions Artifacts → MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
-              `- Repo path (PR created): docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}/`,
+              `- Download: Actions Artifact MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
+              `- Repo path: docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}/`,
               "",
-              "出力（必須）:",
-              `- AUDIT.md`,
-              `- MERGED_DRAFT.md（草案本文1つ）`,
-              `- INPUT_PACKET.md（8ゲート入口へ差し込み可能）`,
-              `- RUN_SUMMARY.md`,
-              `- RESTART_PACKET.txt`,
+              "Files:",
+              "- AUDIT.md",
+              "- MERGED_DRAFT.md",
+              "- INPUT_PACKET.md",
+              "- RUN_SUMMARY.md",
+              "- RESTART_PACKET.txt",
             ].join("\n");
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -70,3 +70,4 @@ jobs:
               issue_number: issue,
               body
             });
+
