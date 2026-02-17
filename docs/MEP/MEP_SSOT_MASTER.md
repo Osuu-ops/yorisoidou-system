@@ -933,7 +933,7 @@ generated_at: (UTC/ISO)
 
 ### Gate8（RESTART_PACKET）出力先固定（追加）
 
-* **Q170（Draft）**：最小必須8ゲートのうち **Gate8（RESTART_PACKET）** の正規出力先（証跡の正）を **PR conversation comment（当該PRスレッドのトップコメント群）**に固定する。
+* **Q170（Adopted）**：最小必須8ゲートのうち **Gate8（RESTART_PACKET）** の正規出力先（証跡の正）を **PR conversation comment（当該PRスレッドのトップコメント群）**に固定する。
 
   * 目的：次サイクル起動情報を **GitHub上に一意・永続・参照容易**な形で残す（workflow実行条件やartifact有無に依存しない）。
   * 正規フォーマット（固定キー）：
