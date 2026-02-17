@@ -392,6 +392,8 @@ def pr_create(run_id: str) -> int:
 def assemble_pr(run_id: str) -> int:
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
+    rs["next_action"] = "STATUS"
+
 
     # PATCH_TYPE_SCAN_A1
     # Preflight patch type/target checks to stop early with reason_code instead of failing in apply-safe.
@@ -474,12 +476,6 @@ def assemble_pr(run_id: str) -> int:
                     rs["next_action"] = "REGENERATE_PATCH_AS_NEWFILE_OR_FIX_PATH"
                     write_json(RUN_STATE, rs); update_compiled(rs)
                     return 1
-
-    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
-    rs["run_id"] = run_id
-    rs["updated_at"] = utc_now_z()
-    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
-    rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "OK"}
     if not patches:
         # NOOP: no patch results -> nothing to apply; close the run deterministically.
         rs["run_status"] = "DONE"
@@ -931,6 +927,7 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
