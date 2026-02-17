@@ -527,20 +527,24 @@ def apply_safe(run_id: str) -> int:
     if not ok:
         write_json(RUN_STATE, rs_guard); update_compiled(rs_guard)
         return 2
+
     branch = f"mep/run_{run_id}"
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
+
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     rs["run_id"] = run_id
     rs["updated_at"] = utc_now_z()
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "OK"}
+
     if not patches:
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
         rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
+
     repo = os.environ.get("GH_REPO", "")
     if not repo:
         rs["last_result"]["stop_class"] = "HARD"
@@ -548,27 +552,38 @@ def apply_safe(run_id: str) -> int:
         rs["next_action"] = "SET_GH_REPO"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
-for p in patches:
+
+    # Base on origin/main (idempotent)
+    _run(["git", "fetch", "origin", "main"])
+    _run(["git", "checkout", "-f", "-B", branch, "origin/main"])
+    _run(["git", "push", "-u", "origin", branch, "--force-with-lease"])
+
+    for p in patches:
         _run(["git", "apply", "--check", str(p)])
     for p in patches:
         _run(["git", "apply", str(p)])
+
     _run(["git", "add", "-A"])
     _run(["git", "commit", "-m", f"mep: apply patches for {run_id}"])
-    _run(["git","push","origin",branch,"--force-with-lease"])
+    _run(["git", "push", "origin", branch, "--force-with-lease"])
+
     open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
     open_prs = json.loads(open_json) if open_json.strip() else []
+
     if len(open_prs) > 1:
         rs["last_result"]["stop_class"] = "HARD"
         rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
         rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
+
     if len(open_prs) == 1:
         pr_url = open_prs[0].get("url")
     else:
         title = f"MEP RUN {run_id} (apply)"
         body = f"Runner applied patches and updated branch for RUN_ID={run_id}"
         pr_url = _run(["gh", "pr", "create", "--repo", repo, "--head", branch, "--base", "main", "--title", title, "--body", body]).strip()
+
     sha = _run(["git", "rev-parse", "HEAD"]).strip()
     rs["last_result"]["evidence"] = {"branch_name": branch, "pr_url": pr_url, "commit_sha": sha}
     rs["last_result"]["stop_class"] = ""
@@ -912,6 +927,7 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
