@@ -24,3 +24,4 @@
 ## 追記例（JSON Lines）
 {"kind":"CHECKPOINT_IN","this_chat_id":"CHAT_...","parent_chat_id":"CHAT_...","checked_at_utc":"...Z","main_head":"...","fixed_handoff_version":"v1.0","portfolio_id":"UNSELECTED","current_phase":"A_DONE","next_item":"B-1 SSOT_SCAN"}
 {"kind":"CHECKPOINT_OUT","this_chat_id":"CHAT_...","next_chat_id":"CHAT_...","checked_at_utc":"...Z","main_head":"...","fixed_handoff_version":"v1.0","portfolio_id":"UNSELECTED","current_phase":"A_DONE","next_item":"B-1 SSOT_SCAN"}
+{"kind":"CHECKPOINT_IN","this_chat_id":"CHAT_20260217T172319Z_63BD","checked_at_utc":"2026-02-17T17:23:19Z","main_head":"482519e58d9c46559df1d538b4047e152a5fcd6c","primary_anchor":"COMMIT:482519e58d9c46559df1d538b4047e152a5fcd6c","runner":{"run_id":"RUN_5e80a72dfa04","run_status":"STILL_OPEN"},"note":"FIXED_HANDOFF start: new chat; THIS_CHAT_ID issued; CHECKPOINT_IN appended via PR (ruleset compliant)."}
