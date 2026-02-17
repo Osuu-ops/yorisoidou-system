@@ -147,3 +147,15 @@ jobs:
 # ---- MEP: AI判断完結ゾーン出力（追記） ----
 # registry-refresh: 20260212_111819
 
+      - name: Upload Entry Outputs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep_writeback_entry_outputs
+          path: |
+            docs/MEP/**
+            docs/MEP_SUB/**
+            .mep_tmp/**
+            _engine_out/**
+            _system_pack_out/**
+          if-no-files-found: ignore
