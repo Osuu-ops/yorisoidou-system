@@ -548,13 +548,7 @@ def apply_safe(run_id: str) -> int:
         rs["next_action"] = "SET_GH_REPO"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
-        # APPLY_SAFE_BASE_ORIGIN_MAIN
-        _run(["git","fetch","origin","main"])
-        # APPLY_SAFE_BASE_ORIGIN_MAIN
-        _run(["git","fetch","origin","main"])
-        _run(["git","checkout","-f","-B",branch,"origin/main"])
-        _run(["git","push","-u","origin",branch,"--force-with-lease"])
-    for p in patches:
+for p in patches:
         _run(["git", "apply", "--check", str(p)])
     for p in patches:
         _run(["git", "apply", str(p)])
@@ -914,10 +908,14 @@ def main() -> int:
     if args.cmd == "ledger-out":
         return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
     return 1
+    _run(["git","fetch","origin","main"])
+    _run(["git","checkout","-f","-B",branch,"origin/main"])
+    _run(["git","push","-u","origin",branch,"--force-with-lease"])
 if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
