@@ -60,6 +60,87 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+
+      
+      - name: Gate8 RESTART_PACKET (DoD-min)
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p .mep
+          STOP_KIND=""
+          STOP_REASON_CODE=""
+          write_packet () {
+            {
+              echo "SSOT_VERSION=${SSOT_VERSION:-UNKNOWN}"
+              echo "HEAD_SHA=${HEAD_SHA:-UNKNOWN}"
+              echo "BUNDLE_VERSION=${BUNDLE_VERSION:-UNKNOWN}"
+              echo "LAST_STOP_STATE=${LAST_STOP_STATE:-UNKNOWN}"
+              echo "LAST_STOP_REASON=${LAST_STOP_REASON:-UNKNOWN}"
+              echo "LAST_STOP_NEXT=${LAST_STOP_NEXT:-UNKNOWN}"
+              echo "RESTART_KEY=${RESTART_KEY:-UNKNOWN}"
+              echo "STOP_KIND=${STOP_KIND}"
+              echo "STOP_REASON_CODE=${STOP_REASON_CODE}"
+            } > .mep/RESTART_PACKET.txt
+          }
+          fail () {
+            STOP_KIND="HARD"
+            STOP_REASON_CODE="G8_RESTART_PACKET_FAILED"
+            write_packet
+          }
+          trap 'fail; exit 1' ERR
+          # SSOT_VERSION (best-effort)
+          SSOT="docs/MEP/MEP_SSOT_MASTER.md"
+          SSOT_VERSION="UNKNOWN"
+          if [ -f "${SSOT}" ]; then
+            v="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "${SSOT}" || true)"
+            if [ -n "${v}" ]; then SSOT_VERSION="${v}"; fi
+          fi
+          # HEAD (required)
+          HEAD_SHA="$(git rev-parse HEAD)"
+          # BUNDLE_VERSION (best-effort)
+          BUNDLE_VERSION="UNKNOWN"
+          if [ -f "docs/MEP/MEP_BUNDLE.md" ]; then
+            bv="$(grep -m1 -E '^\s*BUNDLE_VERSION\s*=\s*' docs/MEP/MEP_BUNDLE.md | sed -E 's/^\s*BUNDLE_VERSION\s*=\s*//')"
+            if [ -n "${bv}" ]; then BUNDLE_VERSION="${bv}"; fi
+          fi
+          # LAST_STOP from mep/run_state.json (best-effort)
+          LAST_STOP_STATE="UNKNOWN"
+          LAST_STOP_REASON="UNKNOWN"
+          LAST_STOP_NEXT="UNKNOWN"
+          if [ -f "mep/run_state.json" ]; then
+            python - <<'PY'
+import json
+from pathlib import Path
+p=Path("mep/run_state.json")
+rs=json.loads(p.read_text(encoding="utf-8"))
+run_status=str(rs.get("run_status","UNKNOWN") or "UNKNOWN")
+lr=rs.get("last_result") or {}
+reason=str(lr.get("reason_code","UNKNOWN") or "UNKNOWN")
+nxt=str(rs.get("next_action","UNKNOWN") or "UNKNOWN")
+print(run_status)
+print(reason)
+print(nxt)
+PY
+          fi | {
+            read -r s || true
+            read -r r || true
+            read -r n || true
+            if [ -n "${s:-}" ]; then LAST_STOP_STATE="${s}"; fi
+            if [ -n "${r:-}" ]; then LAST_STOP_REASON="${r}"; fi
+            if [ -n "${n:-}" ]; then LAST_STOP_NEXT="${n}"; fi
+          }
+          # idempotency key (deterministic)
+          RESTART_KEY="$(printf "%s\n%s\n%s\n%s\n%s\n%s\n" "${SSOT_VERSION}" "${HEAD_SHA}" "${BUNDLE_VERSION}" "${LAST_STOP_STATE}" "${LAST_STOP_REASON}" "${LAST_STOP_NEXT}" | sha256sum | awk '{print $1}')"
+          write_packet
+      - name: Upload RESTART_PACKET (Gate8)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: restart-packet
+          path: .mep/RESTART_PACKET.txt
+          if-no-files-found: error
+
       - name: Load SSOT payload (b64 optional)
         shell: bash
         run: |
