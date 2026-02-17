@@ -481,11 +481,13 @@ def assemble_pr(run_id: str) -> int:
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "OK"}
     if not patches:
-        rs["last_result"]["stop_class"] = "WAIT"
-        rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
-        rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
+        # NOOP: no patch results -> nothing to apply; close the run deterministically.
+        rs["run_status"] = "DONE"
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = "NOOP_NO_PATCH_RESULTS"
+        rs["next_action"] = "ALL_DONE"
         write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        return 0
     pol = load_yaml(POLICY) if POLICY.exists() else {}
     limits = (pol.get("limits") or {})
     max_bytes = int(limits.get("patch_max_bytes", 0) or 0)
@@ -539,11 +541,13 @@ def apply_safe(run_id: str) -> int:
     rs["last_result"]["action"] = {"name": "APPLY_SAFE", "outcome": "OK"}
 
     if not patches:
-        rs["last_result"]["stop_class"] = "WAIT"
-        rs["last_result"]["reason_code"] = "NO_PATCH_RESULTS"
-        rs["next_action"] = "WAIT_FOR_WORKER_RESULTS"
+        # NOOP: no patch results -> nothing to apply; close the run deterministically.
+        rs["run_status"] = "DONE"
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = "NOOP_NO_PATCH_RESULTS"
+        rs["next_action"] = "ALL_DONE"
         write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        return 0
 
     repo = os.environ.get("GH_REPO", "")
     if not repo:
@@ -927,6 +931,7 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
