@@ -1,0 +1,90 @@
+name: MEP Standalone AutoLoop (Dispatch)
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "GitHub Issue number containing the draft"
+        required: true
+        type: string
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+concurrency:
+  group: mep-standalone-dispatch-${{ inputs.issue_number }}
+  cancel-in-progress: true
+jobs:
+  build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build pseudo event json (from issue)
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p _tmp
+          gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}" > _tmp/issue.json
+          python3 - << 'PY'
+          import json, pathlib, os
+          issue = json.loads(pathlib.Path("_tmp/issue.json").read_text(encoding="utf-8"))
+          # mimic GitHub issues event payload shape expected by tools/issue_artifact_loop.py
+          ev = {"issue": issue}
+          pathlib.Path("_tmp/event.json").write_text(json.dumps(ev, ensure_ascii=False), encoding="utf-8")
+          PY
+          echo "EVENT_JSON=_tmp/event.json" >> $GITHUB_ENV
+      - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
+        env:
+          GH_REPO: ${{ github.repository }}
+          GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 tools/issue_artifact_loop.py
+      - name: Upload workflow artifacts (downloadable)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
+          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
+          title: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
+          body: |
+            Standalone AutoLoop (Dispatch) generated artifacts.
+            - Issue: #${{ inputs.issue_number }}
+            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}"
+          branch: auto/standalone_dispatch_${{ inputs.issue_number }}_${{ github.run_id }}
+          base: main
+          add-paths: |
+            docs/MEP/ARTIFACTS/
+      - name: Comment "できました" with pointers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = Number("${{ inputs.issue_number }}");
+            const runUrl = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
+            const body = [
+              "できました（Standalone AutoLoop / Dispatch）",
+              "",
+              `- Run: ${runUrl}`,
+              `- Download: Actions Artifacts → MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
+              `- Repo path (PR created): docs/MEP/ARTIFACTS/<LANE>/ISSUE_${issue}/`,
+              "",
+              "出力（必須）:",
+              `- AUDIT.md`,
+              `- MERGED_DRAFT.md（草案本文1つ）`,
+              `- INPUT_PACKET.md（8ゲート入口へ差し込み可能）`,
+              `- RUN_SUMMARY.md`,
+              `- RESTART_PACKET.txt`,
+            ].join("\n");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue,
+              body
+            });
