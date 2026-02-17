@@ -908,9 +908,6 @@ def main() -> int:
     if args.cmd == "ledger-out":
         return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
     return 1
-    _run(["git","fetch","origin","main"])
-    _run(["git","checkout","-f","-B",branch,"origin/main"])
-    _run(["git","push","-u","origin",branch,"--force-with-lease"])
 if __name__ == "__main__":
     sys.exit(main())
 
