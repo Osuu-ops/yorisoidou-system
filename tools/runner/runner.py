@@ -392,73 +392,52 @@ def pr_create(run_id: str) -> int:
 def assemble_pr(run_id: str) -> int:
     results_dir = MEP_DIR / "results" / run_id
     patches = sorted(results_dir.glob("*.patch")) if results_dir.exists() else []
+
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "OK"}
     rs["next_action"] = "STATUS"
 
-
-    # PATCH_TYPE_SCAN_A1
-    # Preflight patch type/target checks to stop early with reason_code instead of failing in apply-safe.
-    # - NEW FILE patch targeting an existing path => HARD (NEW_FILE_TARGET_EXISTS)
+    # PATCH_TYPE_SCAN_A1: stop early with reason_code instead of failing later.
+    # - NEW file patch targeting an existing path => HARD (NEW_FILE_TARGET_EXISTS)
     # - UPDATE patch targeting a missing path => HARD (UPDATE_TARGET_MISSING)
-    # Uses origin/main as the reference base.
     created_paths = set()
+
     def _cat_exists(rev: str, p: str) -> bool:
         try:
             _run(["git", "cat-file", "-e", f"{rev}:{p}"])
             return True
         except Exception:
             return False
+
     def _scan_patch_paths(txt: str):
-        # returns list of tuples (path, kind) where kind in {"NEW","UPD"}
         out = []
         cur = None
         kind = None
         for line in txt.splitlines():
             if line.startswith("diff --git "):
-                # diff --git a/xxx b/xxx
+                if cur and kind:
+                    out.append((cur, kind))
                 parts = line.split()
                 if len(parts) >= 4:
-                    a = parts[2][2:] if parts[2].startswith("a/") else parts[2]
                     b = parts[3][2:] if parts[3].startswith("b/") else parts[3]
                     cur = b
                     kind = None
             elif line.startswith("new file mode") or line.startswith("--- /dev/null"):
                 if cur:
                     kind = "NEW"
-            elif line.startswith("deleted file mode") or line.startswith("rename from") or line.startswith("rename to"):
-                # treat as dangerous/unsupported at higher layer; leave to denylist
-                pass
             elif line.startswith("--- a/") and cur and kind is None:
                 kind = "UPD"
-        # finalize
         if cur and kind:
             out.append((cur, kind))
-        # multi-file patches: naive fallback, capture all occurrences
-        # capture every diff block:
-        out2 = []
-        cur = None
-        kind = None
-        for line in txt.splitlines():
-            if line.startswith("diff --git "):
-                if cur and kind:
-                    out2.append((cur, kind))
-                parts = line.split()
-                if len(parts) >= 4:
-                    b = parts[3][2:] if parts[3].startswith("b/") else parts[3]
-                    cur = b
-                    kind = None
-            elif line.startswith("new file mode") or line.startswith("--- /dev/null"):
-                if cur:
-                    kind = "NEW"
-            elif line.startswith("--- a/") and cur and kind is None:
-                kind = "UPD"
-        if cur and kind:
-            out2.append((cur, kind))
-        return out2
+        return out
+
     # evaluate patches against origin/main
     for p in patches:
         txt = p.read_text(encoding="utf-8", errors="replace")
         for (tpath, tkind) in _scan_patch_paths(txt):
-            # if earlier patch creates it, allow subsequent updates in same batch
             exists_in_base = _cat_exists("origin/main", tpath)
             exists_effective = exists_in_base or (tpath in created_paths)
             if tkind == "NEW":
@@ -476,14 +455,16 @@ def assemble_pr(run_id: str) -> int:
                     rs["next_action"] = "REGENERATE_PATCH_AS_NEWFILE_OR_FIX_PATH"
                     write_json(RUN_STATE, rs); update_compiled(rs)
                     return 1
+
+    # NO_PATCH_RESULTS => NOOP (close deterministically)
     if not patches:
-        # NOOP: no patch results -> nothing to apply; close the run deterministically.
         rs["run_status"] = "DONE"
         rs["last_result"]["stop_class"] = ""
         rs["last_result"]["reason_code"] = "NOOP_NO_PATCH_RESULTS"
         rs["next_action"] = "ALL_DONE"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
+
     pol = load_yaml(POLICY) if POLICY.exists() else {}
     limits = (pol.get("limits") or {})
     max_bytes = int(limits.get("patch_max_bytes", 0) or 0)
@@ -494,13 +475,14 @@ def assemble_pr(run_id: str) -> int:
         rs["next_action"] = "FIX_POLICY_SCHEMA"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
+
     total_bytes = 0
     total_lines = 0
     deny = ["GIT binary patch", "Binary files ", "deleted file mode", "rename from", "rename to", "old mode", "new mode"]
     for p in patches:
         txt = p.read_text(encoding="utf-8", errors="replace")
         total_bytes += len(txt.encode("utf-8", errors="replace"))
-        total_lines += txt.count("\n") + 1
+        total_lines += txt.count("\\n") + 1
         for pat in deny:
             if pat in txt:
                 rs["last_result"]["stop_class"] = "HARD"
@@ -508,12 +490,14 @@ def assemble_pr(run_id: str) -> int:
                 rs["next_action"] = "SPLIT_PATCH_OR_REDUCE_SCOPE"
                 write_json(RUN_STATE, rs); update_compiled(rs)
                 return 1
+
     if total_bytes > max_bytes or total_lines > max_lines:
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "PATCH_TOO_LARGE"
         rs["next_action"] = "SPLIT_PATCH_OR_REDUCE_SCOPE"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
+
     rs["last_result"]["stop_class"] = ""
     rs["last_result"]["reason_code"] = ""
     rs["next_action"] = "READY_TO_APPLY_SAFE_PATH"
@@ -927,6 +911,7 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
