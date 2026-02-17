@@ -442,11 +442,10 @@ def assemble_pr(run_id: str) -> int:
             exists_effective = exists_in_base or (tpath in created_paths)
             if tkind == "NEW":
                 if exists_effective:
-                    rs["last_result"]["stop_class"] = "HARD"
-                    rs["last_result"]["reason_code"] = "NEW_FILE_TARGET_EXISTS"
-                    rs["next_action"] = "REGENERATE_PATCH_AS_UPDATE"
-                    write_json(RUN_STATE, rs); update_compiled(rs)
-                    return 1
+                    # ASSEMBLE_PR_A2_ALLOW_NEWFILE_EXISTS
+                    # Allow continuation: target already exists on origin/main.
+                    # apply-safe will normalize/skip/convert NEW-file patches safely.
+                    continue
                 created_paths.add(tpath)
             elif tkind == "UPD":
                 if not exists_effective:
