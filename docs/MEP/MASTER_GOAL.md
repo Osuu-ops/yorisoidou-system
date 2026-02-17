@@ -27,3 +27,32 @@ MEPは、人間操作なしで end-to-end の閉ループを完了する（SUCCE
 6. PR_CHECKS（Required checks）
 7. MERGE_FINISH
 8. RESTART_PACKET
+
+## UPDATE（Adopted）：単体AUTO_LOOP（SYSTEM/BUSINESS両対応）の完了条件（成果物→ダウンロード→次ゲート）
+最優先：まず「完成成果物」を生成し、人間がローカルへ落とせる形（Actions Artifacts / Repo files）で提供する。
+この流れが成立した後にのみ、次ゲート（8ゲート入口）へ止まらず進む自動化へ接続する。
+### 単体AUTO_LOOP（8ゲート非接続・安全分離）
+入力：GitHub Issue（label: `mep-loop`）
+レーン選択：
+- label `mep-biz` があれば BUSINESS
+- それ以外は SYSTEM
+出力：
+- Actions Artifacts（ユーザーがダウンロード可能）
+- Repo上の成果物（PRで一次根拠化）
+- Issueコメント「できました」＋Run/Artifacts/パス提示
+必須成果物（レーン別フォルダを必ず生成）：
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/AUDIT.md
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/MERGED_DRAFT.md（草案本文1つ）
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/INPUT_PACKET.md（8ゲート入口へ差し込み可能）
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/RUN_SUMMARY.md
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/RESTART_PACKET.txt
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/AUDIT.md
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/MERGED_DRAFT.md（草案本文1つ）
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/INPUT_PACKET.md（8ゲート入口へ差し込み可能）
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/RUN_SUMMARY.md
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/RESTART_PACKET.txt
+### 接続条件（次ゲートへ入る前提）
+- 単体AUTO_LOOPが上記成果物を生成し、ユーザーがダウンロードできること
+- INPUT_PACKET.md が生成済みであること
+- 8ゲート入口は別ワークフローで受け、単体AUTO_LOOPからは呼ばない（安全）
+
