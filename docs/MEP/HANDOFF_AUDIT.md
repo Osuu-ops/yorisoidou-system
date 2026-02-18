@@ -4,6 +4,6 @@ SSOT_PATHS:
 - mep/policy.yaml
 - mep/run_state.json
 LATEST_EVIDENCE_POINTERS:
-- pr_url: 
+- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2247
 - commit_sha: 
 - workflow_run_url:
