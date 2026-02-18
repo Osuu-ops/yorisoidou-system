@@ -49,6 +49,21 @@ jobs:
           name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
           path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
       - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
+      - name: Create PR to store artifacts in repo (no auto-merge)
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -88,3 +103,4 @@ jobs:
               issue_number: issue,
               body
             });
+
