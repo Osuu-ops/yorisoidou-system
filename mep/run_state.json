@@ -30,17 +30,16 @@
       "outcome": "OK"
     },
     "evidence": {
+      "commit_sha": "05467ac894a61a5eef73cbcdac08f73dace8ba77",
       "branch_name": "mep/run_RUN_5e80a72dfa04",
-      "commit_sha": "",
-      "pr_url": null,
-      "workflow_run_url": null
+      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2247"
     },
     "next_action": "STATUS",
-    "reason_code": "EVIDENCE_REQUIRED_BUT_UNAVAILABLE",
-    "stop_class": "WAIT",
+    "reason_code": "",
+    "stop_class": "",
     "timestamp_utc": "2026-02-18T18:01:24Z"
   },
-  "next_action": "STATUS",
+  "next_action": "MERGE_FINISH",
   "repo": "Osuu-ops/yorisoidou-system",
   "run_id": "RUN_5e80a72dfa04",
   "run_status": "STILL_OPEN",
