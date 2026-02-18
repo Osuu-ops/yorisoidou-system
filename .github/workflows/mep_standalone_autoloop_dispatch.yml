@@ -1,9 +1,5 @@
 name: MEP Standalone AutoLoop (Dispatch)
 on:
-  push:
-    paths:
-      - '.github/workflows/mep_standalone_autoloop_dispatch.yml'
-  workflow_dispatch:
   workflow_dispatch:
     inputs:
       issue_number:
@@ -33,13 +29,12 @@ jobs:
           mkdir -p _tmp
           gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}" > _tmp/issue.json
           python3 - << 'PY'
-          import json, pathlib, os
+          import json, pathlib
           issue = json.loads(pathlib.Path("_tmp/issue.json").read_text(encoding="utf-8"))
-          # mimic GitHub issues event payload shape expected by tools/issue_artifact_loop.py
           ev = {"issue": issue}
           pathlib.Path("_tmp/event.json").write_text(json.dumps(ev, ensure_ascii=False), encoding="utf-8")
           PY
-          echo "EVENT_JSON=_tmp/event.json" >> $GITHUB_ENV
+          echo "EVENT_JSON=_tmp/event.json" >> "$GITHUB_ENV"
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
         env:
           GH_REPO: ${{ github.repository }}
@@ -52,21 +47,7 @@ jobs:
         with:
           name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
           path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-      - name: Create PR to store artifacts in repo (no auto-merge)
+      - name: Create PR to store artifacts in repo
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
@@ -81,25 +62,47 @@ jobs:
           base: main
           add-paths: |
             docs/MEP/ARTIFACTS/
+      - name: Auto-merge artifacts PR (so INPUT_PACKET lands on main)
+        if: steps.cpr.outputs.pull-request-number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = Number('${{ steps.cpr.outputs.pull-request-number }}');
+            await github.rest.pulls.enableAutoMerge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr,
+              merge_method: 'squash'
+            }).catch(() => {});
+            for (let i = 0; i < 180; i++) {
+              const r = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr
+              });
+              if (r.data.merged) { core.info('MERGED'); return; }
+              await new Promise(res => setTimeout(res, 5000));
+            }
+            core.setFailed('Artifacts PR not merged yet (auto-merge waiting).');
       - name: Comment "できました" with pointers
         uses: actions/github-script@v7
         with:
           script: |
-            const issue = Number("${{ inputs.issue_number }}");
-            const runUrl = "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
+            const issue = Number('${{ inputs.issue_number }}');
+            const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
             const body = [
               "できました（Standalone AutoLoop / Dispatch）",
               "",
               `- Run: ${runUrl}`,
               `- Download: Actions Artifacts → MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
-              `- Repo path (PR created): docs/MEP/ARTIFACTS/<LANE>/ISSUE_${issue}/`,
+              `- Repo path (merged): docs/MEP/ARTIFACTS/<LANE>/ISSUE_${issue}/`,
               "",
               "出力（必須）:",
-              `- AUDIT.md`,
-              `- MERGED_DRAFT.md（草案本文1つ）`,
-              `- INPUT_PACKET.md（8ゲート入口へ差し込み可能）`,
-              `- RUN_SUMMARY.md`,
-              `- RESTART_PACKET.txt`,
+              "- AUDIT.md",
+              "- MERGED_DRAFT.md（草案本文1つ）",
+              "- INPUT_PACKET.md（8ゲート入口へ差し込み可能）",
+              "- RUN_SUMMARY.md",
+              "- RESTART_PACKET.txt"
             ].join("\n");
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -107,5 +110,3 @@ jobs:
               issue_number: issue,
               body
             });
-
-
