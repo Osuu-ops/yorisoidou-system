@@ -46,6 +46,19 @@ def main():
     merged.append(body.rstrip())
     (outdir/"MERGED_DRAFT.md").write_text("\n".join(merged).rstrip()+"\n", encoding="utf-8")
 import hashlib
+# OUTDIR_GUARD__AUTOINSERT
+from pathlib import Path as _Path__OUTDIR
+# Ensure outdir exists before use (lane/issue must already be resolved above)
+try:
+    _lane = lane
+except NameError:
+    _lane = "SYSTEM"
+try:
+    _issue = issue
+except NameError:
+    _issue = "UNKNOWN"
+outdir = _Path__OUTDIR("docs")/"MEP"/"ARTIFACTS"/str(_lane)/("ISSUE_" + str(_issue))
+outdir.mkdir(parents=True, exist_ok=True)
 merged_path = outdir/"MERGED_DRAFT.md"
 merged_bytes = merged_path.read_bytes()
 sha256 = hashlib.sha256(merged_bytes).hexdigest()
