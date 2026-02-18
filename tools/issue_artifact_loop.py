@@ -1,3 +1,4 @@
+import re
 #!/usr/bin/env python3
 import json, os, hashlib
 from pathlib import Path
@@ -15,7 +16,19 @@ def main():
         raise SystemExit("GITHUB_EVENT_PATH missing")
     ev = json.loads(Path(event_path).read_text(encoding="utf-8"))
     issue = ev.get("issue") or {}
-    num = int(issue.get("number"))
+    raw_num = issue.get("number")
+    if raw_num is None:
+        env_n = os.environ.get("ISSUE_NUMBER") or os.environ.get("INPUT_ISSUE_NUMBER")
+        if env_n and str(env_n).strip().isdigit():
+            raw_num = int(env_n)
+        else:
+            url = issue.get("html_url","") or ""
+            m = re.search(r"/issues/(\d+)", url)
+            if m:
+                raw_num = int(m.group(1))
+    if raw_num is None:
+        raise SystemExit("issue.number missing (cannot proceed). keys=" + ",".join(sorted(issue.keys())))
+    num = int(raw_num)
     title = (issue.get("title") or "").strip()
     body  = norm(issue.get("body") or "")
     labels = issue.get("labels") or []
@@ -94,3 +107,4 @@ def main():
     (outdir/"RESTART_PACKET.txt").write_text("\n".join(rp).rstrip()+"\n", encoding="utf-8")
 if __name__ == "__main__":
     main()
+

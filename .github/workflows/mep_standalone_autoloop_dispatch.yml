@@ -37,6 +37,7 @@ jobs:
           echo "EVENT_JSON=_tmp/event.json" >> "$GITHUB_ENV"
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
         env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
           GH_REPO: ${{ github.repository }}
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -110,3 +111,4 @@ jobs:
               issue_number: issue,
               body
             });
+
