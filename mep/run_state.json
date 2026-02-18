@@ -25,7 +25,7 @@
   "last_good": null,
   "last_result": {
     "action": {
-      "name": "STATUS",
+      "name": "APPLY_SAFE",
       "outcome": "OK"
     },
     "evidence": {
@@ -35,14 +35,14 @@
       "workflow_run_url": null
     },
     "next_action": "STATUS",
-    "reason_code": "",
-    "stop_class": "",
-    "timestamp_utc": "2026-02-18T16:33:19Z"
+    "reason_code": "REPO_NOT_SET",
+    "stop_class": "HARD",
+    "timestamp_utc": "2026-02-18T16:43:08Z"
   },
-  "next_action": "STATUS",
+  "next_action": "SET_GH_REPO",
   "run_id": "RUN_5e80a72dfa04",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-02-18T16:33:19Z",
+  "updated_at": "2026-02-18T16:43:08Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
