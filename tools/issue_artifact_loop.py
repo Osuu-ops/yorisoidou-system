@@ -47,7 +47,13 @@ def main():
     merged.append(body.rstrip())
     merged_path = outdir/"MERGED_DRAFT.md"
     merged_path.write_text("\n".join(merged).rstrip()+"\n", encoding="utf-8")
-    sha256 = hashlib.sha256(merged_path.read_bytes()).hexdigest()
+    # READ_BYTES_GUARD__AUTOINSERT
+    try:
+        _mb = merged_path.read_bytes()
+    except FileNotFoundError:
+        _mb = b""
+    sha256 = hashlib.sha256(_mb).hexdigest()
+
     # INPUT_PACKET.md
     packet = []
     packet.append("PACKET_VERSION: v1")
