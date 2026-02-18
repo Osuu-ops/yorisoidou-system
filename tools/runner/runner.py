@@ -130,6 +130,19 @@ LATEST_EVIDENCE_POINTERS:
         for x in cands[:10]:
             lines.append(f"- {x}")
     write_md(HANDOFF_WORK_MD, "\n".join(lines))
+
+def _get_repo(rs: dict) -> str:
+    # Prefer explicit env, then persisted state, then GitHub default env.
+    repo = (os.environ.get("GH_REPO") or "").strip()
+    if repo:
+        return repo
+    if isinstance(rs, dict):
+        repo2 = (rs.get("gh_repo") or rs.get("repo") or "").strip()
+        if repo2:
+            return repo2
+    repo3 = (os.environ.get("GITHUB_REPOSITORY") or "").strip()
+    return repo3
+
 def _run(cmd: list[str]) -> str:
     p = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if p.returncode != 0:
@@ -235,6 +248,17 @@ def status() -> int:
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "STATUS", "outcome": "OK"}
     rs["next_action"] = "STATUS"
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
     write_json(RUN_STATE, rs)
     update_compiled(rs)
     rs = _after_compiled(rs)
@@ -259,6 +283,17 @@ def apply(draft_file: Path) -> int:
     rs["last_result"]["stop_class"] = ""
     rs["last_result"]["reason_code"] = ""
     rs["next_action"] = "STATUS"
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
     write_json(RUN_STATE, rs)
     update_compiled(rs)
     rs = _after_compiled(rs)
@@ -272,7 +307,18 @@ def pr_probe(run_id: str) -> int:
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "PR_PROBE", "outcome": "OK"}
     rs["next_action"] = "STATUS"
-    repo = os.environ.get("GH_REPO", "")
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
+    repo = _get_repo(rs)
     if not repo:
         rs["last_result"]["stop_class"] = "HARD"
         rs["last_result"]["reason_code"] = "REPO_NOT_SET"
@@ -299,6 +345,17 @@ def pr_probe(run_id: str) -> int:
         rs["last_result"]["stop_class"] = ""
         rs["last_result"]["reason_code"] = ""
         rs["next_action"] = "STATUS"
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
     if len(open_prs) == 0 and len(closed_prs) >= 1:
@@ -324,7 +381,7 @@ def pr_probe(run_id: str) -> int:
 
     # EVIDENCE_FOLLOW_A2
     # Detect stale PR headRefOid vs branch tip and auto-replace PR.
-    repo = os.environ.get("GH_REPO", "")
+    repo = _get_repo(rs)
     if repo and open_prs:
         try:
             pr_url = open_prs[0].get("url")
@@ -353,7 +410,18 @@ def pr_create(run_id: str) -> int:
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "PR_CREATE", "outcome": "OK"}
     rs["next_action"] = "STATUS"
-    repo = os.environ.get("GH_REPO", "")
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
+    repo = _get_repo(rs)
     if not repo:
         rs["last_result"]["stop_class"] = "HARD"
         rs["last_result"]["reason_code"] = "REPO_NOT_SET"
@@ -400,6 +468,17 @@ def assemble_pr(run_id: str) -> int:
     rs["last_result"]["action"] = {"name": "ASSEMBLE_PR", "outcome": "OK"}
     rs["next_action"] = "STATUS"
 
+    # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
+    repo = ""
+    try:
+        repo = _get_repo(rs)
+    except Exception:
+        repo = ""
+    if (rs.get("last_result") or {}).get("reason_code") == "REPO_NOT_SET" and repo:
+        rs.setdefault("gh_repo", repo)
+        rs.setdefault("repo", repo)
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
     # PATCH_TYPE_SCAN_A1: stop early with reason_code instead of failing later.
     # - NEW file patch targeting an existing path => HARD (NEW_FILE_TARGET_EXISTS)
     # - UPDATE patch targeting a missing path => HARD (UPDATE_TARGET_MISSING)
@@ -615,7 +694,7 @@ def apply_safe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
 
-    repo = os.environ.get("GH_REPO", "")
+    repo = _get_repo(rs)
     if not repo:
         rs["last_result"]["stop_class"] = "HARD"
         rs["last_result"]["reason_code"] = "REPO_NOT_SET"
@@ -680,7 +759,7 @@ def merge_finish(run_id: str) -> int:
     rs["updated_at"] = utc_now_z()
     rs["last_result"]["timestamp_utc"] = rs["updated_at"]
     rs["last_result"]["action"] = {"name": "MERGE_FINISH", "outcome": "OK"}
-    repo = os.environ.get("GH_REPO", "")
+    repo = _get_repo(rs)
     ev = rs.get("last_result", {}).get("evidence", {}) or {}
     pr_url = ev.get("pr_url") or ""
     if not repo or not pr_url:
@@ -722,7 +801,7 @@ def merge_finish(run_id: str) -> int:
 
     # MERGE_FINISH_A3_AUTODONE
     # If PR already MERGED, automatically finalize run_state (no manual backfill).
-    repo = os.environ.get("GH_REPO", "")
+    repo = _get_repo(rs)
     if repo:
         try:
             pr_url = rs.get("last_result", {}).get("evidence", {}).get("pr_url")
