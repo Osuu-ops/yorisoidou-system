@@ -26,11 +26,11 @@
   "last_good": null,
   "last_result": {
     "action": {
-      "name": "STATUS",
-      "outcome": "OK"
+      "outcome": "OK",
+      "name": "MERGE_FINISH"
     },
     "evidence": {
-      "commit_sha": "05467ac894a61a5eef73cbcdac08f73dace8ba77",
+      "commit_sha": "40fd57b177fce1459bea8138c1c15515b95698e1",
       "branch_name": "mep/run_RUN_5e80a72dfa04",
       "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2247"
     },
@@ -39,10 +39,10 @@
     "stop_class": "",
     "timestamp_utc": "2026-02-18T18:01:24Z"
   },
-  "next_action": "MERGE_FINISH",
+  "next_action": "ALL_DONE",
   "repo": "Osuu-ops/yorisoidou-system",
   "run_id": "RUN_5e80a72dfa04",
-  "run_status": "STILL_OPEN",
+  "run_status": "DONE",
   "updated_at": "2026-02-18T18:01:24Z",
   "work_summary": {
     "done": "unknown",
