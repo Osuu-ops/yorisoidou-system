@@ -345,6 +345,8 @@ def pr_probe(run_id: str) -> int:
         rs["last_result"]["stop_class"] = ""
         rs["last_result"]["reason_code"] = ""
         rs["next_action"] = "STATUS"
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 0
     # Clear stale STOP(HARD)/REPO_NOT_SET if repo is now resolvable
     repo = ""
     try:
