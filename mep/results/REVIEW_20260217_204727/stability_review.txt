@@ -1,0 +1,41 @@
+ANCHOR main HEAD=57024edd341eb9e6ee90c473050361419c347e7e
+DATE_UTC=2026-02-17T20:47:36.1783702Z
+
+A) next_action mapping (grep READY_TO_APPLY_SAFE_PATH / apply-safe)
+docs/MEP/HANDOFF_WORK.md:2:NEXT_ACTION: READY_TO_APPLY_SAFE_PATH
+docs/MEP/STATUS.md:6:NEXT_ACTION: READY_TO_APPLY_SAFE_PATH
+mep/run_state.json:42:  "next_action": "READY_TO_APPLY_SAFE_PATH",
+tools/runner/runner.py:502:    rs["next_action"] = "READY_TO_APPLY_SAFE_PATH"
+docs/MEP/BRANCHPOINTS.md:10:- PR #2257・・pply-safe push --force-with-lease・・docs/MEP/FIXED_HANDOFF.md:22:- destructive ops・・pply-safe/merge-finish/compact delete・峨・ handoff_ack.status == ACK 縺檎┌縺・剞繧企ｲ繧√↑縺・docs/MEP/FIXED_HANDOFF.md:89:- AI縺ｮ谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ・壹屍unner status 竊・assemble-pr 竊・apply-safe 竊・merge-finish 縺ｮ縺ｩ縺薙〒豁｢縺ｾ縺｣縺ｦ縺・ｋ縺九ｒ遉ｺ縺励∵ｬ｡縺ｮ1謇九□縺第署遉ｺ縲・docs/MEP/FIXED_HANDOFF.md:127:- AI谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ・嗷unner status 竊・assemble-pr 竊・apply-safe 竊・merge-finish 縺ｮ縲後←縺薙〒豁｢縺ｾ縺｣縺ｦ繧九°縲阪□縺題ｿ斐☆
+docs/MEP/FIXED_HANDOFF.md:209:- AI谺｡繧｢繧ｯ繧ｷ繝ｧ繝ｳ・嗷unner status竊誕ssemble-pr竊誕pply-safe竊知erge-finish 縺ｮ縲後←縺薙〒豁｢縺ｾ縺｣縺ｦ繧九°縲阪□縺題ｿ斐☆
+docs/MEP/HANDOFF_WORK.md:2:NEXT_ACTION: READY_TO_APPLY_SAFE_PATH
+docs/MEP/ROADMAP.md:10:A-4 apply-safe push non-FF 閾ｪ蜍募精蜿趣ｼ咼ONE・・R #2257, mergeCommit daf53fde窶ｦ・・docs/MEP/STATUS.md:6:NEXT_ACTION: READY_TO_APPLY_SAFE_PATH
+docs/MEP/SYSTEM_MAP.md:12:Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・mep/results/RUN_5e80a72dfa04/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・mep/run_state.json:42:  "next_action": "READY_TO_APPLY_SAFE_PATH",
+results/RUN_5e80a72dfa04/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/artifacts/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/patch/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/patch_results/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/patches/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/patches_in/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/worker/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・results/RUN_5e80a72dfa04/workers/0001-mep-system-map-v1.0.patch:18:+Layer1: Runner Execution・亥ｮ梧・・喘oot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact・・tools/runner/runner.py:447:                    # apply-safe will normalize/skip/convert NEW-file patches safely.
+tools/runner/runner.py:502:    rs["next_action"] = "READY_TO_APPLY_SAFE_PATH"
+tools/runner/runner.py:505:def apply_safe(run_id: str) -> int:
+tools/runner/runner.py:958:    ap_safe = sub.add_parser("apply-safe")
+tools/runner/runner.py:992:    if args.cmd == "apply-safe":
+tools/runner/runner.py:993:        return apply_safe(args.run_id)
+
+B) ACK gating refs (handoff_ack)
+docs/MEP/FIXED_HANDOFF.md:22:- destructive ops・・pply-safe/merge-finish/compact delete・峨・ handoff_ack.status == ACK 縺檎┌縺・剞繧企ｲ繧√↑縺・mep/run_state.json:18:  "handoff_ack": {
+tools/runner/runner.py:71:        "handoff_ack": None,
+tools/runner/runner.py:182:        rs["handoff_ack"] = {
+tools/runner/runner.py:189:        rs["handoff_ack"] = {
+tools/runner/runner.py:196:        rs["last_result"]["reason_code"] = "HANDOFF_ACK_REQUIRED"
+tools/runner/runner.py:197:        rs["next_action"] = "NEED_HANDOFF_ACK"
+tools/runner/runner.py:199:def require_handoff_ack(rs: dict) -> tuple[bool, dict]:
+tools/runner/runner.py:200:    ha = rs.get("handoff_ack") or {}
+tools/runner/runner.py:204:    rs["last_result"]["reason_code"] = "HANDOFF_ACK_REQUIRED"
+tools/runner/runner.py:205:    rs["next_action"] = "NEED_HANDOFF_ACK"
+tools/runner/runner.py:507:    ok, rs_guard = require_handoff_ack(rs_guard)
+tools/runner/runner.py:674:    ok, rs_guard = require_handoff_ack(rs_guard)
+tools/runner/runner.py:746:    ok, rs_guard = require_handoff_ack(rs_guard)
+
+C) Gate8 sink refs (PR comment + RESTART_KEY + failure semantics)
+.github/workflows/mep_writeback_bundle_dispatch_entry.yml:81:              echo "RESTART_KEY=${RESTART_KEY:-UNKNOWN}"
+.github/workflows/mep_writeback_bundle_dispatch_entry.yml:88:            STOP_REASON_CODE="G8_RESTART_PACKET_FAILED"
+.github/workflows/mep_writeback_bundle_dispatch_entry.yml:134:          RESTART_KEY="$(printf "%s\n%s\n%s\n%s\n%s\n%s\n" "${SSOT_VERSION}" "${HEAD_SHA}" "${BUNDLE_VERSION}" "${LAST_STOP_STATE}" "${LAST_STOP_REASON}" "${LAST_STOP_NEXT}" | sha256sum | awk '{print $1}')"
+docs/MEP/MEP_SSOT_MASTER.md:941:    - `[MEP][Gate8][RESTART_PACKET]`
+docs/MEP/MEP_SSOT_MASTER.md:948:    - `RESTART_KEY`・亥・遲画ｧ繧ｭ繝ｼ・壼酔荳繧ｭ繝ｼ縺ｯ驥崎､・兜遞ｿ遖∵ｭ｢・・docs/MEP/MEP_SSOT_MASTER.md:953:  * 螟ｱ謨玲凾蝗ｺ螳夲ｼ亥ｿ・茨ｼ会ｼ啻STOP_KIND=HARD` 縺九▽ `STOP_REASON_CODE=G8_RESTART_PACKET_FAILED` 繧貞ｿ・★蜃ｺ蜉帙＠縲∬ｨｼ霍｡繧呈ｮ九☆縲・
