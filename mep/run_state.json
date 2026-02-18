@@ -26,7 +26,7 @@
   "last_good": null,
   "last_result": {
     "action": {
-      "name": "STATUS",
+      "name": "MERGE_FINISH",
       "outcome": "OK"
     },
     "evidence": {
@@ -39,10 +39,10 @@
     "stop_class": "",
     "timestamp_utc": "2026-02-18T18:01:24Z"
   },
-  "next_action": "MERGE_FINISH",
+  "next_action": "ALL_DONE",
   "repo": "Osuu-ops/yorisoidou-system",
   "run_id": "RUN_5e80a72dfa04",
-  "run_status": "STILL_OPEN",
+  "run_status": "DONE",
   "updated_at": "2026-02-18T18:01:24Z",
   "work_summary": {
     "done": "unknown",
