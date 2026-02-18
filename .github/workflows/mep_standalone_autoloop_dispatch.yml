@@ -1,5 +1,9 @@
 name: MEP Standalone AutoLoop (Dispatch)
 on:
+  push:
+    paths:
+      - '.github/workflows/mep_standalone_autoloop_dispatch.yml'
+  workflow_dispatch:
   workflow_dispatch:
     inputs:
       issue_number:
@@ -103,4 +107,5 @@ jobs:
               issue_number: issue,
               body
             });
+
 
