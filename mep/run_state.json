@@ -6,10 +6,10 @@
       "docs/MEP/HANDOFF_AUDIT.md",
       "docs/MEP/HANDOFF_WORK.md"
     ],
-    "digest": "e638a47ded46e0591ae9e15a49cbdc08135d86f4f09d545f2fd4e0d0cf3556ba",
-    "generated_at_utc": "2026-02-18T17:55:53Z",
-    "head_sha": "9f0a2c17a99d776eb8124e54c3a53218a355dd6e",
-    "packet_id": "HP_20260218T175553Z",
+    "digest": "77cfd1e9cb0c97b2259b71cb43e5ba4d54c4b4a8b9501f6c9175a520dc40a1ea",
+    "generated_at_utc": "2026-02-18T18:01:24Z",
+    "head_sha": "8da91c286d4e43f457a4ca4976b18a134a5c9e98",
+    "packet_id": "HP_20260218T180124Z",
     "ssot_paths": [
       "mep/boot_spec.yaml",
       "mep/policy.yaml",
@@ -17,8 +17,8 @@
     ]
   },
   "handoff_ack": {
-    "checked_at_utc": "2026-02-18T17:55:53Z",
-    "packet_id": "HP_20260218T175553Z",
+    "checked_at_utc": "2026-02-18T18:01:24Z",
+    "packet_id": "HP_20260218T180124Z",
     "reason_code": null,
     "status": "ACK"
   },
@@ -30,21 +30,21 @@
       "outcome": "OK"
     },
     "evidence": {
-      "branch_name": null,
-      "commit_sha": null,
+      "branch_name": "mep/run_RUN_5e80a72dfa04",
+      "commit_sha": "",
       "pr_url": null,
       "workflow_run_url": null
     },
     "next_action": "STATUS",
     "reason_code": "EVIDENCE_REQUIRED_BUT_UNAVAILABLE",
     "stop_class": "WAIT",
-    "timestamp_utc": "2026-02-18T17:55:53Z"
+    "timestamp_utc": "2026-02-18T18:01:24Z"
   },
   "next_action": "STATUS",
   "repo": "Osuu-ops/yorisoidou-system",
   "run_id": "RUN_5e80a72dfa04",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-02-18T17:55:53Z",
+  "updated_at": "2026-02-18T18:01:24Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
