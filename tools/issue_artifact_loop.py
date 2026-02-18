@@ -45,7 +45,7 @@ def main():
     merged.append("")
     merged.append(body.rstrip())
     (outdir/"MERGED_DRAFT.md").write_text("\n".join(merged).rstrip()+"\n", encoding="utf-8")
-        import hashlib
+import hashlib
     merged_path = outdir/"MERGED_DRAFT.md"
     merged_bytes = merged_path.read_bytes()
     sha256 = hashlib.sha256(merged_bytes).hexdigest()
