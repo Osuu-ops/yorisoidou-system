@@ -5,37 +5,14 @@ name: MEP Standalone AutoLoop (Dispatch)
 
 
 on:
-  push:
-    branches: [ main ]
-
-
   workflow_dispatch:
-
-
-
-
-
-  workflow_dispatch:
-
-
     inputs:
-
-
       issue_number:
-
-
         description: "GitHub Issue number containing the draft"
-
-
         required: true
-
-
         type: string
-
-
-
-
-
+  pull_request:
+    branches: [ main ]
 permissions:
 
 
