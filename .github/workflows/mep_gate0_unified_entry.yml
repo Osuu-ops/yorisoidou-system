@@ -19,4 +19,4 @@ jobs:
           python tools/runner/runner.py status
       - name: Run Runner Step
         run: |
-          python tools/runner/runner.py merge_finish
+          python tools/runner/runner.py merge-finish
