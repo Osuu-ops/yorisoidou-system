@@ -2,9 +2,9 @@ PACKET_VERSION: v1
 LANE: SYSTEM
 ISSUE_NUMBER: 2400
 ISSUE_URL: 
-RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22154037868
+RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22172310105
 SAFE_MODE: STANDALONE_PRE_8GATE
 DOES_NOT_TRIGGER_8GATE: true
-MERGED_DRAFT_SHA256: 58e12c73ecc90f634a8d7244a4c574bbbf876e823e367ef330a78df13bf7bac2
+MERGED_DRAFT_SHA256: b7795c34f3a16ede945fcc80e534a0e7af8c59ec86c70aba3712454598e3305b
 
 ## Payload
