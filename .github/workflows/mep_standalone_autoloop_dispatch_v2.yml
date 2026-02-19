@@ -124,7 +124,8 @@ jobs:
         env:
 
 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`n          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
 
 
           ISSUE_NUMBER: ${{ inputs.issue_number }}
