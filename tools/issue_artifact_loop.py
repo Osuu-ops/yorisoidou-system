@@ -3,6 +3,39 @@ import re
 import json, os, hashlib
 from pathlib import Path
 from datetime import datetime, timezone
+
+import urllib.request
+def _api_get_json(url: str, token: str):
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"token {token}",
+        "User-Agent": "mep-standalone-autoloop"
+    })
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode("utf-8"))
+def pick_body_with_fallback(body: str, repo: str, num: int, token: str) -> str:
+    b = (body or "").strip()
+    if b:
+        return body
+    if not (repo and token):
+        return body or ""
+    try:
+        url = f"https://api.github.com/repos/{repo}/issues/{num}/comments?per_page=100"
+        comments = _api_get_json(url, token)
+        # choose last meaningful comment
+        for c in reversed(comments or []):
+            t = (c.get("body") or "").strip()
+            if not t:
+                continue
+            # ignore control / bot style comments
+            if t.startswith("/mep"):
+                continue
+            if t.startswith("[MEP]") or t.startswith("[MEP]["):
+                continue
+            return t
+    except Exception:
+        return body or ""
+    return body or ""
 def utc_z():
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
 def norm(s: str) -> str:
@@ -30,11 +63,11 @@ def main():
         raise SystemExit("issue.number missing (cannot proceed). keys=" + ",".join(sorted(issue.keys())))
     num = int(raw_num)
     title = (issue.get("title") or "").strip()
-    body  = norm(issue.get("body") or "")
+    body  = norm(pick_body_with_fallback(issue.get("body") or "", os.environ.get("GH_REPO","") or os.environ.get("GITHUB_REPOSITORY",""), int(num), os.environ.get("GH_TOKEN","")))
     labels = issue.get("labels") or []
     lane = lane_from_labels(labels)
     run_url = os.environ.get("GITHUB_RUN_URL","")
-    issue_url = issue.get("html_url","")
+    issue_url = issue.get("html_url","") or (f"https://github.com/{os.environ.get(\"GH_REPO\",\"\") or os.environ.get(\"GITHUB_REPOSITORY\",\"\")}/issues/{num}" if (os.environ.get("GH_REPO","") or os.environ.get("GITHUB_REPOSITORY","")) else "")
     outdir = Path("docs")/"MEP"/"ARTIFACTS"/lane/f"ISSUE_{num}"
     outdir.mkdir(parents=True, exist_ok=True)
     # AUDIT.md

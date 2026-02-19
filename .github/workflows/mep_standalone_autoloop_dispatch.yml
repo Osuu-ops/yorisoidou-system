@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
         env:
-          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`n          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ inputs.issue_number }}
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
