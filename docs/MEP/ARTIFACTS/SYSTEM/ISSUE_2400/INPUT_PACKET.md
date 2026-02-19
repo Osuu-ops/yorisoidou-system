@@ -1,10 +1,16 @@
 PACKET_VERSION: v1
 LANE: SYSTEM
 ISSUE_NUMBER: 2400
-ISSUE_URL: 
-RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22154037868
+ISSUE_URL: https://github.com/Osuu-ops/yorisoidou-system/issues/2400
+RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22191012571
 SAFE_MODE: STANDALONE_PRE_8GATE
 DOES_NOT_TRIGGER_8GATE: true
-MERGED_DRAFT_SHA256: 58e12c73ecc90f634a8d7244a4c574bbbf876e823e367ef330a78df13bf7bac2
+MERGED_DRAFT_SHA256: 854b3574cc815e2d43f58546eddcad14e68f0eb4bd0eff43872606a7b4e82130
 
 ## Payload
+# MEP DRAFT (from MERGED_DRAFT.md)
+
+# MERGED_DRAFT
+ISSUE: #2400
+LANE: SYSTEM
+TIMESTAMP_UTC: 2026-02-18T19:16:40Z
