@@ -51,15 +51,15 @@ jobs:
           python3 tools/issue_artifact_loop.py
 
       - name: Upload workflow artifacts (downloadable)
-      uses: actions/upload-artifact@v4
-      with:
+        uses: actions/upload-artifact@v4
+        with:
           name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
           path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
 
       - name: Create PR to store artifacts in repo
         id: cpr
-      uses: peter-evans/create-pull-request@v6
-      with:
+        uses: peter-evans/create-pull-request@v6
+        with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
           title: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
@@ -109,9 +109,9 @@ jobs:
               "- RESTART_PACKET.txt"
             ].join("\n");
             await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          issue_number: issue,
               body
             });
 
