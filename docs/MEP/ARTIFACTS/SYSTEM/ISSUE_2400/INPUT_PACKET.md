@@ -2,10 +2,17 @@ PACKET_VERSION: v1
 LANE: SYSTEM
 ISSUE_NUMBER: 2400
 ISSUE_URL: https://github.com/Osuu-ops/yorisoidou-system/issues/2400
-RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22190607858
+RUN_URL: local://2026-02-19T23:31:18.6021681+00:00
 SAFE_MODE: STANDALONE_PRE_8GATE
 DOES_NOT_TRIGGER_8GATE: false
-MERGED_DRAFT_SHA256: 06472dee4ecd322775c814ffe2121e327899c1e5c62c5e0ecec67be3148bf42d
+MERGED_DRAFT_SHA256: 10bdd65a84f2f8987974c3be3738979b9b382cc728fc469f1a6fca45d498da5d
 
 ## Payload
-できました（Standalone AutoLoop / Dispatch）\n\n- Run: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22190222818\n- Download: Actions Artifacts → MEP_STANDALONE_ARTIFACTS_ISSUE_2400\n- Repo path (merged): docs/MEP/ARTIFACTS/<LANE>/ISSUE_2400/\n\n出力（必須）:\n- AUDIT.md\n- MERGED_DRAFT.md（草案本文1つ）\n- INPUT_PACKET.md（8ゲート入口へ差し込み可能）\n- RUN_SUMMARY.md\n- RESTART_PACKET.txt
+# MEP DRAFT (from MERGED_DRAFT.md)
+
+# MERGED_DRAFT
+ISSUE: #2400
+LANE: SYSTEM
+TIMESTAMP_UTC: 2026-02-18T19:16:40Z
+<!-- MEP_TOUCH 2026-02-19T22:37:31.9331291+00:00 -->
+<!-- MEP_TOUCH 2026-02-19T23:05:14.4103012+00:00 -->
