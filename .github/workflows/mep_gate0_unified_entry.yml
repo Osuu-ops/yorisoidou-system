@@ -1,4 +1,4 @@
-# registry-refresh: FIX_GATE0_SET_GH_TOKEN
+# registry-refresh: FIX_GATE0_SKIP_DONE
 name: MEP Gate0 Unified Entry
 on:
   workflow_dispatch:
@@ -9,6 +9,7 @@ permissions:
 jobs:
   loop:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,13 +22,21 @@ jobs:
           GH_REPO:  ${{ github.repository }}
         run: |
           python tools/runner/runner.py status
-      - name: Run Runner Step (merge-finish with run-id)
+      - name: Gate0 Step (skip if DONE, else merge-finish)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO:  ${{ github.repository }}
         run: |
           set -euo pipefail
+          RUN_STATUS="$(python -c 'import json;print(json.load(open("mep/run_state.json")).get("run_status",""))')"
+          NEXT_ACTION="$(python -c 'import json;print(json.load(open("mep/run_state.json")).get("next_action",""))')"
           RID="$(python -c 'import json;print(json.load(open("mep/run_state.json"))["run_id"])')"
+          echo "RUN_STATUS=${RUN_STATUS}"
+          echo "NEXT_ACTION=${NEXT_ACTION}"
           echo "RUN_ID=${RID}"
+          if [ "${RUN_STATUS}" = "DONE" ] || [ "${NEXT_ACTION}" = "ALL_DONE" ]; then
+            echo "[Gate0] nothing to do (already DONE)"
+            exit 0
+          fi
           python tools/runner/runner.py merge-finish --run-id "${RID}"
