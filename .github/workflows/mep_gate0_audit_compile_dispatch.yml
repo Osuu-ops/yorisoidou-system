@@ -49,14 +49,15 @@ jobs:
           # read flags from INPUT_PACKET
           DOES_NOT_TRIGGER="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${PKT}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
           SAFE_MODE="$(grep -m1 -E '^SAFE_MODE:' "${PKT}" | sed -E 's/^SAFE_MODE:\s*//;s/\r//g' || true)"
-          # conditions
+          # conditions (FIX): do NOT gate on AUDIT.md containing "NG" (Issue body can be empty).
+          # Gate on MERGED_DRAFT size + INPUT_PACKET ISSUE_NUMBER match, which are the actual 0->8 bridge artifacts.
           NG=0
-          if grep -n -E '\bNG\b' "${AUD}" >/dev/null 2>&1; then NG=1; fi
           size="$(wc -c < "${DRAFT}" | tr -d ' ')"
-          if [ "${size}" -lt 50 ]; then NG=1; fi
+          non_empty="NG"
+          if [ "${size}" -ge 50 ]; then non_empty="OK"; else NG=1; fi
           if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then NG=1; fi
           if [ "${NG}" -eq 1 ]; then
-            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
+            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
             exit 0
           fi
           # AUDIT OK
