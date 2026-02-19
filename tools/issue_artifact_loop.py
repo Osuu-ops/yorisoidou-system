@@ -4,6 +4,15 @@ import json, os, hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 
+def _read_existing_flag(pkt_path: Path, key: str) -> str:
+    try:
+        t = pkt_path.read_text(encoding="utf-8")
+    except Exception:
+        return ""
+    for ln in t.splitlines():
+        if ln.strip().startswith(key + ":"):
+            return ln.split(":", 1)[1].strip()
+    return ""
 
 def _read_text(p: str) -> str:
     try:
@@ -141,6 +150,12 @@ def main():
         _mb = b""
     sha256 = hashlib.sha256(_mb).hexdigest()
 
+    # Preserve DOES_NOT_TRIGGER_8GATE from existing packet if present; default false
+    pkt_path = dir_path / "INPUT_PACKET.md"
+    prev = _read_existing_flag(pkt_path, "DOES_NOT_TRIGGER_8GATE").lower()
+    does_not_trigger_val = "false"
+    if prev in ("true","false"):
+        does_not_trigger_val = prev
     # INPUT_PACKET.md
     packet = []
     packet.append("PACKET_VERSION: v1")
@@ -149,7 +164,7 @@ def main():
     packet.append(f"ISSUE_URL: {issue_url}")
     packet.append(f"RUN_URL: {run_url}")
     packet.append("SAFE_MODE: STANDALONE_PRE_8GATE")
-    packet.append("DOES_NOT_TRIGGER_8GATE: true")
+    packet.append("DOES_NOT_TRIGGER_8GATE: " + does_not_trigger_val + "")
     packet.append(f"MERGED_DRAFT_SHA256: {sha256}")
     packet.append("")
     packet.append("## Payload")
