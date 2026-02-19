@@ -1,0 +1,17 @@
+name: MEP Standalone AutoLoop (Dispatch Entry)
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "GitHub Issue number containing the draft"
+        required: true
+        type: string
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+jobs:
+  call-v2:
+    uses: ./.github/workflows/mep_standalone_autoloop_dispatch_v2.yml
+    with:
+      issue_number: ${{ inputs.issue_number }}

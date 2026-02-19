@@ -5,6 +5,12 @@ name: MEP Standalone AutoLoop (Dispatch)
 
 
 on:
+  workflow_call:
+    inputs:
+      issue_number:
+        description: "GitHub Issue number containing the draft"
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       issue_number:
