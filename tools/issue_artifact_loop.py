@@ -4,6 +4,21 @@ import json, os, hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 
+
+def _read_text(path: str) -> str:
+    try:
+        return pathlib.Path(path).read_text(encoding="utf-8")
+    except Exception:
+        return ""
+def pick_audit_body(issue_body: str, artifacts_dir: str) -> str:
+    # Prefer artifacts MERGED_DRAFT.md (0->8 truth) over Issue body (can be empty)
+    if artifacts_dir:
+        md = str(pathlib.Path(artifacts_dir) / "MERGED_DRAFT.md")
+        t = _read_text(md).strip()
+        if t:
+            return t
+    return (issue_body or "")
+
 import urllib.request
 def _api_get_json(url: str, token: str):
     req = urllib.request.Request(url, headers={
@@ -81,8 +96,9 @@ def main():
     audit.append(f"TIMESTAMP_UTC: {utc_z()}")
     audit.append("")
     audit.append("## Checks (minimal)")
+    audit_body = pick_audit_body(issue.get("body") if isinstance(issue, dict) else "", locals().get("artifacts_dir", ""))
     audit.append("- Non-empty body: " + ("OK" if body.strip() else "NG"))
-    audit.append("- Size (chars): " + str(len(body)))
+    audit.append("- Size (chars): " + str(len(audit_body)))
     audit.append("- Lane selection: mep-biz => BUSINESS else SYSTEM")
     (outdir/"AUDIT.md").write_text("\n".join(audit).rstrip()+"\n", encoding="utf-8")
     # MERGED_DRAFT.md
