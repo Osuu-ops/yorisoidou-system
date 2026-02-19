@@ -80,22 +80,14 @@ jobs:
           PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
           set -euo pipefail
-          echo "PR_NUM=$PR_NUM"
-          echo "GH_REPO=$GH_REPO"
-          gh pr merge "$PR_NUM" --repo "$GH_REPO" --auto --squash
-          for i in $(seq 1 180); do
-            mergedAt=$(gh pr view "$PR_NUM" --repo "$GH_REPO" --json mergedAt -q .mergedAt || true)
-            state=$(gh pr view "$PR_NUM" --repo "$GH_REPO" --json state -q .state || true)
-            echo "state=$state mergedAt=$mergedAt"
-            if [ "$mergedAt" != "null" ] && [ -n "$mergedAt" ]; then
-              echo "MERGED"
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "PR not merged yet (auto-merge waiting). Proceeding without failing the run."
-          exit 0
-      - name: Comment "できました" with pointers
+          echo "[auto-merge] trigger only (no waiting)"
+          echo "PR_NUMBER=${PR_NUMBER:-}"
+          if [ -z "${PR_NUMBER:-}" ]; then
+            echo "PR_NUMBER is empty -> exit 0 (no-op)"
+            exit 0
+          fi
+          gh pr merge "$PR_NUMBER" --squash --auto --delete-branch || true
+          exit 0      - name: Comment "できました" with pointers
         uses: actions/github-script@v7
         with:
           script: |
