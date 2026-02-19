@@ -1,4 +1,5 @@
 import re
+import pathlib
 #!/usr/bin/env python3
 import json, os, hashlib
 from pathlib import Path
