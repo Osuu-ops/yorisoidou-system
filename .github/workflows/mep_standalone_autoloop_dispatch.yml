@@ -88,9 +88,9 @@ jobs:
           fi
           gh pr merge "$PR_NUMBER" --squash --auto --delete-branch || true
           exit 0
-          - name: Comment "できました" with pointers
-      uses: actions/github-script@v7
-      with:
+      - name: Comment "できました" with pointers
+        uses: actions/github-script@v7
+        with:
           script: |
             const issue = Number('${{ inputs.issue_number }}');
             const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
