@@ -5,6 +5,17 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 
+def _read_text(p: str) -> str:
+    try:
+        return pathlib.Path(p).read_text(encoding="utf-8")
+    except Exception:
+        return ""
+def audit_body_from_artifacts(lane: str, issue_number: int) -> str:
+    base = pathlib.Path("docs")/"MEP"/"ARTIFACTS"/lane/(f"ISSUE_{issue_number}")
+    t = _read_text(str(base/"MERGED_DRAFT.md")).strip()
+    return t
+
+
 def _read_text(path: str) -> str:
     try:
         return pathlib.Path(path).read_text(encoding="utf-8")
@@ -97,7 +108,19 @@ def main():
     audit.append("")
     audit.append("## Checks (minimal)")
     audit_body = pick_audit_body(issue.get("body") if isinstance(issue, dict) else "", locals().get("artifacts_dir", ""))
-    audit.append("- Non-empty body: " + ("OK" if body.strip() else "NG"))
+    # audit source: prefer artifacts MERGED_DRAFT.md (0->8 truth)
+    try:
+        _lane = lane
+    except Exception:
+        _lane = os.environ.get('LANE','SYSTEM') if 'os' in globals() else 'SYSTEM'
+    try:
+        _num = int(issue_number)
+    except Exception:
+        _num = int(os.environ.get('ISSUE_NUMBER','0')) if 'os' in globals() else 0
+    audit_body = audit_body_from_artifacts(_lane, _num)
+    non_empty = bool(audit_body.strip())
+    size_chars = len(audit_body)
+    audit.append("- Non-empty body: " + ("OK" if audit_body.strip() else "NG"))
     audit.append("- Size (chars): " + str(len(audit_body)))
     audit.append("- Lane selection: mep-biz => BUSINESS else SYSTEM")
     (outdir/"AUDIT.md").write_text("\n".join(audit).rstrip()+"\n", encoding="utf-8")
