@@ -67,7 +67,9 @@ def main():
     labels = issue.get("labels") or []
     lane = lane_from_labels(labels)
     run_url = os.environ.get("GITHUB_RUN_URL","")
-    issue_url = issue.get("html_url","") or (f"https://github.com/{os.environ.get(\"GH_REPO\",\"\") or os.environ.get(\"GITHUB_REPOSITORY\",\"\")}/issues/{num}" if (os.environ.get("GH_REPO","") or os.environ.get("GITHUB_REPOSITORY","")) else "")
+    # issue_url fallback (avoid f-string with escaped quotes; keep it syntax-safe)
+    _repo = os.environ.get("GH_REPO","") or os.environ.get("GITHUB_REPOSITORY","")
+    issue_url = issue.get("html_url","") or (("https://github.com/" + _repo + "/issues/" + str(num)) if _repo else "")
     outdir = Path("docs")/"MEP"/"ARTIFACTS"/lane/f"ISSUE_{num}"
     outdir.mkdir(parents=True, exist_ok=True)
     # AUDIT.md
