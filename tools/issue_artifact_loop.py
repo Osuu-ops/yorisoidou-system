@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import hashlib
+import pathlib
 import json
 import os
 import re
