@@ -1,4 +1,4 @@
-# registry-refresh: FIX_GATE0_SKIP_DONE
+# registry-refresh: GATE0_NEXT_ACTION_DRIVER
 name: MEP Gate0 Unified Entry
 on:
   workflow_dispatch:
@@ -16,13 +16,13 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install pyyaml
-      - name: Run Runner Status
+      - name: Runner Status (refresh state)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO:  ${{ github.repository }}
         run: |
           python tools/runner/runner.py status
-      - name: Gate0 Step (skip if DONE, else merge-finish)
+      - name: Execute next_action (single step)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -35,8 +35,24 @@ jobs:
           echo "RUN_STATUS=${RUN_STATUS}"
           echo "NEXT_ACTION=${NEXT_ACTION}"
           echo "RUN_ID=${RID}"
+          # already done -> noop success
           if [ "${RUN_STATUS}" = "DONE" ] || [ "${NEXT_ACTION}" = "ALL_DONE" ]; then
-            echo "[Gate0] nothing to do (already DONE)"
+            echo "[Gate0] already DONE"
             exit 0
           fi
-          python tools/runner/runner.py merge-finish --run-id "${RID}"
+          case "${NEXT_ACTION}" in
+            READY_TO_APPLY_SAFE_PATH)
+              python tools/runner/runner.py apply-safe --run-id "${RID}"
+              ;;
+            MERGE_FINISH)
+              python tools/runner/runner.py merge-finish --run-id "${RID}"
+              ;;
+            STATUS)
+              # status already executed above; treat as noop
+              echo "[Gate0] STATUS noop"
+              ;;
+            *)
+              echo "::error::Unsupported NEXT_ACTION=${NEXT_ACTION}"
+              exit 2
+              ;;
+          esac
