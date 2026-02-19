@@ -1,4 +1,4 @@
-# registry-refresh: FIX_GATE0_RUNID_AND_DISPATCH
+# registry-refresh: FIX_GATE0_SET_GH_TOKEN
 name: MEP Gate0 Unified Entry
 on:
   workflow_dispatch:
@@ -16,10 +16,16 @@ jobs:
           python-version: '3.x'
       - run: pip install pyyaml
       - name: Run Runner Status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO:  ${{ github.repository }}
         run: |
           python tools/runner/runner.py status
       - name: Run Runner Step (merge-finish with run-id)
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO:  ${{ github.repository }}
         run: |
           set -euo pipefail
           RID="$(python -c 'import json;print(json.load(open("mep/run_state.json"))["run_id"])')"
