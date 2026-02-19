@@ -1,0 +1,70 @@
+# registry-refresh: G0_AUDIT_COMPILE_DISPATCH
+name: MEP Gate0 (Audit/Compile/Dispatch)
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "GitHub Issue number (draft source)"
+        required: true
+        type: string
+      lane:
+        description: "SYSTEM or BUSINESS (ARTIFACTS lane folder)"
+        required: false
+        default: "SYSTEM"
+        type: string
+permissions:
+  contents: read
+  issues: write
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate0 Audit (ARTIFACTS must exist and be OK)
+        shell: bash
+        run: |
+          set -euo pipefail
+          N="${{ inputs.issue_number }}"
+          L="${{ inputs.lane }}"
+          DIR="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}"
+          echo "DIR=${DIR}"
+          test -d "${DIR}" || { echo "::error::ARTIFACT_DIR_MISSING ${DIR}"; exit 2; }
+          AUD="${DIR}/AUDIT.md"
+          DRAFT="${DIR}/MERGED_DRAFT.md"
+          PKT="${DIR}/INPUT_PACKET.md"
+          test -f "${AUD}"   || { echo "::error::AUDIT_MISSING ${AUD}"; exit 2; }
+          test -f "${DRAFT}" || { echo "::error::MERGED_DRAFT_MISSING ${DRAFT}"; exit 2; }
+          test -f "${PKT}"   || { echo "::error::INPUT_PACKET_MISSING ${PKT}"; exit 2; }
+          # 1) AUDIT must not contain "NG"
+          if grep -n -E '\bNG\b' "${AUD}" >/dev/null 2>&1; then
+            echo "::error::AUDIT_NG_FOUND"
+            echo "---- AUDIT.md ----"
+            sed -n '1,120p' "${AUD}" || true
+            exit 2
+          fi
+          # 2) MERGED_DRAFT must not be tiny/empty
+          size="$(wc -c < "${DRAFT}" | tr -d ' ')"
+          if [ "${size}" -lt 50 ]; then
+            echo "::error::MERGED_DRAFT_TOO_SMALL size=${size}"
+            sed -n '1,80p' "${DRAFT}" || true
+            exit 2
+          fi
+          # 3) INPUT_PACKET must point to same issue
+          if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then
+            echo "::error::INPUT_PACKET_ISSUE_MISMATCH"
+            sed -n '1,80p' "${PKT}" || true
+            exit 2
+          fi
+          echo "G0_AUDIT_OK"
+      - name: Gate0 Dispatch (comment /mep run to Issue)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          N="${{ inputs.issue_number }}"
+          echo "[G0] commenting /mep run to issue #${N}"
+          gh api "repos/${REPO}/issues/${N}/comments" -f body="/mep run" >/dev/null
+          echo "G0_DISPATCH_OK"
