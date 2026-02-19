@@ -87,7 +87,8 @@ jobs:
             exit 0
           fi
           gh pr merge "$PR_NUMBER" --squash --auto --delete-branch || true
-          exit 0      - name: Comment "できました" with pointers
+          exit 0
+          - name: Comment "できました" with pointers
       uses: actions/github-script@v7
       with:
           script: |
