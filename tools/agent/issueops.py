@@ -185,7 +185,9 @@ def main():
         print("No issue context.")
         return 0
 
-    latest_comment_body = fetch_latest_comment(repo, issue_number)
+    comment = event.get("comment", {}) or {}
+    event_comment_body = (comment.get("body") or "")
+    latest_comment_body = event_comment_body or fetch_latest_comment(repo, issue_number)
     if not should_run(issue, latest_comment_body):
         print("No /mep run trigger found.")
         return 0
