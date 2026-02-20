@@ -1,9 +1,11 @@
 # HANDOFF_AUDIT
+
 SSOT_PATHS:
-- mep/boot_spec.yaml
-- mep/policy.yaml
 - mep/run_state.json
+- mep/inbox/
+- docs/MEP/STATUS.md
+
 LATEST_EVIDENCE_POINTERS:
 - pr_url: 
 - commit_sha: 
-- workflow_run_url:
+- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22207752102

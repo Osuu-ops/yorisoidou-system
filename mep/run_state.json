@@ -25,25 +25,26 @@
   "history": [],
   "last_good": null,
   "last_result": {
+    "stop_class": "",
+    "reason_code": "ISSUEOPS_BOOTSTRAP_OK",
+    "next_action": "OPEN_PR",
+    "timestamp_utc": "2026-02-20T01:38:44Z",
     "action": {
-      "name": "MERGE_FINISH",
+      "name": "ISSUEOPS_BOOT",
       "outcome": "OK"
     },
     "evidence": {
-      "commit_sha": "05467ac894a61a5eef73cbcdac08f73dace8ba77",
-      "branch_name": "mep/run_RUN_5e80a72dfa04",
-      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2247"
-    },
-    "next_action": "STATUS",
-    "reason_code": "",
-    "stop_class": "",
-    "timestamp_utc": "2026-02-18T18:01:24Z"
+      "branch_name": "mep/issueops-run-run_fd3b5d765a60",
+      "pr_url": null,
+      "commit_sha": null,
+      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22207752102"
+    }
   },
-  "next_action": "ALL_DONE",
+  "next_action": "OPEN_PR",
   "repo": "Osuu-ops/yorisoidou-system",
-  "run_id": "RUN_5e80a72dfa04",
-  "run_status": "DONE",
-  "updated_at": "2026-02-18T18:01:24Z",
+  "run_id": "RUN_fd3b5d765a60",
+  "run_status": "STILL_OPEN",
+  "updated_at": "2026-02-20T01:38:44Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
