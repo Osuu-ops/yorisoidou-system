@@ -1,45 +1,31 @@
-name: mep_issueops_run
-
+# registry-refresh: WIRE_ISSUE_COMMENT_MEP_RUN
+name: MEP IssueOps Run (Issue Comment)
 on:
   issue_comment:
     types: [created]
-  issues:
-    types: [edited]
-  pull_request:
-    paths:
-      - '.github/workflows/mep_issueops_run.yml'
-      - 'tools/agent/issueops.py'
-
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
   issues: write
-
+  pull-requests: write
+  actions: write
 jobs:
-  issueops_run:
-    if: >-
-      (github.event_name == 'issues') ||
-      (github.event_name == 'issue_comment' &&
-       github.event.issue.pull_request == null &&
-       startsWith(github.event.comment.body, '/mep run'))
+  run:
+    if: contains(github.event.comment.body, '/mep run')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-
-      - name: Configure git identity
+          python-version: '3.x'
+      - name: Install deps
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Run IssueOps bootstrap
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+      - name: Run IssueOps
         env:
           GH_TOKEN: ${{ github.token }}
-          GITHUB_TOKEN: ${{ github.token }}
-        run: python tools/agent/issueops.py
-
+          GH_REPO:  ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python tools/agent/issueops.py
