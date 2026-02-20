@@ -44,6 +44,20 @@ def utc_now():
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+# MEP_ISSUEOPS_GIT_IDENTITY
+def ensure_git_identity():
+    # Ensure git commit works on GitHub-hosted runners (env + global + repo-local).
+    import os as _os
+    _os.environ.setdefault("GIT_AUTHOR_NAME", "github-actions")
+    _os.environ.setdefault("GIT_AUTHOR_EMAIL", "actions@users.noreply.github.com")
+    _os.environ.setdefault("GIT_COMMITTER_NAME", "github-actions")
+    _os.environ.setdefault("GIT_COMMITTER_EMAIL", "actions@users.noreply.github.com")
+    # Global (covers cases where git refuses empty ident even if repo-local is set)
+    run(["git", "config", "--global", "user.name", "github-actions"])
+    run(["git", "config", "--global", "user.email", "actions@users.noreply.github.com"])
+    # Repo-local (preferred)
+    run(["git", "config", "user.name", "github-actions"])
+    run(["git", "config", "user.email", "actions@users.noreply.github.com"])
 def canonicalize(text: str) -> str:
     return text.replace("\r\n", "\n").replace("\r", "\n").strip()
 
@@ -200,6 +214,7 @@ def post_issue_comment(repo, issue_number, run_id, outcome, reason_code, next_ac
 
 
 def main():
+    ensure_git_identity()
     repo = os.environ["GITHUB_REPOSITORY"]
     event = load_event()
     issue = event.get("issue", {})
@@ -245,6 +260,8 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
 
 
 
