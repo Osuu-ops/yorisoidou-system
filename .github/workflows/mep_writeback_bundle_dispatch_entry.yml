@@ -1,4 +1,4 @@
-# reindex: force workflow registration refresh 2026-02-20T13:40:08Z
+# reindex: force workflow registration refresh 2026-02-20T13:49:22Z
 name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
@@ -19,6 +19,13 @@ on:
         description: "write handoff files (optional)"
         required: false
         default: "false"
+  push:
+    branches: [main]
+    paths:
+      - "docs/MEP/**"
+      - "docs/MEP_SUB/**"
+      - "tools/**"
+      - ".github/workflows/mep_writeback_bundle_dispatch_entry.yml"
 permissions:
   contents: write
   pull-requests: write
