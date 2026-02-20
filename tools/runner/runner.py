@@ -1373,6 +1373,7 @@ def archive_search(query: str = "", portfolio_id: str = "", needs_attention_only
             continue
         hay = " ".join([
             str(r.get("archive_id") or ""),
+            str(r.get("claim_id") or ""),
             str(r.get("top_goal") or ""),
             " ".join(r.get("tags") or []),
             " ".join(r.get("keywords") or []),
