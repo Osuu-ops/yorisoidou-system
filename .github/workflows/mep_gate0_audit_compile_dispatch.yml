@@ -34,8 +34,15 @@ jobs:
             echo "issue_number is empty; skip dispatch"
             exit 0
           fi
+          if [ -z "${L:-}" ]; then
+            L="SYSTEM"
+          fi
           echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
           PKT="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}/INPUT_PACKET.md"
+          if [ ! -f "${PKT}" ]; then
+            echo "INPUT_PACKET not found at ${PKT}; skip dispatch"
+            exit 0
+          fi
           gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f packet_path="${PKT}"
 
       - name: Gate0 Audit + Comment (never hard-fail)
@@ -92,5 +99,4 @@ jobs:
           exit 0
 
 # Dispatch downstream workflow (from Gate0)
-
 
