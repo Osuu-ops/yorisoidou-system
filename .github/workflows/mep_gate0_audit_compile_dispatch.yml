@@ -13,6 +13,7 @@ on:
         default: "SYSTEM"
         type: string
 permissions:
+  actions: write
   contents: read
   issues: write
 jobs:
@@ -68,4 +69,15 @@ jobs:
           # dispatch 8-gate entry by commenting /mep run
           say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: false\nDIR: ${DIR}\n\nNext:\n- Dispatching 8-gate via issue comment: /mep run"
           gh api "repos/${REPO}/issues/${N}/comments" -f body="/mep run" >/dev/null || true
+          echo ""
+          echo "Dispatching downstream workflow: .github/workflows/mep_8gate_entry_filter.yml"
+          if [ -z "${N:-}" ]; then
+            echo "N(issue_number) is empty; skip downstream dispatch."
+          else
+            gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f issue_number="${N}" >/dev/null
+          fi
           exit 0
+
+# Dispatch downstream workflow (from Gate0)
+
+
