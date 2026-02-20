@@ -35,26 +35,20 @@ permissions:
 
 
 concurrency:
-
-
-  group: mep-standalone-dispatch-${{ inputs.issue_number }}
-
-
+  group: mep-standalone-dispatch-${{ inputs.issue_number || github.run_id }}
   cancel-in-progress: true
-
-
-
-
-
 jobs:
-
-
-  build-artifacts:
-
-
+  noop-pr:
+    if: ${{ github.event_name == 'pull_request' && (inputs.issue_number == '' || inputs.issue_number == null) }}
     runs-on: ubuntu-latest
-
-
+    steps:
+      - name: NOOP for PR checks (issue_number not provided)
+        run: |
+          echo "NOOP: mep_standalone_autoloop_dispatch_v2.yml on pull_request without inputs.issue_number"
+          echo "This workflow is a required check; real execution happens via workflow_dispatch/workflow_call with issue_number."
+  build-artifacts:
+    if: ${{ inputs.issue_number != '' }}
+    runs-on: ubuntu-latest
     steps:
 
 
@@ -343,3 +337,4 @@ jobs:
 
 
 # debug-push 20260219T152650Z
+
