@@ -1,5 +1,3 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
 param(
   [string]$RepoRoot = ".",
   [string]$OutDir = "docs/MEP_STATUS",
@@ -7,6 +5,8 @@ param(
   [string]$Bundle = "docs/MEP/MEP_BUNDLE.md",
   [string]$SSOT = "docs/MEP/MEP_SSOT_MASTER.md"
 )
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 function Read-Text([string]$p) {
   if (Test-Path -LiteralPath $p) { return (Get-Content -LiteralPath $p -Raw) }
   return $null
