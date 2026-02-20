@@ -1,0 +1,24 @@
+name: MEP Health Smoke (Dispatch)
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gate12 Health Generator
+        if: always()
+        shell: pwsh
+        run: |
+          ./tools/mep_health_generate.ps1 -RepoRoot . -OutDir docs/MEP_STATUS -RunState mep/run_state.json -Bundle docs/MEP/MEP_BUNDLE.md -SSOT docs/MEP/MEP_SSOT_MASTER.md
+      - name: Upload MEP Health (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep_health
+          path: |
+            docs/MEP_STATUS/mep_health.json
+            docs/MEP_STATUS/mep_health.md
+          if-no-files-found: error
