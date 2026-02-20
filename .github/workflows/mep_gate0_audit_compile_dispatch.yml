@@ -22,6 +22,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Dispatch 8-gate entry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          N: ${{ inputs.issue_number }}
+        run: |
+          set -euo pipefail
+          if [ -z "${N:-}" ]; then
+            echo "issue_number is empty; skip dispatch"
+            exit 0
+          fi
+          echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
+          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f issue_number="${N}"
+
       - name: Gate0 Audit + Comment (never hard-fail)
         shell: bash
         env:
