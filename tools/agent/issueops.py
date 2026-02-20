@@ -16,7 +16,18 @@ INBOX_DIR = ROOT / "mep/inbox"
 
 
 def run(cmd):
-    return subprocess.run(cmd, check=True, text=True, capture_output=True)
+    try:
+        return subprocess.run(cmd, check=True, text=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print("ERROR: command failed")
+        print("CMD:", " ".join(map(str, e.cmd)))
+        if e.stdout:
+            print("---- STDOUT ----")
+            print(e.stdout)
+        if e.stderr:
+            print("---- STDERR ----")
+            print(e.stderr)
+        raise
 
 
 def utc_now():
@@ -51,7 +62,7 @@ def should_run(issue, latest_comment_body):
 
 
 def fetch_latest_comment(repo, issue_number):
-    comments = gh_json([f"/repos/{repo}/issues/{issue_number}/comments", "-f", "per_page=1", "-f", "sort=created", "-f", "direction=desc"])
+    comments = gh_json([f"repos/{repo}/issues/{issue_number}/comments?per_page=1&sort=created&direction=desc"])
     if comments:
         return comments[-1].get("body") or ""
     return ""
@@ -222,4 +233,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
 
