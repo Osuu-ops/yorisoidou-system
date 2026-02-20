@@ -19,6 +19,13 @@ on:
         description: "write handoff files (optional)"
         required: false
         default: "false"
+  push:
+    branches: [main]
+    paths:
+      - "docs/MEP/**"
+      - "docs/MEP_SUB/**"
+      - "tools/**"
+      - ".github/workflows/mep_writeback_bundle_dispatch_entry.yml"
 permissions:
   contents: write
   pull-requests: write
@@ -57,6 +64,7 @@ jobs:
           echo "ZONE_COMPLETE: YES"
           echo "===== MEP_COPYPASTE_ZONE END ====="
   writeback:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
