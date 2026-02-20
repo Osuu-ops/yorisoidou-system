@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "updated_at_utc": "",
+  "run_id": "",
+  "portfolio_id": "UNSELECTED",
+  "mode": "",
+  "primary_anchor": "",
+  "current_phase": "",
+  "next_item": "",
+  "stop_kind": "",
+  "reason_code": "",
+  "evidence": {
+    "pr_url": "",
+    "workflow_run_url": "",
+    "commit_sha": "",
+    "note": ""
+  }
+}

@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 import secrets
+from live_state import update_live_state
+from progress_journal import append_journal_event, new_event_id
 try:
     import yaml  # type: ignore
 except Exception:
@@ -18,12 +20,146 @@ except Exception:
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MEP_DIR = REPO_ROOT / "mep"
 DOCS_MEP = REPO_ROOT / "docs" / "MEP"
+LIVE_STATE_JSON = DOCS_MEP / "LIVE_STATE.json"
+PROGRESS_JOURNAL_JSONL = DOCS_MEP / "PROGRESS_JOURNAL.jsonl"
+ARCHIVE_CATALOG_JSONL = DOCS_MEP / "ARCHIVE" / "CATALOG.jsonl"
+CLAIMS_JSONL = DOCS_MEP / "CLAIMS" / "CLAIMS.jsonl"
+CLAIMS_OPEN_INDEX_JSON = DOCS_MEP / "CLAIMS" / "OPEN_INDEX.json"
 BOOT_SPEC = MEP_DIR / "boot_spec.yaml"
 POLICY = MEP_DIR / "policy.yaml"
 RUN_STATE = MEP_DIR / "run_state.json"
 STATUS_MD = DOCS_MEP / "STATUS.md"
 HANDOFF_AUDIT_MD = DOCS_MEP / "HANDOFF_AUDIT.md"
 HANDOFF_WORK_MD = DOCS_MEP / "HANDOFF_WORK.md"
+
+
+def _evidence_from_rs(rs: dict, note: str = "") -> dict:
+    ev = ((rs or {}).get("last_result") or {}).get("evidence") or {}
+    return {
+        "pr_url": ev.get("pr_url") or "",
+        "workflow_run_url": ev.get("workflow_run_url") or "",
+        "commit_sha": ev.get("commit_sha") or "",
+        "note": note,
+    }
+
+
+def checkpoint_live_state(
+    *,
+    run_id: str,
+    portfolio_id: str,
+    mode: str,
+    primary_anchor: str,
+    phase: str,
+    next_item: str,
+    stop_kind: str,
+    reason_code: str,
+    evidence: dict,
+    step: str,
+    result: str,
+) -> None:
+    payload = {
+        "updated_at_utc": utc_now_z(),
+        "run_id": run_id or "",
+        "portfolio_id": portfolio_id or "UNSELECTED",
+        "mode": mode or "",
+        "primary_anchor": primary_anchor or "",
+        "current_phase": phase or "",
+        "next_item": next_item or "",
+        "stop_kind": stop_kind or "",
+        "reason_code": reason_code or "",
+        "evidence": evidence or {},
+    }
+    update_live_state(LIVE_STATE_JSON, payload)
+    append_journal_event(
+        PROGRESS_JOURNAL_JSONL,
+        {
+            "ts_utc": utc_now_z(),
+            "event_id": new_event_id(),
+            "run_id": run_id or "",
+            "portfolio_id": portfolio_id or "UNSELECTED",
+            "mode": mode or "",
+            "primary_anchor": primary_anchor or "",
+            "phase": phase or "",
+            "step": step,
+            "result": result,
+            "reason_code": reason_code or "",
+            "evidence": evidence or {},
+        },
+    )
+
+
+def _gate_checkpoint_start(gate_name: str, run_id: str = "") -> None:
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    checkpoint_live_state(
+        run_id=run_id or (rs.get("run_id") or ""),
+        portfolio_id="UNSELECTED",
+        mode="EXEC_MODE",
+        primary_anchor="",
+        phase=gate_name,
+        next_item="RUN_GATE",
+        stop_kind="",
+        reason_code="",
+        evidence=_evidence_from_rs(rs, note=f"{gate_name} started"),
+        step="GATE_START",
+        result="OK",
+    )
+
+
+def _gate_checkpoint_end(gate_name: str, run_id: str, exit_code: int) -> None:
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    lr = rs.get("last_result") or {}
+    stop_kind = lr.get("stop_class") or ""
+    reason = lr.get("reason_code") or ""
+    step = "STOP" if stop_kind else "GATE_END"
+    result = "STOP" if stop_kind else ("OK" if exit_code == 0 else "NG")
+    checkpoint_live_state(
+        run_id=run_id or (rs.get("run_id") or ""),
+        portfolio_id="UNSELECTED",
+        mode="EXEC_MODE",
+        primary_anchor="",
+        phase=gate_name,
+        next_item=rs.get("next_action") or "",
+        stop_kind=stop_kind,
+        reason_code=reason,
+        evidence=_evidence_from_rs(rs, note=f"{gate_name} finished"),
+        step=step,
+        result=result,
+    )
+
+
+
+
+def _ensure_irreversible_after(gate_name: str, run_id: str, result: str) -> None:
+    if gate_name not in {"apply-safe", "merge-finish"}:
+        return
+    after_step = "APPLY_AFTER" if gate_name == "apply-safe" else "MERGE_AFTER"
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    stop_kind = ((rs.get("last_result") or {}).get("stop_class") or "")
+    reason_code = ((rs.get("last_result") or {}).get("reason_code") or "")
+    checkpoint_live_state(
+        run_id=run_id or (rs.get("run_id") or ""),
+        portfolio_id="UNSELECTED",
+        mode="EXEC_MODE",
+        primary_anchor="",
+        phase=gate_name,
+        next_item=rs.get("next_action") or "",
+        stop_kind=stop_kind,
+        reason_code=reason_code,
+        evidence=_evidence_from_rs(rs, note=f"{after_step} auto checkpoint"),
+        step=after_step,
+        result=result,
+    )
+def _run_gate(gate_name: str, fn, run_id: str = "") -> int:
+    _gate_checkpoint_start(gate_name, run_id)
+    try:
+        code = fn()
+    except Exception:
+        _ensure_irreversible_after(gate_name, run_id, "NG")
+        _gate_checkpoint_end(gate_name, run_id, 1)
+        raise
+    _ensure_irreversible_after(gate_name, run_id, "OK" if code == 0 else "STOP")
+    _gate_checkpoint_end(gate_name, run_id, code)
+    return code
 def utc_now_z() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 def ensure_parent(p: Path) -> None:
@@ -584,6 +720,20 @@ def assemble_pr(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
 def apply_safe(run_id: str) -> int:
+    rs_before = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    checkpoint_live_state(
+        run_id=run_id,
+        portfolio_id="UNSELECTED",
+        mode="EXEC_MODE",
+        primary_anchor="",
+        phase="apply-safe",
+        next_item="APPLY_PATCHES",
+        stop_kind="",
+        reason_code="",
+        evidence=_evidence_from_rs(rs_before, note="before apply-safe irreversible operation"),
+        step="APPLY_BEFORE",
+        result="OK",
+    )
     rs_guard = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     ok, rs_guard = require_handoff_ack(rs_guard)
     if not ok:
@@ -751,6 +901,20 @@ def apply_safe(run_id: str) -> int:
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
 def merge_finish(run_id: str) -> int:
+    rs_before = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    checkpoint_live_state(
+        run_id=run_id,
+        portfolio_id="UNSELECTED",
+        mode="EXEC_MODE",
+        primary_anchor="",
+        phase="merge-finish",
+        next_item="MERGE_PR",
+        stop_kind="",
+        reason_code="",
+        evidence=_evidence_from_rs(rs_before, note="before merge-finish irreversible operation"),
+        step="MERGE_BEFORE",
+        result="OK",
+    )
     rs_guard = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     ok, rs_guard = require_handoff_ack(rs_guard)
     if not ok:
@@ -989,6 +1153,19 @@ def ledger_in(parent_chat_id: str, portfolio_id: str, mode: str, primary_anchor:
         "next_item": next_item or "UNSPECIFIED",
     }
     ledger_append(entry)
+    checkpoint_live_state(
+        run_id=this_id,
+        portfolio_id=portfolio_id,
+        mode=mode,
+        primary_anchor=primary_anchor,
+        phase=current_phase,
+        next_item=next_item,
+        stop_kind="",
+        reason_code="",
+        evidence={"pr_url": "", "workflow_run_url": "", "commit_sha": entry.get("main_head") or "", "note": "ledger-in completed"},
+        step="ENTRY",
+        result="OK",
+    )
     print(json.dumps({"kind":"CHECKPOINT_IN","this_chat_id": this_id}, ensure_ascii=False))
     return 0
 def ledger_out(this_chat_id: str, portfolio_id: str, mode: str, primary_anchor: str, current_phase: str, next_item: str) -> int:
@@ -1023,6 +1200,227 @@ def ledger_out(this_chat_id: str, portfolio_id: str, mode: str, primary_anchor: 
     return 0
 
 
+
+
+
+def _append_jsonl(path: Path, obj: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(obj, ensure_ascii=False)
+    with path.open("a", encoding="utf-8", newline="\n") as f:
+        f.write(line + "\n")
+        f.flush()
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            out.append(json.loads(line))
+        except Exception:
+            continue
+    return out
+
+
+def _claim_event_id() -> str:
+    return f"CLM_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}_{secrets.token_hex(4)}"
+
+
+def claim_add(portfolio_id: str, run_id: str, mode: str, primary_anchor: str, claim_type: str, dod_ref: str, evidence_required: list[str], evidence_present: dict, note: str, session_id: str, related_archive_id: str) -> int:
+    ev_required = [str(x).strip() for x in (evidence_required or []) if str(x).strip()]
+    ev_present = evidence_present if isinstance(evidence_present, dict) else {}
+    rec = {
+        "schema_version": "v1",
+        "ts_utc": utc_now_z(),
+        "claim_id": _claim_event_id(),
+        "portfolio_id": portfolio_id or "UNSELECTED",
+        "run_id": run_id or "",
+        "mode": mode or "",
+        "primary_anchor": primary_anchor or "",
+        "claim_status": "CLAIMED",
+        "claim_type": claim_type or "DONE",
+        "dod_ref": dod_ref or "",
+        "evidence_required": ev_required,
+        "evidence_present": ev_present,
+        "note": note or "",
+        "session_id": session_id or "",
+        "related_archive_id": related_archive_id or "",
+    }
+    _append_jsonl(CLAIMS_JSONL, rec)
+    print(json.dumps(rec, ensure_ascii=False))
+    return 0
+
+
+def _verify_evidence_key(key: str, val) -> bool:
+    if val is None:
+        return False
+    txt = str(val).strip()
+    if not txt:
+        return False
+    if key == "pr_url":
+        return txt.startswith("http") and "/pull/" in txt
+    if key == "workflow_run_url":
+        return txt.startswith("http") and "/actions/runs/" in txt
+    if key == "commit_sha":
+        try:
+            _run(["git", "rev-parse", "--verify", f"{txt}^{{commit}}"])
+            return True
+        except Exception:
+            return False
+    if key == "bundle_path":
+        return (REPO_ROOT / txt).exists() or Path(txt).exists()
+    return bool(txt)
+
+
+def _latest_claim_states(portfolio_id: str = "") -> dict[str, dict]:
+    latest = {}
+    for rec in _read_jsonl(CLAIMS_JSONL):
+        cid = rec.get("claim_id") or ""
+        if not cid:
+            continue
+        if portfolio_id and rec.get("portfolio_id") != portfolio_id:
+            continue
+        latest[cid] = rec
+    return latest
+
+
+def _render_open_index(latest: dict[str, dict]) -> dict:
+    items = []
+    for cid, rec in sorted(latest.items(), key=lambda kv: kv[1].get("ts_utc", ""), reverse=True):
+        status = rec.get("claim_status") or ""
+        if status not in {"CLAIMED", "FAILED"}:
+            continue
+        items.append({
+            "claim_id": cid,
+            "portfolio": rec.get("portfolio_id") or "UNSELECTED",
+            "type": rec.get("claim_type") or "",
+            "status": status,
+            "note": rec.get("note") or "",
+            "required": rec.get("evidence_required") or [],
+            "present": rec.get("evidence_present") or {},
+            "anchor": rec.get("primary_anchor") or "",
+            "needs_attention": True,
+        })
+    return {"schema_version": "v1", "generated_at_utc": utc_now_z(), "needs_attention": items}
+
+
+def reconcile_claims(portfolio_id: str = "", limit: int = 0) -> int:
+    latest = _latest_claim_states(portfolio_id)
+    target = [r for r in latest.values() if r.get("claim_status") == "CLAIMED"]
+    if limit and limit > 0:
+        target = target[:limit]
+    for rec in target:
+        required = rec.get("evidence_required") or []
+        present = rec.get("evidence_present") or {}
+        ok = all(_verify_evidence_key(k, present.get(k)) for k in required)
+        upd = dict(rec)
+        upd["ts_utc"] = utc_now_z()
+        upd["claim_status"] = "VERIFIED" if ok else "FAILED"
+        upd["note"] = (rec.get("note") or "") + (" | reconciled:ok" if ok else " | reconciled:failed")
+        _append_jsonl(CLAIMS_JSONL, upd)
+        latest[rec["claim_id"]] = upd
+    open_idx = _render_open_index(latest)
+    write_json(CLAIMS_OPEN_INDEX_JSON, open_idx)
+    print(json.dumps(open_idx, ensure_ascii=False))
+    return 0
+
+
+def claims_list(status: str = "", portfolio_id: str = "") -> int:
+    if not CLAIMS_OPEN_INDEX_JSON.exists():
+        write_json(CLAIMS_OPEN_INDEX_JSON, {"schema_version": "v1", "generated_at_utc": utc_now_z(), "needs_attention": []})
+    obj = load_json(CLAIMS_OPEN_INDEX_JSON)
+    arr = obj.get("needs_attention") or []
+    if status:
+        arr = [x for x in arr if (x.get("status") or "") == status]
+    if portfolio_id:
+        arr = [x for x in arr if (x.get("portfolio") or "") == portfolio_id]
+    print(json.dumps({"schema_version": "v1", "generated_at_utc": obj.get("generated_at_utc"), "needs_attention": arr}, ensure_ascii=False))
+    return 0
+
+
+def archive_add(archive_id: str, portfolio_id: str, top_goal: str, primary_anchor: str, path: str, claim_status: str, claim_id: str, needs_attention: bool, tags: list[str], keywords: list[str]) -> int:
+    rec = {
+        "schema_version": "v1",
+        "archive_id": archive_id,
+        "ts_utc": utc_now_z(),
+        "portfolio_id": portfolio_id or "UNSELECTED",
+        "primary_anchor": primary_anchor or "",
+        "claim_status": (claim_status if claim_status in {"NONE", "CLAIMED", "VERIFIED", "FAILED"} else "NONE"),
+        "claim_id": claim_id or "",
+        "needs_attention": bool(needs_attention),
+        "top_goal": top_goal or "",
+        "tags": tags or [],
+        "keywords": keywords or [],
+        "path": path or f"docs/MEP/ARCHIVE/SESSIONS/{archive_id}.json",
+    }
+    _append_jsonl(ARCHIVE_CATALOG_JSONL, rec)
+    print(json.dumps(rec, ensure_ascii=False))
+    return 0
+
+
+def archive_search(query: str = "", portfolio_id: str = "", needs_attention_only: bool = False) -> int:
+    rows = _read_jsonl(ARCHIVE_CATALOG_JSONL)
+    out = []
+    q = (query or "").lower().strip()
+    for r in rows:
+        if portfolio_id and r.get("portfolio_id") != portfolio_id:
+            continue
+        if needs_attention_only and not bool(r.get("needs_attention")):
+            continue
+        hay = " ".join([
+            str(r.get("archive_id") or ""),
+            str(r.get("top_goal") or ""),
+            " ".join(r.get("tags") or []),
+            " ".join(r.get("keywords") or []),
+            str(r.get("primary_anchor") or ""),
+            str(r.get("claim_status") or ""),
+        ]).lower()
+        if q and q not in hay:
+            continue
+        out.append({
+            "archive_id": r.get("archive_id") or "",
+            "portfolio_id": r.get("portfolio_id") or "UNSELECTED",
+            "top_goal": r.get("top_goal") or "",
+            "tags": r.get("tags") or [],
+            "claim_status": r.get("claim_status") or "NONE",
+            "needs_attention": bool(r.get("needs_attention")),
+            "primary_anchor": r.get("primary_anchor") or "",
+            "ts_utc": r.get("ts_utc") or "",
+        })
+    print(json.dumps({"results": out}, ensure_ascii=False))
+    return 0
+
+
+def archive_restore(archive_id: str) -> int:
+    rows = _read_jsonl(ARCHIVE_CATALOG_JSONL)
+    hit = None
+    for r in reversed(rows):
+        if r.get("archive_id") == archive_id:
+            hit = r
+            break
+    if not hit:
+        print("STOP_HARD: ARCHIVE_ID_NOT_FOUND", file=sys.stderr)
+        return 1
+    src = REPO_ROOT / (hit.get("path") or "")
+    if not src.exists():
+        print("STOP_HARD: ARCHIVE_PATH_NOT_FOUND", file=sys.stderr)
+        return 1
+    dst = DOCS_MEP / "ARCHIVE" / "RESTORED" / f"{archive_id}.json"
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    src.replace(dst)
+    try:
+        obj = json.loads(dst.read_text(encoding="utf-8"))
+    except Exception:
+        obj = {}
+    if isinstance(obj, dict):
+        update_live_state(LIVE_STATE_JSON, obj)
+    reconcile_claims(hit.get("portfolio_id") or "", 0)
+    print(json.dumps({"restored_archive_id": archive_id, "restored_to": str(dst.relative_to(REPO_ROOT))}, ensure_ascii=False))
+    return 0
 def main() -> int:
     ap = argparse.ArgumentParser(prog="runner.py")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -1057,37 +1455,100 @@ def main() -> int:
     ap_lo.add_argument("--current-phase", default="UNSPECIFIED")
     ap_lo.add_argument("--next-item", default="UNSPECIFIED")
 
-    args = ap.parse_args()
-    if args.cmd == "boot":
-        return boot()
-    if args.cmd == "status":
-        return status()
-    if args.cmd == "apply":
-        return apply(Path(args.draft_file))
-    if args.cmd == "pr-probe":
-        return pr_probe(args.run_id)
-    if args.cmd == "pr-create":
-        return pr_create(args.run_id)
-    if args.cmd == "assemble-pr":
-        return assemble_pr(args.run_id)
-    if args.cmd == "apply-safe":
-        return apply_safe(args.run_id)
-    if args.cmd == "merge-finish":
-        return merge_finish(args.run_id)
-    if args.cmd == "compact":
-        return compact()
+    ap_claim = sub.add_parser("claim-add")
+    ap_claim.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_claim.add_argument("--run-id", default="")
+    ap_claim.add_argument("--mode", default="")
+    ap_claim.add_argument("--primary-anchor", default="")
+    ap_claim.add_argument("--claim-type", default="DONE")
+    ap_claim.add_argument("--dod-ref", required=True)
+    ap_claim.add_argument("--evidence-required", default="")
+    ap_claim.add_argument("--evidence-present-json", default="{}")
+    ap_claim.add_argument("--note", default="")
+    ap_claim.add_argument("--session-id", default="")
+    ap_claim.add_argument("--related-archive-id", default="")
 
-    if args.cmd == "ledger-in":
-        return ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
-    if args.cmd == "ledger-out":
-        return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
-    return 1
+    ap_rec = sub.add_parser("reconcile-claims")
+    ap_rec.add_argument("--portfolio-id", default="")
+    ap_rec.add_argument("--limit", type=int, default=0)
+
+    ap_cl = sub.add_parser("claims-list")
+    ap_cl.add_argument("--status", default="")
+    ap_cl.add_argument("--portfolio-id", default="")
+
+    ap_aa = sub.add_parser("archive-add")
+    ap_aa.add_argument("--archive-id", required=True)
+    ap_aa.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_aa.add_argument("--top-goal", default="")
+    ap_aa.add_argument("--primary-anchor", default="")
+    ap_aa.add_argument("--path", default="")
+    ap_aa.add_argument("--claim-status", default="NONE")
+    ap_aa.add_argument("--claim-id", default="")
+    ap_aa.add_argument("--needs-attention", action="store_true")
+    ap_aa.add_argument("--tags", default="")
+    ap_aa.add_argument("--keywords", default="")
+
+    ap_as = sub.add_parser("archive-search")
+    ap_as.add_argument("--query", default="")
+    ap_as.add_argument("--portfolio-id", default="")
+    ap_as.add_argument("--needs-attention-only", action="store_true")
+
+    ap_ar = sub.add_parser("archive-restore")
+    ap_ar.add_argument("--archive-id", required=True)
+
+    args = ap.parse_args()
+    try:
+        if args.cmd == "boot":
+            return boot()
+        if args.cmd == "status":
+            return status()
+        if args.cmd == "apply":
+            return apply(Path(args.draft_file))
+        if args.cmd == "pr-probe":
+            return _run_gate("pr-probe", lambda: pr_probe(args.run_id), args.run_id)
+        if args.cmd == "pr-create":
+            return _run_gate("pr-create", lambda: pr_create(args.run_id), args.run_id)
+        if args.cmd == "assemble-pr":
+            return _run_gate("assemble-pr", lambda: assemble_pr(args.run_id), args.run_id)
+        if args.cmd == "apply-safe":
+            return _run_gate("apply-safe", lambda: apply_safe(args.run_id), args.run_id)
+        if args.cmd == "merge-finish":
+            return _run_gate("merge-finish", lambda: merge_finish(args.run_id), args.run_id)
+        if args.cmd == "compact":
+            return _run_gate("compact", compact)
+
+        if args.cmd == "ledger-in":
+            return ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+        if args.cmd == "ledger-out":
+            return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+        if args.cmd == "claim-add":
+            evidence_required = [x.strip() for x in (args.evidence_required or "").split(",") if x.strip()]
+            try:
+                evidence_present = json.loads(args.evidence_present_json or "{}")
+            except Exception:
+                evidence_present = {}
+            return claim_add(args.portfolio_id, args.run_id, args.mode, args.primary_anchor, args.claim_type, args.dod_ref, evidence_required, evidence_present, args.note, args.session_id, args.related_archive_id)
+        if args.cmd == "reconcile-claims":
+            return reconcile_claims(args.portfolio_id, args.limit)
+        if args.cmd == "claims-list":
+            return claims_list(args.status, args.portfolio_id)
+        if args.cmd == "archive-add":
+            tags = [x.strip() for x in (args.tags or "").split(",") if x.strip()]
+            keywords = [x.strip() for x in (args.keywords or "").split(",") if x.strip()]
+            path = args.path or f"docs/MEP/ARCHIVE/SESSIONS/{args.archive_id}.json"
+            return archive_add(args.archive_id, args.portfolio_id, args.top_goal, args.primary_anchor, path, args.claim_status, args.claim_id, args.needs_attention, tags, keywords)
+        if args.cmd == "archive-search":
+            return archive_search(args.query, args.portfolio_id, args.needs_attention_only)
+        if args.cmd == "archive-restore":
+            return archive_restore(args.archive_id)
+        return 1
+    except Exception as ex:
+        print(f"STOP_HARD: STATE_WRITE_FAILED ({ex})", file=sys.stderr)
+        return 1
 if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
-
-
 
 
 
