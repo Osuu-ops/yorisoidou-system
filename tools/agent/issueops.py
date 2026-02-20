@@ -51,7 +51,7 @@ def should_run(issue, latest_comment_body):
 
 
 def fetch_latest_comment(repo, issue_number):
-    comments = gh_json([f"repos/{repo}/issues/{issue_number}/comments", "--paginate", "-f", "per_page=1", "-f", "page=1"])
+    comments = gh_json([f"/repos/{repo}/issues/{issue_number}/comments", "-f", "per_page=1", "-f", "sort=created", "-f", "direction=desc"])
     if comments:
         return comments[-1].get("body") or ""
     return ""
@@ -220,3 +220,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
