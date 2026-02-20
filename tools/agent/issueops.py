@@ -27,7 +27,10 @@ def run(cmd):
         if e.stderr:
             print("---- STDERR ----")
             print(e.stderr)
-        raisedef utc_now():
+        raise
+
+
+def utc_now():
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
@@ -230,5 +233,6 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
 
