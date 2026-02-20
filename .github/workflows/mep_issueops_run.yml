@@ -39,3 +39,13 @@ jobs:
         run: |
           set -euo pipefail
           python tools/agent/issueops.py
+
+      - name: Dispatch Gate0 (Audit/Compile/Dispatch)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          echo "Dispatching Gate0 for issue #${ISSUE_NUMBER}"
+          gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}"
