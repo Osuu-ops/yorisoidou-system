@@ -240,3 +240,17 @@ PY
             _engine_out/**
             _system_pack_out/**
           if-no-files-found: ignore
+
+      - name: MEP Gate12 Health (always)
+        if: always()
+        shell: pwsh
+        run: |
+          ./tools/mep_health_generate.ps1 -RepoRoot . -OutDir docs/MEP_STATUS -RunState mep/run_state.json -Bundle docs/MEP/MEP_BUNDLE.md -SSOT docs/MEP/MEP_SSOT_MASTER.md
+      - name: Upload MEP Health (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep_health
+          path: |
+            docs/MEP_STATUS/mep_health.json
+            docs/MEP_STATUS/mep_health.md
