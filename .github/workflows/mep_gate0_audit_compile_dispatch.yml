@@ -1,4 +1,4 @@
-# registry-refresh: G0_AUDIT_COMMENT_NOFAIL
+# registry-refresh: G0_FIX_8GATE_PACKET_PATH 2026-02-20T15:33:22Z
 name: MEP Gate0 (Audit/Compile/Dispatch)
 on:
   workflow_dispatch:
