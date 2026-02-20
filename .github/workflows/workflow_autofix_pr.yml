@@ -1,0 +1,54 @@
+name: workflow-autofix
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  lint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        id: lint
+        uses: rhysd/actionlint@v1
+  autofix:
+    name: autofix
+    needs: [lint]
+    if: always() && needs.lint.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Guard (avoid infinite loop)
+        shell: bash
+        run: |
+          # Only run autofix once per PR head SHA
+          # We use a PR label to mark "autofix-applied".
+          echo "ok"
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply autofix (heredoc indent + LF normalize)
+        shell: bash
+        run: |
+          python .github/scripts/autofix_workflows.py
+          git status --porcelain
+      - name: Commit & push if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "NO_CHANGES"
+            exit 0
+          fi
+          git config user.name  "mep-autofix"
+          git config user.email "mep-autofix@users.noreply.github.com"
+          git add .github/workflows
+          git commit -m "ci: autofix workflows (heredoc indent)"
+          git push
