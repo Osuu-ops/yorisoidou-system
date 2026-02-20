@@ -15,6 +15,16 @@ WORK_PATH = ROOT / "docs/MEP/HANDOFF_WORK.md"
 INBOX_DIR = ROOT / "mep/inbox"
 
 
+def _issueops_unique_suffix() -> str:
+    # Avoid branch push collisions between multiple runs.
+    # Prefer Actions run id; fallback to UTC timestamp.
+    rid = (os.environ.get('GITHUB_RUN_ID') or '').strip()
+    if rid:
+        return rid
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+
+
 def run(cmd):
     try:
         return subprocess.run(cmd, check=True, text=True, capture_output=True)
@@ -157,7 +167,7 @@ def write_draft(run_id, issue_body):
 
 
 def git_pr_flow(repo, run_id, issue_number):
-    branch = f"mep/issueops-run-{run_id.lower()}"
+    branch = f"mep/issueops-run-{run_id.lower()}-\{_issueops_unique_suffix()\}"
     run(["git", "checkout", "-b", branch])
     run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
     run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])
