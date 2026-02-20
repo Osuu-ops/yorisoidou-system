@@ -1,0 +1,408 @@
+# MEP Gate Audit Report V2 (Repo-wide scan)
+
+- generated_at: 2026-02-20 11:10:25
+- head: ef8d88fd41394daae4230fc900708cd03336df4e
+- files_total: 609
+- files_existing: 592
+- files_missing: 17
+
+## Gate -> candidate implementation files (repo-wide, keyword based)
+
+### Gate 0 — Integrity
+- kw: Gate-0
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Integrity
+  - .github\workflows\mep_gate_pr.yml
+  - .github\workflows\text_integrity_guard_manual.yml
+  - .github\workflows\text_integrity_guard_manual_v3.yml
+  - .github\workflows\text_integrity_guard_pr.yml
+  - docs\MEP\90_CHANGES\self_heal_401_audit_report_v2_20260202_222526.md
+  - docs\MEP\CHAT_PACKET.md
+  - docs\MEP\CHAT_PACKET_BUNDLE.md
+  - docs\MEP\GLOSSARY.md
+  - docs\MEP\GOLDEN_PATH.md
+  - docs\MEP\HANDOFF_NEXT.generated.md
+  - docs\MEP\MEP_BUNDLE.md
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\OPS_REQUIRED_CHECKS.md
+  - docs\MEP\REQUEST_BUNDLE_BUSINESS.md
+  - docs\MEP\REQUEST_BUNDLE_SYSTEM.md
+  - docs\MEP\REQUIRED_CHECKS_SSOT.md
+  - docs\MEP\START_HERE.md
+  - docs\MEP\STATE_CURRENT.md
+  - docs\MEP_SUB\EVIDENCE\MEP_BUNDLE.md
+  - mep\ACCEPTANCE_TESTS_SPEC.md
+- kw: SSOT_WORKFLOW_ID
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: allowed_paths
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\SYSTEM_MAP.md
+  - mep\results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - mep\results\RUN_5e80a72dfa04\9998-test-patch-does-not-apply.patch.normalized.disabled
+  - mep\results\RUN_5e80a72dfa04\9999-test-newfile-exists-system-map.patch.normalized.disabled
+  - results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\artifacts\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch_results\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches_in\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\worker\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\workers\0001-mep-system-map-v1.0.patch
+- kw: workflow_dispatch
+  - .github\workflows\acceptance_tests.yml
+  - .github\workflows\auto_merge_repair_prs.yml
+  - .github\workflows\business_non_interference_guard.yml
+  - .github\workflows\business_packet_guard_pr.yml
+  - .github\workflows\business_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_guard.yml
+  - .github\workflows\chat_packet_self_heal.yml
+  - .github\workflows\chat_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_update_schedule.yml
+  - .github\workflows\dispatch_smoke.yml
+  - .github\workflows\dispatch_smoke.yml.bak.20260113-021811
+  - .github\workflows\docs_index_guard.yml
+  - .github\workflows\mep_8gate_entry_filter.yml
+  - .github\workflows\mep_acceptance_tests_dispatch.yml
+  - .github\workflows\mep_artifacts_regen_dispatch.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v2.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v3.yml
+  - .github\workflows\mep_auto_pr_gate_dispatch.yml
+  - .github\workflows\mep_auto_pr_gate_min_dispatch.yml
+  - .github\workflows\mep_automerge.yml
+- kw: 422
+  - .github\workflows\_SEALED_LEGACY_WORKFLOWS.md
+  - .github\workflows\mep_issue_llm_to_pr_v3.yml
+  - .github\workflows\mep_issue_llm_to_pr_v4.yml
+  - business\business_spec.md
+  - docs\MEP\CHAT_CHAIN_LEDGER.md
+  - docs\MEP\ENTRY_CANONICAL.md
+  - docs\MEP\MEP_BUNDLE.md
+  - docs\MEP\OLD_ENTRY_SEAL.md
+  - docs\MEP\REQUEST_BUNDLE_BUSINESS.md
+  - docs\MEP\REQUEST_BUNDLE_SYSTEM.md
+  - docs\MEP\WORK_ITEMS\yorisoidou_operationalize.md
+
+### Gate 1 — Input
+- kw: Gate-1
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: INPUT_PACKET
+  - .github\workflows\mep_8gate_entry_filter.yml
+  - .github\workflows\mep_dispatch_from_issue.yml
+  - .github\workflows\mep_gate0_audit_compile_dispatch.yml
+  - .github\workflows\mep_standalone_autoloop_dispatch.yml
+  - .github\workflows\mep_standalone_autoloop_dispatch_v2.yml
+  - .github\workflows\mep_standalone_issue_autoloop.yml
+  - docs\MEP\ARTIFACTS\SYSTEM\ISSUE_2400\RESTART_PACKET.txt
+  - docs\MEP\ARTIFACTS\SYSTEM\ISSUE_2400\RUN_SUMMARY.md
+  - docs\MEP\INPUT_PACKET_CONTRACT.md
+  - docs\MEP\MASTER_GOAL.md
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\ROADMAP.md
+  - docs\MEP\SYSTEM_MAP.md
+  - mep\results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - mep\results\RUN_5e80a72dfa04\9998-test-patch-does-not-apply.patch.normalized.disabled
+  - mep\results\RUN_5e80a72dfa04\9999-test-newfile-exists-system-map.patch.normalized.disabled
+  - results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\artifacts\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch_results\0001-mep-system-map-v1.0.patch
+- kw: required_checks_expected
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: pr_creator_allowlist
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: DECISION_LEDGER
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\SYSTEM_MAP.md
+  - mep\results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - mep\results\RUN_5e80a72dfa04\9998-test-patch-does-not-apply.patch.normalized.disabled
+  - mep\results\RUN_5e80a72dfa04\9999-test-newfile-exists-system-map.patch.normalized.disabled
+  - results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\artifacts\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch_results\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches_in\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\worker\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\workers\0001-mep-system-map-v1.0.patch
+
+### Gate 2 — Coverage
+- kw: Gate-2
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: COVERAGE
+  - docs\MEP\MEP_SSOT_MASTER.md
+
+### Gate 3 — Provenance
+- kw: Gate-3
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Provenance
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: provenance_violations
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: SOURCE_CONTEXT
+  - docs\MEP\MEP_BUNDLE.md
+
+### Gate 4 — Completeness
+- kw: Gate-4
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: missing[]
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Completeness
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\REQUEST_BUNDLE_SYSTEM.md
+  - platform\MEP\01_CORE\system\protocol\system_protocol.md
+
+### Gate 5 — Consistency
+- kw: Gate-5
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: conflicts[]
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Supersedes
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\system_packs\MEP_SYSTEM_PACK_v1_FULL_CONVERGENCE_2026-02-16.md
+  - tools\checks\ssot_scan.py
+  - tools\system_pack_engine\templates\doctrine.template.json
+- kw: RULE-0
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\SYSTEM_MAP.md
+  - mep\results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - mep\results\RUN_5e80a72dfa04\9998-test-patch-does-not-apply.patch.normalized.disabled
+  - mep\results\RUN_5e80a72dfa04\9999-test-newfile-exists-system-map.patch.normalized.disabled
+  - results\RUN_5e80a72dfa04\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\artifacts\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patch_results\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\patches_in\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\worker\0001-mep-system-map-v1.0.patch
+  - results\RUN_5e80a72dfa04\workers\0001-mep-system-map-v1.0.patch
+- kw: RULE-1
+  - docs\MEP\MEP_SSOT_MASTER.md
+
+### Gate 6 — Question
+- kw: Gate-6
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: questions[]
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: REQUEST
+  - .github\ISSUE_TEMPLATE\mep_dispatch.yml
+  - .github\PULL_REQUEST_TEMPLATE.md
+  - .github\copilot-instructions.md
+  - .github\workflows\acceptance_tests.yml
+  - .github\workflows\auto_merge_repair_prs.yml
+  - .github\workflows\business_non_interference_guard.yml
+  - .github\workflows\business_packet_guard_pr.yml
+  - .github\workflows\business_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_guard.yml
+  - .github\workflows\chat_packet_intake_issue.yml
+  - .github\workflows\chat_packet_self_heal.yml
+  - .github\workflows\chat_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_update_schedule.yml
+  - .github\workflows\ci_guard_bom.yml
+  - .github\workflows\current_scope_format_guard_pr.yml
+  - .github\workflows\dispatch_smoke.yml.bak.20260113-021811
+  - .github\workflows\docs_index_guard.yml
+  - .github\workflows\mep_acceptance_tests_pr.yml
+  - .github\workflows\mep_artifacts_regen_dispatch.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v2.yml
+
+### Gate 7 — Auto-Answer
+- kw: Gate-7
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: decision_mode
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: AUTO
+  - .gitattributes
+  - .github\scripts\mep_entry_ssot_report.ps1
+  - .github\workflows\auto_merge_repair_prs.yml
+  - .github\workflows\business_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_self_heal.yml
+  - .github\workflows\chat_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_update_schedule.yml
+  - .github\workflows\dispatch_smoke.yml.bak.20260113-021811
+  - .github\workflows\mep_artifacts_regen_dispatch.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v2.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v3.yml
+  - .github\workflows\mep_auto_pr_gate_dispatch.yml
+  - .github\workflows\mep_auto_pr_gate_min_dispatch.yml
+  - .github\workflows\mep_automerge.yml
+  - .github\workflows\mep_autorun_converge.yml
+  - .github\workflows\mep_autorun_daily_health.yml
+  - .github\workflows\mep_autorun_schedule.yml
+  - .github\workflows\mep_bump_bundle_version_dispatch.yml
+  - .github\workflows\mep_bundle_autofix.yml
+  - .github\workflows\mep_dispatch_entry_min6.yml
+- kw: why_auto
+  - docs\MEP\MEP_SSOT_MASTER.md
+
+### Gate 8 — Tie-break
+- kw: Gate-8
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: tiebreak
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: tiebreak_rule
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: RESTART_PACKET
+  - .github\workflows\mep_engine.yml
+  - .github\workflows\mep_entry_clean.yml
+  - .github\workflows\mep_loop_engine.yml
+  - .github\workflows\mep_loop_engine_v2.yml
+  - .github\workflows\mep_loop_entry.yml
+  - .github\workflows\mep_standalone_autoloop_dispatch.yml
+  - .github\workflows\mep_standalone_autoloop_dispatch_v2.yml
+  - .github\workflows\mep_standalone_issue_autoloop.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry__v2_20260212_115558.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry__v3_20260212_120949.yml
+  - docs\MEP\ARTIFACTS\SYSTEM\ISSUE_2400\RESTART_PACKET.txt
+  - docs\MEP\ARTIFACTS\SYSTEM\ISSUE_2400\RUN_SUMMARY.md
+  - docs\MEP\MASTER_GOAL.md
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - mep\results\REVIEW_20260217_204727\stability_review.txt
+  - tools\issue_artifact_loop.py
+  - tools\mep_zonejob_verify.ps1
+- kw: RESTART_KEY
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - mep\results\REVIEW_20260217_204727\stability_review.txt
+
+### Gate 9 — Commit
+- kw: Gate-9
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Commit
+  - .github\PULL_REQUEST_TEMPLATE.md
+  - .github\PULL_REQUEST_TEMPLATE\mep_audit.md
+  - .github\scripts\mep_entry_ssot_report.ps1
+  - .github\workflows\business_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_guard.yml
+  - .github\workflows\chat_packet_self_heal.yml
+  - .github\workflows\chat_packet_update_dispatch.yml
+  - .github\workflows\chat_packet_update_schedule.yml
+  - .github\workflows\dispatch_smoke.yml.bak.20260113-021811
+  - .github\workflows\mep_artifacts_regen_dispatch.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v2.yml
+  - .github\workflows\mep_artifacts_regen_dispatch_v3.yml
+  - .github\workflows\mep_auto_pr_gate_dispatch.yml
+  - .github\workflows\mep_auto_pr_gate_min_dispatch.yml
+  - .github\workflows\mep_autorun_converge.yml
+  - .github\workflows\mep_bump_bundle_version_dispatch.yml
+  - .github\workflows\mep_dispatch_entry_min6.yml
+  - .github\workflows\mep_dispatch_entry_min8_longrun.yml
+  - .github\workflows\mep_dispatch_from_issue.yml
+  - .github\workflows\mep_evidence_writeback_target_dispatch.yml
+- kw: CHECKS_PRESENT
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: REQUIRED_CHECKS_MATCHED
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: TRIGGER_ACTOR_OK
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: mergeable
+  - .github\workflows\auto_merge_repair_prs.yml
+  - .github\workflows\mep_autorun_converge.yml
+  - .github\workflows\mep_autorun_daily_health.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_v2_20260201_035903.yml.txt
+  - docs\MEP\FINAL_AUTORUN_RUNBOOK.md
+  - docs\MEP\MEP_BUNDLE.md
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\OPS_SNIPPETS_PS.md
+  - docs\MEP\REQUEST_BUNDLE_BUSINESS.md
+  - docs\MEP\REQUEST_BUNDLE_SYSTEM.md
+  - docs\MEP\RUNBOOK.md
+  - docs\MEP\SSOT\WORK_ID_SSOT.json
+  - docs\MEP\WORK_ITEMS\mep_entry_work_items_master.md
+  - platform\MEP\01_CORE\cards\COMPLETION_B_RULESET_REQUIRED_CHECKS_SYSTEM_SPEC.md
+  - tools\mep_autopilot.ps1
+  - tools\mep_full_auto_runner.ps1
+  - tools\mep_handoff.ps1.bak.20260107-013624
+  - tools\mep_pr_audit_merge.ps1
+  - tools\runner\mep_observe_run.ps1
+
+### Gate 10 — FullExpand
+- kw: Gate-10
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: FullExpand
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: READABLE_SPEC
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: Readable Spec
+  - docs\MEP\MEP_SSOT_MASTER.md
+
+### Gate 11 — Handoff
+- kw: Gate-11
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: HANDOFF.md
+  - .github\workflows\mep_handoff_dispatch.yml
+  - .github\workflows\mep_handoff_dispatch_manual.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v2.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v3.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v4.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v4b.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v4c.yml
+  - .github\workflows\mep_handoff_dispatch_manual_v5.yml
+  - .github\workflows\mep_handoff_push_v8.yml
+  - .github\workflows\mep_handoff_repo_dispatch_v7.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v1.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v2.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v3.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v4.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v5.yml
+  - .github\workflows\mep_pregate_handoff_dispatch_v6.yml
+  - docs\MEP\FIXED_HANDOFF.md
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - docs\MEP\REQUEST_BUNDLE_SYSTEM.md
+  - docs\MEP\tools\mep_handoff_audit.ps1
+- kw: FIXED_HANDOFF
+  - docs\MEP\CHAT_CHAIN_LEDGER.md
+  - docs\MEP\FIXED_HANDOFF.md
+  - mep\results\REVIEW_20260217_204727\stability_review.txt
+  - tools\runner\runner.py
+- kw: CHECKPOINT_OUT
+  - docs\MEP\CHAT_CHAIN_LEDGER.md
+  - docs\MEP\FIXED_HANDOFF.md
+  - tools\runner\runner.py
+- kw: CHAT_CHAIN_LEDGER
+  - docs\MEP\CHAT_CHAIN_LEDGER.md
+  - docs\MEP\FIXED_HANDOFF.md
+  - tools\runner\runner.py
+
+### Gate 12 — Health
+- kw: Gate-12
+  - docs\MEP\MEP_SSOT_MASTER.md
+- kw: MEP_STATUS
+  - .github\workflows\mep_health_smoke_dispatch.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - tools\mep_health_generate.ps1
+- kw: mep_health.json
+  - .github\workflows\mep_health_smoke_dispatch.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - tools\mep_health_generate.ps1
+- kw: mep_health.md
+  - .github\workflows\mep_health_smoke_dispatch.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+  - docs\MEP\MEP_SSOT_MASTER.md
+  - tools\mep_health_generate.ps1
+- kw: mep_health_generate.ps1
+  - .github\workflows\mep_health_smoke_dispatch.yml
+  - .github\workflows\mep_writeback_bundle_dispatch_entry.yml
+
+## Missing working-tree files (tracked by git but not present locally)
+count: 17
+
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・00_CURRENT_SCOPE_NOTE.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・01_INDEX.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・03_TODO.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・04_DOC_EXAMPLE_STATUS.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・99__ci_trigger.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・99__ci_trigger_cleanup.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・BUSINESS_PACKET.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・BUSINESS_PACKET.yml
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・INDEX.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・LEDGER_REFLECTION_DELETE_FREEZE_FIX_v1.0.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_master.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・business_spec.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・code/README.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・master_spec.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_master.md
+- platform/MEP/03_BUSINESS/繧医ｊ縺昴＞蝣・ui_spec.md
