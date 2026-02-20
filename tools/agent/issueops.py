@@ -44,6 +44,13 @@ def utc_now():
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+# MEP_ISSUEOPS_GIT_IDENTITY
+def ensure_git_identity():
+    # Ensure git commit works on Actions runner (repo-local config).
+    run(["git", "config", "user.name", "github-actions"])
+    run(["git", "config", "user.email", "actions@users.noreply.github.com"])
+
+
 def canonicalize(text: str) -> str:
     return text.replace("\r\n", "\n").replace("\r", "\n").strip()
 
@@ -200,6 +207,7 @@ def post_issue_comment(repo, issue_number, run_id, outcome, reason_code, next_ac
 
 
 def main():
+    ensure_git_identity()
     repo = os.environ["GITHUB_REPOSITORY"]
     event = load_event()
     issue = event.get("issue", {})
@@ -245,6 +253,7 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
 
 
