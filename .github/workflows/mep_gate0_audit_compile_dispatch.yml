@@ -34,7 +34,7 @@ jobs:
             exit 0
           fi
           echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
-          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f issue_number="${N}"
+          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f packet_path="${PKT}"
 
       - name: Gate0 Audit + Comment (never hard-fail)
         shell: bash
@@ -90,5 +90,6 @@ jobs:
           exit 0
 
 # Dispatch downstream workflow (from Gate0)
+
 
 
