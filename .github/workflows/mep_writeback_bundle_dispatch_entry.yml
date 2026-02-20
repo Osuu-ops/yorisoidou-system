@@ -153,7 +153,7 @@ PY
         shell: bash
         run: |
           set -euo pipefail
-          SSOT_B64="${{ inputs.ssot_b64 }}"
+          SSOT_B64="${{ github.event.inputs.ssot_b64 }}"
           if [ -z "${SSOT_B64}" ]; then
             echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
             echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
@@ -170,7 +170,7 @@ PY
         shell: bash
         run: |
           set -euo pipefail
-          SSOT_PATH_IN="${{ inputs.ssot_payload_path }}"
+          SSOT_PATH_IN="${{ github.event.inputs.ssot_payload_path }}"
           if [ -z "${SSOT_PATH_IN}" ]; then
             echo "MEP_SSOT_PAYLOAD_PATH=" >> "${GITHUB_ENV}"
             echo "MEP_SSOT_VERSION=UNKNOWN" >> "${GITHUB_ENV}"
@@ -198,7 +198,7 @@ PY
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PR_IN="${{ inputs.pr_number }}"
+          PR_IN="${{ github.event.inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
             PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
@@ -262,3 +262,4 @@ PY
           path: |
             docs/MEP_STATUS/mep_health.json
             docs/MEP_STATUS/mep_health.md
+
