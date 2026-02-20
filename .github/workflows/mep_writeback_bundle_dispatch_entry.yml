@@ -1,4 +1,4 @@
-# reindex: force workflow registration refresh 2026-02-20T13:49:22Z
+# reindex: force workflow registration refresh 2026-02-20T13:56:46Z
 name: MEP Writeback Bundle (Entry)
 on:
   workflow_dispatch:
@@ -118,18 +118,18 @@ jobs:
           LAST_STOP_NEXT="UNKNOWN"
           if [ -f "mep/run_state.json" ]; then
             python - <<'PY'
-import json
-from pathlib import Path
-p=Path("mep/run_state.json")
-rs=json.loads(p.read_text(encoding="utf-8"))
-run_status=str(rs.get("run_status","UNKNOWN") or "UNKNOWN")
-lr=rs.get("last_result") or {}
-reason=str(lr.get("reason_code","UNKNOWN") or "UNKNOWN")
-nxt=str(rs.get("next_action","UNKNOWN") or "UNKNOWN")
-print(run_status)
-print(reason)
-print(nxt)
-PY
+            import json
+            from pathlib import Path
+            p=Path("mep/run_state.json")
+            rs=json.loads(p.read_text(encoding="utf-8"))
+            run_status=str(rs.get("run_status","UNKNOWN") or "UNKNOWN")
+            lr=rs.get("last_result") or {}
+            reason=str(lr.get("reason_code","UNKNOWN") or "UNKNOWN")
+            nxt=str(rs.get("next_action","UNKNOWN") or "UNKNOWN")
+            print(run_status)
+            print(reason)
+            print(nxt)
+            PY
           fi | {
             read -r s || true
             read -r r || true
