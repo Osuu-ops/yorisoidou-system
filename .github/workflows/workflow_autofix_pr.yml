@@ -44,8 +44,20 @@ jobs:
             exit 0
           fi
 
-          printf 'Lint targets:\n%s\n' "${files[*]}"
-          actionlint "${files[@]}"
+          lint_targets=()
+          for f in "${files[@]}"; do
+            if [ -f "${f}" ]; then
+              lint_targets+=("${f}")
+            fi
+          done
+
+          if [ "${#lint_targets[@]}" -eq 0 ]; then
+            echo "No existing changed workflow files to lint"
+            exit 0
+          fi
+
+          printf 'Lint targets:\n%s\n' "${lint_targets[*]}"
+          actionlint "${lint_targets[@]}"
   autofix:
     name: autofix
     needs: [lint]
