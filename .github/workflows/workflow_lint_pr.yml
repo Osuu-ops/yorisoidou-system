@@ -49,7 +49,7 @@ jobs:
           fi
 
           printf 'Lint targets:\n%s\n' "${lint_targets[*]}"
-          args="${lint_targets[*]}"
+          args="-shellcheck= -pyflakes= ${lint_targets[*]}"
           echo "args=${args}" >> "$GITHUB_OUTPUT"
       - name: actionlint (changed workflow files only)
         if: steps.targets.outputs.args != ''
