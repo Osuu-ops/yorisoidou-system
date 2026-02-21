@@ -30,8 +30,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            mapfile -t files < <(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" -- '.github/workflows/*.yml' '.github/workflows/*.yaml')
+          files=()
+          if [ "${{ github.event_name }}" = "pull_request" ] \
+            && [ -n "${{ github.event.pull_request.base.sha }}" ] \
+            && [ -n "${{ github.event.pull_request.head.sha }}" ]; then
+            mapfile -t files < <(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
           else
             mapfile -t files < <(git diff --name-only HEAD~1..HEAD -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
           fi
@@ -87,4 +90,13 @@ jobs:
           git config user.email "mep-autofix@users.noreply.github.com"
           git add .github/workflows
           git commit -m "ci: autofix workflows (heredoc indent)"
-          git push origin "HEAD:${HEAD_REF}"
+
+          if ! git pull --rebase origin "${HEAD_REF}"; then
+            echo "REBASE_FAILED_SKIP_PUSH"
+            exit 0
+          fi
+
+          if ! git push origin "HEAD:${HEAD_REF}"; then
+            echo "PUSH_FAILED_SKIP"
+            exit 0
+          fi
