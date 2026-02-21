@@ -68,14 +68,23 @@ jobs:
           git status --porcelain
       - name: Commit & push if changed
         shell: bash
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
             echo "NO_CHANGES"
             exit 0
           fi
+
+          if [ "${HEAD_REPO}" != "${{ github.repository }}" ]; then
+            echo "SKIP_PUSH_FORK_PR=${HEAD_REPO}"
+            exit 0
+          fi
+
           git config user.name  "mep-autofix"
           git config user.email "mep-autofix@users.noreply.github.com"
           git add .github/workflows
           git commit -m "ci: autofix workflows (heredoc indent)"
-          git push
+          git push origin "HEAD:${HEAD_REF}"
