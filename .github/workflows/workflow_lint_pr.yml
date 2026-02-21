@@ -12,5 +12,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: actionlint
-        uses: rhysd/actionlint@v1.7.8
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Install actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.8
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: actionlint (changed workflow files only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+            mapfile -t files < <(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- '.github/workflows/*.yml' '.github/workflows/*.yaml')
+          else
+            mapfile -t files < <(git diff --name-only HEAD~1..HEAD -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
+          fi
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No workflow file changes to lint"
+            exit 0
+          fi
+
+          printf 'Lint targets:\n%s\n' "${files[*]}"
+          actionlint "${files[@]}"
