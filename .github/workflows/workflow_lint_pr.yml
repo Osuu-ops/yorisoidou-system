@@ -48,10 +48,7 @@ jobs:
           fi
 
           printf 'Lint targets:\n%s\n' "${lint_targets[*]}"
-          args=""
-          for f in "${lint_targets[@]}"; do
-            args+="$(printf '%q' "$f") "
-          done
+          args="${lint_targets[*]}"
           echo "args=${args}" >> "$GITHUB_OUTPUT"
       - name: actionlint (changed workflow files only)
         if: steps.targets.outputs.args != ''
