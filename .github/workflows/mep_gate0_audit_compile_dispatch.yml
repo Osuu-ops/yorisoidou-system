@@ -92,11 +92,6 @@ jobs:
           say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: false\nDIR: ${DIR}\n\nNext:\n- Dispatching 8-gate via issue comment: /mep run"
           gh api "repos/${REPO}/issues/${N}/comments" -f body="/mep run" >/dev/null || true
           echo ""
-          if [ -z "${N:-}" ]; then
-            echo "N(issue_number) is empty; skip downstream dispatch."
-          else
-          fi
           exit 0
 
 # Dispatch downstream workflow (from Gate0)
-
