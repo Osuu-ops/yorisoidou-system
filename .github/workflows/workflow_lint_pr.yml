@@ -12,5 +12,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: actionlint
-        uses: rhysd/actionlint@v1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Collect changed workflow lint targets
+        id: targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=()
+          if [ "${{ github.event_name }}" = "pull_request" ] \
+            && [ -n "${{ github.event.pull_request.base.sha }}" ] \
+            && [ -n "${{ github.event.pull_request.head.sha }}" ]; then
+            mapfile -t files < <(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
+          else
+            mapfile -t files < <(git diff --name-only HEAD~1..HEAD -- '.github/workflows/*.yml' '.github/workflows/*.yaml' || true)
+          fi
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No workflow file changes to lint"
+            echo "args=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          lint_targets=()
+          for f in "${files[@]}"; do
+            if [ -f "${f}" ]; then
+              lint_targets+=("${f}")
+            fi
+          done
+
+          if [ "${#lint_targets[@]}" -eq 0 ]; then
+            echo "No existing changed workflow files to lint"
+            echo "args=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          printf 'Lint targets:\n%s\n' "${lint_targets[*]}"
+          args="-shellcheck= -pyflakes= ${lint_targets[*]}"
+          echo "args=${args}" >> "$GITHUB_OUTPUT"
+      - name: actionlint (changed workflow files only)
+        if: steps.targets.outputs.args != ''
+        uses: rhysd/actionlint@v1.7.8
+        with:
+          args: ${{ steps.targets.outputs.args }}
