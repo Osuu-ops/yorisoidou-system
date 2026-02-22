@@ -3,16 +3,32 @@
 会話文ではなく GitHub（固定層＋SSOT＋一次根拠）を正として運用する。
 ## 正（優先順位）
 1) 一次根拠：PR/commit/run/gh一次出力
-2) 機械SSOT：mep/run_state.json
-3) 固定層：
+2) 復旧正本（リアルタイム引継ぎ＋巻き戻し）：
+   - docs/MEP/LIVE_STATE.json（最新現在地）
+   - docs/MEP/PROGRESS_JOURNAL.jsonl（巻き戻し用）
+3) 機械SSOT：mep/run_state.json
+4) 固定層：
    - docs/MEP/MASTER_GOAL.md
    - docs/MEP/ROADMAP.md
    - docs/MEP/BRANCHPOINTS.md
    - docs/MEP/CHAT_CHAIN_LEDGER.md
-4) runner生成物（参照用）：
+5) runner生成物（参照用）：
    - docs/MEP/STATUS.md
    - docs/MEP/HANDOFF_WORK.md
    - docs/MEP/HANDOFF_AUDIT.md
+## 復旧手順（最小）
+1) まず docs/MEP/LIVE_STATE.json を読む
+2) LIVE_STATE が壊れている/矛盾時は docs/MEP/PROGRESS_JOURNAL.jsonl の末尾から直近の result=OK を起点に復旧する
+## CLAIM検証ルール（機械判定）
+- AIの「完成/定義済み/固定済み」主張は必ず CLAIMED として記録する。
+- VERIFIED への遷移は `python tools/runner/runner.py reconcile-claims` のみが行う（AIは宣言不可）。
+- `docs/MEP/CLAIMS/CLAIMS.jsonl` と `docs/MEP/ARCHIVE/CATALOG.jsonl` は初期空（append-only）で運用する。
+
+## 復旧の標準手順（AI見失い救出）
+1) LIVE/index → session を確認する
+2) 見失い疑いがあれば `python tools/runner/runner.py claims-list` を実行する
+3) `needs_attention` があれば `archive-search` → `archive-restore` → `reconcile-claims` の順で回収する
+
 ## 入口（固定手順）
 1) git fetch --prune origin
 2) git checkout -f main
