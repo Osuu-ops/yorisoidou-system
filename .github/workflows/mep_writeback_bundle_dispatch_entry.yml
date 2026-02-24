@@ -116,21 +116,10 @@ jobs:
           LAST_STOP_STATE="UNKNOWN"
           LAST_STOP_REASON="UNKNOWN"
           LAST_STOP_NEXT="UNKNOWN"
-          if [ -f "mep/run_state.json" ]; then
-            python - <<'PY'
-            import json
-            from pathlib import Path
-            p=Path("mep/run_state.json")
-            rs=json.loads(p.read_text(encoding="utf-8"))
-            run_status=str(rs.get("run_status","UNKNOWN") or "UNKNOWN")
-            lr=rs.get("last_result") or {}
-            reason=str(lr.get("reason_code","UNKNOWN") or "UNKNOWN")
-            nxt=str(rs.get("next_action","UNKNOWN") or "UNKNOWN")
-            print(run_status)
-            print(reason)
-            print(nxt)
-            PY
-          fi | {
+          { if [ -f "mep/run_state.json" ]; then
+              python -c 'import json; from pathlib import Path; rs=json.loads(Path("mep/run_state.json").read_text(encoding="utf-8")); run_status=str(rs.get("run_status","UNKNOWN") or "UNKNOWN"); lr=rs.get("last_result") or {}; reason=str(lr.get("reason_code","UNKNOWN") or "UNKNOWN"); nxt=str(rs.get("next_action","UNKNOWN") or "UNKNOWN"); print(run_status); print(reason); print(nxt)'
+            fi
+          } | {
             read -r s || true
             read -r r || true
             read -r n || true
@@ -262,4 +251,3 @@ jobs:
           path: |
             docs/MEP_STATUS/mep_health.json
             docs/MEP_STATUS/mep_health.md
-
