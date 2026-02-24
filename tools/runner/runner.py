@@ -88,6 +88,40 @@ def checkpoint_live_state(
     )
 
 
+def _resolve_run_id_fallback(run_id: str) -> str:
+    rid = (run_id or "").strip()
+    if rid:
+        return rid
+    try:
+        import json
+        rs = Path("mep/run_state.json")
+        if rs.exists():
+            obj = json.loads(rs.read_text(encoding="utf-8"))
+            rid2 = str(obj.get("run_id","") or "").strip()
+            if rid2:
+                return rid2
+    except Exception:
+        pass
+    return "RUN_UNSET"
+def _heartbeat_entry(cmd: str, step: str, run_id: str = "", note: str = "cmd_entry") -> None:
+    # WARN-only: never block runner main flow
+    try:
+        rid = _resolve_run_id_fallback(run_id)
+        checkpoint_live_state(
+            run_id=rid,
+            portfolio_id="UNSELECTED",
+            mode="EXEC_MODE",
+            primary_anchor=f"CMD:{cmd}",
+            phase=cmd,
+            next_item="CMD_ENTRY",
+            stop_kind="",
+            reason_code="",
+            evidence={"pr_url":"","workflow_run_url":"","commit_sha":git_head_sha() if "git_head_sha" in globals() else "", "note": note},
+            step=step,
+            result="OK",
+        )
+    except Exception as ex:
+        print(f"WARN: HEARTBEAT_WRITE_FAILED ({ex})", file=sys.stderr)
 def _gate_checkpoint_start(gate_name: str, run_id: str = "") -> None:
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
     checkpoint_live_state(
@@ -398,6 +432,8 @@ def status() -> int:
     write_json(RUN_STATE, rs)
     update_compiled(rs)
     rs = _after_compiled(rs)
+    _heartbeat_entry("status", "HEARTBEAT_STATUS", rs.get("run_id",""), "status")
+
     print(json.dumps({"run_id": rs.get("run_id", ""), "run_status": rs.get("run_status", ""), "next_action": rs.get("next_action", "")}, ensure_ascii=False))
     return 0
 def apply(draft_file: Path) -> int:
@@ -1498,6 +1534,8 @@ def main() -> int:
     ap_ar.add_argument("--archive-id", required=True)
 
     args = ap.parse_args()
+
+    _heartbeat_entry(args.cmd, "HEARTBEAT_CMD_START", "", "cmd_entry")
     try:
         if args.cmd == "boot":
             return boot()
@@ -1550,6 +1588,7 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
+
 
 
 
