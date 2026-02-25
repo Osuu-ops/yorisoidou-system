@@ -2,8 +2,6 @@ name: MEP Gate (PR)
 
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -15,7 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Aggregate required check-runs
+        if: env.ARTIFACTS_ONLY != '1'
         env:
         GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
           REPO: ${{ github.repository }}
@@ -65,4 +67,5 @@ PY
           fi
 
           echo "MEP Gate PASSED"
+
 
