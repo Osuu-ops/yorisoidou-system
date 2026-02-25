@@ -1,270 +1,822 @@
 # FIXED_HANDOFF（固定｜入口規約｜迷子ゼロ）
+
+[FIXED_OBJECTIVES]
+1) 8ゲート完全自動化
+2) 0ゲート完成
+3) SSOT一本化統合
+4) 地雷再発防止（矯正修正）
+
 このファイルは runner 生成物ではない（固定層）。
+
+
 会話文ではなく GitHub（固定層＋SSOT＋一次根拠）を正として運用する。
+
+
 ## 正（優先順位）
+
+
 1) 一次根拠：PR/commit/run/gh一次出力
+
+
 2) 復旧正本（リアルタイム引継ぎ＋巻き戻し）：
+
+
    - docs/MEP/LIVE_STATE.json（最新現在地）
+
+
    - docs/MEP/PROGRESS_JOURNAL.jsonl（巻き戻し用）
+
+
 3) 機械SSOT：mep/run_state.json
+
+
 4) 固定層：
+
+
    - docs/MEP/MASTER_GOAL.md
+
+
    - docs/MEP/ROADMAP.md
+
+
    - docs/MEP/BRANCHPOINTS.md
+
+
    - docs/MEP/CHAT_CHAIN_LEDGER.md
+
+
 5) runner生成物（参照用）：
+
+
    - docs/MEP/STATUS.md
+
+
    - docs/MEP/HANDOFF_WORK.md
+
+
    - docs/MEP/HANDOFF_AUDIT.md
+
+
 ## 復旧手順（最小）
+
+
 1) まず docs/MEP/LIVE_STATE.json を読む
+
+
 2) LIVE_STATE が壊れている/矛盾時は docs/MEP/PROGRESS_JOURNAL.jsonl の末尾から直近の result=OK を起点に復旧する
+
+
 ## CLAIM検証ルール（機械判定）
+
+
 - AIの「完成/定義済み/固定済み」主張は必ず CLAIMED として記録する。
+
+
 - VERIFIED への遷移は `python tools/runner/runner.py reconcile-claims` のみが行う（AIは宣言不可）。
+
+
 - `docs/MEP/CLAIMS/CLAIMS.jsonl` と `docs/MEP/ARCHIVE/CATALOG.jsonl` は初期空（append-only）で運用する。
 
+
+
+
+
 ## 復旧の標準手順（AI見失い救出）
+
+
 1) LIVE/index → session を確認する
+
+
 2) 見失い疑いがあれば `python tools/runner/runner.py claims-list` を実行する
+
+
 3) `needs_attention` があれば `archive-search` → `archive-restore` → `reconcile-claims` の順で回収する
 
+
+
+
+
 ## 入口（固定手順）
+
+
 1) git fetch --prune origin
+
+
 2) git checkout -f main
+
+
 3) git reset --hard origin/main
+
+
 4) python tools/runner/runner.py status
+
+
 ## 安全ゲート
+
+
 - destructive ops（apply-safe/merge-finish/compact delete）は handoff_ack.status == ACK が無い限り進めない
+
+
+
+
 
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
 
+
+
+
+
 ### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
+
+
 台帳が GitHub に反映されていない事故に備え、[MEP_BOOT] には必ず
+
+
 PARENT_CHECKPOINT_OUT_JSONL（親のCHECKPOINT_OUT 1行）を同梱する。
+
+
 新チャットが台帳から復元できない場合、この1行を貼るだけで復元できる。
 
+
+
+
+
 各チャットは「引継ぎタイミング（終端）」で必ず次を行う：
+
+
 1) NEXT_CHAT_ID を生成（衝突しない形式：例 CHAT_YYYYMMDDTHHMMSSZ_xxx）
+
+
 2) docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を追記（append-only）
+
+
 3) 次チャット冒頭に貼る本文として、下記 [MEP_BOOT] ブロックを **そのまま提示**する
+
+
    - PARENT_CHAT_ID は「このチャットが払い出した NEXT_CHAT_ID」を **具体値で埋める**（プレースホルダ禁止）
+
+
 ### 次チャット冒頭に貼る本文（固定）
+
+
 [MEP_BOOT]
+
+
 PARENT_CHAT_ID: （ここに前チャットが提示した NEXT_CHAT_ID を貼る）
+
+
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
+
+
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
+
+
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
+
+
+
+
 
 ### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
 
+
+
+
+
 ### EXEC_AUTO（EXEC専用一括｜AUTO_BOOTSTRAP_EXEC）
+
+
 アンカー優先順位：PrimaryAnchor指定 > PR(OPEN/HEADに紐づく) > PR(MERGED/HEADに紐づく) > COMMIT(main HEAD)
+
+
 目的：実装中（EXEC_MODE）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（作業ツリーはクリーン必須）。
+
+
 使い方（PowerShell）
+
+
 - リポジトリ直下で実行（main HEADを一次根拠に ledger-in/out → MEP_BOOT）：
+
+
   .\tools\runner\bootstrap_exec.ps1
+
+
 備考：
+
+
 - 作業ツリーが汚れていると停止（誤アンカー防止）。
+
+
 - DRAFT_MODE は GENESIS_AUTO（bootstrap.ps1）を使う。
 
+
+
+
+
 目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
+
+
 使い方（PowerShell）
+
+
 - リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
+
+
   .\tools\runner\bootstrap.ps1 -Draft docs/system/MEP_SYSTEM_PACK_v1.md
+
+
 備考：
+
+
 - Rulesetにより main 直pushは禁止。反映はPR経由。
+
+
 - EXEC_MODE（PR/merge起点）は別途拡張する（本節はDRAFT専用）。
+
+
+
+
+
+
 
 
 ユーザーが貼る指示は「最短1行」で成立させる。
+
+
 ### 最短1行（PORTFOLIO未指定でも開始可）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 ### 2行（推奨：並走A/B/Cの迷子防止）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 PORTFOLIO_ID: BIZ_A  （例）
+
+
 ### 継続（FOLLOW）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 PARENT_CHAT_ID: CHAT_...（前チャットの NEXT_CHAT_ID）
+
+
 分岐規則：
+
+
 - PARENT_CHAT_ID が空 → GENESIS（新規）
+
+
 - PARENT_CHAT_ID がある → FOLLOW（継続）## PRE_HANDOFF_GATE（NORMATIVE｜PRE_HANDOFF_GATE_V1）
+
+
 ユーザーが「引継ぎしたい」と言ったら、AIは必ず以下3点を機械的にチェックし、
+
+
 不足があれば STOP_REASON を明示して止め、分岐指示（最小の追加情報）だけ返すこと。
+
+
 ### チェック1：草案の Issue 注入（一次根拠化）
+
+
 - 最新草案が Issue に保存されていること（Issue URL が提示されること）
+
+
 - Issue が PORTFOLIO_ID と整合すること（BIZ_A/BIZ_B/BIZ_C 等）
+
+
 不足時：
+
+
 - STOP_REASON: DRAFT_NOT_INJECTED_TO_ISSUE
+
+
 - AIの次アクション：『草案を Issue に注入して URL を出してください（PORTFOLIO_ID も必要なら明示）』
+
+
 ### チェック2：RUN が収束していること（未収束のまま次へ行かない）
+
+
 - run_state / evidence が STILL_OPEN 放置ではない
+
+
 - PR が OPEN のままではない（必要なら merge-finish まで）
+
+
 不足時：
+
+
 - STOP_REASON: RUN_NOT_CONVERGED
+
+
 - AIの次アクション：『runner status → assemble-pr → apply-safe → merge-finish のどこで止まっているかを示し、次の1手だけ提示』
+
+
 ### チェック3：CHECKPOINT_OUT の準備（終端で次チャットへ渡せる状態）
+
+
 - THIS_CHAT_ID / NEXT_CHAT_ID を確定し、CHAT_CHAIN_LEDGER に CHECKPOINT_OUT を追記できる状態
+
+
 不足時：
+
+
 - STOP_REASON: CHECKPOINT_OUT_MISSING
+
+
 - AIの次アクション：『NEXT_CHAT_ID を発行し、CHECKPOINT_OUT を台帳に追記してから [MEP_BOOT] を出力』
+
+
 ### 全チェックOKの場合のみ
+
+
 - NEXT_CHAT_ID を発行
+
+
 - CHECKPOINT_OUT を docs/MEP/CHAT_CHAIN_LEDGER.md に append-only 追記
+
+
 - [MEP_BOOT] を出力（次チャット冒頭貼付用）
+
+
 更新: 2026-02-15T16:00:34Z
 
+
+
+
+
 ## PRE_HANDOFF_GATE（草案/実装 両対応｜NORMATIVE｜PRE_HANDOFF_GATE_V2_DUALMODE）
+
+
 目的：草案中（DRAFT）でも実装中（EXEC）でも、最終的に「固定→次へ渡す」が必ず通るようにする。
+
+
 Issue注入の“行為”を常時必須にせず、代わりに「一次根拠アンカー最低1つ」を必須とする。
+
+
 ### モード判定（AIが決める）
+
+
 - DRAFT_MODE（草案系）：Issue URL が一次根拠の中心
+
+
 - EXEC_MODE（実装系）：PR/commit が一次根拠の中心
+
+
 判定基準（推奨）：
+
+
 - ユーザーが Issue URL を提示 → DRAFT_MODE
+
+
 - run_state に PR/commit が入っている／RunnerでPRが見える → EXEC_MODE
+
+
 - どちらも無い → DRAFT_MODE（＝一次根拠ゼロを防ぐため）
+
+
 ### チェック0：PORTFOLIO_ID（並走対策）
+
+
 - 未指定でも進行可（UNSELECTED）
+
+
 - 並走（A/B/C）の場合は必須（BIZ_A/BIZ_B/BIZ_C 等）
+
+
 ### チェック1：一次根拠アンカー（最低1つ必須）
+
+
 アンカー候補（どれか1つでOK）：
+
+
 - Issue URL（草案の一次根拠）
+
+
 - PR URL（実装の一次根拠）
+
+
 - merge commit / commit sha（実装の一次根拠）
+
+
 - run_state.json の evidence（pr_url/commit_sha が埋まっている）
+
+
 不足時：
+
+
 - STOP_REASON: NO_PRIMARY_ANCHOR
+
+
 - AI次アクション：『Issue URL か PR/commit のどちらか1つを提示してから再実行』
+
+
 ### チェック2：RUN収束（未収束のまま次へ行かない）
+
+
 - STILL_OPEN 放置や、必要なPRがOPEN放置でないこと
+
+
 不足時：
+
+
 - STOP_REASON: RUN_NOT_CONVERGED
+
+
 - AI次アクション：runner status → assemble-pr → apply-safe → merge-finish の「どこで止まってるか」だけ返す
+
+
 ### チェック3：CHECKPOINT_OUT 準備（終端で次に渡せる状態）
+
+
 - NEXT_CHAT_ID を発行
+
+
 - docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を append-only 追記
+
+
 - [MEP_BOOT] を出力（次チャット冒頭貼付用、プレースホルダ禁止）
+
+
 不足時：
+
+
 - STOP_REASON: CHECKPOINT_OUT_MISSING
+
+
 - AI次アクション：『NEXT_CHAT_ID→台帳追記→[MEP_BOOT]出力』だけ返す
+
+
 ### 全チェックOKの場合のみ（終端アクション）
+
+
 - NEXT_CHAT_ID を発行
+
+
 - CHECKPOINT_OUT を台帳へ追記
+
+
 - [MEP_BOOT] を出力
+
+
 更新: 2026-02-15T16:21:03Z
 
+
+
+
+
 <!-- BEGIN MEP_FIXED_HANDOFF_V3 -->
+
+
 ## FIXED_HANDOFF_VERSION
+
+
 v3.0 （更新: 2026-02-15T16:31:33Z）
+
+
 ## 最短入口（SHORT_ENTRY_GUIDE｜NORMATIVE）
+
+
+
+
 
 ### GENESIS_AUTO（DRAFT専用一括｜AUTO_BOOTSTRAP）
 
+
+
+
+
 ### EXEC_AUTO（EXEC専用一括｜AUTO_BOOTSTRAP_EXEC）
+
+
 目的：実装中（EXEC_MODE）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（作業ツリーはクリーン必須）。
+
+
 使い方（PowerShell）
+
+
 - リポジトリ直下で実行（main HEADを一次根拠に ledger-in/out → MEP_BOOT）：
+
+
   .\tools\runner\bootstrap_exec.ps1
+
+
 備考：
+
+
 - 作業ツリーが汚れていると停止（誤アンカー防止）。
+
+
 - DRAFT_MODE は GENESIS_AUTO（bootstrap.ps1）を使う。
 
+
+
+
+
 目的：新規（GENESIS）で「一次根拠アンカー＋台帳＋MEP_BOOT」を PowerShell 1コマンドで完結させる（DRAFT_MODE専用）。
+
+
 使い方（PowerShell）
+
+
 - リポジトリ直下で実行（commit→ledger-in→ledger-out→MEP_BOOT）：
+
+
   .\tools\runner\bootstrap.ps1 -Draft docs/system/MEP_SYSTEM_PACK_v1.md
+
+
 備考：
+
+
 - Rulesetにより main 直pushは禁止。反映はPR経由。
+
+
 - EXEC_MODE（PR/merge起点）は別途拡張する（本節はDRAFT専用）。
 
 
+
+
+
+
+
+
 ユーザーは最短1行で開始できる（未指定は UNSELECTED）。
+
+
 ### 最短1行（GENESIS/FOLLOW 自動判定）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 ### 2行（推奨：並走A/B/C）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 PORTFOLIO_ID: BIZ_A
+
+
 ### 継続（FOLLOW 明示）
+
+
 引継ぎしたい。@github docs/MEP/FIXED_HANDOFF.md を読んで開始して。
+
+
 PARENT_CHAT_ID: CHAT_....
+
+
 ## CHAT_ID 規約（NORMATIVE）
+
+
 - THIS_CHAT_ID / NEXT_CHAT_ID 形式：
+
+
   CHAT_YYYYMMDDTHHMMSSZ_<4桁HEX>
+
+
 - 衝突しないように、AIは生成時刻＋乱数（4桁HEX）を付ける。
+
+
 ## PORTFOLIO_ID 規約（NORMATIVE）
+
+
 - 未指定: UNSELECTED（進行可）
+
+
 - 並走する場合は必須（例: BIZ_A / BIZ_B / BIZ_C）
+
+
 - 台帳（CHAT_CHAIN_LEDGER）と一次根拠（Issue/PR）に必ず PORTFOLIO_ID を持たせる。
+
+
 ## PRE_HANDOFF_GATE（草案/実装 両対応｜NORMATIVE｜PRE_HANDOFF_GATE_V3）
+
+
 目的：草案中（DRAFT）でも実装中（EXEC）でも、最終的に「固定→次へ渡す」が必ず通るようにする。
+
+
 Issue注入の“行為”を常時必須にせず、代わりに「一次根拠アンカー最低1つ」を必須とする。
+
+
 ### モード判定（AIが決める）
+
+
 - DRAFT_MODE：一次根拠アンカーが Issue 中心
+
+
 - EXEC_MODE：一次根拠アンカーが PR/commit 中心
+
+
 判定基準（推奨）：
+
+
 - Issue URL が提示されている → DRAFT_MODE
+
+
 - PR URL / commit sha / run_state evidence がある → EXEC_MODE
+
+
 - どれも無い → DRAFT_MODE（一次根拠ゼロ防止）
+
+
 ### チェック0：PORTFOLIO_ID
+
+
 - 未指定でも進行可（UNSELECTED）
+
+
 - 並走の場合は必須（BIZ_A/BIZ_B/BIZ_C）
+
+
 ### チェック1：一次根拠アンカー（最低1つ必須）
+
+
 アンカー候補（どれか1つでOK）：
+
+
 - Issue URL（草案の一次根拠） 例: ISSUE:https://github.com/.../issues/123
+
+
 - PR URL（実装の一次根拠）     例: PR:https://github.com/.../pull/456
+
+
 - merge commit / commit sha     例: COMMIT:abcdef...
+
+
 - run_state.json の evidence    例: EVIDENCE:pr_url/commit_sha
+
+
 不足時：
+
+
 - STOP_REASON: NO_PRIMARY_ANCHOR
+
+
 - AI次アクション：『Issue URL か PR/commit のどれか1つを提示して再実行』
+
+
 ### チェック2：RUN収束（未収束のまま次へ行かない）
+
+
 - STILL_OPEN 放置や、必要なPRがOPEN放置でないこと
+
+
 不足時：
+
+
 - STOP_REASON: RUN_NOT_CONVERGED
+
+
 - AI次アクション：runner status→assemble-pr→apply-safe→merge-finish の「どこで止まってるか」だけ返す
+
+
 ### チェック3：CHECKPOINT_OUT 準備（終端で次に渡せる状態）
+
+
 - NEXT_CHAT_ID を発行
+
+
 - docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を append-only 追記（JSONL）
+
+
 - [MEP_BOOT] を出力（次チャット冒頭貼付用、プレースホルダ禁止）
+
+
 不足時：
+
+
 - STOP_REASON: CHECKPOINT_OUT_MISSING
+
+
 - AI次アクション：『NEXT_CHAT_ID→台帳追記→[MEP_BOOT]出力』だけ返す
+
+
 ### 全チェックOKの場合のみ（終端アクション）
+
+
 - NEXT_CHAT_ID を発行
+
+
 - CHECKPOINT_OUT を台帳へ追記
+
+
 - [MEP_BOOT] を出力（次チャット冒頭貼付用）
+
+
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
 
+
+
+
+
 ### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
+
+
 台帳が GitHub に反映されていない事故に備え、[MEP_BOOT] には必ず
+
+
 PARENT_CHECKPOINT_OUT_JSONL（親のCHECKPOINT_OUT 1行）を同梱する。
+
+
 新チャットが台帳から復元できない場合、この1行を貼るだけで復元できる。
 
+
+
+
+
 各チャットは「引継ぎタイミング（終端）」で必ず次を行う：
+
+
 1) NEXT_CHAT_ID を生成（具体値で埋める。プレースホルダ禁止）
+
+
 2) docs/MEP/CHAT_CHAIN_LEDGER.md に CHECKPOINT_OUT を追記（append-only）
+
+
 3) 次チャット冒頭に貼る本文として、下記 [MEP_BOOT] を **そのまま提示**する
+
+
 ### 次チャット冒頭に貼る本文（固定）
+
+
 [MEP_BOOT]
+
+
 PARENT_CHAT_ID: <前チャットが提示した NEXT_CHAT_ID>
+
+
 PARENT_CHECKPOINT_OUT_JSONL: <親のCHECKPOINT_OUT 1行JSONL（next_chat_id==PARENT_CHAT_ID）>
+
+
 @github docs/MEP/FIXED_HANDOFF.md を読み、PARENT_CHAT_IDに一致するCHECKPOINT_OUTを docs/MEP/CHAT_CHAIN_LEDGER.md から復元して開始せよ。
+
+
 開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。
+
+
 <!-- END MEP_FIXED_HANDOFF_V3 -->
 
+
+
+
+
 ## RUNNER_LEDGER_COMMANDS（NORMATIVE｜RUNNER_LEDGER_COMMANDS_V1）
+
+
 台帳（CHAT_CHAIN_LEDGER）の追記は **手打ち禁止**。必ず runner コマンドで行う。
+
+
 （これにより ID衝突/時刻/HEAD取り違え/JSON崩れ を最小化する）
+
+
 ### CHECKPOINT_IN（新チャット冒頭）
+
+
 - 実行：
+
+
   python tools/runner/runner.py ledger-in --parent-chat-id <PARENT_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
+
+
 - 出力：this_chat_id（JSON）を返す → これを THIS_CHAT_ID として以後保持
+
+
 ### CHECKPOINT_OUT（チャット終端）
+
+
 - 実行：
+
+
   python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
+
+
 - 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
+
+
 注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
