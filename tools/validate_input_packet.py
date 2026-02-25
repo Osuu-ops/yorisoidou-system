@@ -40,7 +40,10 @@ def main() -> int:
     merged = p.parent / "MERGED_DRAFT.md"
     if not merged.exists():
         stop("MERGED_DRAFT.md not found next to INPUT_PACKET.md")
-    computed = hashlib.sha256(merged.read_bytes()).hexdigest()
+    # Normalize line endings before hashing to avoid CRLF/LF platform mismatch
+merged_text = merged.read_text(encoding="utf-8")
+normalized = merged_text.replace("\r\n", "\n").replace("\r", "\n")
+computed = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
     if computed != sha_value:
         stop("SHA256 mismatch (MERGED_DRAFT.md bytes)")
     print("PACKET_VALID")
