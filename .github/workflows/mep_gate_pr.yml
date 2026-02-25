@@ -39,7 +39,9 @@ jobs:
             echo "Artifacts-only PR detected; PASS (skip aggregation)."
             exit 0
           fi
-          echo "ARTIFACTS_ONLY=0" >> "$GITHUB_ENV"      - name: Aggregate required check-runs
+          echo "ARTIFACTS_ONLY=0" >> "$GITHUB_ENV"
+
+      - name: Aggregate required check-runs
         if: env.ARTIFACTS_ONLY != '1'
         env:
         GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
@@ -90,6 +92,7 @@ PY
           fi
 
           echo "MEP Gate PASSED"
+
 
 
 
