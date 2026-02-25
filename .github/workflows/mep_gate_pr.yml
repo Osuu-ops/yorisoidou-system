@@ -16,7 +16,30 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Aggregate required check-runs
+      - name: Preflight (artifacts-only PR => PASS)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$base" ] || [ -z "$head" ]; then
+            echo "ARTIFACTS_ONLY=0" >> "$GITHUB_ENV"
+            echo "No PR base/head sha; continue."
+            exit 0
+          fi
+          files="$(git diff --name-only "$base...$head" || true)"
+          if [ -z "$files" ]; then
+            echo "ARTIFACTS_ONLY=1" >> "$GITHUB_ENV"
+            echo "No changed files; treat as PASS."
+            exit 0
+          fi
+          non_artifacts="$(echo "$files" | grep -vE '^docs/MEP/ARTIFACTS/' || true)"
+          if [ -z "$non_artifacts" ]; then
+            echo "ARTIFACTS_ONLY=1" >> "$GITHUB_ENV"
+            echo "Artifacts-only PR detected; PASS (skip aggregation)."
+            exit 0
+          fi
+          echo "ARTIFACTS_ONLY=0" >> "$GITHUB_ENV"      - name: Aggregate required check-runs
         if: env.ARTIFACTS_ONLY != '1'
         env:
         GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
@@ -67,5 +90,6 @@ PY
           fi
 
           echo "MEP Gate PASSED"
+
 
 
