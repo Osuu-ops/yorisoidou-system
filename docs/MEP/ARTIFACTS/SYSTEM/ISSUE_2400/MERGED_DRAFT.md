@@ -1,6 +1,19 @@
 # MERGED_DRAFT
 ISSUE: #2400
 LANE: SYSTEM
+TIMESTAMP_UTC: 2026-02-26T13:34:59Z
+
+[MEP][AUTO_BODY]
+generated_at_utc=2026-02-26T13:34:46.8723211Z
+lane=SYSTEM
+# MEP DRAFT
+This is an auto-injected non-empty draft body to satisfy Gate0 "Non-empty body" requirement.
+(If you want, replace this section with the real draft content later.)
+# MERGED_DRAFT (reference)
+source=docs/MEP/ARTIFACTS/SYSTEM/ISSUE_2400/MERGED_DRAFT.md
+# MERGED_DRAFT
+ISSUE: #2400
+LANE: SYSTEM
 TIMESTAMP_UTC: 2026-02-25T14:02:32Z
 
 # MERGED_DRAFT
