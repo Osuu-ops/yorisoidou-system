@@ -6,6 +6,6 @@ SSOT_PATHS:
 - docs/MEP/STATUS.md
 
 LATEST_EVIDENCE_POINTERS:
-- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2608
+- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2625
 - commit_sha: 
-- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22422838507
+- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22424895460
