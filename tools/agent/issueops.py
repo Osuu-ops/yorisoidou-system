@@ -72,6 +72,21 @@ def gh_json(args):
     return json.loads(completed.stdout)
 
 
+
+
+def find_open_intake_pr_url(repo: str, run_id: str) -> str:
+    # Idempotency: if an intake PR for this run_id is already open, reuse it.
+    # This prevents duplicate intake PR bursts when /mep run is posted multiple times.
+    try:
+        pulls = gh_json([f"repos/{repo}/pulls?state=open&per_page=100"])
+        target_title = f"chore(mep): IssueOps intake {run_id}"
+        for pr in pulls:
+            title = (pr.get("title") or "").strip()
+            if title == target_title:
+                return (pr.get("html_url") or pr.get("url") or "").strip()
+    except Exception:
+        return ""
+    return ""
 def load_event():
     event_path = os.environ["GITHUB_EVENT_PATH"]
     with open(event_path, "r", encoding="utf-8") as f:
@@ -237,7 +252,11 @@ def main():
         write_draft(run_id, issue_body)
         workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "OPEN_PR", workflow_run_url, None)
-        pr_url, _ = git_pr_flow(repo, run_id, issue_number)
+        existing = find_open_intake_pr_url(repo, run_id)
+        if existing:
+            pr_url = existing
+        else:
+            pr_url, _ = git_pr_flow(repo, run_id, issue_number)
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)
         run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
