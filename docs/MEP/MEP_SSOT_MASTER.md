@@ -903,6 +903,15 @@ generated_at: (UTC/ISO)
 
 ## B-5) AUTO_LOOP_POLICY（要約：空欄OK）
 
+* Converge Policy（保険）:
+  * 通常運用では converge を呼ばない（no-converge が標準）
+  * converge 起動条件（例外・保険）:
+    * OPEN_INTAKE_COUNT > 1
+    * OPEN_WRITEBACK_COUNT > 1
+    * PR が no checks / required checks missing で停滞
+  * converge の役割:
+    * duplicate close / noop push / recreate による“収束掃除”のみ（平常系の前提にしない）
+
 * Loop Smoke DoD（運用合格条件）:
   * INTAKE: OPEN_INTAKE_COUNT == 1 を維持（/mep run 連打で増えない）
   * WRITEBACK: OPEN_WRITEBACK_COUNT <= 1 を維持（0=滞留なしとして合格、増えないこと）
