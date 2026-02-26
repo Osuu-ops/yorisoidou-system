@@ -27,24 +27,24 @@
   "last_result": {
     "stop_class": "",
     "reason_code": "ISSUEOPS_BOOTSTRAP_OK",
-    "next_action": "WAIT_PR_CHECKS",
-    "timestamp_utc": "2026-02-26T02:35:27Z",
+    "next_action": "OPEN_PR",
+    "timestamp_utc": "2026-02-26T10:41:02Z",
     "action": {
       "name": "ISSUEOPS_BOOT",
       "outcome": "OK"
     },
     "evidence": {
       "branch_name": "mep/issueops-run-run_fd3b5d765a60",
-      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2632",
+      "pr_url": null,
       "commit_sha": null,
-      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22425368093"
+      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22438507631"
     }
   },
-  "next_action": "WAIT_PR_CHECKS",
+  "next_action": "OPEN_PR",
   "repo": "Osuu-ops/yorisoidou-system",
   "run_id": "RUN_fd3b5d765a60",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-02-26T02:35:27Z",
+  "updated_at": "2026-02-26T10:41:02Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
