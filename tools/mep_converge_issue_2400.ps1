@@ -1,8 +1,3 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference='Stop'
-$ProgressPreference='SilentlyContinue'
-$env:GH_PAGER='cat'
-$env:GIT_PAGER='cat'
 param(
   [int]$Issue = 2400,
   [string]$RunId = "RUN_fd3b5d765a60",
@@ -10,6 +5,12 @@ param(
   [int]$ChecksWaitSeconds = 60,
   [switch]$CloseConflictingIntakes
 )
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
+$env:GH_PAGER='cat'
+$env:GIT_PAGER='cat'
 function _WaitChecks([int]$Pr, [int]$MaxSeconds) {
   $t = 0
   while ($t -lt $MaxSeconds) {
@@ -125,3 +126,4 @@ foreach ($it in $openWritebacks.items) {
 Write-Host ""
 Write-Host "=== Open PRs (now) ==="
 gh pr list --repo $Repo --state open -L 20
+
