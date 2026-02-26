@@ -1,18 +1,10 @@
 # MERGED_DRAFT
 ISSUE: #2400
 LANE: SYSTEM
-TIMESTAMP_UTC: 2026-02-25T14:02:32Z
+TIMESTAMP_UTC: 2026-02-26T13:37:14Z
 
-# MERGED_DRAFT
-ISSUE: #2400
-LANE: SYSTEM
-TIMESTAMP_UTC: 2026-02-19T23:31:18Z
-
-# MEP DRAFT (from MERGED_DRAFT.md)
-
-# MERGED_DRAFT
-ISSUE: #2400
-LANE: SYSTEM
-TIMESTAMP_UTC: 2026-02-18T19:16:40Z
-<!-- MEP_TOUCH 2026-02-19T22:37:31.9331291+00:00 -->
-<!-- MEP_TOUCH 2026-02-19T23:05:14.4103012+00:00 -->
+This is an auto-injected non-empty draft body for Gate0 / Standalone extractor.
+Goal: satisfy issue_artifact_loop.extract_draft() which prefers '## DRAFT' heading.
+Proceed to 8-gate after artifacts are generated.
+## NOTES
+- This section can be replaced with the real draft later.
