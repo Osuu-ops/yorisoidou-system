@@ -1,7 +1,7 @@
 PARENT_BUNDLE_VERSION
 v0.0.0+20260204_042728+main_34b5a6e0
 
-BUNDLE_VERSION = v0.0.0+20260226_010308+main_19e9f03
+BUNDLE_VERSION = v0.0.0+20260226_011514+main_f9443b1
 BUNDLED_AT = 2026-02-02T04:05:55+0900
 OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
 # MEP_BUNDLE
@@ -1262,3 +1262,5 @@ PR #2606 | audit=OK,WB0000 | appended_at=2026-02-26T00:44:15.0255578+00:00 | via
 PR #2609 | audit=OK,WB0000 | appended_at=2026-02-26T00:52:44.2534915+00:00 | via=mep_append_evidence_line_full.ps1
 * - PR #2610 | mergedAt=02/26/2026 01:02:23 | mergeCommit=19e9f03f55f68aa0be70625d012dc563db1c1f04 | BUNDLE_VERSION=v0.0.0+20260226_010308+main_19e9f03 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/2610
 PR #2610 | audit=OK,WB0000 | appended_at=2026-02-26T01:03:10.6093314+00:00 | via=mep_append_evidence_line_full.ps1
+* - PR #2611 | mergedAt=02/26/2026 01:14:27 | mergeCommit=f9443b1dbc2e8e07ff4c3947c25b1b6a06adf0f0 | BUNDLE_VERSION=v0.0.0+20260226_011514+main_f9443b1 | audit=OK,WB0000 | https://github.com/Osuu-ops/yorisoidou-system/pull/2611
+PR #2611 | audit=OK,WB0000 | appended_at=2026-02-26T01:15:17.2778291+00:00 | via=mep_append_evidence_line_full.ps1
