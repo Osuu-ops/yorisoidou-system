@@ -32,7 +32,7 @@ jobs:
           git config user.email "mep-issueops@users.noreply.github.com"
       - name: Run IssueOps
         env:
-          GH_TOKEN: GH_TOKEN: $\{\{ secrets.MEP_PR_TOKEN || github.token \}\}
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           GH_REPO:  ${{ github.repository }}
           GIT_AUTHOR_NAME: "mep-issueops"
           GIT_AUTHOR_EMAIL: "mep-issueops@users.noreply.github.com"
@@ -44,7 +44,7 @@ jobs:
 
       - name: Dispatch Gate0 (Audit/Compile/Dispatch)
         env:
-          GH_TOKEN: GH_TOKEN: $\{\{ secrets.MEP_PR_TOKEN || github.token \}\}
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
