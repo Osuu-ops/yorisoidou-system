@@ -1,0 +1,36 @@
+name: MEP Auto-Trigger Next Cycle (Writeback Merge)
+on:
+  pull_request:
+    types: [closed]
+permissions:
+  issues: write
+  pull-requests: read
+  contents: read
+jobs:
+  trigger:
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.title, 'Writeback bundle evidence')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide & post /mep run (idempotent)
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: "2400"
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="AUTO_TRIGGER_WRITEBACK_MERGE:${MERGE_SHA}"
+          echo "[INFO] key=${key}"
+          # Idempotency: skip if we've already posted this key.
+          # Check recent 200 comments (cheap, sufficient).
+          already="$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=200&sort=created&direction=desc" --jq "[.[].body | select(. != null) | select(test(\"${key}\"))] | length")"
+          if [ "${already}" != "0" ]; then
+            echo "[INFO] already posted (count=${already}) -> skip"
+            exit 0
+          fi
+          body=$'/mep run\n\n[MEP][AUTO_TRIGGER]\n'"${key}"$'\nreason=writeback_merged\n'
+          gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments" -X POST -f body="${body}" >/dev/null
+          echo "[OK] posted /mep run with key"
