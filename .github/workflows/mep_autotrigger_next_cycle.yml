@@ -10,7 +10,7 @@ jobs:
   trigger:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug workflow_run payload + post /mep run (success only, idempotent)
+      - name: Debug workflow_run payload + post /mep run (always once per run_id)
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           REPO: ${{ github.repository }}
@@ -21,6 +21,7 @@ jobs:
           WF_NAME: ${{ github.event.workflow_run.name }}
           WF_PATH: ${{ github.event.workflow_run.path }}
           EVENT: ${{ github.event.workflow_run.event }}
+          RUN_HTML_URL: ${{ github.event.workflow_run.html_url }}
         shell: bash
         run: |
           set -euo pipefail
@@ -30,11 +31,8 @@ jobs:
           echo "[DEBUG] workflow_run.name=${WF_NAME}"
           echo "[DEBUG] workflow_run.path=${WF_PATH}"
           echo "[DEBUG] workflow_run.event=${EVENT}"
-          # Only on success
-          if [ "${CONCLUSION}" != "success" ]; then
-            echo "[INFO] skip posting because conclusion != success"
-            exit 0
-          fi
+          echo "[DEBUG] workflow_run.html_url=${RUN_HTML_URL}"
+          # Always post once per RUN_ID (idempotent)
           key="AUTO_TRIGGER_WRITEBACK_RUN:${RUN_ID}"
           echo "[INFO] key=${key}"
           already="$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=200&sort=created&direction=desc" --jq "[.[].body | select(. != null) | select(test(\"${key}\"))] | length")"
@@ -42,6 +40,6 @@ jobs:
             echo "[INFO] already posted (count=${already}) -> skip"
             exit 0
           fi
-          body=$'/mep run\n\n[MEP][AUTO_TRIGGER]\n'"${key}"$'\nreason=writeback_workflow_run_success\n'
+          body=$'/mep run\n\n[MEP][AUTO_TRIGGER]\n'"${key}"$'\nreason=writeback_workflow_run_completed\nstatus='"${STATUS}"$'\nconclusion='"${CONCLUSION}"$'\nrun_url='"${RUN_HTML_URL}"$'\n'
           gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments" -X POST -f body="${body}" >/dev/null
           echo "[OK] posted /mep run with key"
