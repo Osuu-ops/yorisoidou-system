@@ -8,18 +8,33 @@ permissions:
   contents: read
 jobs:
   trigger:
-    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - name: Post /mep run (idempotent; by workflow_run id)
+      - name: Debug workflow_run payload + post /mep run (success only, idempotent)
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: "2400"
           RUN_ID: ${{ github.event.workflow_run.id }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          STATUS: ${{ github.event.workflow_run.status }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_PATH: ${{ github.event.workflow_run.path }}
+          EVENT: ${{ github.event.workflow_run.event }}
         shell: bash
         run: |
           set -euo pipefail
+          echo "[DEBUG] workflow_run.id=${RUN_ID}"
+          echo "[DEBUG] workflow_run.status=${STATUS}"
+          echo "[DEBUG] workflow_run.conclusion=${CONCLUSION}"
+          echo "[DEBUG] workflow_run.name=${WF_NAME}"
+          echo "[DEBUG] workflow_run.path=${WF_PATH}"
+          echo "[DEBUG] workflow_run.event=${EVENT}"
+          # Only on success
+          if [ "${CONCLUSION}" != "success" ]; then
+            echo "[INFO] skip posting because conclusion != success"
+            exit 0
+          fi
           key="AUTO_TRIGGER_WRITEBACK_RUN:${RUN_ID}"
           echo "[INFO] key=${key}"
           already="$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=200&sort=created&direction=desc" --jq "[.[].body | select(. != null) | select(test(\"${key}\"))] | length")"
