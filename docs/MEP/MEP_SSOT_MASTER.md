@@ -903,6 +903,11 @@ generated_at: (UTC/ISO)
 
 ## B-5) AUTO_LOOP_POLICY（要約：空欄OK）
 
+* Loop Smoke DoD（運用合格条件）:
+  * INTAKE: OPEN_INTAKE_COUNT == 1 を維持（/mep run 連打で増えない）
+  * WRITEBACK: OPEN_WRITEBACK_COUNT <= 1 を維持（0=滞留なしとして合格、増えないこと）
+  * 追加観測: writeback は「生成→closed/merged」へ収束し、open滞留を原則作らない
+
 * 薄い入力は問題にしない：AIがAUTO補完（Q106）。
 * STOPは2系統のみ：境界不明・汚染リスク／不可逆・高コスト（Q109）。
 * STOP時：SSOTから材料復元→選択肢提示（Q112）。Machine-Onlyは質問ではなくRECOVERY起票（Q113）。
