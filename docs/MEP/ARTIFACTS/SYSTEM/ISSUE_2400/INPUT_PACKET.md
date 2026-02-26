@@ -4,7 +4,7 @@ ISSUE_NUMBER: 2400
 ISSUE_URL: https://github.com/Osuu-ops/yorisoidou-system/issues/2400
 RUN_URL: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22400196088
 SAFE_MODE: STANDALONE_PRE_8GATE
-DOES_NOT_TRIGGER_8GATE: true
+DOES_NOT_TRIGGER_8GATE: false
 MERGED_DRAFT_SHA256: b5e4335d863f64a1634ebdb7e0df5a335b1bbbc719c4939ff71858ce3322160d
 
 ## Payload
