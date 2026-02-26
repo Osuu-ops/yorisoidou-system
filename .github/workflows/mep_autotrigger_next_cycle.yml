@@ -1,41 +1,32 @@
-name: MEP Auto-Trigger Next Cycle (Writeback Close)
+name: MEP Auto-Trigger Next Cycle (Writeback Completed)
 on:
-  pull_request:
-    types: [closed]
+  workflow_run:
+    workflows: ["MEP Writeback Bundle (Entry)"]
+    types: [completed]
 permissions:
   issues: write
-  pull-requests: read
   contents: read
 jobs:
   trigger:
-    if: startsWith(github.event.pull_request.title, 'Writeback bundle evidence')
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - name: Post /mep run (idempotent; merged or closed)
+      - name: Post /mep run (idempotent; by workflow_run id)
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: "2400"
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGED: ${{ github.event.pull_request.merged }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ "${MERGED}" = "true" ] && [ -n "${MERGE_SHA}" ]; then
-            key="AUTO_TRIGGER_WRITEBACK_MERGE:${MERGE_SHA}"
-            reason="writeback_merged"
-          else
-            key="AUTO_TRIGGER_WRITEBACK_CLOSED:${PR_NUMBER}:${HEAD_SHA}"
-            reason="writeback_closed_not_merged"
-          fi
-          echo "[INFO] key=${key} reason=${reason}"
+          key="AUTO_TRIGGER_WRITEBACK_RUN:${RUN_ID}"
+          echo "[INFO] key=${key}"
           already="$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=200&sort=created&direction=desc" --jq "[.[].body | select(. != null) | select(test(\"${key}\"))] | length")"
           if [ "${already}" != "0" ]; then
             echo "[INFO] already posted (count=${already}) -> skip"
             exit 0
           fi
-          body=$'/mep run\n\n[MEP][AUTO_TRIGGER]\n'"${key}"$'\nreason='"${reason}"$'\n'
+          body=$'/mep run\n\n[MEP][AUTO_TRIGGER]\n'"${key}"$'\nreason=writeback_workflow_run_success\n'
           gh api "repos/${REPO}/issues/${ISSUE_NUMBER}/comments" -X POST -f body="${body}" >/dev/null
           echo "[OK] posted /mep run with key"
