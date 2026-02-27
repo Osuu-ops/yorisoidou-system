@@ -1,6 +1,6 @@
 # STATUS
 
-RUN_ID: RUN_5b8c712dddea
+RUN_ID: RUN_de849a498e5b
 
 RUN_STATUS: STILL_OPEN
 
@@ -8,10 +8,10 @@ STOP_CLASS:
 
 REASON_CODE: ISSUEOPS_BOOTSTRAP_OK
 
-NEXT_ACTION: WAIT_PR_CHECKS
+NEXT_ACTION: OPEN_PR
 
-TIMESTAMP_UTC: 2026-02-27T16:29:55Z
+TIMESTAMP_UTC: 2026-02-27T16:40:03Z
 
 EVIDENCE:
-- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2700
-- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22494598724
+- pr_url: 
+- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22494962137
