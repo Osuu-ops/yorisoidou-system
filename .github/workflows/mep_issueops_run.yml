@@ -30,7 +30,14 @@ jobs:
           set -euo pipefail
           git config user.name  "mep-issueops"
           git config user.email "mep-issueops@users.noreply.github.com"
-      - name: Run IssueOps
+      - name: Checkout IssueOps work branch (avoid pushing main)  # ISSUEOPS_WORK_BRANCH
+        shell: bash
+        run: |
+          set -euo pipefail
+          BR="mep/issueops-work-${GITHUB_RUN_ID}"
+          git checkout -B "$BR"
+          # best-effort: create remote branch to ensure subsequent pushes never touch main
+          git push -u origin "$BR" >/dev/null 2>&1 || true      - name: Run IssueOps
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           GH_REPO:  ${{ github.repository }}
