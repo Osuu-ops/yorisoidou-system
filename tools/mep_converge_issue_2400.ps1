@@ -25,7 +25,8 @@ function _WaitChecks([int]$Pr, [int]$MaxSeconds) {
 function _NoopPush([int]$Pr) {
   if (-not (Test-Path ".git")) { throw "STOP_HARD: NOT_IN_REPO_ROOT" }
   if (git status --porcelain) { throw "STOP_HARD: WORKING_TREE_DIRTY" }
-  $pi = gh api "/repos/$Repo/pulls/$Pr" | ConvertFrom-Json
+  # [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
   if ($pi.state -ne "open") { return }
   $headRef = [string]$pi.head.ref
   if (-not $headRef) { throw "STOP_HARD: PR_HEAD_REF_EMPTY" }
@@ -42,7 +43,8 @@ function _RecreateWriteback([int]$SrcPr) {
   git fetch --prune origin | Out-Null
   git checkout -f main | Out-Null
   git reset --hard origin/main | Out-Null
-  $p = gh api "/repos/$Repo/pulls/$SrcPr" | ConvertFrom-Json
+  # [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
   if ($p.state -ne "open") { return }
   $srcUrl  = [string]$p.html_url
   $baseSha = [string]$p.base.sha
@@ -84,18 +86,23 @@ git fetch --prune origin | Out-Null
 git checkout -f main | Out-Null
 git reset --hard origin/main | Out-Null
 # kick loop
-@{ body="/mep run" } | ConvertTo-Json | gh api "/repos/$Repo/issues/$Issue/comments" -X POST --input - | Out-Null
-Write-Host "OK: posted /mep run"
+# [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
+# [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
 # discover OPEN loop PRs
-$openWritebacks = gh api "/search/issues?q=repo:$Repo+is:pr+is:open+%22Writeback%20bundle%20evidence%22&per_page=10" | ConvertFrom-Json
-$openIntakes    = gh api "/search/issues?q=repo:$Repo+is:pr+is:open+%22IssueOps%20intake%20$RunId%22&per_page=10" | ConvertFrom-Json
+# [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
+# [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
 Write-Host "=== OPEN LOOP PRs ==="
 foreach ($it in $openIntakes.items)   { Write-Host ("INTAKE  #{0} {1}" -f $it.number, $it.title) }
 foreach ($it in $openWritebacks.items){ Write-Host ("WRITEBK #{0} {1}" -f $it.number, $it.title) }
 # intake converge
 foreach ($it in $openIntakes.items) {
   $n = [int]$it.number
-  $pi = gh api "/repos/$Repo/pulls/$n" | ConvertFrom-Json
+  # [AUTO_MEP_RUN_DISABLED] /mep run auto-comment disabled
+
   if ($pi.mergeable -eq $false) {
     if ($CloseConflictingIntakes) {
       gh pr close $n --repo $Repo --comment "Closing conflicting duplicate intake; loop will generate next." | Out-Null
