@@ -62,4 +62,4 @@ jobs:
           gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}"
 concurrency:
   group: mep-issueops-issue-$\{\{ github.event.issue.number \}\}
-  cancel-in-progress: true
+  cancel-in-progress: false
