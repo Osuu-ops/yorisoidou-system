@@ -37,7 +37,9 @@ jobs:
           BR="mep/issueops-work-${GITHUB_RUN_ID}"
           git checkout -B "$BR"
           # best-effort: create remote branch to ensure subsequent pushes never touch main
-          git push -u origin "$BR" >/dev/null 2>&1 || true      - name: Run IssueOps
+          git push -u origin "$BR" >/dev/null 2>&1 || true
+
+      - name: Run IssueOps
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           GH_REPO:  ${{ github.repository }}

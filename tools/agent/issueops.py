@@ -202,7 +202,7 @@ def git_pr_flow(repo, run_id, issue_number):
     run(["git","checkout","-B", branch])
     run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
     run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])
-    run(["git", "push", "-u", "origin", branch])
+    run(["git","push","-u","origin", f"HEAD:refs/heads/{branch}"])
     pr = run([
         "gh", "pr", "create",
         "--repo", repo,
@@ -226,6 +226,17 @@ def post_issue_comment(repo, issue_number, run_id, outcome, reason_code, next_ac
     ])
     run(["gh", "issue", "comment", str(issue_number), "--repo", repo, "--body", body])
     return workflow_run_url
+
+def get_pr_head_ref(repo: str, pr_url: str) -> str:
+    # pr_url: https://github.com/<org>/<repo>/pull/<num>
+    try:
+        num = pr_url.rstrip('/').split('/')[-1]
+        pr = gh_json([f"repos/{repo}/pulls/{num}"])
+        head = (pr.get('head') or {})
+        ref = (head.get('ref') or '').strip()
+        return ref
+    except Exception:
+        return ''
 
 
 def main():
@@ -255,12 +266,20 @@ def main():
         existing = find_open_intake_pr_url(repo, run_id)
         if existing:
             pr_url = existing
+            head_ref = get_pr_head_ref(repo, pr_url)
+            if head_ref:
+                run(["git","fetch","origin", head_ref])
+                run(["git","checkout","-B", head_ref, f"origin/{head_ref}"])
         else:
             pr_url, _ = git_pr_flow(repo, run_id, issue_number)
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)
         run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
-        run(["git","push","-u","origin", f"HEAD:{branch}"])
+        # PUSH_GUARD: never push main; always push current HEAD to its branch explicitly
+        current_branch = run(["git","rev-parse","--abbrev-ref","HEAD"]).stdout.strip()
+        if current_branch == "main":
+            raise RuntimeError("PUSH_GUARD: refusing to push main")
+        run(["git","push","origin", f"HEAD:refs/heads/{current_branch}"])
         post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
