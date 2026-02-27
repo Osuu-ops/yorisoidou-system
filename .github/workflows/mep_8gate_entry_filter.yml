@@ -17,21 +17,8 @@ jobs:
       - name: Validate INPUT_PACKET contract
         run: |
           python3 tools/validate_input_packet.py "${{ inputs.packet_path }}"
-
       - name: MEP_GATE1_TO_GATE0_ISSUEOPS_BRIDGE
-        if: ${{ success() }}
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
+        if: ${{ false }}
         run: |
-          set -euo pipefail
-          P="${{ inputs.packet_path }}"
-          # Extract ISSUE_NUMBER from INPUT_PACKET.md
-          N="$(grep -m1 -E '^ISSUE_NUMBER:\s*' "$P" | sed -E 's/^ISSUE_NUMBER:\s*//')"
-          if [ -z "$N" ]; then
-            echo "::error::ISSUE_NUMBER not found in INPUT_PACKET"
-            exit 2
-          fi
-          echo "[bridge] commenting /mep run to issue #$N"
-          gh api "repos/${{ github.repository }}/issues/$N/comments" -f body="/mep run" >/dev/null
-          echo "[bridge] OK"
+          echo "[bridge] disabled (prevent infinite /mep run loop)"
+
