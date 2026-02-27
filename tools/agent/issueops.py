@@ -1,1 +1,225 @@
-#!/usr/bin/env python3import datetime as dtimport hashlibimport jsonimport osimport subprocessimport sysfrom pathlib import PathROOT = Path(__file__).resolve().parents[2]RUN_STATE_PATH = ROOT / "mep/run_state.json"STATUS_PATH = ROOT / "docs/MEP/STATUS.md"AUDIT_PATH = ROOT / "docs/MEP/HANDOFF_AUDIT.md"WORK_PATH = ROOT / "docs/MEP/HANDOFF_WORK.md"INBOX_DIR = ROOT / "mep/inbox"def _issueops_unique_suffix() -> str:    # Avoid branch push collisions between multiple runs.    # Prefer Actions run id; fallback to UTC timestamp.    rid = (os.environ.get('GITHUB_RUN_ID') or '').strip()    if rid:        return rid    from datetime import datetime, timezone    return datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')def run(cmd):    try:        return subprocess.run(cmd, check=True, text=True, capture_output=True)    except subprocess.CalledProcessError as e:        print("ERROR: command failed")        print("CMD:", " ".join(map(str, e.cmd)))        if e.stdout:            print("---- STDOUT ----")            print(e.stdout)        if e.stderr:            print("---- STDERR ----")            print(e.stderr)        raisedef utc_now():    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")# MEP_ISSUEOPS_GIT_IDENTITYdef ensure_git_identity():    # Ensure git commit works on GitHub-hosted runners (env + global + repo-local).    import os as _os    _os.environ.setdefault("GIT_AUTHOR_NAME", "github-actions")    _os.environ.setdefault("GIT_AUTHOR_EMAIL", "actions@users.noreply.github.com")    _os.environ.setdefault("GIT_COMMITTER_NAME", "github-actions")    _os.environ.setdefault("GIT_COMMITTER_EMAIL", "actions@users.noreply.github.com")    # Global (covers cases where git refuses empty ident even if repo-local is set)    run(["git", "config", "--global", "user.name", "github-actions"])    run(["git", "config", "--global", "user.email", "actions@users.noreply.github.com"])    # Repo-local (preferred)    run(["git", "config", "user.name", "github-actions"])    run(["git", "config", "user.email", "actions@users.noreply.github.com"])def canonicalize(text: str) -> str:    return text.replace("\r\n", "\n").replace("\r", "\n").strip()def calc_run_id(canonical_draft: str) -> str:    h = hashlib.sha256(canonical_draft.encode("utf-8")).hexdigest()[:12]    return f"RUN_{h}"def gh_json(args):    completed = run(["gh", "api", *args])    return json.loads(completed.stdout)def find_open_intake_pr_url(repo: str, run_id: str) -> str:    # Idempotency: if an intake PR for this run_id is already open, reuse it.    # This prevents duplicate intake PR bursts when /mep run is posted multiple times.    try:        pulls = gh_json([f"repos/{repo}/pulls?state=open&per_page=100"])        target_title = f"chore(mep): IssueOps intake {run_id}"        for pr in pulls:            title = (pr.get("title") or "").strip()            if title == target_title:                return (pr.get("html_url") or pr.get("url") or "").strip()    except Exception:        return ""    return ""def load_event():    event_path = os.environ["GITHUB_EVENT_PATH"]    with open(event_path, "r", encoding="utf-8") as f:        return json.load(f)def should_run(issue, latest_comment_body):    body_trimmed = (issue.get("body") or "").strip()    body_trigger = body_trimmed.endswith("/mep run")    comment_trigger = "/mep run" in (latest_comment_body or "")    return body_trigger or comment_triggerdef fetch_latest_comment(repo, issue_number):    comments = gh_json([f"repos/{repo}/issues/{issue_number}/comments?per_page=1&sort=created&direction=desc"])    if comments:        return comments[-1].get("body") or ""    return ""def update_run_state(run_id, outcome, reason_code, next_action, workflow_run_url, pr_url):    now = utc_now()    state = {}    if RUN_STATE_PATH.exists():        state = json.loads(RUN_STATE_PATH.read_text(encoding="utf-8"))    state["run_id"] = run_id    state["run_status"] = "STILL_OPEN" if outcome == "PASS" else "STOPPED"    state["next_action"] = next_action    state["last_result"] = {        "stop_class": "" if outcome == "PASS" else outcome,        "reason_code": reason_code,        "next_action": next_action,        "timestamp_utc": now,        "action": {"name": "ISSUEOPS_BOOT", "outcome": "OK" if outcome == "PASS" else "NG"},        "evidence": {            "branch_name": f"mep/issueops-run-{run_id.lower()}",            "pr_url": pr_url,            "commit_sha": None,            "workflow_run_url": workflow_run_url,        },    }    state["updated_at"] = now    RUN_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)    RUN_STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")    STATUS_PATH.write_text(        "\n".join([            "# STATUS",            "",            f"RUN_ID: {run_id}",            "",            "RUN_STATUS: STILL_OPEN" if outcome == "PASS" else "RUN_STATUS: STOPPED",            "",            f"STOP_CLASS: {'' if outcome == 'PASS' else outcome}",            "",            f"REASON_CODE: {reason_code}",            "",            f"NEXT_ACTION: {next_action}",            "",            f"TIMESTAMP_UTC: {now}",            "",            "EVIDENCE:",            f"- pr_url: {pr_url or ''}",            f"- workflow_run_url: {workflow_run_url or ''}",            "",        ]),        encoding="utf-8",    )    AUDIT_PATH.write_text(        "\n".join([            "# HANDOFF_AUDIT",            "",            "SSOT_PATHS:",            "- mep/run_state.json",            "- mep/inbox/",            "- docs/MEP/STATUS.md",            "",            "LATEST_EVIDENCE_POINTERS:",            f"- pr_url: {pr_url or ''}",            "- commit_sha: ",            f"- workflow_run_url: {workflow_run_url or ''}",            "",        ]),        encoding="utf-8",    )    WORK_PATH.write_text(        "\n".join([            "# HANDOFF_WORK",            "",            f"NEXT_ACTION: {next_action}",            f"REASON_CODE: {reason_code}",            f"STOP_CLASS: {'' if outcome == 'PASS' else outcome}",            "",        ]),        encoding="utf-8",    )def write_draft(run_id, issue_body):    canonical = canonicalize(issue_body)    INBOX_DIR.mkdir(parents=True, exist_ok=True)    p = INBOX_DIR / f"draft_{run_id}.md"    p.write_text(canonical + "\n", encoding="utf-8")def git_pr_flow(repo, run_id, issue_number):    uniq = (os.environ.get("GITHUB_RUN_ID") or "").strip() or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")    branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"    run(["git", "checkout", "-b", branch])    run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])    run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])    run(["git", "push", "-u", "origin", branch])    pr = run([        "gh", "pr", "create",        "--repo", repo,        "--base", "main",        "--head", branch,        "--title", f"chore(mep): IssueOps intake {run_id}",        "--body", f"Auto-generated by IssueOps from issue #{issue_number}.\n\n- run_id: {run_id}\n",    ])    return pr.stdout.strip(), branchdef post_issue_comment(repo, issue_number, run_id, outcome, reason_code, next_action, pr_url):    workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"    body = "\n".join([        f"RUN_ID={run_id}",        f"OUTCOME={outcome}",        f"REASON_CODE={reason_code}",        f"NEXT_ACTION={next_action}",        f"PR_URL={pr_url or ''}",        f"EVIDENCE={workflow_run_url}",    ])    run(["gh", "issue", "comment", str(issue_number), "--repo", repo, "--body", body])    return workflow_run_urldef main():    ensure_git_identity()    repo = os.environ["GITHUB_REPOSITORY"]    event = load_event()    issue = event.get("issue", {})    issue_number = issue.get("number")    if not issue_number:        print("No issue context.")        return 0    comment = event.get("comment", {}) or {}    event_comment_body = (comment.get("body") or "")    latest_comment_body = event_comment_body or fetch_latest_comment(repo, issue_number)    if not should_run(issue, latest_comment_body):        print("No /mep run trigger found.")        return 0    issue_body = issue.get("body") or ""    run_id = calc_run_id(canonicalize(issue_body))    try:        write_draft(run_id, issue_body)        workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"        update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "OPEN_PR", workflow_run_url, None)        existing = find_open_intake_pr_url(repo, run_id)        if existing:            pr_url = existing        else:            pr_url, _ = git_pr_flow(repo, run_id, issue_number)        update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)        run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])        run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])        run(["git", "push"])        post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)        return 0    except Exception as e:        reason = "STATE_UPDATE_FAILED"        outcome = "STOP_HARD"        next_action = "FIX_ISSUEOPS_NO_MAIN_PUSH"        try:            workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"            update_run_state(run_id, outcome, reason, next_action, workflow_run_url, None)        except Exception:            reason = "STATE_UPDATE_FAILED"        post_issue_comment(repo, issue_number, run_id, outcome, reason, next_action, None)        print(f"Error: {e}")        return 1if __name__ == "__main__":    sys.exit(main())
+#!/usr/bin/env python3
+import datetime as dt
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+RUN_STATE_PATH = ROOT / "mep/run_state.json"
+STATUS_PATH = ROOT / "docs/MEP/STATUS.md"
+AUDIT_PATH = ROOT / "docs/MEP/HANDOFF_AUDIT.md"
+WORK_PATH = ROOT / "docs/MEP/HANDOFF_WORK.md"
+INBOX_DIR = ROOT / "mep/inbox"
+
+
+def _issueops_unique_suffix() -> str:
+    # Avoid branch push collisions between multiple runs.
+    # Prefer Actions run id; fallback to UTC timestamp.
+    rid = (os.environ.get('GITHUB_RUN_ID') or '').strip()
+    if rid:
+        return rid
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+
+
+def run(cmd):
+    try:
+        return subprocess.run(cmd, check=True, text=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print("ERROR: command failed")
+        print("CMD:", " ".join(map(str, e.cmd)))
+        if e.stdout:
+            print("---- STDOUT ----")
+            print(e.stdout)
+        if e.stderr:
+            print("---- STDERR ----")
+            print(e.stderr)
+        raise
+
+
+def utc_now():
+    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+# MEP_ISSUEOPS_GIT_IDENTITY
+def ensure_git_identity():
+    # Ensure git commit works on GitHub-hosted runners (env + global + repo-local).
+    import os as _os
+    _os.environ.setdefault("GIT_AUTHOR_NAME", "github-actions")
+    _os.environ.setdefault("GIT_AUTHOR_EMAIL", "actions@users.noreply.github.com")
+    _os.environ.setdefault("GIT_COMMITTER_NAME", "github-actions")
+    _os.environ.setdefault("GIT_COMMITTER_EMAIL", "actions@users.noreply.github.com")
+    # Global (covers cases where git refuses empty ident even if repo-local is set)
+    run(["git", "config", "--global", "user.name", "github-actions"])
+    run(["git", "config", "--global", "user.email", "actions@users.noreply.github.com"])
+    # Repo-local (preferred)
+    run(["git", "config", "user.name", "github-actions"])
+    run(["git", "config", "user.email", "actions@users.noreply.github.com"])
+def canonicalize(text: str) -> str:
+    return text.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+
+def calc_run_id(canonical_draft: str) -> str:
+    h = hashlib.sha256(canonical_draft.encode("utf-8")).hexdigest()[:12]
+    return f"RUN_{h}"
+
+
+def gh_json(args):
+    completed = run(["gh", "api", *args])
+    return json.loads(completed.stdout)
+
+
+
+
+def find_open_intake_pr_url(repo: str, run_id: str) -> str:
+    # Idempotency: if an intake PR for this run_id is already open, reuse it.
+    # This prevents duplicate intake PR bursts when /mep run is posted multiple times.
+    try:
+        pulls = gh_json([f"repos/{repo}/pulls?state=open&per_page=100"])
+        target_title = f"chore(mep): IssueOps intake {run_id}"
+        for pr in pulls:
+            title = (pr.get("title") or "").strip()
+            if title == target_title:
+                return (pr.get("html_url") or pr.get("url") or "").strip()
+    except Exception:
+        return ""
+    return ""
+def load_event():
+    event_path = os.environ["GITHUB_EVENT_PATH"]
+    with open(event_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def should_run(issue, latest_comment_body):
+    body_trimmed = (issue.get("body") or "").strip()
+    body_trigger = body_trimmed.endswith("/mep run")
+    comment_trigger = "/mep run" in (latest_comment_body or "")
+    return body_trigger or comment_trigger
+
+
+def fetch_latest_comment(repo, issue_number):
+    comments = gh_json([f"repos/{repo}/issues/{issue_number}/comments?per_page=1&sort=created&direction=desc"])
+    if comments:
+        return comments[-1].get("body") or ""
+    return ""
+
+
+def update_run_state(run_id, outcome, reason_code, next_action, workflow_run_url, pr_url):
+    now = utc_now()
+    state = {}
+    if RUN_STATE_PATH.exists():
+        state = json.loads(RUN_STATE_PATH.read_text(encoding="utf-8"))
+
+    state["run_id"] = run_id
+    state["run_status"] = "STILL_OPEN" if outcome == "PASS" else "STOPPED"
+    state["next_action"] = next_action
+    state["last_result"] = {
+        "stop_class": "" if outcome == "PASS" else outcome,
+        "reason_code": reason_code,
+        "next_action": next_action,
+        "timestamp_utc": now,
+        "action": {"name": "ISSUEOPS_BOOT", "outcome": "OK" if outcome == "PASS" else "NG"},
+        "evidence": {
+            "branch_name": f"mep/issueops-run-{run_id.lower()}",
+            "pr_url": pr_url,
+            "commit_sha": None,
+            "workflow_run_url": workflow_run_url,
+        },
+    }
+    state["updated_at"] = now
+    RUN_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    RUN_STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    STATUS_PATH.write_text(
+        "\n".join([
+            "# STATUS",
+            "",
+            f"RUN_ID: {run_id}",
+            "",
+            "RUN_STATUS: STILL_OPEN" if outcome == "PASS" else "RUN_STATUS: STOPPED",
+            "",
+            f"STOP_CLASS: {'' if outcome == 'PASS' else outcome}",
+            "",
+            f"REASON_CODE: {reason_code}",
+            "",
+            f"NEXT_ACTION: {next_action}",
+            "",
+            f"TIMESTAMP_UTC: {now}",
+            "",
+            "EVIDENCE:",
+            f"- pr_url: {pr_url or ''}",
+            f"- workflow_run_url: {workflow_run_url or ''}",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+
+    AUDIT_PATH.write_text(
+        "\n".join([
+            "# HANDOFF_AUDIT",
+            "",
+            "SSOT_PATHS:",
+            "- mep/run_state.json",
+            "- mep/inbox/",
+            "- docs/MEP/STATUS.md",
+            "",
+            "LATEST_EVIDENCE_POINTERS:",
+            f"- pr_url: {pr_url or ''}",
+            "- commit_sha: ",
+            f"- workflow_run_url: {workflow_run_url or ''}",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+
+    WORK_PATH.write_text(
+        "\n".join([
+            "# HANDOFF_WORK",
+            "",
+            f"NEXT_ACTION: {next_action}",
+            f"REASON_CODE: {reason_code}",
+            f"STOP_CLASS: {'' if outcome == 'PASS' else outcome}",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+
+
+def write_draft(run_id, issue_body):
+    canonical = canonicalize(issue_body)
+    INBOX_DIR.mkdir(parents=True, exist_ok=True)
+    p = INBOX_DIR / f"draft_{run_id}.md"
+    p.write_text(canonical + "\n", encoding="utf-8")
+
+
+def git_pr_flow(repo, run_id, issue_number):
+    uniq = (os.environ.get("GITHUB_RUN_ID") or "").strip() or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"
+
+    run(["git", "checkout", "-b", branch])
+        post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
+        return 0
+    except Exception as e:
+        reason = "STATE_UPDATE_FAILED"
+        outcome = "STOP_HARD"
+        next_action = "FIX_ISSUEOPS_NO_MAIN_PUSH"
+        try:
+            workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"
+            update_run_state(run_id, outcome, reason, next_action, workflow_run_url, None)
+        except Exception:
+            reason = "STATE_UPDATE_FAILED"
+        post_issue_comment(repo, issue_number, run_id, outcome, reason, next_action, None)
+        print(f"Error: {e}")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+
+
+
+
