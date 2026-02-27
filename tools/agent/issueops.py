@@ -199,7 +199,7 @@ def git_pr_flow(repo, run_id, issue_number):
     uniq = (os.environ.get("GITHUB_RUN_ID") or "").strip() or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"
 
-    run(["git","checkout","-B", branch])
+    run(["git", "checkout", "-b", branch])
     run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
     run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])
     run(["git", "push", "-u", "origin", branch])
@@ -260,13 +260,7 @@ def main():
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)
         run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
-        cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
-        if cur == "main":
-            run(["git","checkout","-B", branch])
-            cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
-        if cur == "main":
-            raise RuntimeError("REFUSE_PUSH_MAIN_GH013")
-        run(["git","push","-u","origin", branch])
+        run(["git", "push"])
         post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
