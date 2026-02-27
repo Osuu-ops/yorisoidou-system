@@ -200,8 +200,8 @@ def git_pr_flow(repo, run_id, issue_number):
     branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"
 
     run(["git", "checkout", "-b", branch])
-        post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
-        return 0
+    post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
+    return 0
     except Exception as e:
         reason = "STATE_UPDATE_FAILED"
         outcome = "STOP_HARD"
