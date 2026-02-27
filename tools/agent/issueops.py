@@ -280,7 +280,8 @@ def main():
         if current_branch == "main":
             raise RuntimeError("PUSH_GUARD: refusing to push main")
         push_branch = (target_branch or current_branch)
-        run(["git","push","origin", f"HEAD:refs/heads/{push_branch}"])post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
+        run(["git","push","origin", f"HEAD:refs/heads/{push_branch}"])
+        post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
         reason = "STATE_UPDATE_FAILED"
