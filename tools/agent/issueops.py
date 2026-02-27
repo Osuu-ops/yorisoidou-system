@@ -266,7 +266,7 @@ def main():
             cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
         if cur == "main":
             raise RuntimeError("REFUSE_PUSH_MAIN_GH013")
-        run(["git","push","-u","origin","HEAD"])
+        run(["git","push","-u","origin", branch])
         post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
