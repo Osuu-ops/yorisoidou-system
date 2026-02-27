@@ -199,10 +199,13 @@ def git_pr_flow(repo, run_id, issue_number):
     uniq = (os.environ.get("GITHUB_RUN_ID") or "").strip() or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"
 
-    run(["git", "checkout", "-b", branch])
+    run(["git","checkout","-B", branch])
     run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
     run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])
-    run(["git", "push", "-u", "origin", branch])
+    cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
+    if cur == "main":
+        raise RuntimeError("REFUSE_PUSH_MAIN_GH013")
+    run(["git","push","-u","origin","HEAD"])
     pr = run([
         "gh", "pr", "create",
         "--repo", repo,
