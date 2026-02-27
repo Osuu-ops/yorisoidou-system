@@ -23,9 +23,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Dispatch 8-gate entry
+        shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          GH_REPO:  ${{ github.repository }}
           N: ${{ inputs.issue_number }}
           L: ${{ inputs.lane }}
         run: |
@@ -37,13 +38,34 @@ jobs:
           if [ -z "${L:-}" ]; then
             L="SYSTEM"
           fi
-          echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
-          PKT="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}/INPUT_PACKET.md"
+          DIR="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}"
+          PKT="${DIR}/INPUT_PACKET.md"
+          DRAFT="${DIR}/MERGED_DRAFT.md"
           if [ ! -f "${PKT}" ]; then
             echo "INPUT_PACKET not found at ${PKT}; skip dispatch"
             exit 0
           fi
+          if [ ! -f "${DRAFT}" ]; then
+            echo "MERGED_DRAFT not found at ${DRAFT}; skip dispatch"
+            exit 0
+          fi
+          size="$(wc -c < "${DRAFT}" | tr -d ' ')"
+          if [ "${size}" -lt 50 ]; then
+            echo "MERGED_DRAFT too small (${size}); skip dispatch"
+            exit 0
+          fi
+          if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then
+            echo "INPUT_PACKET ISSUE_NUMBER mismatch; skip dispatch"
+            exit 0
+          fi
+          DOES_NOT_TRIGGER="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${PKT}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
+          if [ "${DOES_NOT_TRIGGER}" = "true" ]; then
+            echo "DOES_NOT_TRIGGER_8GATE:true; skip dispatch"
+            exit 0
+          fi
+          echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
           gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f packet_path="${PKT}"
+
 
       - name: Gate0 Audit + Comment (never hard-fail)
         shell: bash
