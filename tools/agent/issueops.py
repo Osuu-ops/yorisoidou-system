@@ -264,23 +264,23 @@ def main():
         workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "OPEN_PR", workflow_run_url, None)
         existing = find_open_intake_pr_url(repo, run_id)
+        target_branch = None
         if existing:
             pr_url = existing
             head_ref = get_pr_head_ref(repo, pr_url)
             if head_ref:
-                run(["git","fetch","origin", head_ref])
-                run(["git","checkout","-B", head_ref, f"origin/{head_ref}"])
+                target_branch = head_ref
         else:
-            pr_url, _ = git_pr_flow(repo, run_id, issue_number)
+            pr_url, target_branch = git_pr_flow(repo, run_id, issue_number)
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)
         run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
-        # PUSH_GUARD: never push main; always push current HEAD to its branch explicitly
+        # PUSH_GUARD: never push main; always push explicitly to target branch
         current_branch = run(["git","rev-parse","--abbrev-ref","HEAD"]).stdout.strip()
         if current_branch == "main":
             raise RuntimeError("PUSH_GUARD: refusing to push main")
-        run(["git","push","origin", f"HEAD:refs/heads/{current_branch}"])
-        post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
+        push_branch = (target_branch or current_branch)
+        run(["git","push","origin", f"HEAD:refs/heads/{push_branch}"])post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
         reason = "STATE_UPDATE_FAILED"
