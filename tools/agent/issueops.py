@@ -262,7 +262,6 @@ def main():
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
         cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
         if cur == "main":
-            # Ensure we are on the working branch before pushing (avoid GH013)
             run(["git","checkout","-B", branch])
             cur = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"], text=True).strip()
         if cur == "main":
