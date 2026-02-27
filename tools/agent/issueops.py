@@ -196,9 +196,8 @@ def write_draft(run_id, issue_body):
 
 
 def git_pr_flow(repo, run_id, issue_number):
-    uniq = (os.environ.get("GITHUB_RUN_ID") or "").strip() or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    branch = f"mep/issueops-run-{run_id.lower()}-{_issueops_unique_suffix()}-{uniq}"
-
+    gh_run = (os.environ.get("GITHUB_RUN_ID") or "").strip() or dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    branch = f"mep/issueops-run-{run_id.lower()}-{gh_run}"
     run(["git","checkout","-B", branch])
     run(["git", "add", "mep/inbox", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
     run(["git", "commit", "-m", f"chore(mep): issueops intake {run_id} (issue #{issue_number})"])
@@ -264,14 +263,15 @@ def main():
         workflow_run_url = f"{os.environ.get('GITHUB_SERVER_URL','https://github.com')}/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID','')}"
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "OPEN_PR", workflow_run_url, None)
         existing = find_open_intake_pr_url(repo, run_id)
-        target_branch = None
         if existing:
-            pr_url = existing
-            head_ref = get_pr_head_ref(repo, pr_url)
-            if head_ref:
-                target_branch = head_ref
-        else:
-            pr_url, target_branch = git_pr_flow(repo, run_id, issue_number)
+            # REUSE_PR_DISABLED: close stale intake PR to avoid branch collision / push reject, then create a fresh one
+            try:
+                num = existing.rstrip("/").split("/")[-1]
+                run(["gh","pr","close", num, "--repo", repo, "--comment", f"Closing stale intake PR before re-create (run_id={run_id})"])
+            except Exception:
+                pass
+        pr_url, _ = git_pr_flow(repo, run_id, issue_number)
+
         update_run_state(run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", workflow_run_url, pr_url)
         run(["git", "add", "mep/run_state.json", "docs/MEP/STATUS.md", "docs/MEP/HANDOFF_AUDIT.md", "docs/MEP/HANDOFF_WORK.md"])
         run(["git", "commit", "-m", f"chore(mep): update issueops evidence {run_id}"])
@@ -279,8 +279,7 @@ def main():
         current_branch = run(["git","rev-parse","--abbrev-ref","HEAD"]).stdout.strip()
         if current_branch == "main":
             raise RuntimeError("PUSH_GUARD: refusing to push main")
-        push_branch = (target_branch or current_branch)
-        run(["git","push","origin", f"HEAD:refs/heads/{push_branch}"])
+        run(["git","push","origin", f"HEAD:refs/heads/{current_branch}"])
         post_issue_comment(repo, issue_number, run_id, "PASS", "ISSUEOPS_BOOTSTRAP_OK", "WAIT_PR_CHECKS", pr_url)
         return 0
     except Exception as e:
