@@ -1,0 +1,104 @@
+name: mep-merge-finish-poller
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"  # every 10 minutes
+permissions:
+  issues: write
+  pull-requests: read
+  contents: read
+concurrency:
+  group: mep-merge-finish-poller
+  cancel-in-progress: false
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Poll merged intake PRs and post MERGE_FINISH (best-effort)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          now_epoch="$(date -u +%s)"
+          # lookback window (seconds): 6 hours
+          lookback=21600
+          cutoff=$((now_epoch - lookback))
+          # Fetch recently updated closed PRs (merged are included)
+          prs_json="$(gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc")"
+          python - <<'PY'
+import json, os, re, sys, time, subprocess
+prs = json.loads(os.environ["PRS_JSON"])
+repo = os.environ["REPO"]
+run_url = os.environ["RUN_URL"]
+cutoff = int(os.environ["CUTOFF"])
+def sh(cmd):
+    return subprocess.check_output(cmd, text=True)
+def parse_issue(title, body):
+    s = (title or "") + "\n" + (body or "")
+    m = re.search(r'\bIssue\s*#\s*(\d+)\b', s, re.IGNORECASE)
+    if not m:
+        m = re.search(r'^\s*ISSUE_NUMBER:\s*(\d+)\s*$', s, re.MULTILINE)
+    if not m:
+        m = re.search(r'^\s*issue_number:\s*(\d+)\s*$', s, re.MULTILINE)
+    return m.group(1) if m else ""
+def iso_to_epoch(iso):
+    # "2026-02-28T15:10:30Z"
+    if not iso:
+        return 0
+    return int(time.mktime(time.strptime(iso.replace("Z","UTC"), "%Y-%m-%dT%H:%M:%S%Z")))
+posted = 0
+scanned = 0
+for pr in prs:
+    merged_at = pr.get("merged_at")
+    if not merged_at:
+        continue
+    merged_epoch = iso_to_epoch(merged_at)
+    if merged_epoch < cutoff:
+        continue
+    head_ref = (pr.get("head", {}) or {}).get("ref", "") or ""
+    title = pr.get("title","") or ""
+    if not head_ref.startswith("mep/issueops-run-"):
+        continue
+    scanned += 1
+    pr_num = pr.get("number")
+    pr_url = pr.get("html_url")
+    merge_sha = pr.get("merge_commit_sha","") or ""
+    body = pr.get("body") or ""
+    issue = parse_issue(title, body)
+    if not issue:
+        # no issue mapping: do nothing (avoid spamming)
+        continue
+    # dedupe: check recent issue comments for same PR_URL + RUN_ID=MERGE_FINISH
+    # (we fetch last 100 comments only to keep light)
+    comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
+    already = False
+    needle1 = "RUN_ID=MERGE_FINISH"
+    needle2 = f"PR_URL={pr_url}"
+    for c in comments:
+        b = (c.get("body") or "")
+        if needle1 in b and needle2 in b:
+            already = True
+            break
+    if already:
+        continue
+    msg = "\n".join([
+        "RUN_ID=MERGE_FINISH",
+        "OUTCOME=PASS",
+        "REASON_CODE=MERGE_FINISH_OK",
+        "NEXT_ACTION=RESTART_PACKET",
+        f"PR_URL={pr_url}",
+        f"MERGE_SHA={merge_sha}",
+        f"EVIDENCE={run_url}",
+    ])
+    # post
+    try:
+        sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
+        posted += 1
+    except Exception:
+        pass
+print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
+PY
+PY' | env PRS_JSON="$prs_json" CUTOFF="$cutoff" python -
