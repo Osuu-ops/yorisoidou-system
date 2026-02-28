@@ -8,6 +8,7 @@ permissions:
   contents: read
 jobs:
   trigger:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Debug workflow_run payload + post /mep run (always once per run_id)
