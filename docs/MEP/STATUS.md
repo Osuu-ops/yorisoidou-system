@@ -8,10 +8,10 @@ STOP_CLASS:
 
 REASON_CODE: ISSUEOPS_BOOTSTRAP_OK
 
-NEXT_ACTION: WAIT_PR_CHECKS
+NEXT_ACTION: OPEN_PR
 
-TIMESTAMP_UTC: 2026-02-28T01:17:41Z
+TIMESTAMP_UTC: 2026-02-28T11:37:21Z
 
 EVIDENCE:
-- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2718
-- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22510184523
+- pr_url: 
+- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22519989164
