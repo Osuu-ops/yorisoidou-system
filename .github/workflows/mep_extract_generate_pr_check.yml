@@ -1,0 +1,22 @@
+name: EXTRACT_GENERATE (PR)
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  extract_generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Extract generate (dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/extract/extract_generate.py --dry-run
