@@ -1,0 +1,22 @@
+name: SSOT_SCAN (PR)
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  ssot_scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run SSOT_SCAN
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/checks/ssot_scan.py
