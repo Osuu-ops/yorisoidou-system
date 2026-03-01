@@ -25,20 +25,23 @@ jobs:
           now_epoch="$(date -u +%s)"
           lookback=21600
           cutoff=$((now_epoch - lookback))
-          prs_json="$(gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc")"
-          export PRS_JSON="$prs_json"
+          prs_path="$(mktemp)"
+          gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc" > "$prs_path"
+          export PRS_PATH="$prs_path"
           export CUTOFF="$cutoff"
           export REPO="${REPO}"
           export RUN_URL="${RUN_URL}"
           python3 - <<'PY'
           import json, os, re, subprocess
           from datetime import datetime, timezone
-          import textwrap
         
-          prs = json.loads(os.environ.get("PRS_JSON","[]"))
           repo = os.environ["REPO"]
           run_url = os.environ["RUN_URL"]
           cutoff = int(os.environ.get("CUTOFF","0"))
+          prs_path = os.environ["PRS_PATH"]
+        
+          with open(prs_path, "r", encoding="utf-8") as f:
+              prs = json.load(f)
         
           def sh(cmd):
               return subprocess.check_output(cmd, text=True)
@@ -84,7 +87,6 @@ jobs:
               if not issue:
                   continue
         
-              # dedupe
               comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
               needle1 = "RUN_ID=MERGE_FINISH"
               needle2 = f"PR_URL={pr_url}"
@@ -100,6 +102,15 @@ jobs:
                   f"MERGE_SHA={merge_sha}",
                   f"EVIDENCE={run_url}",
               ])
+        
+              try:
+                  sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
+                  posted += 1
+              except Exception:
+                  pass
+        
+          print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
+          PY
               try:
                   sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
                   posted += 1
