@@ -2,7 +2,8 @@ name: MEP Self-Heal Auto Resume
 on:
   workflow_dispatch: {}
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
   actions: read
 jobs:
   auto_resume:
@@ -24,7 +25,7 @@ jobs:
         shell: bash
         env:
           GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python tools/self_heal/auto_resume.py
-
