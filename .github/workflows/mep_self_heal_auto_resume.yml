@@ -14,6 +14,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install deps (pyyaml)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
       - name: Auto-resume from SSOT (run_state)
         shell: bash
         env:
@@ -21,3 +27,4 @@ jobs:
         run: |
           set -euo pipefail
           python tools/self_heal/auto_resume.py
+
