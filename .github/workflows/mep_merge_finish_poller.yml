@@ -28,7 +28,9 @@ jobs:
           cutoff=$((now_epoch - lookback))
           # Fetch recently updated closed PRs (merged are included)
           prs_json="$(gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc")"
-          python - <<'PY'
+          export PRS_JSON="$prs_json"
+export CUTOFF="$cutoff"
+python - <<'PY'
 import json, os, re, sys, time, subprocess
 prs = json.loads(os.environ["PRS_JSON"])
 repo = os.environ["REPO"]
@@ -101,4 +103,3 @@ for pr in prs:
         pass
 print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
 PY
-PY' | env PRS_JSON="$prs_json" CUTOFF="$cutoff" python -
