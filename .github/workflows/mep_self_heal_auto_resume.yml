@@ -1,0 +1,23 @@
+name: MEP Self-Heal Auto Resume
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  auto_resume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Auto-resume from SSOT (run_state)
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python tools/self_heal/auto_resume.py
