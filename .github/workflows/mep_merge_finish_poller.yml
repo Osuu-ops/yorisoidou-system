@@ -29,23 +29,17 @@ jobs:
           gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc" > "$prs_path"
           export PRS_PATH="$prs_path"
           export CUTOFF="$cutoff"
-          export REPO="${REPO}"
-          export RUN_URL="${RUN_URL}"
           python3 - <<'PY'
           import json, os, re, subprocess
           from datetime import datetime, timezone
-        
           repo = os.environ["REPO"]
           run_url = os.environ["RUN_URL"]
           cutoff = int(os.environ.get("CUTOFF","0"))
           prs_path = os.environ["PRS_PATH"]
-        
           with open(prs_path, "r", encoding="utf-8") as f:
               prs = json.load(f)
-        
           def sh(cmd):
               return subprocess.check_output(cmd, text=True)
-        
           def parse_issue(title, body):
               s = (title or "") + "\n" + (body or "")
               m = re.search(r'\bIssue\s*#\s*(\d+)\b', s, re.IGNORECASE)
@@ -54,17 +48,14 @@ jobs:
               if not m:
                   m = re.search(r'^\s*issue_number:\s*(\d+)\s*$', s, re.MULTILINE)
               return m.group(1) if m else ""
-        
           def iso_to_epoch(iso):
               if not iso:
                   return 0
               iso = iso.replace("Z", "+00:00")
               dt = datetime.fromisoformat(iso).astimezone(timezone.utc)
               return int(dt.timestamp())
-        
           posted = 0
           scanned = 0
-        
           for pr in prs:
               merged_at = pr.get("merged_at")
               if not merged_at:
@@ -72,27 +63,22 @@ jobs:
               merged_epoch = iso_to_epoch(merged_at)
               if merged_epoch < cutoff:
                   continue
-        
               head_ref = ((pr.get("head") or {}).get("ref")) or ""
               title = pr.get("title") or ""
               if not head_ref.startswith("mep/issueops-run-"):
                   continue
-        
               scanned += 1
               pr_url = pr.get("html_url") or ""
               merge_sha = pr.get("merge_commit_sha") or ""
               body = pr.get("body") or ""
-        
               issue = parse_issue(title, body)
               if not issue:
                   continue
-        
               comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
               needle1 = "RUN_ID=MERGE_FINISH"
               needle2 = f"PR_URL={pr_url}"
               if any((needle1 in (c.get("body") or "")) and (needle2 in (c.get("body") or "")) for c in comments):
                   continue
-        
               msg = "\n".join([
                   "RUN_ID=MERGE_FINISH",
                   "OUTCOME=PASS",
@@ -102,23 +88,6 @@ jobs:
                   f"MERGE_SHA={merge_sha}",
                   f"EVIDENCE={run_url}",
               ])
-        
-              try:
-                  sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
-                  posted += 1
-              except Exception:
-                  pass
-        
-          print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
-          PY
-              try:
-                  sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
-                  posted += 1
-              except Exception:
-                  pass
-        
-          print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
-          PY
               try:
                   sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
                   posted += 1
@@ -126,4 +95,3 @@ jobs:
                   pass
           print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
           PY
-          python /tmp/mep_merge_finish_poller.py
