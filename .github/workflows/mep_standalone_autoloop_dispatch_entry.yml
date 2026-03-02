@@ -13,5 +13,6 @@ permissions:
 jobs:
   call-v2:
     uses: ./.github/workflows/mep_standalone_autoloop_dispatch_v2.yml
+    secrets: inherit
     with:
       issue_number: ${{ inputs.issue_number }}
