@@ -163,6 +163,8 @@ def main() -> int:
     except Exception as e:
       print(f"STOP_HARD: SSOT_WRITEBACK_FAILED\n{e}", file=sys.stderr)
       return 1
+  else:
+    print("SSOT_DIRTY=false")
   return p.returncode
 if __name__ == "__main__":
   raise SystemExit(main())
