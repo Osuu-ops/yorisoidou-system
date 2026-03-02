@@ -1,10 +1,10 @@
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
 param(
   [Parameter(Mandatory=$true)]
   [ValidateNotNullOrEmpty()]
   [string]$BundlePath
 )
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
 function Get-RepoRoot {
   $p = (& git rev-parse --show-toplevel 2>$null)
   if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($p)) { throw "Failed to resolve repo root." }
