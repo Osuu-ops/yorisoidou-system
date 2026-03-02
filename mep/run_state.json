@@ -26,39 +26,30 @@
   "last_good": null,
   "last_result": {
     "action": {
-      "name": "RESTART_BRIDGE",
+      "name": "MERGE_FINISH",
       "outcome": "OK"
     },
     "evidence": {
-      "branch_name": "auto/standalone_dispatch_2400_22578043502",
-      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2778",
+      "branch_name": "mep/issueops-run-run_5b8c712dddea",
       "commit_sha": null,
-      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22578043502",
-      "restart_packet": "docs/MEP/ARTIFACTS/SYSTEM/ISSUE_2400/RESTART_PACKET.txt"
+      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2723",
+      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22523250925"
     },
-    "next_action": "BOOT",
-    "reason_code": "RESTART_BRIDGE_READY",
+    "next_action": "WAIT_PR_CHECKS",
+    "reason_code": "",
     "stop_class": "",
-    "timestamp_utc": "2026-03-02T13:26:44Z"
+    "timestamp_utc": "2026-03-02T12:34:30Z"
   },
-  "next_action": "BOOT",
+  "next_action": "ALL_DONE",
   "repo": "Osuu-ops/yorisoidou-system",
-  "run_id": "RUN_RESTART_2400_22578043502",
-  "run_status": "STILL_OPEN",
-  "updated_at": "2026-03-02T13:26:44Z",
+  "run_id": "RUN_5b8c712dddea",
+  "run_status": "DONE",
+  "updated_at": "2026-03-02T12:34:30Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
     "ready": "unknown",
     "stop": "unknown",
     "total": "unknown"
-  },
-  "restart_bridge": {
-    "source_issue_number": "2400",
-    "source_standalone_run_id": "22578043502",
-    "source_standalone_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22578043502",
-    "artifact_pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2778",
-    "restart_packet": "docs/MEP/ARTIFACTS/SYSTEM/ISSUE_2400/RESTART_PACKET.txt",
-    "bridged_at": "2026-03-02T13:26:44Z"
   }
 }
