@@ -10,6 +10,8 @@ on:
     secrets:
       MEP_BOT_PAT:
         required: false
+      MEP_PR_TOKEN:
+        required: false
   workflow_dispatch:
     inputs:
       issue_number:
@@ -42,7 +44,7 @@ jobs:
     env:
       GH_REPO: ${{ github.repository }}
       ISSUE_NUMBER: ${{ inputs.issue_number || github.event.inputs.issue_number }}
-      GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
+      GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
       GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
@@ -81,7 +83,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
+          token: ${{ secrets.MEP_PR_TOKEN || github.token }}
           commit-message: "MEP: issue artifacts ISSUE #${{ env.ISSUE_NUMBER }}"
           title: "MEP: issue artifacts ISSUE #${{ env.ISSUE_NUMBER }}"
           body: |
