@@ -56,51 +56,51 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-import json, os, sys, importlib.util
-from pathlib import Path
-# load runner.py by file path (no assumptions about package)
-spec = importlib.util.spec_from_file_location("runner", "tools/runner/runner.py")
-mod = importlib.util.module_from_spec(spec)
-assert spec and spec.loader
-spec.loader.exec_module(mod)
-p = Path("mep/run_state.json")
-if not p.exists():
-  print("STOP_HARD: RUN_STATE_MISSING", file=sys.stderr)
-  sys.exit(1)
-rs = json.loads(p.read_text(encoding="utf-8"))
-next_action = str(rs.get("next_action") or "")
-run_id = str(rs.get("run_id") or "")
-os.environ["GH_REPO"] = os.environ.get("GH_REPO") or os.environ.get("GITHUB_REPOSITORY","")
-print(f"[runner] next_action={next_action} run_id={run_id}")
-# Always refresh compiled views + ack packet (safe)
-try:
-  mod.status()
-except SystemExit as e:
-  raise
-except Exception as e:
-  print(f"STOP_HARD: RUNNER_STATUS_FAILED: {e}", file=sys.stderr)
-  sys.exit(1)
-# Reload after status (status rewrites run_state)
-rs = json.loads(p.read_text(encoding="utf-8"))
-next_action = str(rs.get("next_action") or "")
-run_id = str(rs.get("run_id") or "")
-# Gate7->Gate? currently stuck at READY_TO_APPLY_SAFE_PATH
-if next_action == "READY_TO_APPLY_SAFE_PATH":
-  if not run_id:
-    print("STOP_HARD: RUN_ID_MISSING", file=sys.stderr)
-    sys.exit(1)
-  rc = mod.apply_safe(run_id)
-  if rc not in (0,2):
-    sys.exit(rc)
-  # Reload state after apply_safe
-  rs = json.loads(p.read_text(encoding="utf-8"))
-  run_id = str(rs.get("run_id") or "")
-  # Attempt merge_finish (will WAIT if checks pending / evidence missing)
-  rc2 = mod.merge_finish(run_id)
-  if rc2 not in (0,2):
-    sys.exit(rc2)
-print("[runner] EXEC_NEXT_ACTION done")
-PY
+          import json, os, sys, importlib.util
+          from pathlib import Path
+          # load runner.py by file path (no assumptions about package)
+          spec = importlib.util.spec_from_file_location("runner", "tools/runner/runner.py")
+          mod = importlib.util.module_from_spec(spec)
+          assert spec and spec.loader
+          spec.loader.exec_module(mod)
+          p = Path("mep/run_state.json")
+          if not p.exists():
+            print("STOP_HARD: RUN_STATE_MISSING", file=sys.stderr)
+            sys.exit(1)
+          rs = json.loads(p.read_text(encoding="utf-8"))
+          next_action = str(rs.get("next_action") or "")
+          run_id = str(rs.get("run_id") or "")
+          os.environ["GH_REPO"] = os.environ.get("GH_REPO") or os.environ.get("GITHUB_REPOSITORY","")
+          print(f"[runner] next_action={next_action} run_id={run_id}")
+          # Always refresh compiled views + ack packet (safe)
+          try:
+            mod.status()
+          except SystemExit as e:
+            raise
+          except Exception as e:
+            print(f"STOP_HARD: RUNNER_STATUS_FAILED: {e}", file=sys.stderr)
+            sys.exit(1)
+          # Reload after status (status rewrites run_state)
+          rs = json.loads(p.read_text(encoding="utf-8"))
+          next_action = str(rs.get("next_action") or "")
+          run_id = str(rs.get("run_id") or "")
+          # Gate7->Gate? currently stuck at READY_TO_APPLY_SAFE_PATH
+          if next_action == "READY_TO_APPLY_SAFE_PATH":
+            if not run_id:
+              print("STOP_HARD: RUN_ID_MISSING", file=sys.stderr)
+              sys.exit(1)
+            rc = mod.apply_safe(run_id)
+            if rc not in (0,2):
+              sys.exit(rc)
+            # Reload state after apply_safe
+            rs = json.loads(p.read_text(encoding="utf-8"))
+            run_id = str(rs.get("run_id") or "")
+            # Attempt merge_finish (will WAIT if checks pending / evidence missing)
+            rc2 = mod.merge_finish(run_id)
+            if rc2 not in (0,2):
+              sys.exit(rc2)
+          print("[runner] EXEC_NEXT_ACTION done")
+          PY
       - name: Dispatch Gate8 (Writeback Bundle Entry) after merge attempt
         shell: bash
         env:
@@ -136,4 +136,4 @@ PY
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_engine.yml/dispatches" \
             -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
-# registry-refresh: 20260218T162201Z
+# registry-refresh: 20260302T161500Z
