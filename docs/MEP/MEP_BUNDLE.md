@@ -817,7 +817,9 @@ Bundled 本文に基づき、
 ### STOP（固定）
 - Required checks が安定して発火しない／Required checks名が不一致／一次根拠が取れない場合は **STOP_HARD**。
 - STOP時は「編集主体（Codex）へ差し戻し」以外の手段で進めない。
-<!-- END: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->- Purpose:
+<!-- END: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->
+
+- Purpose:
   - AI が人間に要求する操作は **PowerShell の単一コードブロックのみ**に固定する。
 - Rule:
   - 人間に対して複数ステップ・対話的操作・分割実行を要求してはならない。
