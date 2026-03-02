@@ -75,6 +75,78 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 # RUNBOOK（復旧カード）
 
+
+<!-- BEGIN: CODEX_REPO_BOOTSTRAP (MEP) -->
+## CARD: CODEX_REPO_BOOTSTRAP（Codex作業開始時の標準初期化：repo/origin/権限の固定）  [Adopted]
+### 目的（固定）
+- Codex環境で発生しがちな「作業ディレクトリ違い」「origin未設定」「HTTPS認証がGH_TOKENに繋がらない」を入口で潰し、以後のPR作成・checks判定ループを安定させる。
+### 前提（固定）
+- Codex環境には `GH_TOKEN` が存在する（例：`printenv | egrep -i 'GITHUB|GH_'`）。
+- Codex環境には `gh` が無い場合がある（その場合、PR作成はREST APIで行う）。
+### 標準初期化（Codex shell：毎回最初に実行）
+1) repoルートへ移動（固定）
+- `cd /workspace/yorisoidou-system`
+- `git rev-parse --show-toplevel` が `/workspace/yorisoidou-system` を指すこと
+2) origin を必ず再設定（固定：token付きHTTPS）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read）：`git ls-remote --heads origin | head`
+3) main追随（固定）
+- `git fetch origin main`
+- `git checkout main`
+- `git reset --hard origin/main`
+4) 作業ブランチ作成（固定）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -b "$BR"`
+### PR作成（gh無し想定：REST API固定）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "<TITLE>" "$BR" "<BODY>")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+- 返り値 `html_url` がPR URL（一次出力）
+### STOP_HARD（固定）
+- `git ls-remote` が失敗 → remote/URL/ネットワーク不整合（STOP_HARD）
+- `401/403` → GH_TOKEN 無効 or 権限不足（STOP_HARD）
+- Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+<!-- END: CODEX_REPO_BOOTSTRAP (MEP) -->
+<!-- BEGIN: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+## CARD: RUNBOOK / CODEX_GITHUB_AUTH_RECOVERY（Codexからpush/PRできない時の最短復旧）  [Adopted]
+### 観測（症状）
+- `git push` が失敗する（例：`could not read Username for 'https://github.com'` / `origin does not appear to be a git repository`）
+- PR作成APIが `401 Requires authentication`
+- `gh` コマンドが存在しない（Codex環境で `gh auth status` が使えない）
+### 原因（典型）
+- Codex環境に **GitHub CLI（gh）が無い**ため、gh経由の認証/PR作成ができない
+- HTTPS remote の git は **GH_TOKEN を自動では使わない**（別途tokenをURLに埋める等が必要）
+- そのrepoコンテキストで `origin` が未設定／消えている（別ディレクトリで設定した等）
+### 復旧（最短手順：Codex shell）
+> 前提：Codex環境に `GH_TOKEN` が入っている（例：`printenv | egrep -i 'GITHUB|GH_'` で確認）
+1) repo rootへ移動（例）
+- `cd /workspace/yorisoidou-system`
+2) origin を token付きで再設定（originが無い/壊れている場合の標準）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read確認）：`git ls-remote --heads origin | head`
+3) push（write確認：最小の変更でOK）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -B "$BR" HEAD`
+- `git push -u origin "$BR"`
+4) PR作成（gh無し想定：REST API）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "chore: codex pr create (connectivity)" "$BR" "Codex connectivity check PR. Close after verify.")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+### 判定（成功/失敗）
+- 成功：pushが通り、PRが作成される（`html_url` が返る）
+- 失敗（STOP_HARD）：
+  - `401/403` → GH_TOKEN 無効 or 権限不足
+  - `ls-remote` が失敗 → remote/URL/ネットワーク不整合
+  - Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+### 後始末（推奨）
+- テスト用PRは **mergeせず close**（ブランチも削除）
+- 本番作業は「1テーマ=1PR → checks → merge → Bundled」の規約に従う
+<!-- END: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+
 ## CARD: no-checks（Checksがまだ出ない／表示されない）
 
 ### 観測
@@ -779,6 +851,45 @@ Bundled 本文に基づき、
 ## FIXED_OPERATIONS
 
 ### CARD: ONE_BLOCK_POWERSHELL_OPERATION [Adopted]
+
+
+<!-- BEGIN: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->
+## CARD: CODEX_FIRST_OPERATION_CONTRACT（Codex主役・PS縮退の運用契約）  [Adopted]
+### 目的（固定）
+- 実装の主役を **Codex（または同等のコーディング・エージェント）** に固定し、ローカルPS起因の事故（書き換え/分岐/再実行ズレ）を根絶する。
+- PSは「観測＋dispatch起動」のみに縮退し、**作業ツリーを書き換えない**ことで再現性と監査性を上げる。
+### 用語（固定）
+- “編集主体” = リポジトリ内容（ファイル）を変更しPRを作る主体
+- “観測主体” = 状態を取得し、CI/Workflowを起動し、結果を確認してSTOP/GO判定する主体
+### 役割分担（固定）
+- 編集主体（唯一の正）：
+  - Codex（または同等エージェント）
+  - 実施：多ファイル編集、テスト、PR作成/更新、差分収束
+- 観測主体（唯一の正）：
+  - PowerShell（ローカル）/ GitHub Actions（CI）
+  - 実施：git/ghで状態取得、workflow_dispatch起動、checks/ログ/artifact確認、STOP判定
+### PS縮退ルール（最重要・固定）
+- PSは禁止：
+  - ファイル編集（yaml/md/json/ps1含む）・自動パッチ適用・自動コミット・自動整形
+- PSで許可：
+  - `git status` / `gh pr view` / `gh pr checks` / `gh run list` 等の**観測**
+  - `workflow_dispatch` 等の**起動**
+  - 結果確認（checks / logs / artifacts）
+- 例外（物理的に人間しかできない行為）：
+  - 承認（0入力）・レビュー・権限付与
+### 合否の正（固定）
+- 合否は会話ではなく、**PR checks / Gate Validate（一次出力）**で判定する。
+- “入った扱い”は **PR → main → Bundled（BUNDLE_VERSION）** の証跡のみ。
+### 進行ループ（半自動・固定）
+1. （編集）CodexがPRを作成/更新する
+2. （判定）ActionsのRequired checksで合否が出る
+3. NGなら、同PRをCodexが修正して再実行（収束まで繰り返す）
+4. OKなら、マージ（auto-mergeまたは人手。いずれも証跡が真実）
+5. writeback/evidence/restartが必要なら workflow_dispatch で起動（観測主体が実施）
+### STOP（固定）
+- Required checks が安定して発火しない／Required checks名が不一致／一次根拠が取れない場合は **STOP_HARD**。
+- STOP時は「編集主体（Codex）へ差し戻し」以外の手段で進めない。
+<!-- END: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->
 
 - Purpose:
   - AI が人間に要求する操作は **PowerShell の単一コードブロックのみ**に固定する。

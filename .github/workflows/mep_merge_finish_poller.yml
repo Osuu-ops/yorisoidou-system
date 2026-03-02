@@ -25,10 +25,9 @@ jobs:
           now_epoch="$(date -u +%s)"
           lookback=21600
           cutoff=$((now_epoch - lookback))
-          # Search merged intake PRs reliably (no "top100 updated closed pulls" miss)
-          q="repo:${REPO} is:pr is:merged head:mep/issueops-run- sort:updated-desc"
+q="repo:${REPO} is:pr is:merged in:title:\"IssueOps intake\" sort:updated-desc"
           urls_path="$(mktemp)"
-          # Output PR API URLs one per line (pagination-safe)
+          # PR API URL を1行ずつ（pagination-safe）
           gh api "search/issues" -f q="$q" --paginate --jq '.items[].pull_request.url' > "$urls_path"
           export URLS_PATH="$urls_path"
           export CUTOFF="$cutoff"
@@ -77,7 +76,7 @@ jobs:
               issue = parse_issue(title, body)
               if not issue:
                   continue
-              # dedupe by (RUN_ID=MERGE_FINISH + PR_URL)
+              # dedupe (last 100)
               comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
               needle1 = "RUN_ID=MERGE_FINISH"
               needle2 = f"PR_URL={pr_url}"
