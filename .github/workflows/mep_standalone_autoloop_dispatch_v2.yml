@@ -22,6 +22,9 @@ on:
 permissions:
 
 
+  actions: write
+
+
   contents: write
 
 
@@ -233,13 +236,13 @@ jobs:
           echo "[auto-merge] trigger only (no waiting)"
 
 
-          echo "PR_NUMBER=${PR_NUMBER:-}"
+          echo "PR_NUM=${PR_NUM:-}"
 
 
-          if [ -z "${PR_NUMBER:-}" ]; then
+          if [ -z "${PR_NUM:-}" ]; then
 
 
-            echo "PR_NUMBER is empty -> exit 0 (no-op)"
+            echo "PR_NUM is empty -> exit 0 (no-op)"
 
 
             exit 0
@@ -248,10 +251,91 @@ jobs:
           fi
 
 
-          gh pr merge "$PR_NUMBER" --squash --auto --delete-branch || true
+          gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
+
+
+          gh pr checks "$PR_NUM" --watch --required || true
 
 
           exit 0
+
+
+      - name: Resolve artifact lane
+
+
+        id: lane
+
+
+        shell: bash
+
+
+        env:
+
+
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+
+
+        run: |
+
+
+          set -euo pipefail
+
+
+          if [ -d "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_${ISSUE_NUMBER}" ]; then
+
+
+            echo "lane=BUSINESS" >> "$GITHUB_OUTPUT"
+
+
+          else
+
+
+            echo "lane=SYSTEM" >> "$GITHUB_OUTPUT"
+
+
+          fi
+
+
+
+
+
+      - name: Dispatch 8-gate entry (packet filter)
+
+
+        env:
+
+
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+
+
+          LANE: ${{ steps.lane.outputs.lane }}
+
+
+        run: |
+
+
+          set -euo pipefail
+
+
+          sleep 5
+
+
+          TARGET_REF="${{ steps.cpr.outputs.pull-request-branch || github.ref_name }}"
+
+
+          PACKET_PATH="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${ISSUE_NUMBER}/INPUT_PACKET.md"
+
+
+          echo "Dispatching mep_8gate_entry_filter.yml ref=${TARGET_REF} packet=${PACKET_PATH}"
+
+
+          gh workflow run "mep_8gate_entry_filter.yml" --ref "${TARGET_REF}" -f packet_path="${PACKET_PATH}"
+
+
+
 
 
       - name: Comment "できました" with pointers
