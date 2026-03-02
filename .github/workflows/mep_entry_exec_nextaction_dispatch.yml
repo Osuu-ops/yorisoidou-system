@@ -38,43 +38,43 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-import json, os, sys, importlib.util
-from pathlib import Path
-spec = importlib.util.spec_from_file_location("runner", "tools/runner/runner.py")
-mod = importlib.util.module_from_spec(spec)
-assert spec and spec.loader
-spec.loader.exec_module(mod)
-p = Path("mep/run_state.json")
-if not p.exists():
-  print("STOP_HARD: RUN_STATE_MISSING", file=sys.stderr)
-  sys.exit(1)
-rs = json.loads(p.read_text(encoding="utf-8"))
-next_action = str(rs.get("next_action") or "")
-run_id = str(rs.get("run_id") or "")
-os.environ["GH_REPO"] = os.environ.get("GH_REPO") or os.environ.get("GITHUB_REPOSITORY","")
-print(f"[runner] before: next_action={next_action} run_id={run_id}")
-# refresh compiled views + ack packet
-mod.status()
-rs = json.loads(p.read_text(encoding="utf-8"))
-next_action = str(rs.get("next_action") or "")
-run_id = str(rs.get("run_id") or "")
-print(f"[runner] after status: next_action={next_action} run_id={run_id}")
-if next_action == "READY_TO_APPLY_SAFE_PATH":
-  if not run_id:
-    print("STOP_HARD: RUN_ID_MISSING", file=sys.stderr)
-    sys.exit(1)
-  rc = mod.apply_safe(run_id)
-  print(f"[runner] apply_safe rc={rc}")
-  if rc not in (0,2):
-    sys.exit(rc)
-  rs = json.loads(p.read_text(encoding="utf-8"))
-  run_id = str(rs.get("run_id") or "")
-  rc2 = mod.merge_finish(run_id)
-  print(f"[runner] merge_finish rc={rc2}")
-  if rc2 not in (0,2):
-    sys.exit(rc2)
-print("[runner] done")
-PY
+          import json, os, sys, importlib.util
+          from pathlib import Path
+          spec = importlib.util.spec_from_file_location("runner", "tools/runner/runner.py")
+          mod = importlib.util.module_from_spec(spec)
+          assert spec and spec.loader
+          spec.loader.exec_module(mod)
+          p = Path("mep/run_state.json")
+          if not p.exists():
+            print("STOP_HARD: RUN_STATE_MISSING", file=sys.stderr)
+            sys.exit(1)
+          rs = json.loads(p.read_text(encoding="utf-8"))
+          next_action = str(rs.get("next_action") or "")
+          run_id = str(rs.get("run_id") or "")
+          os.environ["GH_REPO"] = os.environ.get("GH_REPO") or os.environ.get("GITHUB_REPOSITORY","")
+          print(f"[runner] before: next_action={next_action} run_id={run_id}")
+          # refresh compiled views + ack packet
+          mod.status()
+          rs = json.loads(p.read_text(encoding="utf-8"))
+          next_action = str(rs.get("next_action") or "")
+          run_id = str(rs.get("run_id") or "")
+          print(f"[runner] after status: next_action={next_action} run_id={run_id}")
+          if next_action == "READY_TO_APPLY_SAFE_PATH":
+            if not run_id:
+              print("STOP_HARD: RUN_ID_MISSING", file=sys.stderr)
+              sys.exit(1)
+            rc = mod.apply_safe(run_id)
+            print(f"[runner] apply_safe rc={rc}")
+            if rc not in (0,2):
+              sys.exit(rc)
+            rs = json.loads(p.read_text(encoding="utf-8"))
+            run_id = str(rs.get("run_id") or "")
+            rc2 = mod.merge_finish(run_id)
+            print(f"[runner] merge_finish rc={rc2}")
+            if rc2 not in (0,2):
+              sys.exit(rc2)
+          print("[runner] done")
+          PY
       - name: Dispatch Gate8 (Writeback Bundle Entry)
         shell: bash
         env:
@@ -87,3 +87,4 @@ PY
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_writeback_bundle_dispatch_entry.yml/dispatches" \
             -d '{"ref":"main","inputs":{"pr_number":"0","write_handoff":"true"}}'
+# registry-refresh: 20260302T161500Z
