@@ -1,17 +1,11 @@
 # STATUS
-
 RUN_ID: RUN_5b8c712dddea
-
-RUN_STATUS: STILL_OPEN
-
+RUN_STATUS: DONE
 STOP_CLASS: 
-
-REASON_CODE: ISSUEOPS_BOOTSTRAP_OK
-
-NEXT_ACTION: WAIT_PR_CHECKS
-
-TIMESTAMP_UTC: 2026-02-28T15:10:05Z
-
+REASON_CODE: 
+NEXT_ACTION: ALL_DONE
+TIMESTAMP_UTC: 2026-03-02T12:34:30Z
 EVIDENCE:
+- branch_name: mep/issueops-run-run_5b8c712dddea
 - pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2723
-- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22523250925
+- commit_sha:
