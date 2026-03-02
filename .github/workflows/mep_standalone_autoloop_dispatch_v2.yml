@@ -251,10 +251,40 @@ jobs:
           fi
 
 
-          gh pr merge "$PR_NUM" --squash --delete-branch
+          gh pr merge "$PR_NUM" --squash --auto --delete-branch
 
 
-          exit 0
+          gh pr checks "$PR_NUM" --watch --required
+
+
+          for i in $(seq 1 30); do
+
+
+            merged="$(gh pr view "$PR_NUM" --json merged --jq '.merged')"
+
+
+            if [ "$merged" = "true" ]; then
+
+
+              echo "PR #${PR_NUM} merged"
+
+
+              exit 0
+
+
+            fi
+
+
+            sleep 10
+
+
+          done
+
+
+          echo "Timed out waiting for PR #${PR_NUM} to merge"
+
+
+          exit 1
 
 
       - name: Resolve artifact lane
