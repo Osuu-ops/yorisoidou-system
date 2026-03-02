@@ -112,7 +112,9 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 ### 後始末（推奨）
 - テスト用PRは **mergeせず close**（ブランチも削除）
 - 本番作業は「1テーマ=1PR → checks → merge → Bundled」の規約に従う
-<!-- END: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->## CARD: no-checks（Checksがまだ出ない／表示されない）
+<!-- END: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+
+## CARD: no-checks（Checksがまだ出ない／表示されない）
 
 ### 観測
 - PR に checks が出ない／"No checks" が継続する
