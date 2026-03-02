@@ -25,7 +25,7 @@ jobs:
           now_epoch="$(date -u +%s)"
           lookback=21600
           cutoff=$((now_epoch - lookback))
-q="repo:${REPO} is:pr is:merged in:title:\"IssueOps intake\" sort:updated-desc"
+          q="repo:${REPO} is:pr is:merged in:title:\"IssueOps intake\" sort:updated-desc"
           urls_path="$(mktemp)"
           # PR API URL を1行ずつ（pagination-safe）
           gh api "search/issues" -f q="$q" --paginate --jq '.items[].pull_request.url' > "$urls_path"
