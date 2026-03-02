@@ -76,6 +76,18 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 # RUNBOOK（復旧カード）
 
 
+<!-- BEGIN: ISSUEOPS_SPEC_REFS (MEP) -->
+## CARD: ISSUEOPS_SPEC_REFS（Issue仕様の正本化：Bundled参照）  [Adopted]
+### 目的（固定）
+- Issueに散在した設計草案（/mep run 入口・導入パケット）を、repo内の成果物へ移植し、Bundledから一意に参照できるようにする。
+### 正本（参照先）
+- 導入パケット v0.1（入口固定・自走前提・Codex主体）:
+  - docs/MEP/CONTRACTS/MEP_STARTUP_PACKET_V0_1.md
+- Phase0 仕様（Issue /mep run → Actions IssueOps → ingest → Issue返信）:
+  - docs/MEP/CONTRACTS/ISSUEOPS_PHASE0_SPEC.md
+### 取り込み元（証跡）
+- Issue #2119 / Issue #2120 から移植（会話ログではなく、repo成果物に固定）
+<!-- END: ISSUEOPS_SPEC_REFS (MEP) -->
 <!-- BEGIN: CODEX_TASK_PACKET_TEMPLATE (MEP) -->
 ## CARD: CODEX_TASK_PACKET_TEMPLATE（Codex一括指示書テンプレ：迷子ゼロ固定）  [Adopted]
 ### 目的（固定）
