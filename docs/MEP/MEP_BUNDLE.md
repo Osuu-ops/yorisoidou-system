@@ -75,6 +75,121 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 # RUNBOOK（復旧カード）
 
+
+<!-- BEGIN: CODEX_TASK_PACKET_TEMPLATE (MEP) -->
+## CARD: CODEX_TASK_PACKET_TEMPLATE（Codex一括指示書テンプレ：迷子ゼロ固定）  [Adopted]
+### 目的（固定）
+- 「Codexが薄くしか使われない」「PS回しに戻る」を防ぐため、Codexへ渡す入力を **1枚（固定フォーマット）** に統一する。
+- 編集（差分作成/PR更新）をCodexへ集約し、合否はPR checksで機械判定する。
+### 使い方（固定）
+- Codexに作業を依頼するときは、**必ずこのテンプレ本文をそのまま貼る**（空欄だけ埋める）。
+- 人間は途中で手順追加・分割指示をしない（迷子源）。追加は「禁止/DoD/Scope」の更新として差し戻す。
+---
+## [MEP/CODEX一括指示]（テンプレ本文）
+### 0) 入口宣言（固定）
+- このタスクは **CODEX_FIRST**（編集=Codex、PS=観測/dispatchのみ）。
+- 合否は **PR checks（Required checks / Gate Validate）** のみで判定する。会話で断定しない。
+### 1) 目的（必須・1〜2行）
+- <目的を1〜2行で>
+### 2) 変更してよい範囲（Scope Fence：必須）
+- 変更OK:
+  - <ディレクトリ/ファイルを列挙>
+- 変更禁止:
+  - <触ってはいけないものを列挙（なければ “なし”）>
+### 3) DoD（合格条件：必須）
+- PRを作成/更新すること（同PRで収束）。
+- Required checks が **全て SUCCESS** になること。
+- 変更はScope内のみ。大置換・全文書換えは禁止。
+- 必要なら Bundled/SSOT へは **カード形式（BEGIN/END付き）** で追記すること。
+### 4) 禁止（必須）
+- 範囲外変更
+- 大置換／全文書換え／意味の上書き
+- 会話での「確定/完了」宣言（証跡のみが真実）
+- Required checks が出ない/不一致のまま進める（STOP_HARD）
+### 5) 進め方（固定）
+1. Codexが実装してPRを出す（編集はCodexのみ）
+2. checksでNGなら、Codexが同PRを修正して収束させる
+3. checksが全SUCCESSになったら、人間が merge（auto-merge推奨）
+### 6) 出力（Codexが返すべきもの：固定）
+- PR URL
+- 変更ファイル一覧（Scope内であることの自己監査）
+- checks結果（SUCCESS/FAILURE）
+---
+### STOP_HARD（固定）
+- Required checksが出ない／Required checks名が不一致／401/403等でPRが作れない
+- この場合は「原因の一次出力（エラー全文）」を貼って停止する（復旧はRUNBOOKに従う）
+<!-- END: CODEX_TASK_PACKET_TEMPLATE (MEP) -->
+<!-- BEGIN: CODEX_REPO_BOOTSTRAP (MEP) -->
+## CARD: CODEX_REPO_BOOTSTRAP（Codex作業開始時の標準初期化：repo/origin/権限の固定）  [Adopted]
+### 目的（固定）
+- Codex環境で発生しがちな「作業ディレクトリ違い」「origin未設定」「HTTPS認証がGH_TOKENに繋がらない」を入口で潰し、以後のPR作成・checks判定ループを安定させる。
+### 前提（固定）
+- Codex環境には `GH_TOKEN` が存在する（例：`printenv | egrep -i 'GITHUB|GH_'`）。
+- Codex環境には `gh` が無い場合がある（その場合、PR作成はREST APIで行う）。
+### 標準初期化（Codex shell：毎回最初に実行）
+1) repoルートへ移動（固定）
+- `cd /workspace/yorisoidou-system`
+- `git rev-parse --show-toplevel` が `/workspace/yorisoidou-system` を指すこと
+2) origin を必ず再設定（固定：token付きHTTPS）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read）：`git ls-remote --heads origin | head`
+3) main追随（固定）
+- `git fetch origin main`
+- `git checkout main`
+- `git reset --hard origin/main`
+4) 作業ブランチ作成（固定）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -b "$BR"`
+### PR作成（gh無し想定：REST API固定）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "<TITLE>" "$BR" "<BODY>")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+- 返り値 `html_url` がPR URL（一次出力）
+### STOP_HARD（固定）
+- `git ls-remote` が失敗 → remote/URL/ネットワーク不整合（STOP_HARD）
+- `401/403` → GH_TOKEN 無効 or 権限不足（STOP_HARD）
+- Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+<!-- END: CODEX_REPO_BOOTSTRAP (MEP) -->
+<!-- BEGIN: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+## CARD: RUNBOOK / CODEX_GITHUB_AUTH_RECOVERY（Codexからpush/PRできない時の最短復旧）  [Adopted]
+### 観測（症状）
+- `git push` が失敗する（例：`could not read Username for 'https://github.com'` / `origin does not appear to be a git repository`）
+- PR作成APIが `401 Requires authentication`
+- `gh` コマンドが存在しない（Codex環境で `gh auth status` が使えない）
+### 原因（典型）
+- Codex環境に **GitHub CLI（gh）が無い**ため、gh経由の認証/PR作成ができない
+- HTTPS remote の git は **GH_TOKEN を自動では使わない**（別途tokenをURLに埋める等が必要）
+- そのrepoコンテキストで `origin` が未設定／消えている（別ディレクトリで設定した等）
+### 復旧（最短手順：Codex shell）
+> 前提：Codex環境に `GH_TOKEN` が入っている（例：`printenv | egrep -i 'GITHUB|GH_'` で確認）
+1) repo rootへ移動（例）
+- `cd /workspace/yorisoidou-system`
+2) origin を token付きで再設定（originが無い/壊れている場合の標準）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read確認）：`git ls-remote --heads origin | head`
+3) push（write確認：最小の変更でOK）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -B "$BR" HEAD`
+- `git push -u origin "$BR"`
+4) PR作成（gh無し想定：REST API）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "chore: codex pr create (connectivity)" "$BR" "Codex connectivity check PR. Close after verify.")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+### 判定（成功/失敗）
+- 成功：pushが通り、PRが作成される（`html_url` が返る）
+- 失敗（STOP_HARD）：
+  - `401/403` → GH_TOKEN 無効 or 権限不足
+  - `ls-remote` が失敗 → remote/URL/ネットワーク不整合
+  - Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+### 後始末（推奨）
+- テスト用PRは **mergeせず close**（ブランチも削除）
+- 本番作業は「1テーマ=1PR → checks → merge → Bundled」の規約に従う
+<!-- END: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+
 ## CARD: no-checks（Checksがまだ出ない／表示されない）
 
 ### 観測
