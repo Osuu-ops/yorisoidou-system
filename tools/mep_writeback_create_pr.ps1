@@ -1,147 +1,85 @@
 param(
   [Parameter(Mandatory=$true)]
+  [ValidateNotNullOrEmpty()]
   [string]$BundlePath
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
-function Warn([string]$m){ Write-Host ("[WARN] {0}
-function Resolve-FullRepo(){
-  $r = ($env:GITHUB_REPOSITORY ?? "").Trim()
-  if ($r) { return $r }
-  try { return (gh repo view --json nameWithOwner -q .nameWithOwner).Trim() } catch {}
-  return ""
-}
-function AutoClose-StaleWritebackPrs([string]$keepHead){
-  $fullRepo = Resolve-FullRepo
-  if (-not $fullRepo) { Warn "AUTO_CLOSE_SKIP: cannot resolve repo"; return }
-  # Close other open writeback PRs to avoid pile-up
-  $lines = $null
-  try {
-    $lines = gh pr list -R $fullRepo --state open --json number,headRefName,title --jq '.[] | select(.title|startswith("Writeback bundle evidence")) | "\(.number)\t\(.headRefName)"' 2>$null
-  } catch {
-    Warn ("AUTO_CLOSE_LIST_FAILED: " + param(
-  [Parameter(Mandatory=$true)]
-  [string]$BundlePath
-)
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
+
 function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
 function Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }
-$head = (git rev-parse --abbrev-ref HEAD).Trim()
-Info ("HEAD=" + $head)
-function Ensure-PrForHead([string]$h){
-  $exists = $null
-  try { $exists = gh pr list --state open --head $h --json number --jq '.[0].number' 2>$null } catch {}
-  if ($exists) { Info ("PR already exists for head " + $h + ": #" + $exists); return }
-  $runId = $env:GITHUB_RUN_ID; if (-not $runId) { $runId = "0" }
-  $title = ("Writeback bundle evidence ({0})" -f $h)
-  $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $h, $runId)
-  $url = gh pr create --title $title --body $body --base "main" --head $h
-  Info ("Created PR: " + $url)
+
+function Resolve-FullRepo {
+  $r = [string]($env:GITHUB_REPOSITORY)
+  if (-not [string]::IsNullOrWhiteSpace($r)) { return $r.Trim() }
+  try {
+    $v = (gh repo view --json nameWithOwner -q .nameWithOwner 2>$null)
+    if (-not [string]::IsNullOrWhiteSpace($v)) { return $v.Trim() }
+  } catch {}
+  return ""
 }
+
+function Ensure-PrForHead([string]$head, [string]$base, [string]$title, [string]$body){
+  $exists = $null
+  try { $exists = gh pr list --state open --head $head --base $base --json number,url --jq '.[0].url' 2>$null } catch {}
+  if (-not [string]::IsNullOrWhiteSpace([string]$exists)) {
+    Info ("PR already exists for head " + $head + ": " + $exists.Trim())
+    return $exists.Trim()
+  }
+  $url = gh pr create --base $base --head $head --title $title --body $body
+  Info ("Created PR: " + $url)
+  return $url
+}
+
+$repo = Resolve-FullRepo
+if ($repo) { Info ("Repo=" + $repo) } else { Warn "Repo unresolved; using gh defaults" }
+
+$head = (git rev-parse --abbrev-ref HEAD).Trim()
+$base = "main"
+$runId = [string]$env:GITHUB_RUN_ID; if ([string]::IsNullOrWhiteSpace($runId)) { $runId = "0" }
+$prNo  = [string]$env:PR_NUMBER;     if ([string]::IsNullOrWhiteSpace($prNo))  { $prNo  = "0" }
+
 if ($head -like "auto/writeback-bundle_*") {
-  Ensure-PrForHead $head
+  $title = ("Writeback bundle evidence ({0})" -f $head)
+  $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $head, $runId)
+  [void](Ensure-PrForHead -head $head -base $base -title $title -body $body)
   exit 0
 }
+
 $dirty = ([string](git status --porcelain)).Trim()
 if (-not $dirty) {
   Info "Working tree clean; nothing to write back."
   exit 0
 }
-$runId = $env:GITHUB_RUN_ID; if (-not $runId) { $runId = "0" }
-$prNo  = $env:PR_NUMBER;    if (-not $prNo)  { $prNo  = "0" }
+
 $ts = (Get-Date -Format "yyyyMMdd_HHmmss")
 $newHead = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $prNo, $ts)
 Warn ("Not on auto/writeback-bundle_*; creating branch " + $newHead)
+
 git switch -c $newHead | Out-Null
+
 git add -- $BundlePath | Out-Null
-$dirty2 = ([string](git status --porcelain)).Trim()
-if (-not $dirty2) {
+$staged = ([string](git diff --cached --name-only)).Trim()
+if (-not $staged) {
   Info "No staged changes for bundle; skip push/PR."
   exit 0
 }
+
 $msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $runId)
 git commit -m $msg | Out-Null
-# ---- ensure BUNDLE_VERSION main_<hash> matches the commit that contains it (race-proof) ----
+
 try {
-  $bundlePathResolved = $BundlePath
-  if (-not $bundlePathResolved) { $bundlePathResolved = "docs/MEP/MEP_BUNDLE.md" }
-  pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath $bundlePathResolved
+  pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath $BundlePath
+  $suffixChanged = ([string](git status --porcelain -- $BundlePath)).Trim()
+  if ($suffixChanged) {
+    git add -- $BundlePath | Out-Null
+    git commit -m ("chore(mep): align bundle version suffix to HEAD ({0})" -f $runId) | Out-Null
+  }
 } catch {
-  Write-Host "[WARN] mep_fix_bundle_version_suffix_to_head.ps1 failed: $($_.Exception.Message)"
+  Warn ("mep_fix_bundle_version_suffix_to_head.ps1 failed: " + $_.Exception.Message)
 }
-# ------------------------------------------------------------------------------
 
 git push -u origin $newHead | Out-Null
-Ensure-PrForHead $newHead
-
-
-.Exception.Message)
-    return
-  }
-  $arr = @()
-  if ($lines) { $arr = @($lines) }
-  foreach($ln in $arr){
-    $cols = $ln -split "`t"
-    if($cols.Count -ge 2){
-      $n = [int]$cols[0]
-      $h = [string]$cols[1]
-      if($h -and ($h -ne $keepHead)){
-        try {
-          gh pr close -R $fullRepo $n --comment ("Auto-close: stale writeback PR; keep head=" + $keepHead) 1>$null 2>$null
-        } catch {}
-      }
-    }
-  }
-}
-" -f $m) }
-$head = (git rev-parse --abbrev-ref HEAD).Trim()
-Info ("HEAD=" + $head)
-function Ensure-PrForHead([string]$h){
-  $exists = $null
-  try { $exists = gh pr list --state open --head $h --json number --jq '.[0].number' 2>$null } catch {}
-  if ($exists) { Info ("PR already exists for head " + $h + ": #" + $exists); return }
-  $runId = $env:GITHUB_RUN_ID; if (-not $runId) { $runId = "0" }
-  $title = ("Writeback bundle evidence ({0})" -f $h)
-  $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $h, $runId)
-  $url = gh pr create --title $title --body $body --base "main" --head $h
-  Info ("Created PR: " + $url)
-}
-if ($head -like "auto/writeback-bundle_*") {
-  Ensure-PrForHead $head
-  exit 0
-}
-$dirty = ([string](git status --porcelain)).Trim()
-if (-not $dirty) {
-  Info "Working tree clean; nothing to write back."
-  exit 0
-}
-$runId = $env:GITHUB_RUN_ID; if (-not $runId) { $runId = "0" }
-$prNo  = $env:PR_NUMBER;    if (-not $prNo)  { $prNo  = "0" }
-$ts = (Get-Date -Format "yyyyMMdd_HHmmss")
-$newHead = ("auto/writeback-bundle_{0}_{1}_{2}" -f $runId, $prNo, $ts)
-Warn ("Not on auto/writeback-bundle_*; creating branch " + $newHead)
-git switch -c $newHead | Out-Null
-git add -- $BundlePath | Out-Null
-$dirty2 = ([string](git status --porcelain)).Trim()
-if (-not $dirty2) {
-  Info "No staged changes for bundle; skip push/PR."
-  exit 0
-}
-$msg = ("chore(mep): writeback bundle evidence (PR #{0}) (run {1})" -f $prNo, $runId)
-git commit -m $msg | Out-Null
-# ---- ensure BUNDLE_VERSION main_<hash> matches the commit that contains it (race-proof) ----
-try {
-  $bundlePathResolved = $BundlePath
-  if (-not $bundlePathResolved) { $bundlePathResolved = "docs/MEP/MEP_BUNDLE.md" }
-  pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath $bundlePathResolved
-} catch {
-  Write-Host "[WARN] mep_fix_bundle_version_suffix_to_head.ps1 failed: $($_.Exception.Message)"
-}
-# ------------------------------------------------------------------------------
-
-git push -u origin $newHead | Out-Null
-Ensure-PrForHead $newHead
-
-
+$title = ("Writeback bundle evidence ({0})" -f $newHead)
+$body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $newHead, $runId)
+[void](Ensure-PrForHead -head $newHead -base $base -title $title -body $body)
