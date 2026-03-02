@@ -76,6 +76,39 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 # RUNBOOK（復旧カード）
 
 
+<!-- BEGIN: CODEX_REPO_BOOTSTRAP (MEP) -->
+## CARD: CODEX_REPO_BOOTSTRAP（Codex作業開始時の標準初期化：repo/origin/権限の固定）  [Adopted]
+### 目的（固定）
+- Codex環境で発生しがちな「作業ディレクトリ違い」「origin未設定」「HTTPS認証がGH_TOKENに繋がらない」を入口で潰し、以後のPR作成・checks判定ループを安定させる。
+### 前提（固定）
+- Codex環境には `GH_TOKEN` が存在する（例：`printenv | egrep -i 'GITHUB|GH_'`）。
+- Codex環境には `gh` が無い場合がある（その場合、PR作成はREST APIで行う）。
+### 標準初期化（Codex shell：毎回最初に実行）
+1) repoルートへ移動（固定）
+- `cd /workspace/yorisoidou-system`
+- `git rev-parse --show-toplevel` が `/workspace/yorisoidou-system` を指すこと
+2) origin を必ず再設定（固定：token付きHTTPS）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read）：`git ls-remote --heads origin | head`
+3) main追随（固定）
+- `git fetch origin main`
+- `git checkout main`
+- `git reset --hard origin/main`
+4) 作業ブランチ作成（固定）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -b "$BR"`
+### PR作成（gh無し想定：REST API固定）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "<TITLE>" "$BR" "<BODY>")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+- 返り値 `html_url` がPR URL（一次出力）
+### STOP_HARD（固定）
+- `git ls-remote` が失敗 → remote/URL/ネットワーク不整合（STOP_HARD）
+- `401/403` → GH_TOKEN 無効 or 権限不足（STOP_HARD）
+- Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+<!-- END: CODEX_REPO_BOOTSTRAP (MEP) -->
 <!-- BEGIN: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
 ## CARD: RUNBOOK / CODEX_GITHUB_AUTH_RECOVERY（Codexからpush/PRできない時の最短復旧）  [Adopted]
 ### 観測（症状）
