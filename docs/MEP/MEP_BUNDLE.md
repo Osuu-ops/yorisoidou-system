@@ -76,6 +76,49 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 # RUNBOOK（復旧カード）
 
 
+<!-- BEGIN: CODEX_TASK_PACKET_TEMPLATE (MEP) -->
+## CARD: CODEX_TASK_PACKET_TEMPLATE（Codex一括指示書テンプレ：迷子ゼロ固定）  [Adopted]
+### 目的（固定）
+- 「Codexが薄くしか使われない」「PS回しに戻る」を防ぐため、Codexへ渡す入力を **1枚（固定フォーマット）** に統一する。
+- 編集（差分作成/PR更新）をCodexへ集約し、合否はPR checksで機械判定する。
+### 使い方（固定）
+- Codexに作業を依頼するときは、**必ずこのテンプレ本文をそのまま貼る**（空欄だけ埋める）。
+- 人間は途中で手順追加・分割指示をしない（迷子源）。追加は「禁止/DoD/Scope」の更新として差し戻す。
+---
+## [MEP/CODEX一括指示]（テンプレ本文）
+### 0) 入口宣言（固定）
+- このタスクは **CODEX_FIRST**（編集=Codex、PS=観測/dispatchのみ）。
+- 合否は **PR checks（Required checks / Gate Validate）** のみで判定する。会話で断定しない。
+### 1) 目的（必須・1〜2行）
+- <目的を1〜2行で>
+### 2) 変更してよい範囲（Scope Fence：必須）
+- 変更OK:
+  - <ディレクトリ/ファイルを列挙>
+- 変更禁止:
+  - <触ってはいけないものを列挙（なければ “なし”）>
+### 3) DoD（合格条件：必須）
+- PRを作成/更新すること（同PRで収束）。
+- Required checks が **全て SUCCESS** になること。
+- 変更はScope内のみ。大置換・全文書換えは禁止。
+- 必要なら Bundled/SSOT へは **カード形式（BEGIN/END付き）** で追記すること。
+### 4) 禁止（必須）
+- 範囲外変更
+- 大置換／全文書換え／意味の上書き
+- 会話での「確定/完了」宣言（証跡のみが真実）
+- Required checks が出ない/不一致のまま進める（STOP_HARD）
+### 5) 進め方（固定）
+1. Codexが実装してPRを出す（編集はCodexのみ）
+2. checksでNGなら、Codexが同PRを修正して収束させる
+3. checksが全SUCCESSになったら、人間が merge（auto-merge推奨）
+### 6) 出力（Codexが返すべきもの：固定）
+- PR URL
+- 変更ファイル一覧（Scope内であることの自己監査）
+- checks結果（SUCCESS/FAILURE）
+---
+### STOP_HARD（固定）
+- Required checksが出ない／Required checks名が不一致／401/403等でPRが作れない
+- この場合は「原因の一次出力（エラー全文）」を貼って停止する（復旧はRUNBOOKに従う）
+<!-- END: CODEX_TASK_PACKET_TEMPLATE (MEP) -->
 <!-- BEGIN: CODEX_REPO_BOOTSTRAP (MEP) -->
 ## CARD: CODEX_REPO_BOOTSTRAP（Codex作業開始時の標準初期化：repo/origin/権限の固定）  [Adopted]
 ### 目的（固定）
