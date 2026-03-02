@@ -70,7 +70,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
 
 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
 
 
           ISSUE_NUMBER: ${{ inputs.issue_number }}
@@ -121,7 +121,7 @@ jobs:
         env:
 
 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
           GH_REPO: ${{ github.repository }}
 
 
@@ -173,7 +173,7 @@ jobs:
         with:
 
 
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
 
 
           commit-message: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
@@ -218,7 +218,7 @@ jobs:
         env:
 
 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
 
 
           GH_REPO: ${{ github.repository }}
@@ -305,7 +305,7 @@ jobs:
         env:
 
 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
 
 
           ISSUE_NUMBER: ${{ inputs.issue_number }}
