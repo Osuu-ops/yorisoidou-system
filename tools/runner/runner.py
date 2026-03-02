@@ -971,6 +971,19 @@ def merge_finish(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     pr_num = int(pr_url.rstrip("/").split("/")[-1])
+    # If PR already MERGED, finalize immediately (idempotent)
+    try:
+        st0 = _run(["gh","pr","view", str(pr_num), "--repo", repo, "--json", "state", "-q", ".state"]).strip()
+        if st0 == "MERGED":
+            rs["run_status"] = "DONE"
+            rs["last_result"]["stop_class"] = ""
+            rs["last_result"]["reason_code"] = ""
+            rs["next_action"] = "ALL_DONE"
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 0
+    except Exception:
+        pass
+
     for _ in range(360):
         out = _run(["gh", "pr", "checks", str(pr_num), "--repo", repo])
         if "0 pending checks" in out and "0 failing" in out:
@@ -984,8 +997,8 @@ def merge_finish(run_id: str) -> int:
         return 2
     _run(["gh", "pr", "merge", str(pr_num), "--repo", repo, "--auto", "--squash"])
     for _ in range(360):
-        j = _run(["gh", "pr", "view", str(pr_num), "--repo", repo, "--json", "state", "-q", "{state:.state}"])
-        if '"state":"MERGED"' in j:
+        j = _run(["gh", "pr", "view", str(pr_num), "--repo", repo, "--json", "state", "-q", ".state"])
+        if j.strip() == "MERGED":
             break
         time.sleep(5)
     else:
