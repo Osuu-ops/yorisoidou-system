@@ -114,13 +114,14 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json
+          import os
           from datetime import datetime, timezone
           from pathlib import Path
 
-          issue_number = "${ISSUE_NUMBER}"
-          standalone_run_id = "${GITHUB_RUN_ID}"
-          standalone_run_url = "${GITHUB_RUN_URL}"
-          artifact_pr_url = "${ARTIFACT_PR_URL}"
+          issue_number = os.environ.get("ISSUE_NUMBER", "").strip()
+          standalone_run_id = os.environ.get("GITHUB_RUN_ID", "").strip()
+          standalone_run_url = os.environ.get("GITHUB_RUN_URL", "").strip()
+          artifact_pr_url = os.environ.get("ARTIFACT_PR_URL", "").strip()
 
           run_state = Path("mep/run_state.json")
           rs = json.loads(run_state.read_text(encoding="utf-8")) if run_state.exists() else {}
