@@ -11,6 +11,9 @@ on:
         description: "GitHub Issue number containing the draft"
         required: true
         type: string
+    secrets:
+      MEP_BOT_PAT:
+        required: false
   workflow_dispatch:
     inputs:
       issue_number:
@@ -421,5 +424,4 @@ jobs:
 
 
 # debug-push 20260219T152650Z
-
 
