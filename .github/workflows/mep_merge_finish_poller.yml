@@ -14,7 +14,7 @@ jobs:
   poll:
     runs-on: ubuntu-latest
     steps:
-      - name: Poll merged intake PRs and post MERGE_FINISH (best-effort)
+      - name: Poll merged intake PRs via search API and post MERGE_FINISH (best-effort)
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -25,9 +25,12 @@ jobs:
           now_epoch="$(date -u +%s)"
           lookback=21600
           cutoff=$((now_epoch - lookback))
-          prs_path="$(mktemp)"
-          gh api "repos/${REPO}/pulls?state=closed&per_page=100&sort=updated&direction=desc" > "$prs_path"
-          export PRS_PATH="$prs_path"
+          # Search merged intake PRs reliably (no "top100 updated closed pulls" miss)
+          q="repo:${REPO} is:pr is:merged head:mep/issueops-run- sort:updated-desc"
+          urls_path="$(mktemp)"
+          # Output PR API URLs one per line (pagination-safe)
+          gh api "search/issues" -f q="$q" --paginate --jq '.items[].pull_request.url' > "$urls_path"
+          export URLS_PATH="$urls_path"
           export CUTOFF="$cutoff"
           python3 - <<'PY'
           import json, os, re, subprocess
@@ -35,11 +38,15 @@ jobs:
           repo = os.environ["REPO"]
           run_url = os.environ["RUN_URL"]
           cutoff = int(os.environ.get("CUTOFF","0"))
-          prs_path = os.environ["PRS_PATH"]
-          with open(prs_path, "r", encoding="utf-8") as f:
-              prs = json.load(f)
+          urls_path = os.environ["URLS_PATH"]
           def sh(cmd):
               return subprocess.check_output(cmd, text=True)
+          def iso_to_epoch(iso):
+              if not iso:
+                  return 0
+              iso = iso.replace("Z", "+00:00")
+              dt = datetime.fromisoformat(iso).astimezone(timezone.utc)
+              return int(dt.timestamp())
           def parse_issue(title, body):
               s = (title or "") + "\n" + (body or "")
               m = re.search(r'\bIssue\s*#\s*(\d+)\b', s, re.IGNORECASE)
@@ -48,32 +55,29 @@ jobs:
               if not m:
                   m = re.search(r'^\s*issue_number:\s*(\d+)\s*$', s, re.MULTILINE)
               return m.group(1) if m else ""
-          def iso_to_epoch(iso):
-              if not iso:
-                  return 0
-              iso = iso.replace("Z", "+00:00")
-              dt = datetime.fromisoformat(iso).astimezone(timezone.utc)
-              return int(dt.timestamp())
+          with open(urls_path, "r", encoding="utf-8") as f:
+              urls = [ln.strip() for ln in f.read().splitlines() if ln.strip()]
           posted = 0
           scanned = 0
-          for pr in prs:
+          for pr_api_url in urls[:200]:
+              pr = json.loads(sh(["gh","api",pr_api_url]))
               merged_at = pr.get("merged_at")
               if not merged_at:
                   continue
-              merged_epoch = iso_to_epoch(merged_at)
-              if merged_epoch < cutoff:
+              if iso_to_epoch(merged_at) < cutoff:
                   continue
               head_ref = ((pr.get("head") or {}).get("ref")) or ""
-              title = pr.get("title") or ""
               if not head_ref.startswith("mep/issueops-run-"):
                   continue
               scanned += 1
+              title = pr.get("title") or ""
+              body = pr.get("body") or ""
               pr_url = pr.get("html_url") or ""
               merge_sha = pr.get("merge_commit_sha") or ""
-              body = pr.get("body") or ""
               issue = parse_issue(title, body)
               if not issue:
                   continue
+              # dedupe by (RUN_ID=MERGE_FINISH + PR_URL)
               comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
               needle1 = "RUN_ID=MERGE_FINISH"
               needle2 = f"PR_URL={pr_url}"
