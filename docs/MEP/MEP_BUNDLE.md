@@ -780,7 +780,44 @@ Bundled 本文に基づき、
 
 ### CARD: ONE_BLOCK_POWERSHELL_OPERATION [Adopted]
 
-- Purpose:
+
+<!-- BEGIN: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->
+## CARD: CODEX_FIRST_OPERATION_CONTRACT（Codex主役・PS縮退の運用契約）  [Adopted]
+### 目的（固定）
+- 実装の主役を **Codex（または同等のコーディング・エージェント）** に固定し、ローカルPS起因の事故（書き換え/分岐/再実行ズレ）を根絶する。
+- PSは「観測＋dispatch起動」のみに縮退し、**作業ツリーを書き換えない**ことで再現性と監査性を上げる。
+### 用語（固定）
+- “編集主体” = リポジトリ内容（ファイル）を変更しPRを作る主体
+- “観測主体” = 状態を取得し、CI/Workflowを起動し、結果を確認してSTOP/GO判定する主体
+### 役割分担（固定）
+- 編集主体（唯一の正）：
+  - Codex（または同等エージェント）
+  - 実施：多ファイル編集、テスト、PR作成/更新、差分収束
+- 観測主体（唯一の正）：
+  - PowerShell（ローカル）/ GitHub Actions（CI）
+  - 実施：git/ghで状態取得、workflow_dispatch起動、checks/ログ/artifact確認、STOP判定
+### PS縮退ルール（最重要・固定）
+- PSは禁止：
+  - ファイル編集（yaml/md/json/ps1含む）・自動パッチ適用・自動コミット・自動整形
+- PSで許可：
+  - `git status` / `gh pr view` / `gh pr checks` / `gh run list` 等の**観測**
+  - `workflow_dispatch` 等の**起動**
+  - 結果確認（checks / logs / artifacts）
+- 例外（物理的に人間しかできない行為）：
+  - 承認（0入力）・レビュー・権限付与
+### 合否の正（固定）
+- 合否は会話ではなく、**PR checks / Gate Validate（一次出力）**で判定する。
+- “入った扱い”は **PR → main → Bundled（BUNDLE_VERSION）** の証跡のみ。
+### 進行ループ（半自動・固定）
+1. （編集）CodexがPRを作成/更新する
+2. （判定）ActionsのRequired checksで合否が出る
+3. NGなら、同PRをCodexが修正して再実行（収束まで繰り返す）
+4. OKなら、マージ（auto-mergeまたは人手。いずれも証跡が真実）
+5. writeback/evidence/restartが必要なら workflow_dispatch で起動（観測主体が実施）
+### STOP（固定）
+- Required checks が安定して発火しない／Required checks名が不一致／一次根拠が取れない場合は **STOP_HARD**。
+- STOP時は「編集主体（Codex）へ差し戻し」以外の手段で進めない。
+<!-- END: CODEX_FIRST_OPERATION_CONTRACT (MEP) -->- Purpose:
   - AI が人間に要求する操作は **PowerShell の単一コードブロックのみ**に固定する。
 - Rule:
   - 人間に対して複数ステップ・対話的操作・分割実行を要求してはならない。
