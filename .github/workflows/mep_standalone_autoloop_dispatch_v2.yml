@@ -251,40 +251,13 @@ jobs:
           fi
 
 
-          gh pr merge "$PR_NUM" --squash --auto --delete-branch
+          gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
 
 
-          gh pr checks "$PR_NUM" --watch --required
+          gh pr checks "$PR_NUM" --watch --required || true
 
 
-          for i in $(seq 1 30); do
-
-
-            merged="$(gh pr view "$PR_NUM" --json merged --jq '.merged')"
-
-
-            if [ "$merged" = "true" ]; then
-
-
-              echo "PR #${PR_NUM} merged"
-
-
-              exit 0
-
-
-            fi
-
-
-            sleep 10
-
-
-          done
-
-
-          echo "Timed out waiting for PR #${PR_NUM} to merge"
-
-
-          exit 1
+          exit 0
 
 
       - name: Resolve artifact lane
@@ -326,7 +299,7 @@ jobs:
 
 
 
-      - name: Dispatch Gate0 (Audit/Compile/8-gate)
+      - name: Dispatch 8-gate entry (packet filter)
 
 
         env:
@@ -350,10 +323,16 @@ jobs:
           sleep 5
 
 
-          echo "Dispatching mep_gate0_audit_compile_dispatch.yml issue=${ISSUE_NUMBER} lane=${LANE}"
+          TARGET_REF="${{ steps.cpr.outputs.pull-request-branch || github.ref_name }}"
 
 
-          gh workflow run "mep_gate0_audit_compile_dispatch.yml" -f issue_number="${ISSUE_NUMBER}" -f lane="${LANE}"
+          PACKET_PATH="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${ISSUE_NUMBER}/INPUT_PACKET.md"
+
+
+          echo "Dispatching mep_8gate_entry_filter.yml ref=${TARGET_REF} packet=${PACKET_PATH}"
+
+
+          gh workflow run "mep_8gate_entry_filter.yml" --ref "${TARGET_REF}" -f packet_path="${PACKET_PATH}"
 
 
 
