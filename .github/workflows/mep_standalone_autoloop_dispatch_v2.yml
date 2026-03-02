@@ -1,9 +1,5 @@
 name: MEP Standalone AutoLoop (Dispatch)
 
-
-
-
-
 on:
   workflow_call:
     inputs:
@@ -21,407 +17,88 @@ on:
         required: true
         type: string
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
 permissions:
-
-
   actions: write
-
-
   contents: write
-
-
   issues: write
-
-
   pull-requests: write
-
-
-
-
 
 concurrency:
   group: mep-standalone-dispatch-${{ github.run_id }}
   cancel-in-progress: true
+
 jobs:
   noop-pr:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
-      - name: NOOP for PR checks (issue_number not provided)
-        run: |
-          echo "NOOP: mep_standalone_autoloop_dispatch_v2.yml on pull_request without inputs.issue_number"
-          echo "This workflow is a required check; real execution happens via workflow_dispatch/workflow_call with issue_number."
+      - run: 'echo "NOOP: required PR check for standalone dispatch workflow"'
+
   build-artifacts:
-    if: ${{ github.event_name != 'pull_request' && inputs.issue_number != '' }}
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
+    env:
+      GH_REPO: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ inputs.issue_number || github.event.inputs.issue_number }}
+      GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
+      GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
-
-
       - uses: actions/checkout@v4
 
-
-
-
+      - name: Validate issue input
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${ISSUE_NUMBER:-}" || { echo "issue_number is required"; exit 1; }
 
       - name: Build pseudo event json (from issue)
-
-
-        env:
-
-
-          GH_REPO: ${{ github.repository }}
-
-
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
-
-
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-
-
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-
+        shell: bash
         run: |
-
-
           set -euo pipefail
-
-
           mkdir -p _tmp
-
-
           gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}" > _tmp/issue.json
-
-
-          python3 - << 'PY'
-
-
+          python3 - <<'PY'
           import json, pathlib
-
-
-          issue = json.loads(pathlib.Path("_tmp/issue.json").read_text(encoding="utf-8"))
-
-
-          ev = {"issue": issue}
-
-
-          pathlib.Path("_tmp/event.json").write_text(json.dumps(ev, ensure_ascii=False), encoding="utf-8")
-
-
+          issue = json.loads(pathlib.Path('_tmp/issue.json').read_text(encoding='utf-8'))
+          pathlib.Path('_tmp/event.json').write_text(json.dumps({'issue': issue}, ensure_ascii=False), encoding='utf-8')
           PY
-
-
           echo "EVENT_JSON=_tmp/event.json" >> "$GITHUB_ENV"
 
-
-
-
-
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
-
-
         env:
-
-
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
-          GH_REPO: ${{ github.repository }}
-
-
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-
-
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
+        run: python3 tools/issue_artifact_loop.py
 
-
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-
-        run: |
-
-
-          python3 tools/issue_artifact_loop.py
-
-
-
-
-
-      - name: Upload workflow artifacts (downloadable)
-
-
+      - name: Upload workflow artifacts
         uses: actions/upload-artifact@v4
-
-
         with:
-
-
-          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
-
-
-          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
-
-
-
-
+          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ env.ISSUE_NUMBER }}
+          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ env.ISSUE_NUMBER }}/
 
       - name: Create PR to store artifacts in repo
-
-
         id: cpr
-
-
         uses: peter-evans/create-pull-request@v6
-
-
         with:
-
-
           token: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
-
-
-          commit-message: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
-
-
-          title: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
-
-
+          commit-message: "MEP: issue artifacts ISSUE #${{ env.ISSUE_NUMBER }}"
+          title: "MEP: issue artifacts ISSUE #${{ env.ISSUE_NUMBER }}"
           body: |
-
-
             Standalone AutoLoop (Dispatch) generated artifacts.
-
-
-            - Issue: #${{ inputs.issue_number }}
-
-
-            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}"
-
-
-          branch: auto/standalone_dispatch_${{ inputs.issue_number }}_${{ github.run_id }}
-
-
+            - Issue: #${{ env.ISSUE_NUMBER }}
+            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ env.ISSUE_NUMBER }}"
+          branch: auto/standalone_dispatch_${{ env.ISSUE_NUMBER }}_${{ github.run_id }}
           base: main
-
-
           add-paths: |
-
-
             docs/MEP/ARTIFACTS/
 
-
-
-
-
-      - name: Auto-merge artifacts PR (gh cli)
-
-
+      - name: Enable auto-merge for artifacts PR
         if: steps.cpr.outputs.pull-request-number != ''
-
-
-        env:
-
-
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
-
-
-          GH_REPO: ${{ github.repository }}
-
-
-          PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
-
-
-        run: |
-
-
-          set -euo pipefail
-
-
-          echo "[auto-merge] trigger only (no waiting)"
-
-
-          echo "PR_NUM=${PR_NUM:-}"
-
-
-          if [ -z "${PR_NUM:-}" ]; then
-
-
-            echo "PR_NUM is empty -> exit 0 (no-op)"
-
-
-            exit 0
-
-
-          fi
-
-
-          gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
-
-
-          gh pr checks "$PR_NUM" --watch --required || true
-
-
-          exit 0
-
-
-      - name: Resolve artifact lane
-
-
-        id: lane
-
-
         shell: bash
-
-
         env:
-
-
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-
-
+          PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
-
-
           set -euo pipefail
-
-
-          if [ -d "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_${ISSUE_NUMBER}" ]; then
-
-
-            echo "lane=BUSINESS" >> "$GITHUB_OUTPUT"
-
-
-          else
-
-
-            echo "lane=SYSTEM" >> "$GITHUB_OUTPUT"
-
-
-          fi
-
-
-
-
-
-      - name: Dispatch 8-gate entry (packet filter)
-
-
-        env:
-
-
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT != '' && secrets.MEP_BOT_PAT || github.token }}
-
-
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-
-
-          LANE: ${{ steps.lane.outputs.lane }}
-
-
-        run: |
-
-
-          set -euo pipefail
-
-
-          sleep 5
-
-
-          TARGET_REF="${{ steps.cpr.outputs.pull-request-branch || github.ref_name }}"
-
-
-          PACKET_PATH="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${ISSUE_NUMBER}/INPUT_PACKET.md"
-
-
-          echo "Dispatching mep_8gate_entry_filter.yml ref=${TARGET_REF} packet=${PACKET_PATH}"
-
-
-          gh workflow run "mep_8gate_entry_filter.yml" --ref "${TARGET_REF}" -f packet_path="${PACKET_PATH}"
-
-
-
-
-
-      - name: Comment "できました" with pointers
-
-
-        uses: actions/github-script@v7
-
-
-        with:
-
-
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-
-          script: |
-
-
-            const issue = Number('${{ inputs.issue_number }}');
-
-
-            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-
-
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-
-
-            const body = [
-
-
-              'できました（Standalone AutoLoop / Dispatch）',
-
-
-              '',
-
-
-              '- Run: ' + runUrl,
-
-
-              '- Download: Actions Artifacts → MEP_STANDALONE_ARTIFACTS_ISSUE_' + issue,
-
-
-              '- Repo path (merged): docs/MEP/ARTIFACTS/<LANE>/ISSUE_' + issue + '/',
-
-
-              '',
-
-
-              '出力（必須）:',
-
-
-              '- AUDIT.md',
-
-
-              '- MERGED_DRAFT.md（草案本文1つ）',
-
-
-              '- INPUT_PACKET.md（8ゲート入口へ差し込み可能）',
-
-
-              '- RUN_SUMMARY.md',
-
-
-              '- RESTART_PACKET.txt'
-
-
-            ].join('\\n');
-
-
-            await github.rest.issues.createComment({ owner, repo, issue_number: issue, body });
-
-
-
-
-
-# registry-refresh 20260219T151523Z
-
-
-
-
-
-# registry-v2 20260219T152015Z
-
-
-
-# debug-push 20260219T152650Z
-
+          gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
+          gh pr checks "$PR_NUM" --watch --required || true
