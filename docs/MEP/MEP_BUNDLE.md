@@ -75,7 +75,44 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 # RUNBOOK（復旧カード）
 
-## CARD: no-checks（Checksがまだ出ない／表示されない）
+
+<!-- BEGIN: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->
+## CARD: RUNBOOK / CODEX_GITHUB_AUTH_RECOVERY（Codexからpush/PRできない時の最短復旧）  [Adopted]
+### 観測（症状）
+- `git push` が失敗する（例：`could not read Username for 'https://github.com'` / `origin does not appear to be a git repository`）
+- PR作成APIが `401 Requires authentication`
+- `gh` コマンドが存在しない（Codex環境で `gh auth status` が使えない）
+### 原因（典型）
+- Codex環境に **GitHub CLI（gh）が無い**ため、gh経由の認証/PR作成ができない
+- HTTPS remote の git は **GH_TOKEN を自動では使わない**（別途tokenをURLに埋める等が必要）
+- そのrepoコンテキストで `origin` が未設定／消えている（別ディレクトリで設定した等）
+### 復旧（最短手順：Codex shell）
+> 前提：Codex環境に `GH_TOKEN` が入っている（例：`printenv | egrep -i 'GITHUB|GH_'` で確認）
+1) repo rootへ移動（例）
+- `cd /workspace/yorisoidou-system`
+2) origin を token付きで再設定（originが無い/壊れている場合の標準）
+- `git remote remove origin 2>/dev/null || true`
+- `git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/Osuu-ops/yorisoidou-system.git"`
+- `git remote -v`
+- 疎通（read確認）：`git ls-remote --heads origin | head`
+3) push（write確認：最小の変更でOK）
+- `BR="codex/work-$(date -u +%Y%m%dT%H%M%SZ)"`
+- `git checkout -B "$BR" HEAD`
+- `git push -u origin "$BR"`
+4) PR作成（gh無し想定：REST API）
+- `API="https://api.github.com/repos/Osuu-ops/yorisoidou-system/pulls"`
+- `DATA=$(printf '{"title":"%s","head":"%s","base":"main","body":"%s"}' "chore: codex pr create (connectivity)" "$BR" "Codex connectivity check PR. Close after verify.")`
+- `curl -sS -X POST -H "Authorization: token ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "$API" -d "$DATA"`
+### 判定（成功/失敗）
+- 成功：pushが通り、PRが作成される（`html_url` が返る）
+- 失敗（STOP_HARD）：
+  - `401/403` → GH_TOKEN 無効 or 権限不足
+  - `ls-remote` が失敗 → remote/URL/ネットワーク不整合
+  - Required checks が出ない/不一致 → ruleset契約違反（STOP_HARD）
+### 後始末（推奨）
+- テスト用PRは **mergeせず close**（ブランチも削除）
+- 本番作業は「1テーマ=1PR → checks → merge → Bundled」の規約に従う
+<!-- END: CODEX_GITHUB_AUTH_RECOVERY (MEP) -->## CARD: no-checks（Checksがまだ出ない／表示されない）
 
 ### 観測
 - PR に checks が出ない／"No checks" が継続する
