@@ -1,6 +1,8 @@
 name: workflow-pr-presence-guard
 
 on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
     paths:
@@ -16,5 +18,6 @@ jobs:
       - name: Emit always-on workflow PR presence check
         run: |
           echo "workflow-pr-presence-guard running"
+          echo "event=${{ github.event_name }}"
           echo "pr=${{ github.event.pull_request.number }}"
           echo "head=${{ github.event.pull_request.head.sha }}"
