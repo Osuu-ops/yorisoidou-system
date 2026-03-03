@@ -77,7 +77,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 
 <!-- BEGIN: PARALLEL_COLLISION_GUARD (MEP) -->
-## CARD: PARALLEL_COLLISION_GUARD（並走衝突ガード：同一作業の二重実行を停止）  [Draft]
+## CARD: PARALLEL_COLLISION_GUARD（並走衝突ガード：同一作業の二重実行を停止）  [Adopted]
 ### 目的（固定）
 - 並走チャット/並走エージェントが存在しても「同一対象を二重に編集」しないことで、SSOT混線・競合・証跡分岐を防ぐ。
 ### 衝突の定義（固定）
