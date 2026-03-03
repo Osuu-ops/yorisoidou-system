@@ -58,49 +58,54 @@ jobs:
               urls = [ln.strip() for ln in f.read().splitlines() if ln.strip()]
           posted = 0
           scanned = 0
-          for pr_api_url in urls[:200]:
-              api_path = pr_api_url
-              if api_path.startswith("https://api.github.com/"):
-                  api_path = api_path[len("https://api.github.com/"):]
-              try:
-                  pr = json.loads(sh(["gh","api",api_path]))
-              except Exception:
-                  continue
-              merged_at = pr.get("merged_at")
-              if not merged_at:
-                  continue
-              if iso_to_epoch(merged_at) < cutoff:
-                  continue
-              head_ref = ((pr.get("head") or {}).get("ref")) or ""
-              if not head_ref.startswith("mep/issueops-run-"):
-                  continue
-              scanned += 1
-              title = pr.get("title") or ""
-              body = pr.get("body") or ""
-              pr_url = pr.get("html_url") or ""
-              merge_sha = pr.get("merge_commit_sha") or ""
-              issue = parse_issue(title, body)
-              if not issue:
-                  continue
-              # dedupe (last 100)
-              comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
-              needle1 = "RUN_ID=MERGE_FINISH"
-              needle2 = f"PR_URL={pr_url}"
-              if any((needle1 in (c.get("body") or "")) and (needle2 in (c.get("body") or "")) for c in comments):
-                  continue
-              msg = "\n".join([
-                  "RUN_ID=MERGE_FINISH",
-                  "OUTCOME=PASS",
-                  "REASON_CODE=MERGE_FINISH_OK",
-                  "NEXT_ACTION=RESTART_PACKET",
-                  f"PR_URL={pr_url}",
-                  f"MERGE_SHA={merge_sha}",
-                  f"EVIDENCE={run_url}",
-              ])
-              try:
-                  sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
-                  posted += 1
-              except Exception:
-                  pass
-          print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
+          try:
+              for pr_api_url in urls[:200]:
+                  api_path = pr_api_url
+                  if api_path.startswith("https://api.github.com/"):
+                      api_path = api_path[len("https://api.github.com/"):]
+                  try:
+                      pr = json.loads(sh(["gh","api",api_path]))
+                  except Exception:
+                      continue
+                  merged_at = pr.get("merged_at")
+                  if not merged_at:
+                      continue
+                  if iso_to_epoch(merged_at) < cutoff:
+                      continue
+                  head_ref = ((pr.get("head") or {}).get("ref")) or ""
+                  if not head_ref.startswith("mep/issueops-run-"):
+                      continue
+                  scanned += 1
+                  title = pr.get("title") or ""
+                  body = pr.get("body") or ""
+                  pr_url = pr.get("html_url") or ""
+                  merge_sha = pr.get("merge_commit_sha") or ""
+                  issue = parse_issue(title, body)
+                  if not issue:
+                      continue
+                  # dedupe (last 100) - best-effort
+                  try:
+                      comments = json.loads(sh(["gh","api",f"repos/{repo}/issues/{issue}/comments?per_page=100"]))
+                  except Exception:
+                      continue
+                  needle1 = "RUN_ID=MERGE_FINISH"
+                  needle2 = f"PR_URL={pr_url}"
+                  if any((needle1 in (c.get("body") or "")) and (needle2 in (c.get("body") or "")) for c in comments):
+                      continue
+                  msg = "\n".join([
+                      "RUN_ID=MERGE_FINISH",
+                      "OUTCOME=PASS",
+                      "REASON_CODE=MERGE_FINISH_OK",
+                      "NEXT_ACTION=RESTART_PACKET",
+                      f"PR_URL={pr_url}",
+                      f"MERGE_SHA={merge_sha}",
+                      f"EVIDENCE={run_url}",
+                  ])
+                  try:
+                      sh(["gh","api",f"repos/{repo}/issues/{issue}/comments","-f",f"body={msg}"])
+                      posted += 1
+                  except Exception:
+                      pass
+          finally:
+              print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
           PY
