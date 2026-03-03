@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  checks: write
 
 jobs:
   workflow-pr-presence:
@@ -16,5 +17,24 @@ jobs:
       - name: Emit always-on workflow PR presence check
         run: |
           echo "workflow-pr-presence-guard running"
+          echo "event=${{ github.event_name }}"
           echo "pr=${{ github.event.pull_request.number }}"
           echo "head=${{ github.event.pull_request.head.sha }}"
+
+      - name: Publish stable check-run on PR head SHA
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          gh api \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            "repos/${REPO}/check-runs" \
+            -f name='workflow-pr-presence-guard / workflow-pr-presence' \
+            -f head_sha="${HEAD_SHA}" \
+            -f status='completed' \
+            -f conclusion='success' \
+            -f output[title]='Workflow PR presence guard' \
+            -f output[summary]='Guaranteed check-run for workflow-touching PRs (PARALLEL_COLLISION_GUARD support).'
