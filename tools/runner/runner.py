@@ -10,6 +10,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 import secrets
+
+THIS_DIR = Path(__file__).resolve().parent
+if str(THIS_DIR) not in sys.path:
+    sys.path.insert(0, str(THIS_DIR))
+
 from live_state import update_live_state
 from progress_journal import append_journal_event, new_event_id
 try:
