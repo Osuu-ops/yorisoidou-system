@@ -31,6 +31,13 @@ def _warn_if_ledger_dirty(ledger_path: str) -> None:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
         )
         if r.stdout.strip():
+            repo_root = None
+            try:
+                rr = subprocess.run(['git','rev-parse','--show-toplevel'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+                if rr.stdout.strip():
+                    repo_root = rr.stdout.strip()
+            except Exception:
+                repo_root = None
             sys.stderr.write(
                 f"[WARN] CHAT_CHAIN_LEDGER is dirty: {ledger_path}\n"
                 f"       This boot/ledger update will NOT be recoverable elsewhere unless you PR+merge it.\n"
@@ -1596,9 +1603,13 @@ def main() -> int:
             return _run_gate("compact", compact)
 
         if args.cmd == "ledger-in":
-            return ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+            rc = ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+            _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
+            return rc
         if args.cmd == "ledger-out":
-            return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+            rc = ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
+            _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
+            return rc
         if args.cmd == "claim-add":
             evidence_required = [x.strip() for x in (args.evidence_required or "").split(",") if x.strip()]
             try:
