@@ -76,6 +76,34 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 # RUNBOOK（復旧カード）
 
 
+<!-- BEGIN: PARALLEL_COLLISION_GUARD (MEP) -->
+## CARD: PARALLEL_COLLISION_GUARD（並走衝突ガード：同一作業の二重実行を停止）  [Draft]
+### 目的（固定）
+- 並走チャット/並走エージェントが存在しても「同一対象を二重に編集」しないことで、SSOT混線・競合・証跡分岐を防ぐ。
+### 衝突の定義（固定）
+次のいずれかが一致する場合、同一作業（同一ポートフォリオ）とみなす：
+- portfolio_id が一致（例：PR_2778 / ISSUE_XXXX / RUN_RESTART_...）
+- primary_anchor（例：COMMIT:<sha>）が一致
+- 対象ファイル領域が一致（特に危険領域：.github/workflows/* / docs/MEP/MEP_BUNDLE.md）
+### 実行ルール（固定）
+1) 編集主体は常に1つ（CODEX_FIRST前提）
+- 変更（コミット/PR作成/更新）を行う主体は **常に1つ**に固定する。
+- 他の並走チャットは「観測/STATUS/ログ整理」のみ（編集禁止）。
+2) 危険領域は単独PR
+- .github/workflows/* は単独PR（他ファイル混在禁止）
+- docs/MEP/MEP_BUNDLE.md は単独PR（他ファイル混在禁止）
+3) 開始前の衝突チェック（必須）
+- 対象ファイル領域に関する open PR が存在する場合、**新規の編集を開始しない（STOP_HARD）**。
+- open PR が0でも、同一 portfolio_id / primary_anchor を別経路で進めない。
+### 観測コマンド（再現用）
+- open PR 確認：`gh pr list -R Osuu-ops/yorisoidou-system --state open`
+- 対象領域の open PR 検索（例）：`gh pr list --search ".github/workflows" --state open`
+- PRの変更ファイル確認：`gh pr view <n> --json files`（または `gh pr diff --name-only` 相当）
+### STOP_HARD（固定）
+- 同一対象の二重編集が疑われる（portfolio/anchor/領域が衝突）
+- 危険領域（workflows / Bundled）に open PR があるのに編集を開始しようとした
+- この場合は「観測のみ」に退避し、既存PRを収束させてから再開する
+<!-- END: PARALLEL_COLLISION_GUARD (MEP) -->
 <!-- BEGIN: ISSUEOPS_SPEC_REFS (MEP) -->
 ## CARD: ISSUEOPS_SPEC_REFS（Issue仕様の正本化：Bundled参照）  [Adopted]
 ### 目的（固定）
