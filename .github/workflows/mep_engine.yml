@@ -24,16 +24,16 @@ jobs:
         shell: bash
         run: |
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
-echo "RESTART_PACKET"
-echo "RUN_STATE_CODE=RUNNING"
-echo "MODE=DISPATCH_LOOP_ENGINE"
-echo "ITER=${{ inputs.iter }}"
-echo "MAX_ITER=${{ inputs.max_iter }}"
-echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
-echo "BRANCH=${GITHUB_REF_NAME}"
-echo "HEAD_SHA=${GITHUB_SHA}"
-echo "NEXT_ACTION=ENTRY_DISPATCH_IF_WITHIN_LIMIT"
-echo "===== MEP_COPYPASTE_ZONE END ====="
+          echo "RESTART_PACKET"
+          echo "RUN_STATE_CODE=RUNNING"
+          echo "MODE=DISPATCH_LOOP_ENGINE"
+          echo "ITER=${{ inputs.iter }}"
+          echo "MAX_ITER=${{ inputs.max_iter }}"
+          echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
+          echo "BRANCH=${GITHUB_REF_NAME}"
+          echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "NEXT_ACTION=ENTRY_DISPATCH_IF_WITHIN_LIMIT"
+          echo "===== MEP_COPYPASTE_ZONE END ====="
       - name: Dispatch Entry (bounded)
         shell: bash
         env:
@@ -56,4 +56,4 @@ echo "===== MEP_COPYPASTE_ZONE END ====="
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_entry_clean.yml/dispatches" \
             -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\"}}"
-# registry-refresh: 20260212_135722
+# registry-refresh: 20260303T001500Z
