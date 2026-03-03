@@ -18,7 +18,8 @@ jobs:
             const ok = labels.some(n => n.startsWith("mep:controller="));
             if (!ok) {
               core.setFailed("PR_CONTROLLER_LOCK_MISSING: add label mep:controller=<CHAT_ID> (or chosen controller id) before merge.");
-            }      - name: Checkout
+            }
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
