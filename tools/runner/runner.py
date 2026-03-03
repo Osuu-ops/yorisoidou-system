@@ -17,6 +17,27 @@ if str(THIS_DIR) not in sys.path:
 
 from live_state import update_live_state
 from progress_journal import append_journal_event, new_event_id
+
+
+def _warn_if_ledger_dirty(ledger_path: str) -> None:
+    """
+    Safety guard: if CHAT_CHAIN_LEDGER.md was appended but not committed,
+    warn loudly so operator knows it will NOT be recoverable elsewhere unless merged via PR.
+    """
+    import subprocess, sys
+    try:
+        r = subprocess.run(
+            ["git", "status", "--porcelain", "--", ledger_path],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
+        )
+        if r.stdout.strip():
+            sys.stderr.write(
+                f"[WARN] CHAT_CHAIN_LEDGER is dirty: {ledger_path}\n"
+                f"       This boot/ledger update will NOT be recoverable elsewhere unless you PR+merge it.\n"
+            )
+    except Exception:
+        return
+
 try:
     import yaml  # type: ignore
 except Exception:
@@ -1601,6 +1622,7 @@ def main() -> int:
         return 1
     except Exception as ex:
         print(f"STOP_HARD: STATE_WRITE_FAILED ({ex})", file=sys.stderr)
+        _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
         return 1
 if __name__ == "__main__":
     sys.exit(main())
