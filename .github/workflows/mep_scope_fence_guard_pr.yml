@@ -15,18 +15,41 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+
             const pr = context.payload.pull_request;
+
             if (!pr || !pr.number) {
+
               core.setFailed("PR_CONTROLLER_LOCK_UNREADABLE: pull_request payload missing.");
+
               return;
+
             }
+
             const { owner, repo } = context.repo;
+
             const issue_number = pr.number;
+
             const res = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number });
+
             const labels = (res.data || []).map(l => l.name || "");
-            const ok = labels.some(n => n.startsWith("mep:controller="));
-            if (!ok) {
-              core.setFailed("PR_CONTROLLER_LOCK_MISSING: add label mep:controller=<CHAT_ID> before merge.");
+
+            const controllers = labels.filter(n => n.startsWith("mep:controller="));
+
+            const hasAny = controllers.length > 0;
+
+            const hasPlaceholder = controllers.some(n => n === "mep:controller=CHAT");
+
+            const hasReal = controllers.some(n => /^mep:controller=CHAT_[A-Za-z0-9_]+$/.test(n));
+
+            if (!hasAny) {
+
+              core.setFailed("PR_CONTROLLER_LOCK_MISSING: add label mep:controller=CHAT_<THIS_CHAT_ID> before merge.");
+
+            } else if (hasPlaceholder || !hasReal) {
+
+              core.setFailed("PR_CONTROLLER_LOCK_INVALID: placeholder is forbidden. Use mep:controller=CHAT_<THIS_CHAT_ID>.");
+
             }
       - name: Checkout
         uses: actions/checkout@v4
