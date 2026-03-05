@@ -39,7 +39,12 @@ jobs:
           cutoff = int(os.environ.get("CUTOFF","0"))
           urls_path = os.environ["URLS_PATH"]
           def sh(cmd):
-              return subprocess.check_output(cmd, text=True)
+              try:
+                  return subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
+              except subprocess.CalledProcessError as e:
+                  print(f"[poll][sh_error] cmd={cmd} rc={e.returncode}")
+                  print(e.output)
+                  raise
           def iso_to_epoch(iso):
               if not iso:
                   return 0
@@ -106,6 +111,10 @@ jobs:
                       posted += 1
                   except Exception:
                       pass
+          except Exception as e:
+              print("[poll][fatal]", repr(e))
+              import traceback; traceback.print_exc()
+              # best-effort 継続（exit 0）
           finally:
               print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
           PY
