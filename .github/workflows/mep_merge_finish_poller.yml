@@ -114,7 +114,7 @@ jobs:
           except Exception as e:
               print("[poll][fatal]", repr(e))
               import traceback; traceback.print_exc()
-              # best-effort 継続（step failure にしない / exit 0）
+              # best-effort 継続（exit 0）
           finally:
               print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
           PY
