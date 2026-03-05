@@ -1554,21 +1554,21 @@ def main() -> int:
 
     ap_li = sub.add_parser("ledger-in")
     ap_li.add_argument("--parent-chat-id", required=True)
-    ap_li.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_li.add_argument("--portfolio-id", default="")
     ap_li.add_argument("--mode", default="UNSPECIFIED")
     ap_li.add_argument("--primary-anchor", default="UNSPECIFIED")
     ap_li.add_argument("--current-phase", default="UNSPECIFIED")
     ap_li.add_argument("--next-item", default="UNSPECIFIED")
     ap_lo = sub.add_parser("ledger-out")
     ap_lo.add_argument("--this-chat-id", default="")
-    ap_lo.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_lo.add_argument("--portfolio-id", default="")
     ap_lo.add_argument("--mode", default="UNSPECIFIED")
     ap_lo.add_argument("--primary-anchor", default="UNSPECIFIED")
     ap_lo.add_argument("--current-phase", default="UNSPECIFIED")
     ap_lo.add_argument("--next-item", default="UNSPECIFIED")
 
     ap_claim = sub.add_parser("claim-add")
-    ap_claim.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_claim.add_argument("--portfolio-id", default="")
     ap_claim.add_argument("--run-id", default="")
     ap_claim.add_argument("--mode", default="")
     ap_claim.add_argument("--primary-anchor", default="")
@@ -1590,7 +1590,7 @@ def main() -> int:
 
     ap_aa = sub.add_parser("archive-add")
     ap_aa.add_argument("--archive-id", required=True)
-    ap_aa.add_argument("--portfolio-id", default="UNSELECTED")
+    ap_aa.add_argument("--portfolio-id", default="")
     ap_aa.add_argument("--top-goal", default="")
     ap_aa.add_argument("--primary-anchor", default="")
     ap_aa.add_argument("--path", default="")
@@ -1636,12 +1636,16 @@ def main() -> int:
             _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
             return rc
         if args.cmd == "ledger-out":
+            # portfolio_id: forbid only when user explicitly passed UNSELECTED
+            explicit_pid = getattr(args, "portfolio_id", None)
+            if explicit_pid is not None and str(explicit_pid).strip() == "UNSELECTED" and not getattr(args, "allow_unselected", False):
+                print("STOP_HARD: PORTFOLIO_ID_UNSELECTED_FORBIDDEN", file=sys.stderr)
+                return 1
+
             rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
             pid = _resolve_portfolio_id_for_ledger(getattr(args,"portfolio_id",""), getattr(args,"allow_unselected", False), rs)
             # forbid explicit UNSELECTED unless explicitly allowed
-            if (getattr(args,"portfolio_id","") or "").strip() == "UNSELECTED" and not getattr(args,"allow_unselected", False):
-                print("STOP_HARD: PORTFOLIO_ID_UNSELECTED_FORBIDDEN", file=sys.stderr)
-                return 1
+
             args.portfolio_id = pid
             return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
         if args.cmd == "claim-add":
