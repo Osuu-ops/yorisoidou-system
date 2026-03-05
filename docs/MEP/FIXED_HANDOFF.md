@@ -200,6 +200,14 @@ PARENT_CHAT_ID: CHAT_....
   CHAT_YYYYMMDDTHHMMSSZ_<4桁HEX>
 - 衝突しないように、AIは生成時刻＋乱数（4桁HEX）を付ける。
 ## PORTFOLIO_ID 規約（NORMATIVE）
+
+### 追記（運用更新｜NORMATIVE）: PORTFOLIO_ID 自動決定 + UNSELECTED 原則禁止
+- runner の ledger-in/ledger-out は、PORTFOLIO_ID が未指定または UNSELECTED の場合、次の順で自動決定する：
+  1) run_state の pr_url → PR_<番号>
+  2) restart_bridge.source_issue_number → ISSUE_<番号>
+  3) それ以外 → COORD_MAIN
+- UNSELECTED の台帳書き込みは原則禁止（衝突源）。例外は `--allow-unselected` 明示時のみ許可。
+
 - 未指定: UNSELECTED（進行可）
 - 並走する場合は必須（例: BIZ_A / BIZ_B / BIZ_C）
 - 台帳（CHAT_CHAIN_LEDGER）と一次根拠（Issue/PR）に必ず PORTFOLIO_ID を持たせる。

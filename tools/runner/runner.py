@@ -19,6 +19,35 @@ from live_state import update_live_state
 from progress_journal import append_journal_event, new_event_id
 
 
+def _resolve_portfolio_id_for_ledger(portfolio_id: str, allow_unselected: bool, rs: dict) -> str:
+    """
+    Auto-resolve portfolio_id to avoid UNSELECTED collisions.
+    Priority:
+      1) explicit non-UNSELECTED
+      2) last_result.evidence.pr_url -> PR_<n>
+      3) restart_bridge.source_issue_number -> ISSUE_<n>
+      4) COORD_MAIN
+    UNSELECTED is forbidden unless allow_unselected=True.
+    """
+    pid = (portfolio_id or "").strip()
+    if pid and pid != "UNSELECTED":
+        return pid
+    ev = ((rs or {}).get("last_result") or {}).get("evidence") or {}
+    pr_url = str(ev.get("pr_url") or "").strip()
+    m = re.search(r"/pull/(?P<n>\d+)\b", pr_url)
+    if m:
+        return f"PR_{m.group('n')}"
+    rb = (rs or {}).get("restart_bridge") or {}
+    issue = str(rb.get("source_issue_number") or "").strip()
+    if issue.isdigit():
+        return f"ISSUE_{issue}"
+    # fallback (valid + stable)
+    if allow_unselected:
+        return "UNSELECTED"
+    return "COORD_MAIN"
+
+
+
 def _warn_if_ledger_dirty(ledger_path: str) -> None:
     """
     Safety guard: if CHAT_CHAIN_LEDGER.md was appended but not committed,
@@ -1606,7 +1635,14 @@ def main() -> int:
             rc = ledger_in(args.parent_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
             _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
             return rc
-        if args.cmd == "ledger-out":
+        if args.cmd == "ledger-out":            rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+            pid = _resolve_portfolio_id_for_ledger(getattr(args,'portfolio_id',''), getattr(args,'allow_unselected',False), rs)
+            if (getattr(args,'portfolio_id','') or '').strip() == 'UNSELECTED' and not getattr(args,'allow_unselected',False):
+                # forbid UNSELECTED write unless explicitly allowed
+                pass
+            args.portfolio_id = pid
+
+
             rc = ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
             _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
             return rc
