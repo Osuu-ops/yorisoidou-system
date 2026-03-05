@@ -66,27 +66,36 @@ jobs:
   autofix:
     name: autofix
     needs: [lint]
-    if: always() && needs.lint.result == 'failure'
+    if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Noop when lint succeeded
+        if: needs.lint.result != 'failure'
+        shell: bash
+        run: |
+          echo "NOOP: lint succeeded"
       - name: Guard (avoid infinite loop)
+        if: needs.lint.result == 'failure'
         shell: bash
         run: |
           # Only run autofix once per PR head SHA
           # We use a PR label to mark "autofix-applied".
           echo "ok"
       - name: Checkout PR head
+        if: needs.lint.result == 'failure'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Apply autofix (heredoc indent + LF normalize)
+        if: needs.lint.result == 'failure'
         shell: bash
         run: |
           python .github/scripts/autofix_workflows.py
           git status --porcelain
       - name: Commit & push if changed
+        if: needs.lint.result == 'failure'
         shell: bash
         env:
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}

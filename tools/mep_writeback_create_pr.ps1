@@ -9,6 +9,19 @@ $ErrorActionPreference = "Stop"
 function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
 function Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }
 
+function StopHard([string]$m){ throw ("STOP_HARD: " + $m) }
+
+function Assert-ControllerLock {
+  $label = [string]$env:MEP_CONTROLLER_LABEL
+  $expected = [string]$env:MEP_EXPECTED_CONTROLLER_LABEL
+  if ([string]::IsNullOrWhiteSpace($label)) { StopHard "PR_CONTROLLER_LOCK_MISSING" }
+  if ($label -notmatch '^mep:controller=CHAT_[A-Za-z0-9_]+$') { StopHard "PR_CONTROLLER_LOCK_INVALID_FORMAT" }
+  if (-not [string]::IsNullOrWhiteSpace($expected) -and $label -ne $expected) {
+    StopHard ("PR_CONTROLLER_LOCK_MISMATCH expected=" + $expected + " actual=" + $label)
+  }
+  Info ("Controller lock OK: " + $label)
+}
+
 function Resolve-FullRepo {
   $r = [string]($env:GITHUB_REPOSITORY)
   if (-not [string]::IsNullOrWhiteSpace($r)) { return $r.Trim() }
@@ -30,6 +43,8 @@ function Ensure-PrForHead([string]$head, [string]$base, [string]$title, [string]
   Info ("Created PR: " + $url)
   return $url
 }
+
+Assert-ControllerLock
 
 $repo = Resolve-FullRepo
 if ($repo) { Info ("Repo=" + $repo) } else { Warn "Repo unresolved; using gh defaults" }
