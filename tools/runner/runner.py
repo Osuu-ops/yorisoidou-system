@@ -1637,16 +1637,13 @@ def main() -> int:
             return rc
         if args.cmd == "ledger-out":
             rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
-            pid = _resolve_portfolio_id_for_ledger(getattr(args, "portfolio_id", ""), getattr(args, "allow_unselected", False), rs)
-            # Forbid explicit UNSELECTED unless allow_unselected was provided.
-            if (getattr(args, "portfolio_id", "") or "").strip() == "UNSELECTED" and not getattr(args, "allow_unselected", False):
+            pid = _resolve_portfolio_id_for_ledger(getattr(args,"portfolio_id",""), getattr(args,"allow_unselected", False), rs)
+            # forbid explicit UNSELECTED unless explicitly allowed
+            if (getattr(args,"portfolio_id","") or "").strip() == "UNSELECTED" and not getattr(args,"allow_unselected", False):
                 print("STOP_HARD: PORTFOLIO_ID_UNSELECTED_FORBIDDEN", file=sys.stderr)
                 return 1
             args.portfolio_id = pid
-            rc = ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
-rc = ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
-            _warn_if_ledger_dirty('docs/MEP/CHAT_CHAIN_LEDGER.md')
-            return rc
+            return ledger_out(args.this_chat_id, args.portfolio_id, args.mode, args.primary_anchor, args.current_phase, args.next_item)
         if args.cmd == "claim-add":
             evidence_required = [x.strip() for x in (args.evidence_required or "").split(",") if x.strip()]
             try:
