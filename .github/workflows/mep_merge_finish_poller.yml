@@ -31,7 +31,7 @@ jobs:
           gh api "search/issues" -f q="$q" --paginate --jq '.items[].pull_request.url' > "$urls_path"
           export URLS_PATH="$urls_path"
           export CUTOFF="$cutoff"
-          python3 - <<'PY'
+          python3 - <<'PY' 2>&1 | sed -e 's/^/[PYOUT] /'
           import json, os, re, subprocess
           from datetime import datetime, timezone
           repo = os.environ["REPO"]
@@ -63,6 +63,7 @@ jobs:
               urls = [ln.strip() for ln in f.read().splitlines() if ln.strip()]
           posted = 0
           scanned = 0
+          exit_code = 0
           try:
               for pr_api_url in urls[:200]:
                   api_path = pr_api_url
@@ -114,7 +115,9 @@ jobs:
           except Exception as e:
               print("[poll][fatal]", repr(e))
               import traceback; traceback.print_exc()
+              exit_code = 0  # best-effort success
               # best-effort 継続（exit 0）
           finally:
               print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
+              import sys; sys.exit(exit_code)
           PY
