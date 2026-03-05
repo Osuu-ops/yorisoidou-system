@@ -102,6 +102,7 @@ jobs:
           print("[runner] EXEC_NEXT_ACTION done")
           PY
       - name: Dispatch Gate8 (Writeback Bundle Entry) after merge attempt
+    continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -115,6 +116,7 @@ jobs:
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_writeback_bundle_dispatch_entry.yml/dispatches" \
             -d "{\"ref\":\"main\",\"inputs\":{\"pr_number\":\"0\",\"write_handoff\":\"true\"}}"
       - name: Dispatch Engine (bounded, continue loop)
+    continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
