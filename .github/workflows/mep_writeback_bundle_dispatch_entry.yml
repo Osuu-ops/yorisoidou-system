@@ -19,13 +19,14 @@ on:
         description: "write handoff files (optional)"
         required: false
         default: "false"
-  push:
-    branches: [main]
-    paths:
-      - "docs/MEP/**"
-      - "docs/MEP_SUB/**"
-      - "tools/**"
-      - ".github/workflows/mep_writeback_bundle_dispatch_entry.yml"
+      controller_label:
+        description: "controller lock label (mep:controller=CHAT_<ID>)"
+        required: false
+        default: ""
+      expected_controller_label:
+        description: "exact expected controller label (optional but recommended)"
+        required: false
+        default: ""
 permissions:
   contents: write
   pull-requests: write
@@ -216,6 +217,8 @@ jobs:
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
+          MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
+          MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
         run: |
           pwsh -NoProfile -File ./tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
           pwsh -NoProfile -File ./tools/mep_writeback_create_pr.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
