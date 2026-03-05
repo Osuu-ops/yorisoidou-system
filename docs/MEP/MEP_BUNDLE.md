@@ -76,6 +76,21 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 # RUNBOOK（復旧カード）
 
 
+<!-- BEGIN: PR_CONTROLLER_LOCK (MEP) -->
+## CARD: PR_CONTROLLER_LOCK（PR操作衝突防止：controllerラベル必須）  [Adopted]
+### 目的（固定）
+- 並走チャット/並走エージェントが同一PRに対して update-branch/merge/close 等の「PR操作」を同時に行い、状態が揺れて収束不能になる事故を防ぐ。
+- controller（操縦者）を一意にし、controller以外は観測のみとする。
+### ルール（固定）
+- PRには必ず `mep:controller=<CONTROLLER_ID>` ラベルを付ける（例：`mep:controller=PC`）。
+- 暫定ラベル `mep:controller=CHAT` は **禁止**（PR_CONTROLLER_LOCK_INVALID）。
+- controllerラベルが無いPRは **STOP_HARD（PR_CONTROLLER_LOCK_MISSING）**。
+- controllerは「PR操作（update-branch/merge/close/auto-merge設定）」のみ担当し、他チャットは観測（view/checks/log）に限定する。
+### 物理ブロック（一次根拠）
+- Required check `scope-fence` 内の “Controller Lock (label required)” が、ラベル未設定/不正を fail し、マージ不能にする。
+### 収束手順（固定）
+- ラベル後付けで `scope-fence` が落ちた場合は `gh run rerun --failed` で収束させる。
+<!-- END: PR_CONTROLLER_LOCK (MEP) -->
 <!-- BEGIN: PARALLEL_COLLISION_GUARD (MEP) -->
 ## CARD: PARALLEL_COLLISION_GUARD（並走衝突ガード：同一作業の二重実行を停止）  [Adopted]
 ### 目的（固定）

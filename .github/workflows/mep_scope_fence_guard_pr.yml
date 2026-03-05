@@ -35,23 +35,14 @@ jobs:
             const labels = (res.data || []).map(l => l.name || "");
 
             const controllers = labels.filter(n => n.startsWith("mep:controller="));
-
-            const hasAny = controllers.length > 0;
-
-            const hasPlaceholder = controllers.some(n => n === "mep:controller=CHAT");
-
-            const hasReal = controllers.some(n => /^mep:controller=CHAT_[A-Za-z0-9_]+$/.test(n));
-
-            if (!hasAny) {
-
-              core.setFailed("PR_CONTROLLER_LOCK_MISSING: add label mep:controller=CHAT_<THIS_CHAT_ID> before merge.");
-
-            } else if (hasPlaceholder || !hasReal) {
-
-              core.setFailed("PR_CONTROLLER_LOCK_INVALID: placeholder is forbidden. Use mep:controller=CHAT_<THIS_CHAT_ID>.");
-
-            }
-      - name: Checkout
+const hasAny = controllers.length > 0;
+const hasPlaceholder = controllers.some(n => n === "mep:controller=CHAT");
+const hasReal = controllers.some(n => n !== "mep:controller=CHAT" && n.length > "mep:controller=".length);
+if (!hasAny) {
+  core.setFailed("PR_CONTROLLER_LOCK_MISSING: add label mep:controller=<CONTROLLER_ID> before merge.");
+} else if (hasPlaceholder || !hasReal) {
+  core.setFailed("PR_CONTROLLER_LOCK_INVALID: placeholder 'mep:controller=CHAT' is forbidden. Use a concrete id (e.g., mep:controller=PC).");
+}- name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
