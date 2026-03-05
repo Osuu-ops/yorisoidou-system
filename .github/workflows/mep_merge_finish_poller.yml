@@ -33,7 +33,6 @@ jobs:
           export CUTOFF="$cutoff"
           python3 - <<'PY'
           import json, os, re, subprocess
-          import traceback
           from datetime import datetime, timezone
           repo = os.environ["REPO"]
           run_url = os.environ["RUN_URL"]
@@ -114,7 +113,7 @@ jobs:
                       pass
           except Exception as e:
               print("[poll][fatal]", repr(e))
-              traceback.print_exc()
+              import traceback; traceback.print_exc()
               # best-effort 継続（exit 0）
           finally:
               print(f"[poll] scanned_merged_intake={scanned} posted={posted}")
