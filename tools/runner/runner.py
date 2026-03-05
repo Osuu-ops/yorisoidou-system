@@ -28,12 +28,12 @@ def _warn_if_ledger_dirty(ledger_path: str) -> None:
     try:
         r = subprocess.run(
             ["git", "status", "--porcelain", "--", ledger_path],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", check=False
         )
         if r.stdout.strip():
             repo_root = None
             try:
-                rr = subprocess.run(['git','rev-parse','--show-toplevel'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+                rr = subprocess.run(['git','rev-parse','--show-toplevel'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", check=False)
                 if rr.stdout.strip():
                     repo_root = rr.stdout.strip()
             except Exception:
