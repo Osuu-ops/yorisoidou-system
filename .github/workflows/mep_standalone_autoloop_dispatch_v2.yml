@@ -39,7 +39,8 @@ jobs:
       - run: 'echo "NOOP: required PR check for standalone dispatch workflow"'
 
   build-artifacts:
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ always() }}
+    name: build-artifacts
     runs-on: ubuntu-latest
     env:
       GH_REPO: ${{ github.repository }}
@@ -47,15 +48,22 @@ jobs:
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
       GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
+      - name: Noop for PR
+        if: ${{ github.event_name == 'pull_request' }}
+        run: 'echo "NOOP: required PR check for build-artifacts"'
+
       - uses: actions/checkout@v4
+        if: ${{ github.event_name != 'pull_request' }}
 
       - name: Validate issue input
+        if: ${{ github.event_name != 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "${ISSUE_NUMBER:-}" || { echo "issue_number is required"; exit 1; }
 
       - name: Build pseudo event json (from issue)
+        if: ${{ github.event_name != 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -69,17 +77,20 @@ jobs:
           echo "EVENT_JSON=_tmp/event.json" >> "$GITHUB_ENV"
 
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
         run: python3 tools/issue_artifact_loop.py
 
       - name: Upload workflow artifacts
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ env.ISSUE_NUMBER }}
           path: docs/MEP/ARTIFACTS/**/ISSUE_${{ env.ISSUE_NUMBER }}/
 
       - name: Create PR to store artifacts in repo
+        if: ${{ github.event_name != 'pull_request' }}
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
@@ -96,7 +107,7 @@ jobs:
             docs/MEP/ARTIFACTS/
 
       - name: Enable auto-merge for artifacts PR
-        if: steps.cpr.outputs.pull-request-number != ''
+        if: ${{ github.event_name != 'pull_request' && steps.cpr.outputs.pull-request-number != '' }}
         shell: bash
         env:
           PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
@@ -107,6 +118,7 @@ jobs:
 
 
       - name: Bridge restart state into SSOT
+        if: ${{ github.event_name != 'pull_request' }}
         shell: bash
         env:
           ARTIFACT_PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
@@ -167,6 +179,7 @@ jobs:
           PY
 
       - name: Create PR to persist restart bridge SSOT
+        if: ${{ github.event_name != 'pull_request' }}
         id: restart_pr
         uses: peter-evans/create-pull-request@v6
         with:
@@ -184,7 +197,7 @@ jobs:
             mep/run_state.json
 
       - name: Enable auto-merge for restart bridge PR
-        if: steps.restart_pr.outputs.pull-request-number != ''
+        if: ${{ github.event_name != 'pull_request' && steps.restart_pr.outputs.pull-request-number != '' }}
         shell: bash
         env:
           PR_NUM: ${{ steps.restart_pr.outputs.pull-request-number }}
