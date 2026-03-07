@@ -2,34 +2,42 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 # =============================================================================
-# MEP BOOT LIST EXPORT + ENSURE "THIS CHAT" BOOT (FINAL / SAVE THIS)
+# MEP BOOT LIST EXPORT (FINAL / SAVE THIS)
+#
+# What this does (safe semantics)
 # - Reads: docs/MEP/CHAT_CHAIN_LEDGER.md
 # - Extracts: all {"kind":"CHECKPOINT_OUT", ...} JSON objects (robust; string-aware)
-# - Determines THIS CHAT target portfolio_id from mep/run_state.json:
-#     pr_url -> PR_<n>, restart_bridge.source_issue_number -> ISSUE_<n>, else COORD_MAIN
-# - If ledger has NO BOOT for target portfolio_id -> runs runner ledger-out to CREATE one
 # - Prints:
-#   (1) Summary (+ TARGET)
+#   (1) Summary
 #   (2) Full list (newest first)  [table + TSV]
 #   (3) PORTFOLIOS (latest exists)
 #   (4) LATEST BOOT per portfolio_id (copy/paste into NEW CHAT top)
-#   (5) If created: GENERATED TARGET BOOT (paste into NEW CHAT top)
+#   (5) THIS CHAT handoff instructions:
+#       - shows the exact command to generate a NEW boot
+#       - if -GenerateNow is given, generates it and shows LEDGER_DIRTY check
 #
-# Notes:
+# IMPORTANT
+# - "This chat's boot" does NOT exist just because the same portfolio_id exists in the ledger.
+# - Therefore this script NEVER claims "this chat boot exists" from portfolio_id alone.
+# - To hand off THIS chat, explicitly generate a NEW boot (ledger-out) in this chat context.
+#
+# Notes
 # - $PID is reserved automatic var in PowerShell -> NEVER use it.
 # - Legacy placeholder rows ("...Z","CHAT_...") are excluded by default.
 # - Some legacy JSON may miss fields (primary_anchor/mode/etc) -> tolerated.
 # =============================================================================
-# ---- CONFIG (edit if needed) ----
+param(
+  [switch]$IncludeLegacyPlaceholder = $false,
+  [switch]$GenerateNow = $false,
+  # Optional: force portfolio id. If omitted, runner auto-resolve decides (PR_<n>/ISSUE_<n>/COORD_MAIN).
+  [string]$PortfolioId = "",
+  [string]$Mode = "EXEC_MODE",
+  [string]$CurrentPhase = "STATUS",
+  [string]$NextItem = "CONTINUE"
+)
+# ---- CONFIG (auto) ----
 $repoDir = (Resolve-Path -LiteralPath ".").Path
 $ledgerPath = "docs/MEP/CHAT_CHAIN_LEDGER.md"
-$runStatePath = "mep/run_state.json"
-# legacy placeholder rows like "...Z" / "CHAT_..." are noise; default exclude
-$IncludeLegacyPlaceholder = $false
-# ensure THIS CHAT boot exists (target portfolio_id). default = true
-$EnsureThisChatBoot = $true
-# fallback target if run_state has no PR/ISSUE signal
-$fallbackTargetPortfolioId = "COORD_MAIN"
 # =============================================================================
 # Sync (read-only)
 # =============================================================================
@@ -94,21 +102,6 @@ function Is-LegacyPlaceholder([string]$checkedAt, [string]$thisId, [string]$next
   if ($checkedAt -eq "" -or $thisId -eq "" -or $nextId -eq "") { return $true }
   return $false
 }
-function Resolve-TargetPortfolioId {
-  $targetPortfolioId = $fallbackTargetPortfolioId
-  try {
-    if (Test-Path -LiteralPath $runStatePath) {
-      $rs = (Get-Content -LiteralPath $runStatePath -Raw -Encoding UTF8 | ConvertFrom-Json)
-      $prUrl = ""
-      try { $prUrl = [string]$rs.last_result.evidence.pr_url } catch { $prUrl = "" }
-      if ($prUrl -match "/pull/(?<n>\d+)\b") { return ("PR_" + $Matches["n"]) }
-      $issue = ""
-      try { $issue = [string]$rs.restart_bridge.source_issue_number } catch { $issue = "" }
-      if ($issue -match '^\d+$') { return ("ISSUE_" + $issue) }
-    }
-  } catch {}
-  return $targetPortfolioId
-}
 function Read-BootsFromLedger([string]$rawText, [bool]$includeLegacy) {
   $pattern = '"kind"\s*:\s*"CHECKPOINT_OUT"'
   $matches = [regex]::Matches($rawText, $pattern)
@@ -159,7 +152,7 @@ function Read-BootsFromLedger([string]$rawText, [bool]$includeLegacy) {
   }
   return @($items.ToArray())
 }
-function Print-BootExport([object[]]$boots, [string]$head, [string]$ledgerPathLocal, [string]$targetPid, [string]$targetStatus, [string[]]$generatedBootOut) {
+function Print-BootExport([object[]]$boots, [string]$head, [string]$ledgerPathLocal) {
   $sorted = @($boots | Sort-Object checked_at_dt -Descending)
   $latest = @{}
   foreach ($x in $sorted) {
@@ -173,8 +166,6 @@ function Print-BootExport([object[]]$boots, [string]$head, [string]$ledgerPathLo
   ("LEDGER_PATH=" + $ledgerPathLocal)
   ("BOOT_COUNT=" + $sorted.Count)
   ("INCLUDE_LEGACY_PLACEHOLDER=" + $IncludeLegacyPlaceholder)
-  ("TARGET_PORTFOLIO_ID=" + $targetPid)
-  ("TARGET_STATUS=" + $targetStatus)
   "=============================="
   ""
   "--- CHECKPOINT_OUT LIST (newest first) ---"
@@ -210,19 +201,6 @@ function Print-BootExport([object[]]$boots, [string]$head, [string]$ledgerPathLo
     '開始後、このチャットの THIS_CHAT_ID を生成し、CHECKPOINT_IN を台帳へ追記せよ。'
     "===== END ====="
   }
-  if ($generatedBootOut -and $generatedBootOut.Count -gt 0) {
-    ""
-    "--- GENERATED TARGET BOOT (paste into NEW CHAT TOP) ---"
-    $generatedBootOut
-    ""
-    "--- LEDGER_DIRTY_CHECK ---"
-    $dirty = (git status --porcelain -- $ledgerPathLocal)
-    if ($dirty) {
-      "LEDGER_DIRTY=YES -> PR+merge CHAT_CHAIN_LEDGER.md to persist this new boot across chats."
-    } else {
-      "LEDGER_CLEAN=OK"
-    }
-  }
   ""
   "=============================="
   "END"
@@ -231,27 +209,49 @@ function Print-BootExport([object[]]$boots, [string]$head, [string]$ledgerPathLo
 # =============================================================================
 # MAIN
 # =============================================================================
-$targetPortfolioId = Resolve-TargetPortfolioId
 $boots = Read-BootsFromLedger $raw $IncludeLegacyPlaceholder
-$hasTarget = $false
-foreach ($b in $boots) {
-  if ($b.portfolio_id -eq $targetPortfolioId) { $hasTarget = $true; break }
-}
-$generated = @()
-if ($EnsureThisChatBoot -and (-not $hasTarget)) {
-  # Create exactly one boot for THIS CHAT portfolio_id
-  $generated = @(py -3 tools/runner/runner.py ledger-out `
-    --this-chat-id "" `
-    --portfolio-id $targetPortfolioId `
-    --mode "EXEC_MODE" `
-    --primary-anchor ("COMMIT:" + $headSha) `
-    --current-phase "STATUS" `
-    --next-item "CONTINUE" 2>&1)
-  # Re-read ledger (in case the runner appended)
-  $raw2 = Get-Content -LiteralPath $ledgerPath -Raw -Encoding UTF8
-  $boots = Read-BootsFromLedger $raw2 $IncludeLegacyPlaceholder
-  Print-BootExport $boots $headSha $ledgerPath $targetPortfolioId "CREATED_BY_LEDGER_OUT" $generated
+Print-BootExport $boots $headSha $ledgerPath
+""
+"--- THIS CHAT: how to generate a NEW boot for handoff ---"
+"NOTE: A boot for THIS chat does not exist until you generate it (ledger-out)."
+""
+"RUN (copy/paste):"
+if ([string]::IsNullOrWhiteSpace($PortfolioId)) {
+  "py -3 tools/runner/runner.py ledger-out --this-chat-id """" --mode ""$Mode"" --primary-anchor (""COMMIT:"" + (git rev-parse HEAD).Trim()) --current-phase ""$CurrentPhase"" --next-item ""$NextItem"""
 } else {
-  $status = $(if ($hasTarget) { "EXISTS_IN_LEDGER" } else { "MISSING_IN_LEDGER (EnsureThisChatBoot=false)" })
-  Print-BootExport $boots $headSha $ledgerPath $targetPortfolioId $status @()
+  "py -3 tools/runner/runner.py ledger-out --this-chat-id """" --portfolio-id ""$PortfolioId"" --mode ""$Mode"" --primary-anchor (""COMMIT:"" + (git rev-parse HEAD).Trim()) --current-phase ""$CurrentPhase"" --next-item ""$NextItem"""
+}
+""
+if ($GenerateNow) {
+  "ACTION: GenerateNow=TRUE -> running ledger-out now..."
+  "NOTE: This will make docs/MEP/CHAT_CHAIN_LEDGER.md dirty (expected)."
+  ""
+  if ([string]::IsNullOrWhiteSpace($PortfolioId)) {
+    $out = @(py -3 tools/runner/runner.py ledger-out `
+      --this-chat-id "" `
+      --mode $Mode `
+      --primary-anchor ("COMMIT:" + (git rev-parse HEAD).Trim()) `
+      --current-phase $CurrentPhase `
+      --next-item $NextItem 2>&1)
+  } else {
+    $out = @(py -3 tools/runner/runner.py ledger-out `
+      --this-chat-id "" `
+      --portfolio-id $PortfolioId `
+      --mode $Mode `
+      --primary-anchor ("COMMIT:" + (git rev-parse HEAD).Trim()) `
+      --current-phase $CurrentPhase `
+      --next-item $NextItem 2>&1)
+  }
+  ""
+  "--- GENERATED BOOT (paste into NEW CHAT TOP) ---"
+  $out
+  ""
+  "--- LEDGER_DIRTY_CHECK ---"
+  $dirty = (git status --porcelain -- $ledgerPath)
+  if ($dirty) {
+    "LEDGER_DIRTY=YES -> PR+merge CHAT_CHAIN_LEDGER.md if you want cross-chat recovery."
+    $dirty
+  } else {
+    "LEDGER_CLEAN=OK"
+  }
 }
