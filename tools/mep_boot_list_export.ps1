@@ -1,3 +1,12 @@
+param(
+  [switch]$IncludeLegacyPlaceholder = $false,
+  [switch]$GenerateNow = $false,
+  # Optional: force portfolio id. If omitted, runner auto-resolve decides (PR_<n>/ISSUE_<n>/COORD_MAIN).
+  [string]$PortfolioId = "",
+  [string]$Mode = "EXEC_MODE",
+  [string]$CurrentPhase = "STATUS",
+  [string]$NextItem = "CONTINUE"
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -26,15 +35,6 @@ $ProgressPreference = 'SilentlyContinue'
 # - Legacy placeholder rows ("...Z","CHAT_...") are excluded by default.
 # - Some legacy JSON may miss fields (primary_anchor/mode/etc) -> tolerated.
 # =============================================================================
-param(
-  [switch]$IncludeLegacyPlaceholder = $false,
-  [switch]$GenerateNow = $false,
-  # Optional: force portfolio id. If omitted, runner auto-resolve decides (PR_<n>/ISSUE_<n>/COORD_MAIN).
-  [string]$PortfolioId = "",
-  [string]$Mode = "EXEC_MODE",
-  [string]$CurrentPhase = "STATUS",
-  [string]$NextItem = "CONTINUE"
-)
 # ---- CONFIG (auto) ----
 $repoDir = (Resolve-Path -LiteralPath ".").Path
 $ledgerPath = "docs/MEP/CHAT_CHAIN_LEDGER.md"
@@ -247,10 +247,10 @@ if ($GenerateNow) {
   $out
   ""
   "--- LEDGER_DIRTY_CHECK ---"
-  $dirty = (git status --porcelain -- $ledgerPath)
-  if ($dirty) {
+  $dirty2 = (git status --porcelain -- $ledgerPath)
+  if ($dirty2) {
     "LEDGER_DIRTY=YES -> PR+merge CHAT_CHAIN_LEDGER.md if you want cross-chat recovery."
-    $dirty
+    $dirty2
   } else {
     "LEDGER_CLEAN=OK"
   }
