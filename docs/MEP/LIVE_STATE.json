@@ -1,18 +1,18 @@
 {
   "schema_version": "v1",
-  "updated_at_utc": "2026-02-25T13:11:19Z",
-  "run_id": "CHAT_20260225T131119Z_DCE6",
-  "portfolio_id": "RUN_fd3b5d765a60",
+  "updated_at_utc": "2026-03-07T15:52:12Z",
+  "run_id": "RUN_5b8c712dddea",
+  "portfolio_id": "UNSELECTED",
   "mode": "EXEC_MODE",
-  "primary_anchor": "COMMIT:c027527ca7389591b9bbf675228746ab50d7c2ea",
-  "current_phase": "STATUS",
-  "next_item": "CONTINUE",
+  "primary_anchor": "CMD:ledger-out",
+  "current_phase": "ledger-out",
+  "next_item": "CMD_ENTRY",
   "stop_kind": "",
   "reason_code": "",
   "evidence": {
     "pr_url": "",
     "workflow_run_url": "",
-    "commit_sha": "c027527ca7389591b9bbf675228746ab50d7c2ea",
-    "note": "ledger-in completed"
+    "commit_sha": "041f603e6477068ac43675af0df68346a5b593de",
+    "note": "cmd_entry"
   }
 }

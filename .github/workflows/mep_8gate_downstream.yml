@@ -1,0 +1,188 @@
+name: MEP 8-Gate Downstream
+
+on:
+  workflow_dispatch:
+    inputs:
+      packet_path:
+        description: "Path to INPUT_PACKET.md"
+        required: true
+        type: string
+      source_entry_run_id:
+        description: "Source run id from mep_8gate_entry_filter"
+        required: false
+        default: ""
+        type: string
+      source_issue_number:
+        description: "Issue number (optional override)"
+        required: false
+        default: ""
+        type: string
+      source_lane:
+        description: "SYSTEM or BUSINESS (optional override)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: mep-8gate-downstream-${{ inputs.packet_path }}
+  cancel-in-progress: false
+
+jobs:
+  gate_chain:
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.chain.outputs.issue_number }}
+      lane: ${{ steps.chain.outputs.lane }}
+      pr_number: ${{ steps.chain.outputs.pr_number }}
+      restart_packet_file: ${{ steps.chain.outputs.restart_packet_file }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate1..Gate8
+        id: chain
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKET_PATH: ${{ inputs.packet_path }}
+          SOURCE_ISSUE: ${{ inputs.source_issue_number }}
+          SOURCE_LANE: ${{ inputs.source_lane }}
+          SOURCE_ENTRY_RUN_ID: ${{ inputs.source_entry_run_id }}
+        run: |
+          set -euo pipefail
+          stop_hard(){ echo "STOP_HARD REASON_CODE=$1"; exit 1; }
+          stop_wait(){ echo "STOP_WAIT REASON_CODE=$1"; exit 1; }
+          pass(){ echo "PASS REASON_CODE=$1"; }
+
+          # Gate1: packet validate
+          [ -n "${PACKET_PATH:-}" ] || stop_hard G1_PACKET_PATH_MISSING
+          [ -f "${PACKET_PATH}" ] || stop_hard G1_PACKET_NOT_FOUND
+          python3 tools/validate_input_packet.py "${PACKET_PATH}" || stop_hard G1_PACKET_VALIDATION_FAILED
+          issue="$(grep -m1 -E '^ISSUE_NUMBER:' "${PACKET_PATH}" | sed -E 's/^ISSUE_NUMBER:[[:space:]]*//;s/\r//g' || true)"
+          lane="$(grep -m1 -E '^LANE:' "${PACKET_PATH}" | sed -E 's/^LANE:[[:space:]]*//;s/\r//g' || true)"
+          [ -n "${issue}" ] || issue="${SOURCE_ISSUE:-}"
+          [ -n "${lane}" ] || lane="${SOURCE_LANE:-}"
+          [ -n "${issue}" ] || stop_hard G1_ISSUE_NUMBER_MISSING
+          case "${lane}" in SYSTEM|BUSINESS) ;; *) stop_hard G1_LANE_INVALID ;; esac
+          packet_sha="$(sha256sum "${PACKET_PATH}" | awk '{print $1}')"
+          pass G1_PACKET_VALID
+
+          # Gate2: PR checks truth
+          commit_sha="$(git log -n1 --pretty=%H -- "${PACKET_PATH}" || true)"
+          [ -n "${commit_sha}" ] || stop_wait G2_PACKET_COMMIT_NOT_FOUND
+          prs_json="$(gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/commits/${commit_sha}/pulls" || true)"
+          [ -n "${prs_json}" ] || stop_wait G2_ASSOCIATED_PR_QUERY_FAILED
+          pr="$(echo "${prs_json}" | jq -r '[.[] | select(.base.ref=="main")] | sort_by(.number) | .[-1].number // empty')"
+          [ -n "${pr}" ] || stop_wait G2_ASSOCIATED_PR_NOT_FOUND
+          pr_json="$(gh pr view "${pr}" --repo "${GITHUB_REPOSITORY}" --json state,mergeStateStatus,mergedAt,isDraft,statusCheckRollup)"
+          pr_state="$(echo "${pr_json}" | jq -r '.state // "UNKNOWN"')"
+          pr_merge="$(echo "${pr_json}" | jq -r '.mergeStateStatus // "UNKNOWN"')"
+          merged_at="$(echo "${pr_json}" | jq -r '.mergedAt // ""')"
+          is_draft="$(echo "${pr_json}" | jq -r '.isDraft // false')"
+          checks_total="$(echo "${pr_json}" | jq '.statusCheckRollup | length')"
+          checks_failed="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("FAILURE|FAILED|ERROR|CANCELLED|TIMED_OUT|ACTION_REQUIRED")))] | length')"
+          checks_pending="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("PENDING|IN_PROGRESS|QUEUED|WAITING|REQUESTED|EXPECTED")))] | length')"
+          [ "${is_draft}" != "true" ] || stop_wait G2_PR_IS_DRAFT
+          [ "${checks_total}" -gt 0 ] || stop_hard G2_PR_CHECKS_MISSING
+          [ "${checks_failed}" -eq 0 ] || stop_hard G2_PR_CHECKS_FAILED
+          [ "${checks_pending}" -eq 0 ] || stop_wait G2_PR_CHECKS_PENDING
+          pass G2_PR_CHECKS_PASS
+
+          # Gate3: update-branch when behind
+          if [ "${pr_state}" = "OPEN" ] && [ "${pr_merge}" = "BEHIND" ]; then
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/update-branch" >/dev/null || stop_wait G3_UPDATE_BRANCH_FAILED
+            stop_wait G3_UPDATE_BRANCH_REQUESTED
+          fi
+          pass G3_NOT_BEHIND
+
+          # Gate4: enable auto-merge for open PR
+          if [ "${pr_state}" = "OPEN" ]; then
+            gh pr merge "${pr}" --repo "${GITHUB_REPOSITORY}" --squash --auto --delete-branch || stop_wait G4_ENABLE_AUTOMERGE_FAILED
+          fi
+          pass G4_AUTOMERGE_ENABLED_OR_SKIP
+
+          # Gate5: wait merged while checks stay green
+          deadline=$(( $(date +%s) + 1200 ))
+          while [ -z "${merged_at}" ]; do
+            pr_json="$(gh pr view "${pr}" --repo "${GITHUB_REPOSITORY}" --json state,mergeStateStatus,mergedAt,statusCheckRollup)"
+            pr_state="$(echo "${pr_json}" | jq -r '.state // "UNKNOWN"')"
+            pr_merge="$(echo "${pr_json}" | jq -r '.mergeStateStatus // "UNKNOWN"')"
+            merged_at="$(echo "${pr_json}" | jq -r '.mergedAt // ""')"
+            checks_total="$(echo "${pr_json}" | jq '.statusCheckRollup | length')"
+            checks_failed="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("FAILURE|FAILED|ERROR|CANCELLED|TIMED_OUT|ACTION_REQUIRED")))] | length')"
+            [ "${checks_total}" -gt 0 ] || stop_hard G5_PR_CHECKS_MISSING
+            [ "${checks_failed}" -eq 0 ] || stop_hard G5_PR_CHECKS_FAILED
+            if [ -n "${merged_at}" ]; then break; fi
+            [ "${pr_state}" = "OPEN" ] || stop_hard G5_PR_CLOSED_WITHOUT_MERGE
+            if [ "${pr_merge}" = "BEHIND" ]; then
+              gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/update-branch" >/dev/null || stop_wait G5_UPDATE_BRANCH_FAILED
+              stop_wait G5_UPDATE_BRANCH_REQUESTED
+            fi
+            [ "$(date +%s)" -lt "${deadline}" ] || stop_wait G5_MERGE_TIMEOUT
+            sleep 20
+          done
+          pass G5_PR_MERGED
+
+          # Gate6: verify merged packet on main
+          git fetch origin main --prune
+          git checkout --detach origin/main
+          [ -f "${PACKET_PATH}" ] || stop_hard G6_PACKET_NOT_ON_MAIN
+          main_sha="$(sha256sum "${PACKET_PATH}" | awk '{print $1}')"
+          [ "${main_sha}" = "${packet_sha}" ] || stop_hard G6_PACKET_HASH_MISMATCH_ON_MAIN
+          pass G6_MAIN_REFLECTED_PACKET
+
+          # Gate7: evidence comment
+          gate7_body="[MEP][8GATE] PASS\n\n- lane: ${lane}\n- issue: #${issue}\n- pr: #${pr}\n- merged_at: ${merged_at}\n- packet_path: ${PACKET_PATH}\n- run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh api "repos/${GITHUB_REPOSITORY}/issues/${issue}/comments" -f body="${gate7_body}" >/dev/null || stop_wait G7_EVIDENCE_COMMENT_FAILED
+          pass G7_EVIDENCE_COMMENT_WRITTEN
+
+          # Gate8: restart packet
+          mkdir -p .mep/restart
+          restart_packet_file=".mep/restart/ISSUE_${issue}_RESTART_PACKET.txt"
+          {
+            echo "RESTART_PACKET"
+            echo "STOP_KIND="
+            echo "STOP_REASON_CODE="
+            echo "NEXT_ACTION=RESTART_PACKET_READY"
+            echo "ISSUE_NUMBER=${issue}"
+            echo "LANE=${lane}"
+            echo "PACKET_PATH=${PACKET_PATH}"
+            echo "PR_NUMBER=${pr}"
+            echo "PR_MERGED_AT=${merged_at}"
+            echo "SOURCE_ENTRY_RUN_ID=${SOURCE_ENTRY_RUN_ID}"
+            echo "GATE_CHAIN_RUN_URL=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > "${restart_packet_file}"
+          pass G8_RESTART_PACKET_READY
+
+          echo "issue_number=${issue}" >> "${GITHUB_OUTPUT}"
+          echo "lane=${lane}" >> "${GITHUB_OUTPUT}"
+          echo "pr_number=${pr}" >> "${GITHUB_OUTPUT}"
+          echo "restart_packet_file=${restart_packet_file}" >> "${GITHUB_OUTPUT}"
+      - name: Upload restart packet artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mep_8gate_restart_packet_issue_${{ steps.chain.outputs.issue_number }}
+          path: ${{ steps.chain.outputs.restart_packet_file }}
+          if-no-files-found: error
+
+  restart_packet:
+    runs-on: ubuntu-latest
+    needs: gate_chain
+    steps:
+      - name: Restart packet final evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ needs.gate_chain.outputs.issue_number }}
+          LANE: ${{ needs.gate_chain.outputs.lane }}
+          PR_NUMBER: ${{ needs.gate_chain.outputs.pr_number }}
+        run: |
+          set -euo pipefail
+          body="[MEP][8GATE][RESTART_PACKET] READY\n\n- artifact: mep_8gate_restart_packet_issue_${ISSUE_NUMBER}\n- lane: ${LANE}\n- pr: #${PR_NUMBER}\n- run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh api "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null
+          echo "PASS REASON_CODE=RESTART_PACKET_EMITTED"
