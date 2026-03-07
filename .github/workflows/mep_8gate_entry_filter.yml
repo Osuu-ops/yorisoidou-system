@@ -7,6 +7,7 @@ on:
         required: true
         type: string
 permissions:
+  actions: write
   issues: write
   contents: read
 jobs:
@@ -18,7 +19,19 @@ jobs:
         run: |
           python3 tools/validate_input_packet.py "${{ inputs.packet_path }}"
       - name: MEP_GATE1_TO_GATE0_ISSUEOPS_BRIDGE
-        if: ${{ false }}
-        run: |
-          echo "[bridge] disabled (prevent infinite /mep run loop)"
-
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const packetPath = ${{ inputs.packet_path }};
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'mep_8gate_downstream.yml',
+              ref: 'main',
+              inputs: {
+                packet_path: packetPath,
+                source_entry_run_id: String(context.runId),
+                source_issue_number: '',
+                source_lane: ''
+              }
+            });
