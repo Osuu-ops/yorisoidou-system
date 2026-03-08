@@ -1,8 +1,13 @@
 name: MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS)
 on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to build artifacts for"
+        required: true
+        type: string
   issues:
-    types: [opened, edited, labeled]
-permissions:
+    types: [opened, edited, labeled]permissions:
   contents: write
   issues: write
   pull-requests: write
@@ -11,11 +16,23 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build-artifacts:
-    if: contains(join(github.event.issue.labels.*.name, ','), 'mep-loop')
+    if: github.event_name == 'workflow_dispatch' || contains(join(github.event.issue.labels.*.name, ','), 'mep-loop')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
+            - uses: actions/checkout@v4
+      - name: Synthesize GITHUB_EVENT_PATH for workflow_dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          set -euo pipefail
+          tmp="${RUNNER_TEMP}/mep_issue_event.json"
+          issue_json="$(gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}")"
+          # minimal shape expected by downstream: { issue: <issue> }
+          printf '{"issue":%s}\n' "${issue_json}" > "${tmp}"
+          echo "GITHUB_EVENT_PATH=${tmp}" >> "${GITHUB_ENV}"      - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
         env:
           GH_REPO: ${{ github.repository }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
@@ -85,5 +102,6 @@ jobs:
               issue_number: issue,
               body
             });
+
 
 
