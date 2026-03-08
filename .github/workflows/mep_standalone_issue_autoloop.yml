@@ -7,7 +7,8 @@ on:
         required: true
         type: string
   issues:
-    types: [opened, edited, labeled]permissions:
+    types: [opened, edited, labeled]
+permissions:
   contents: write
   issues: write
   pull-requests: write
@@ -19,7 +20,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(join(github.event.issue.labels.*.name, ','), 'mep-loop')
     runs-on: ubuntu-latest
     steps:
-            - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Synthesize GITHUB_EVENT_PATH for workflow_dispatch
         if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
@@ -102,6 +103,7 @@ jobs:
               issue_number: issue,
               body
             });
+
 
 
 
