@@ -100,8 +100,7 @@ function _NormalizeBootRecord([object]$o, [string]$json, [string]$source) {
 function _ReadBootsFromJsonl([string]$jsonlFile) {
   if (-not (Test-Path -LiteralPath $jsonlFile)) { return @() }
   $items = New-Object 'System.Collections.Generic.List[object]'
-  $lines = Get-Content -LiteralPath $jsonlFile -Encoding UTF8
-  foreach ($line in $lines) {
+  foreach ($line in (Get-Content -LiteralPath $jsonlFile -Encoding UTF8)) {
     if ([string]::IsNullOrWhiteSpace($line)) { continue }
     $o = $null
     try { $o = $line | ConvertFrom-Json } catch { $o = $null }
@@ -116,8 +115,7 @@ function _ReadBootsFromJsonl([string]$jsonlFile) {
 function _ReadBootsFromMarkdown([string]$ledgerFile) {
   if (-not (Test-Path -LiteralPath $ledgerFile)) { return @() }
   $raw = Get-Content -LiteralPath $ledgerFile -Raw -Encoding UTF8
-  $pattern = '"kind"\s*:\s*"CHECKPOINT_OUT"'
-  $matches = [regex]::Matches($raw, $pattern)
+  $matches = [regex]::Matches($raw, '"kind"\s*:\s*"CHECKPOINT_OUT"')
   $seen = New-Object 'System.Collections.Generic.HashSet[string]'
   $items = New-Object 'System.Collections.Generic.List[object]'
   foreach ($m in $matches) {
@@ -286,27 +284,26 @@ if ($allBootsSorted.Count -eq 0) {
 }
 Write-Output ''
 Write-Output '[CHAT_INSTRUCTION_BEGIN]'
-Write-Output 'この出力を読んだ現チャットは、以下の固定ルールでのみ動作すること。'
-Write-Output '1) まず DANGER_STATUS を確認する。STOP_AND_REVIEW のときは危険状態として明記し、通常の引継ぎ完成文を確定しないこと。'
-Write-Output '2) EXACT_MATCH_COUNT > 0 のとき:'
-Write-Output '   - BOOT_EXACT_MATCHES から採用対象を選ぶ。'
-Write-Output '   - 新チャットへ貼るBootをコードブロックで書く。'
-Write-Output '   - さらに、Boot本文だけでは分からない引継ぎ、事故、注意点、禁止事項、必要なアドバイスをコードブロックで書く。'
-Write-Output '   - この場合、追加のPSコードは書かないこと。'
-Write-Output '3) EXACT_MATCH_COUNT = 0 かつ NEAR_MATCH_COUNT > 0 のとき:'
-Write-Output '   - いきなり新規生成せず、まず BOOT_NEAR_MATCHES を候補として整理すること。'
-Write-Output '   - 再利用不可と判断した場合にのみ、ID生成 + Boot生成 + ledger追記 + 再検証 の次コードを書くこと。'
-Write-Output '4) EXACT_MATCH_COUNT = 0 かつ NEAR_MATCH_COUNT = 0 のとき:'
-Write-Output '   - その場で最終Boot完成文を書かないこと。'
-Write-Output '   - まず、ID生成 + Boot生成 + ledger追記 + 再検証 のために次にPowerShellへ流すコードをコードブロックで書くこと。'
-Write-Output '   - その次コードは、生成した CHECKPOINT_OUT を docs/MEP/CHAT_CHAIN_LEDGER.md または docs/MEP/CHAT_CHAIN_LEDGER.jsonl に実際に追記すること。'
-Write-Output '   - 画面表示だけで終わらせないこと。'
-Write-Output '   - 追記後、その場で再読込し、EXACT_MATCH_COUNT が 1 以上になったことを確認結果に含めること。'
-Write-Output '   - 人間がそのコードをPowerShellへ流し、生成結果を現チャットへ貼るまで待つこと。'
-Write-Output '   - 生成結果が貼られた後は、それを生成済みBootとして扱い、EXACTあり時と同じ挙動に入ること。'
-Write-Output '5) ある時とない時の指示を混同しないこと。'
-Write-Output '6) CAUTION_DIRTY_WORKTREE のときは、repoの既存変更を壊さないよう、最小変更で ledger への追記だけを行うこと。'
-Write-Output '7) jsonl が存在する場合は jsonl を正とし、md だけを見て判断しないこと。'
+Write-Output 'Chat must use only the following fixed rules.'
+Write-Output '1) Check DANGER_STATUS first. If STOP_AND_REVIEW, do not finalize handoff text.'
+Write-Output '2) If EXACT_MATCH_COUNT > 0:'
+Write-Output '   - Select from BOOT_EXACT_MATCHES.'
+Write-Output '   - Write the boot block for the next chat.'
+Write-Output '   - Write extra handoff notes, incidents, cautions, forbidden actions, and advice.'
+Write-Output '   - Do not write extra PowerShell in this case.'
+Write-Output '3) If EXACT_MATCH_COUNT = 0 and NEAR_MATCH_COUNT > 0:'
+Write-Output '   - Do not generate immediately. Review BOOT_NEAR_MATCHES first.'
+Write-Output '   - Generate only if reuse is not valid.'
+Write-Output '4) If EXACT_MATCH_COUNT = 0 and NEAR_MATCH_COUNT = 0:'
+Write-Output '   - Do not finalize handoff text yet.'
+Write-Output '   - Write the next PowerShell block for ID generation + boot generation + ledger append + recheck.'
+Write-Output '   - The next block must append CHECKPOINT_OUT to CHAT_CHAIN_LEDGER.md or CHAT_CHAIN_LEDGER.jsonl.'
+Write-Output '   - Display only is not enough.'
+Write-Output '   - After append, re-read and include proof that EXACT_MATCH_COUNT is at least 1.'
+Write-Output '   - Wait for the pasted result, then continue as exact.'
+Write-Output '5) Do not mix the exact path and no-exact path.'
+Write-Output '6) If CAUTION_DIRTY_WORKTREE, only make minimal ledger-only changes.'
+Write-Output '7) If jsonl exists, prefer jsonl for judgment.'
 Write-Output '[CHAT_INSTRUCTION_END]'
 Write-Output ''
 Write-Output '[SAFETY_NOTES]'
