@@ -64,31 +64,59 @@ jobs:
           )
 
           api="repos/${REPO}/commits/${SHA}/check-runs"
-          json="$(gh api "$api" -H "Accept: application/vnd.github+json")"
-          [ -n "${json}" ] || { echo "::error::Unable to read check-runs"; exit 1; }
+          deadline=$(( $(date +%s) + 600 ))
+          while :; do
+            json="$(gh api "$api" -H "Accept: application/vnd.github+json")"
+            [ -n "${json}" ] || { echo "::error::Unable to read check-runs"; exit 1; }
 
-          fail=0
-          for name in "${REQUIRED[@]}"; do
-            concl="$(echo "${json}" | jq -r --arg name "${name}" '
-              [.check_runs[]? | select(.name == $name)]
-              | sort_by(.completed_at // .started_at // "")
-              | if length == 0 then "__MISSING__" else (.[-1].conclusion // "__NO_CONCLUSION__") end
-            ')"
+            fail=0
+            pending=0
+            for name in "${REQUIRED[@]}"; do
+              status="$(echo "${json}" | jq -r --arg name "${name}" '
+                [.check_runs[]? | select(.name == $name)]
+                | sort_by(.completed_at // .started_at // "")
+                | if length == 0 then "__MISSING__" else (.[-1].status // "__NO_STATUS__") end
+              ')"
+              concl="$(echo "${json}" | jq -r --arg name "${name}" '
+                [.check_runs[]? | select(.name == $name)]
+                | sort_by(.completed_at // .started_at // "")
+                | if length == 0 then "__MISSING__" else (.[-1].conclusion // "__NO_CONCLUSION__") end
+              ')"
 
-            if [ "${concl}" = "__MISSING__" ]; then
-              echo "::error::Missing required check-run: $name"
-              fail=1
-            elif [ "$(printf '%s' "${concl}" | tr '[:upper:]' '[:lower:]')" != "success" ]; then
-              echo "::error::Required check-run not successful: $name (conclusion=${concl})"
-              fail=1
-            else
-              echo "OK: $name"
+              if [ "${status}" = "__MISSING__" ] || [ "${concl}" = "__MISSING__" ]; then
+                echo "::error::Missing required check-run: $name"
+                fail=1
+                continue
+              fi
+
+              if [ "$(printf '%s' "${status}" | tr '[:upper:]' '[:lower:]')" != "completed" ]; then
+                echo "PENDING: $name (status=${status})"
+                pending=1
+                continue
+              fi
+
+              if [ "$(printf '%s' "${concl}" | tr '[:upper:]' '[:lower:]')" != "success" ]; then
+                echo "::error::Required check-run not successful: $name (conclusion=${concl})"
+                fail=1
+              else
+                echo "OK: $name"
+              fi
+            done
+
+            if [ "${fail}" -ne 0 ]; then
+              echo "::error::MEP Gate FAILED"
+              exit 1
             fi
-          done
 
-          if [ "${fail}" -ne 0 ]; then
-            echo "::error::MEP Gate FAILED"
-            exit 1
-          fi
+            if [ "${pending}" -eq 0 ]; then
+              break
+            fi
+
+            if [ "$(date +%s)" -ge "${deadline}" ]; then
+              echo "::error::MEP Gate timed out waiting required check-runs"
+              exit 1
+            fi
+            sleep 15
+          done
 
           echo "MEP Gate PASSED"
