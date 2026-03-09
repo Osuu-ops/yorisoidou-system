@@ -1,4 +1,4 @@
-name: MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS) [SEALED]
+name: "MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS) [SEALED]"
 on:
   workflow_dispatch:
     inputs:
@@ -18,6 +18,7 @@ permissions:
   issues: write
 jobs:
   sealed:
+    if: github.event_name == 'workflow_dispatch' || contains(join(github.event.issue.labels.*.name, ','), 'mep-loop')
     runs-on: ubuntu-latest
     steps:
       - name: Reject legacy entry and point to canonical workflow
@@ -25,7 +26,7 @@ jobs:
         with:
           script: |
             const payloadIssue = context.payload.issue?.number;
-            const inputIssue = Number(core.getInput('issue_number') || "0");
+            const inputIssue = Number(context.payload.inputs?.issue_number || "0");
             const issue = payloadIssue || (Number.isFinite(inputIssue) && inputIssue > 0 ? inputIssue : 0);
             const canonical = '.github/workflows/mep_standalone_autoloop_dispatch.yml';
             const body = [

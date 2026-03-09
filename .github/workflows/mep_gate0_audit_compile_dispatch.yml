@@ -155,7 +155,7 @@ jobs:
             say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: true\nDIR: ${DIR}\n\nNext:\n- This packet is marked as NOT triggering 8-gate.\n- If you want to run 8-gate, set DOES_NOT_TRIGGER_8GATE:false and re-generate INPUT_PACKET."
             exit 0
           fi
-          say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: false\nDIR: ${DIR}\n\nNext:\n- Dispatching 8-gate via issue comment: /mep run"
+          say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: false\nDIR: ${DIR}\n\nNext:\n- Direct dispatch to 8-gate entry has been requested via mep_8gate_entry_filter.yml."
           echo "[gate0] /mep run auto-comment disabled"
           echo ""
           exit 0
