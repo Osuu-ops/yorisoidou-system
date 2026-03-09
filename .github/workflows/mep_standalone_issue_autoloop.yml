@@ -127,7 +127,11 @@ jobs:
             merge_sha="$(echo "${pr_json}" | jq -r '.mergeCommit.oid // ""')"
 
             [ "${is_draft}" != "true" ] || stop_wait AUTO_PR_IS_DRAFT
-            [ "${checks_total}" -gt 0 ] || stop_hard AUTO_PR_CHECKS_MISSING
+            if [ "${checks_total}" -le 0 ]; then
+              [ "$(date +%s)" -lt "${deadline}" ] || stop_hard AUTO_PR_CHECKS_MISSING
+              sleep 20
+              continue
+            fi
             [ "${checks_failed}" -eq 0 ] || stop_hard AUTO_PR_CHECKS_FAILED
 
             if [ -n "${merged_at}" ]; then
@@ -241,4 +245,3 @@ jobs:
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           body="[MEP][STANDALONE_AUTOLOOP] PASS\n\n- issue: #${ISSUE_NUMBER}\n- lane: ${LANE}\n- packet_path: ${PACKET_PATH}\n- artifact_pr: #${PR_NUMBER}\n- artifact_pr_url: ${PR_URL}\n- merge_commit_sha: ${MERGE_COMMIT_SHA}\n- merged_at: ${MERGED_AT}\n- draft_size_bytes: ${DRAFT_SIZE}\n- run: ${run_url}\n\nRUN_ID=STANDALONE_AUTOLOOP\nOUTCOME=PASS\nSTOP_CLASS=\nREASON_CODE=AUTOLOOP_ENTRY_DISPATCHED\nNEXT_ACTION=WAIT_8GATE\nISSUE_NUMBER=${ISSUE_NUMBER}\nLANE=${LANE}\nPACKET_PATH=${PACKET_PATH}\nPR_URL=${PR_URL}\nCOMMIT_SHA=${MERGE_COMMIT_SHA}\nWORKFLOW_RUN_URL=${run_url}"
           gh api "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null
-
