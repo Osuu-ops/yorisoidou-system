@@ -5,6 +5,9 @@
 - Machine-readable map: `docs/MEP/BOOT_MAP.json`
 - Ledger (human): `docs/MEP/CHAT_CHAIN_LEDGER.md`
 - Ledger (machine, optional): `docs/MEP/CHAT_CHAIN_LEDGER.jsonl`
+## Scope note
+- `tools/mep_handoff_observe.ps1` is only for boot/handoff recovery.
+- Normal human observe/dispatch flow for issue -> run -> PR uses `docs/MEP/HUMAN_POWERSHELL_ENTRY.md` and `tools/mep.ps1`.
 ## Operating rule
 1. Run `tools/mep_handoff_observe.ps1`
 2. Paste output to chat

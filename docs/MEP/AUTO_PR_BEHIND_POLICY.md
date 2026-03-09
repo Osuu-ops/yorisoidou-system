@@ -41,4 +41,6 @@
 
 ## Manual Fallback (minimum)
 - If timeout persists: run update-branch manually, then rerun canonical standalone workflow for the same issue.
+- Recommended human entry:
+  - `pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\mep.ps1 dispatch-standalone -IssueNumber <n> -Lane <SYSTEM|BUSINESS>`
 - If checks keep failing: fix failing required checks first, then rerun.

@@ -44,6 +44,9 @@
 ## 安全ゲート
 - destructive ops（apply-safe/merge-finish/compact delete）は handoff_ack.status == ACK が無い限り進めない
 
+## Human PowerShell (Codex-first)
+- Boot / handoff observe remains separate: `tools/mep_handoff_observe.ps1`, `tools/mep_handoff_state.ps1`, `tools/runner/bootstrap_exec.ps1`, `tools/runner/bootstrap.ps1`.
+- Normal human observe/dispatch flow for issue -> run -> PR uses `docs/MEP/HUMAN_POWERSHELL_ENTRY.md` and `tools/mep.ps1`.
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
 
 ### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
@@ -249,6 +252,7 @@ Issue注入の“行為”を常時必須にせず、代わりに「一次根拠
 - NEXT_CHAT_ID を発行
 - CHECKPOINT_OUT を台帳へ追記
 - [MEP_BOOT] を出力（次チャット冒頭貼付用）
+
 ## 終端必須出力（NORMATIVE）｜MEP_BOOT_OUTPUT_REQUIRED
 
 ### BOOT_BUNDLE_PARENT_JSONL_REQUIRED（NORMATIVE）
@@ -280,9 +284,3 @@ PARENT_CHECKPOINT_OUT_JSONL: <親のCHECKPOINT_OUT 1行JSONL（next_chat_id==PAR
   python tools/runner/runner.py ledger-out --this-chat-id <THIS_CHAT_ID> --portfolio-id <PORTFOLIO_ID> --mode <MODE> --primary-anchor <ANCHOR> --current-phase <PHASE> --next-item <NEXT>
 - 出力：next_chat_id（JSON）＋ [MEP_BOOT] を stdout に出す → そのまま次チャット冒頭へ貼る
 注：上の <...> は説明用。実運用では AI が具体値を埋めた [MEP_BOOT] を必ず提示する。
-
-
-
-
-
-
