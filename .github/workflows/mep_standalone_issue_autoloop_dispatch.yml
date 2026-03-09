@@ -45,7 +45,7 @@ jobs:
       - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
         env:
           GH_REPO: ${{ github.repository }}
-          GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
+          GITHUB_EVENT_PATH: ${{ runner.temp }}/mep_issue_event.json
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           python3 tools/issue_artifact_loop.py
@@ -118,5 +118,6 @@ jobs:
               issue_number: issue,
               body
             });
+
 
 
