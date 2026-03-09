@@ -224,11 +224,8 @@ jobs:
           PACKET_PATH: ${{ steps.gate0.outputs.packet_path }}
         run: |
           set -euo pipefail
-          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" --ref "${GITHUB_REF_NAME}" \
-            -f packet_path="${PACKET_PATH}" \
-            -f source_entry_run_id="${GITHUB_RUN_ID}" \
-            -f source_issue_number="${ISSUE_NUMBER}" \
-            -f source_lane="${LANE}"
+          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" --ref main \
+            -f packet_path="${PACKET_PATH}"
 
       - name: Comment pass evidence (machine-readable)
         shell: bash
