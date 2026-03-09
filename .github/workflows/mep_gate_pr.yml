@@ -57,10 +57,10 @@ jobs:
           set -euo pipefail
 
           REQUIRED=(
-            "Business Packet Guard (PR)/Business Packet Guard (PR)"
-            "Text Integrity Guard (PR)/Text Integrity Guard (PR)"
-            "MEP Semantic Audit (PR Gate)/semantic-audit"
-            "MEP Semantic Audit (PR Gate)/semantic-audit-business"
+            "Business Packet Guard (PR)"
+            "Text Integrity Guard (PR)"
+            "semantic-audit"
+            "semantic-audit-business"
           )
 
           api="repos/${REPO}/commits/${SHA}/check-runs"
