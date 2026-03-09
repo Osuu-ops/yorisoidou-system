@@ -1,4 +1,4 @@
-name: MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS)
+name: "MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS)"
 on:
   workflow_dispatch:
     inputs:

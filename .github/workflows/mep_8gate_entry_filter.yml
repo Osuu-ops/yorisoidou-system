@@ -41,6 +41,7 @@ on:
 permissions:
   actions: write
   issues: write
+  pull-requests: write
   contents: read
 jobs:
   validate_packet:

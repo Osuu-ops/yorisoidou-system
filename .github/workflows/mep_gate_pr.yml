@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
 
 jobs:
   gate:
@@ -48,7 +49,7 @@ jobs:
       - name: Aggregate required check-runs
         if: env.ARTIFACTS_ONLY != '1'
         env:
-          GH_TOKEN: ${{ secrets.MEP_BOT_PAT || github.token }}
+          GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
