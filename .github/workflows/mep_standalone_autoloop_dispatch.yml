@@ -1,10 +1,31 @@
 name: MEP Standalone AutoLoop (Dispatch)
 on:
+  workflow_call:
+    inputs:
+      issue_number:
+        description: "GitHub Issue number containing the draft"
+        required: true
+        type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
+        type: string
+    secrets:
+      MEP_BOT_PAT:
+        required: false
+      MEP_PR_TOKEN:
+        required: false
   workflow_dispatch:
     inputs:
       issue_number:
         description: "GitHub Issue number containing the draft"
         required: true
+        type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
         type: string
 permissions:
   actions: write
@@ -14,5 +35,7 @@ permissions:
 jobs:
   call-v2:
     uses: ./.github/workflows/mep_standalone_autoloop_dispatch_v2.yml
+    secrets: inherit
     with:
-      issue_number: ${{ inputs.issue_number }}
+      issue_number: ${{ inputs.issue_number || github.event.inputs.issue_number }}
+      lane: ${{ inputs.lane || github.event.inputs.lane || '' }}

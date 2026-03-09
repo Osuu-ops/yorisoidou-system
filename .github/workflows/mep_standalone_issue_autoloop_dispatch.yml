@@ -6,121 +6,19 @@ on:
         description: "Issue number to build artifacts for"
         required: true
         type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
+        type: string
 permissions:
   contents: write
   issues: write
   pull-requests: write
-concurrency:
-  group: mep-standalone-dispatch-${{ inputs.issue_number }}
-  cancel-in-progress: false
 jobs:
-  build-artifacts:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Synthesize GITHUB_EVENT_PATH (fetch issue JSON)
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-        run: |
-          set -euo pipefail
-          tmp_raw="${RUNNER_TEMP}/issue_raw.json"
-          tmp="${RUNNER_TEMP}/mep_issue_event.json"
-          gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" > "${tmp_raw}"
-          jq -c '{issue: .}' "${tmp_raw}" > "${tmp}"
-          # sanity
-          jq -e '.issue.number' "${tmp}" > /dev/null
-          echo "GITHUB_EVENT_PATH=${tmp}" >> "${GITHUB_ENV}"
-      - name: Determine lane from labels (SYSTEM/BUSINESS)
-        id: lane
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const issue = Number(context.payload.inputs.issue_number);
-            const got = await github.rest.issues.get({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issue });
-            const labels = (got.data.labels || []).map(x => (typeof x === "string" ? x : x.name));
-            const lane = labels.includes("mep-biz") ? "BUSINESS" : "SYSTEM";
-            core.setOutput("lane", lane);
-      - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
-        env:
-          GH_REPO: ${{ github.repository }}
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
-          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
-          GITHUB_EVENT_PATH: ${{ runner.temp }}/mep_issue_event.json
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          python3 tools/issue_artifact_loop.py
-      - name: Upload workflow artifacts (downloadable)
-        uses: actions/upload-artifact@v4
-        with:
-          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}
-          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ inputs.issue_number }}/
-      - name: Ensure controller label exists (for scope-fence)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const name = "mep:controller=ISSUE_" + String(context.payload.inputs.issue_number) + "_" + String(context.runId);
-            try {
-              await github.rest.issues.createLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name,
-                color: "ededed",
-                description: "MEP controller lock (auto)"
-              });
-            } catch (e) {
-              // ignore if already exists
-            }
-            core.setOutput("controller_label", name);
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        id: cpr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
-          title: "MEP: issue artifacts ISSUE #${{ inputs.issue_number }}"
-          body: |
-            Standalone AutoLoop generated artifacts (SYSTEM/BUSINESS).
-            - Issue: #${{ inputs.issue_number }}
-            - Lane: ${{ steps.lane.outputs.lane }}
-            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ inputs.issue_number }}"
-          branch: auto/standalone_issue_${{ inputs.issue_number }}_${{ github.run_id }}
-          base: main
-          labels: ${{ steps.ensure-controller-label.outputs.controller_label }}
-          add-paths: |
-            docs/MEP/ARTIFACTS/
-      - name: Comment DONE with pointers (incl PR)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const issue = Number(context.payload.inputs.issue_number);
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const lane = "${{ steps.lane.outputs.lane }}";
-            const prUrl = "${{ steps.cpr.outputs.pull-request-url }}";
-            const body = [
-              "[MEP][STANDALONE_AUTOLOOP] DONE",
-              "",
-              `- Lane: ${lane}`,
-              `- Run: ${runUrl}`,
-              `- PR: ${prUrl}`,
-              `- Download: Actions Artifact MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
-              `- Repo path: docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}/`,
-              "",
-              "Files:",
-              "- AUDIT.md",
-              "- MERGED_DRAFT.md",
-              "- INPUT_PACKET.md",
-              "- RUN_SUMMARY.md",
-              "- RESTART_PACKET.txt",
-            ].join("\n");
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue,
-              body
-            });
-
-
-
-
+  call-canonical:
+    uses: ./.github/workflows/mep_standalone_autoloop_dispatch.yml
+    secrets: inherit
+    with:
+      issue_number: ${{ github.event.inputs.issue_number }}
+      lane: ${{ github.event.inputs.lane || '' }}

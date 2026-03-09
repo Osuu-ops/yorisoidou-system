@@ -58,9 +58,16 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
-          issue_json="$(gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}")"
-          lane="$(printf '%s' "${issue_json}" | jq -r '[((.labels // [])[] | (if type=="string" then . else .name end))] | if index("mep-biz") then "BUSINESS" else "SYSTEM" end')"
-          case "${lane}" in SYSTEM|BUSINESS) ;; *) lane="SYSTEM" ;; esac
+          mkdir -p _tmp
+          gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}" > _tmp/issue.json
+
+          if ! lane="$(python3 tools/mep_resolve_lane.py --issue-json-path _tmp/issue.json 2>_tmp/lane.err)"; then
+            err="$(tr '\n' ' ' < _tmp/lane.err | sed -E 's/[[:space:]]+/ /g;s/^ //;s/ $//')"
+            body="[MEP][G0] STOP_HARD\n\nSTOP_REASON: LANE_UNRESOLVED\nDETAIL: ${err}\n\nAction:\n- Add exactly one label: mep-biz or mep-system\n- Or run canonical standalone workflow with explicit lane:\n  .github/workflows/mep_standalone_autoloop_dispatch.yml"
+            gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null || true
+            exit 1
+          fi
+
           echo "Dispatching Gate0 for issue #${ISSUE_NUMBER} lane=${lane}"
           gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}" -f lane="${lane}"
 concurrency:

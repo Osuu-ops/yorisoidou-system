@@ -1,65 +1,35 @@
-name: MEP Dispatch (from Issue) [G0-min AutoLoop Only]
+name: MEP Dispatch (from Issue) [SEALED]
 on:
   issues:
     types: [labeled, edited]
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
   issues: write
-concurrency:
-  group: mep-g0min-${{ github.event.issue.number }}
-  cancel-in-progress: true
 jobs:
-  autoloop:
+  sealed:
     if: contains(github.event.issue.labels.*.name, 'mep-dispatch')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
-        env:
-          GH_REPO: ${{ github.repository }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          python3 tools/issue_artifact_loop.py
-      - name: Upload workflow artifacts (downloadable)
-        uses: actions/upload-artifact@v4
-        with:
-          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ github.event.issue.number }}
-          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ github.event.issue.number }}/
-      - name: Create PR to store artifacts in repo (no auto-merge)
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "MEP: issue artifacts ISSUE #${{ github.event.issue.number }}"
-          title: "MEP: issue artifacts ISSUE #${{ github.event.issue.number }}"
-          body: |
-            G0-min AutoLoop generated artifacts (SYSTEM/BUSINESS).
-            - Issue: #${{ github.event.issue.number }}
-            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ github.event.issue.number }}"
-          branch: auto/standalone_issue_${{ github.event.issue.number }}_${{ github.run_id }}
-          base: main
-          add-paths: |
-            docs/MEP/ARTIFACTS/
-      - name: Comment DONE with pointers
+      - name: Reject legacy issue-dispatch entry and point to canonical workflow
         uses: actions/github-script@v7
-        env:
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
           script: |
-            const issue = context.payload.issue.number;
-            const runUrl = process.env.GITHUB_RUN_URL || "";
-            const labels = (context.payload.issue.labels || []).map(x => x.name);
-            const lane = labels.includes("mep-biz") ? "BUSINESS" : "SYSTEM";
+            const issue = context.payload.issue?.number;
+            const canonical = '.github/workflows/mep_standalone_autoloop_dispatch.yml';
             const body = [
-              "[MEP][G0-min][AUTOLOOP] DONE",
-              "",
-              `- Lane: ${lane}`,
-              `- Run: ${runUrl}`,
-              `- Download: Actions Artifact MEP_STANDALONE_ARTIFACTS_ISSUE_${issue}`,
-              `- Repo path: docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}/`,
-              "",
-              "Next:",
-              "- Use INPUT_PACKET.md to dispatch 8-gate entry (connect 0->1)."
-            ].join("\n");
-            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issue, body });
+              '[MEP][SEALED] Legacy issue-dispatch entry is sealed.',
+              '',
+              '- Canonical workflow: ' + canonical,
+              '- Use workflow_dispatch with: issue_number (+ optional lane)',
+              '- Lane rule: explicit lane OR labels (mep-biz/mep-system).',
+              '- Unknown lane is STOP_HARD (no implicit SYSTEM fallback).'
+            ].join('\n');
+            if (issue) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue,
+                body,
+              });
+            }
+            core.setFailed('SEALED_WORKFLOW: use mep_standalone_autoloop_dispatch.yml');
