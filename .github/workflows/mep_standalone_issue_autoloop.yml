@@ -90,6 +90,8 @@ jobs:
             - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ steps.ctx.outputs.issue_number }}"
           branch: auto/standalone_issue_${{ steps.ctx.outputs.issue_number }}_${{ github.run_id }}
           base: main
+          labels: |
+            mep:controller=PC
           add-paths: |
             docs/MEP/ARTIFACTS/
 
