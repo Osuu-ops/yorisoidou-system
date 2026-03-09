@@ -143,7 +143,30 @@ jobs:
 
           now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
           new_run_id = f"RUN_RESTART_{issue_number}_{standalone_run_id}"
-          restart_packet = f"docs/MEP/ARTIFACTS/SYSTEM/ISSUE_{issue_number}/RESTART_PACKET.txt"
+
+          lane = "SYSTEM"
+          issue_json = Path("_tmp/issue.json")
+          if issue_json.exists():
+              try:
+                  issue_data = json.loads(issue_json.read_text(encoding="utf-8"))
+                  labels = []
+                  for x in (issue_data.get("labels") or []):
+                      if isinstance(x, dict):
+                          labels.append(x.get("name", ""))
+                      elif isinstance(x, str):
+                          labels.append(x)
+                  if "mep-biz" in labels:
+                      lane = "BUSINESS"
+              except Exception:
+                  lane = "SYSTEM"
+
+          restart_packet = f"docs/MEP/ARTIFACTS/{lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
+          if not Path(restart_packet).exists():
+              alt_lane = "BUSINESS" if lane == "SYSTEM" else "SYSTEM"
+              alt_path = f"docs/MEP/ARTIFACTS/{alt_lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
+              if Path(alt_path).exists():
+                  lane = alt_lane
+                  restart_packet = alt_path
 
           rs["run_id"] = new_run_id
           rs["run_status"] = "STILL_OPEN"
@@ -161,6 +184,7 @@ jobs:
               "pr_url": artifact_pr_url or None,
               "commit_sha": None,
               "workflow_run_url": standalone_run_url,
+              "lane": lane,
               "restart_packet": restart_packet,
           }
           rs["last_result"] = lr
@@ -169,6 +193,7 @@ jobs:
               "source_standalone_run_id": standalone_run_id,
               "source_standalone_run_url": standalone_run_url,
               "artifact_pr_url": artifact_pr_url,
+              "lane": lane,
               "restart_packet": restart_packet,
               "bridged_at": now,
           }
