@@ -7,6 +7,11 @@ on:
         description: "GitHub Issue number containing the draft"
         required: true
         type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -14,8 +19,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  call-v2:
-    uses: ./.github/workflows/mep_standalone_autoloop_dispatch_v2.yml
+  call-canonical:
+    uses: ./.github/workflows/mep_standalone_autoloop_dispatch.yml
     secrets: inherit
     with:
       issue_number: ${{ github.event.inputs.issue_number }}
+      lane: ${{ github.event.inputs.lane || '' }}

@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       lane:
-        description: "SYSTEM or BUSINESS (optional; auto-detected when empty)"
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
         required: false
         default: ""
         type: string
@@ -22,7 +22,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Dispatch 8-gate entry
+
+      - name: Resolve lane (strict, no implicit fallback)
+        id: lane
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
@@ -31,31 +33,28 @@ jobs:
           L: ${{ inputs.lane }}
         run: |
           set -euo pipefail
-          resolve_lane () {
-            local requested="${1:-}"
-            local issue_number="${2:-}"
-            local repo="${3:-}"
-            local labels
-            if [ -n "${requested}" ]; then
-              case "${requested}" in SYSTEM|BUSINESS) echo "${requested}"; return 0 ;; esac
-              return 1
-            fi
-            labels="$(gh api "repos/${repo}/issues/${issue_number}" --jq '.labels[]?.name' 2>/dev/null || true)"
-            if printf '%s\n' "${labels}" | grep -qx 'mep-biz'; then
-              echo "BUSINESS"
-            else
-              echo "SYSTEM"
-            fi
-          }
+          [ -n "${N:-}" ] || { echo "STOP_HARD REASON_CODE=G0_ISSUE_NUMBER_MISSING"; exit 1; }
+          mkdir -p _tmp
+          gh api "repos/${GH_REPO}/issues/${N}" > _tmp/issue.json
+          lane_args=()
+          if [ -n "${L:-}" ]; then
+            lane_args+=(--requested-lane "${L}")
+          fi
+          LANE="$(python3 tools/mep_resolve_lane.py --issue-json-path _tmp/issue.json "${lane_args[@]}")"
+          echo "lane=${LANE}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch 8-gate entry
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          GH_REPO:  ${{ github.repository }}
+          N: ${{ inputs.issue_number }}
+          LANE: ${{ steps.lane.outputs.lane }}
+        run: |
+          set -euo pipefail
 
           if [ -z "${N:-}" ]; then
             echo "issue_number is empty; skip dispatch"
-            exit 0
-          fi
-
-          LANE="$(resolve_lane "${L:-}" "${N}" "${GH_REPO}" || true)"
-          if [ -z "${LANE}" ]; then
-            echo "lane resolution failed; skip dispatch"
             exit 0
           fi
 
@@ -109,51 +108,29 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          LANE: ${{ steps.lane.outputs.lane }}
         run: |
           set -euo pipefail
           N="${{ inputs.issue_number }}"
-          L_INPUT="${{ inputs.lane }}"
-          resolve_lane () {
-            local requested="${1:-}"
-            local issue_number="${2:-}"
-            local repo="${3:-}"
-            local labels
-            if [ -n "${requested}" ]; then
-              case "${requested}" in SYSTEM|BUSINESS) echo "${requested}"; return 0 ;; esac
-              return 1
-            fi
-            labels="$(gh api "repos/${repo}/issues/${issue_number}" --jq '.labels[]?.name' 2>/dev/null || true)"
-            if printf '%s\n' "${labels}" | grep -qx 'mep-biz'; then
-              echo "BUSINESS"
-            else
-              echo "SYSTEM"
-            fi
-          }
           say () {
             gh api "repos/${REPO}/issues/${N}/comments" -f body="$1" >/dev/null || true
           }
-
-          LANE="$(resolve_lane "${L_INPUT:-}" "${N}" "${REPO}" || true)"
-          if [ -z "${LANE}" ]; then
-            LANE="SYSTEM"
-          fi
 
           DIR="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${N}"
           AUD="${DIR}/AUDIT.md"
           DRAFT="${DIR}/MERGED_DRAFT.md"
           PKT="${DIR}/INPUT_PACKET.md"
 
-
           header="[MEP][G0] AUDIT RESULT"
+          canonical=".github/workflows/mep_standalone_autoloop_dispatch.yml"
           if [ ! -d "${DIR}" ]; then
-            say "${header}\n\nSTOP_REASON: ARTIFACT_DIR_MISSING\nDIR: ${DIR}\n\nAction:\n- Run standalone artifact build first (Issue loop) to generate ARTIFACTS."
+            say "${header}\n\nSTOP_REASON: ARTIFACT_DIR_MISSING\nDIR: ${DIR}\n\nAction:\n- Run canonical standalone build first:\n  ${canonical}\n  inputs: issue_number=${N}, lane=${LANE}"
             exit 0
           fi
           if [ ! -f "${AUD}" ] || [ ! -f "${DRAFT}" ] || [ ! -f "${PKT}" ]; then
-            say "${header}\n\nSTOP_REASON: ARTIFACT_FILES_MISSING\nDIR: ${DIR}\n\nMissing:\n- AUDIT.md? $([ -f "${AUD}" ] && echo OK || echo NG)\n- MERGED_DRAFT.md? $([ -f "${DRAFT}" ] && echo OK || echo NG)\n- INPUT_PACKET.md? $([ -f "${PKT}" ] && echo OK || echo NG)\n\nAction:\n- Re-run artifact generation for this issue."
+            say "${header}\n\nSTOP_REASON: ARTIFACT_FILES_MISSING\nDIR: ${DIR}\n\nMissing:\n- AUDIT.md? $([ -f "${AUD}" ] && echo OK || echo NG)\n- MERGED_DRAFT.md? $([ -f "${DRAFT}" ] && echo OK || echo NG)\n- INPUT_PACKET.md? $([ -f "${PKT}" ] && echo OK || echo NG)\n\nAction:\n- Run canonical standalone build:\n  ${canonical}\n  inputs: issue_number=${N}, lane=${LANE}"
             exit 0
           fi
-
 
           # read flags from INPUT_PACKET
           DOES_NOT_TRIGGER="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${PKT}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
@@ -169,7 +146,7 @@ jobs:
           if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then NG=1; fi
           if [ "${packet_lane}" != "${LANE}" ]; then NG=1; fi
           if [ "${NG}" -eq 1 ]; then
-            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n- Lane match (expected ${LANE}): $([ "${packet_lane}" = "${LANE}" ] && echo OK || echo NG:"${packet_lane}")\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
+            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n- Lane match (expected ${LANE}): $([ "${packet_lane}" = "${LANE}" ] && echo OK || echo NG:"${packet_lane}")\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run canonical standalone build (${canonical})\n- Re-run Gate0"
             exit 0
           fi
 

@@ -7,6 +7,11 @@ on:
         description: "GitHub Issue number containing the draft"
         required: true
         type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
+        type: string
     secrets:
       MEP_BOT_PAT:
         required: false
@@ -17,6 +22,11 @@ on:
       issue_number:
         description: "GitHub Issue number containing the draft"
         required: true
+        type: string
+      lane:
+        description: "SYSTEM or BUSINESS (optional explicit lane)"
+        required: false
+        default: ""
         type: string
   pull_request:
     branches: [main]
@@ -45,6 +55,7 @@ jobs:
     env:
       GH_REPO: ${{ github.repository }}
       ISSUE_NUMBER: ${{ inputs.issue_number || github.event.inputs.issue_number }}
+      REQUESTED_LANE: ${{ inputs.lane || github.event.inputs.lane || '' }}
       GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
       GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
@@ -76,10 +87,25 @@ jobs:
           PY
           echo "EVENT_JSON=_tmp/event.json" >> "$GITHUB_ENV"
 
+      - name: Resolve lane (strict, no implicit fallback)
+        if: ${{ github.event_name != 'pull_request' }}
+        id: lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          lane_args=()
+          if [ -n "${REQUESTED_LANE:-}" ]; then
+            lane_args+=(--requested-lane "${REQUESTED_LANE}")
+          fi
+          lane="$(python3 tools/mep_resolve_lane.py --issue-json-path _tmp/issue.json "${lane_args[@]}")"
+          echo "lane=${lane}" >> "$GITHUB_OUTPUT"
+          echo "MEP_RESOLVED_LANE=${lane}" >> "$GITHUB_ENV"
+
       - name: Generate artifacts (SYSTEM/BUSINESS) from Issue
         if: ${{ github.event_name != 'pull_request' }}
         env:
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
+          MEP_REQUESTED_LANE: ${{ env.MEP_RESOLVED_LANE }}
         run: python3 tools/issue_artifact_loop.py
 
       - name: Upload workflow artifacts
@@ -100,6 +126,7 @@ jobs:
           body: |
             Standalone AutoLoop (Dispatch) generated artifacts.
             - Issue: #${{ env.ISSUE_NUMBER }}
+            - Lane: ${{ env.MEP_RESOLVED_LANE }}
             - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ env.ISSUE_NUMBER }}"
           branch: auto/standalone_dispatch_${{ env.ISSUE_NUMBER }}_${{ github.run_id }}
           base: main
@@ -116,7 +143,6 @@ jobs:
           gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
           gh pr checks "$PR_NUM" --watch --required || true
 
-
       - name: Bridge restart state into SSOT
         if: ${{ github.event_name != 'pull_request' }}
         shell: bash
@@ -126,6 +152,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json
+          import os
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -133,6 +160,10 @@ jobs:
           standalone_run_id = "${GITHUB_RUN_ID}"
           standalone_run_url = "${GITHUB_RUN_URL}"
           artifact_pr_url = "${ARTIFACT_PR_URL}"
+
+          resolved_lane = (os.environ.get("MEP_RESOLVED_LANE") or "").strip().upper()
+          if resolved_lane not in ("SYSTEM", "BUSINESS"):
+              raise SystemExit("STOP_HARD: lane unresolved in restart bridge")
 
           run_state = Path("mep/run_state.json")
           rs = json.loads(run_state.read_text(encoding="utf-8")) if run_state.exists() else {}
@@ -143,24 +174,7 @@ jobs:
 
           now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
           new_run_id = f"RUN_RESTART_{issue_number}_{standalone_run_id}"
-
-          lane = "SYSTEM"
-          issue_json = Path("_tmp/issue.json")
-          if issue_json.exists():
-              try:
-                  issue_data = json.loads(issue_json.read_text(encoding="utf-8"))
-                  labels = []
-                  for x in (issue_data.get("labels") or []):
-                      if isinstance(x, dict):
-                          labels.append(x.get("name", ""))
-                      elif isinstance(x, str):
-                          labels.append(x)
-                  if "mep-biz" in labels:
-                      lane = "BUSINESS"
-              except Exception:
-                  lane = "SYSTEM"
-
-          restart_packet = f"docs/MEP/ARTIFACTS/{lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
+          restart_packet = f"docs/MEP/ARTIFACTS/{resolved_lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
 
           rs["run_id"] = new_run_id
           rs["run_status"] = "STILL_OPEN"
@@ -178,7 +192,7 @@ jobs:
               "pr_url": artifact_pr_url or None,
               "commit_sha": None,
               "workflow_run_url": standalone_run_url,
-              "lane": lane,
+              "lane": resolved_lane,
               "restart_packet": restart_packet,
           }
           rs["last_result"] = lr
@@ -187,7 +201,7 @@ jobs:
               "source_standalone_run_id": standalone_run_id,
               "source_standalone_run_url": standalone_run_url,
               "artifact_pr_url": artifact_pr_url,
-              "lane": lane,
+              "lane": resolved_lane,
               "restart_packet": restart_packet,
               "bridged_at": now,
           }
@@ -208,6 +222,7 @@ jobs:
           body: |
             Restart bridge writeback after standalone dispatch completion.
             - Issue: #${{ env.ISSUE_NUMBER }}
+            - Lane: ${{ env.MEP_RESOLVED_LANE }}
             - Standalone run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
             - Artifact PR: ${{ steps.cpr.outputs.pull-request-url }}
           branch: mep/state-update/restart_${{ env.ISSUE_NUMBER }}_${{ github.run_id }}
