@@ -58,8 +58,11 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
-          echo "Dispatching Gate0 for issue #${ISSUE_NUMBER}"
-          gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}"
+          issue_json="$(gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}")"
+          lane="$(printf '%s' "${issue_json}" | jq -r '[((.labels // [])[] | (if type=="string" then . else .name end))] | if index("mep-biz") then "BUSINESS" else "SYSTEM" end')"
+          case "${lane}" in SYSTEM|BUSINESS) ;; *) lane="SYSTEM" ;; esac
+          echo "Dispatching Gate0 for issue #${ISSUE_NUMBER} lane=${lane}"
+          gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}" -f lane="${lane}"
 concurrency:
   group: mep-issueops-issue-$\{\{ github.event.issue.number \}\}
   cancel-in-progress: false

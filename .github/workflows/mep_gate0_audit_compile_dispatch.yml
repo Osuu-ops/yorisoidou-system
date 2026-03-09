@@ -8,9 +8,9 @@ on:
         required: true
         type: string
       lane:
-        description: "SYSTEM or BUSINESS (ARTIFACTS lane folder)"
+        description: "SYSTEM or BUSINESS (optional; auto-detected when empty)"
         required: false
-        default: "SYSTEM"
+        default: ""
         type: string
 permissions:
   actions: write
@@ -31,16 +31,38 @@ jobs:
           L: ${{ inputs.lane }}
         run: |
           set -euo pipefail
+          resolve_lane () {
+            local requested="${1:-}"
+            local issue_number="${2:-}"
+            local repo="${3:-}"
+            local labels
+            if [ -n "${requested}" ]; then
+              case "${requested}" in SYSTEM|BUSINESS) echo "${requested}"; return 0 ;; esac
+              return 1
+            fi
+            labels="$(gh api "repos/${repo}/issues/${issue_number}" --jq '.labels[]?.name' 2>/dev/null || true)"
+            if printf '%s\n' "${labels}" | grep -qx 'mep-biz'; then
+              echo "BUSINESS"
+            else
+              echo "SYSTEM"
+            fi
+          }
+
           if [ -z "${N:-}" ]; then
             echo "issue_number is empty; skip dispatch"
             exit 0
           fi
-          if [ -z "${L:-}" ]; then
-            L="SYSTEM"
+
+          LANE="$(resolve_lane "${L:-}" "${N}" "${GH_REPO}" || true)"
+          if [ -z "${LANE}" ]; then
+            echo "lane resolution failed; skip dispatch"
+            exit 0
           fi
-          DIR="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}"
+
+          DIR="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${N}"
           PKT="${DIR}/INPUT_PACKET.md"
           DRAFT="${DIR}/MERGED_DRAFT.md"
+
           if [ ! -f "${PKT}" ]; then
             echo "INPUT_PACKET not found at ${PKT}; skip dispatch"
             exit 0
@@ -49,6 +71,21 @@ jobs:
             echo "MERGED_DRAFT not found at ${DRAFT}; skip dispatch"
             exit 0
           fi
+
+          packet_lane="$(grep -m1 -E '^LANE:' "${PKT}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
+          case "${packet_lane}" in
+            SYSTEM|BUSINESS)
+              if [ "${packet_lane}" != "${LANE}" ]; then
+                echo "INPUT_PACKET lane mismatch (expected=${LANE} actual=${packet_lane}); skip dispatch"
+                exit 0
+              fi
+              ;;
+            *)
+              echo "INPUT_PACKET lane invalid (${packet_lane}); skip dispatch"
+              exit 0
+              ;;
+          esac
+
           size="$(wc -c < "${DRAFT}" | tr -d ' ')"
           if [ "${size}" -lt 50 ]; then
             echo "MERGED_DRAFT too small (${size}); skip dispatch"
@@ -63,9 +100,9 @@ jobs:
             echo "DOES_NOT_TRIGGER_8GATE:true; skip dispatch"
             exit 0
           fi
-          echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N}"
-          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f packet_path="${PKT}"
 
+          echo "Dispatching .github/workflows/mep_8gate_entry_filter.yml for issue #${N} lane=${LANE}"
+          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" -f packet_path="${PKT}"
 
       - name: Gate0 Audit + Comment (never hard-fail)
         shell: bash
@@ -75,37 +112,67 @@ jobs:
         run: |
           set -euo pipefail
           N="${{ inputs.issue_number }}"
-          L="${{ inputs.lane }}"
-          DIR="docs/MEP/ARTIFACTS/${L}/ISSUE_${N}"
+          L_INPUT="${{ inputs.lane }}"
+          resolve_lane () {
+            local requested="${1:-}"
+            local issue_number="${2:-}"
+            local repo="${3:-}"
+            local labels
+            if [ -n "${requested}" ]; then
+              case "${requested}" in SYSTEM|BUSINESS) echo "${requested}"; return 0 ;; esac
+              return 1
+            fi
+            labels="$(gh api "repos/${repo}/issues/${issue_number}" --jq '.labels[]?.name' 2>/dev/null || true)"
+            if printf '%s\n' "${labels}" | grep -qx 'mep-biz'; then
+              echo "BUSINESS"
+            else
+              echo "SYSTEM"
+            fi
+          }
           say () {
             gh api "repos/${REPO}/issues/${N}/comments" -f body="$1" >/dev/null || true
           }
+
+          LANE="$(resolve_lane "${L_INPUT:-}" "${N}" "${REPO}" || true)"
+          if [ -z "${LANE}" ]; then
+            LANE="SYSTEM"
+          fi
+
+          DIR="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${N}"
+          AUD="${DIR}/AUDIT.md"
+          DRAFT="${DIR}/MERGED_DRAFT.md"
+          PKT="${DIR}/INPUT_PACKET.md"
+
+
           header="[MEP][G0] AUDIT RESULT"
           if [ ! -d "${DIR}" ]; then
             say "${header}\n\nSTOP_REASON: ARTIFACT_DIR_MISSING\nDIR: ${DIR}\n\nAction:\n- Run standalone artifact build first (Issue loop) to generate ARTIFACTS."
             exit 0
           fi
-          AUD="${DIR}/AUDIT.md"
-          DRAFT="${DIR}/MERGED_DRAFT.md"
-          PKT="${DIR}/INPUT_PACKET.md"
           if [ ! -f "${AUD}" ] || [ ! -f "${DRAFT}" ] || [ ! -f "${PKT}" ]; then
             say "${header}\n\nSTOP_REASON: ARTIFACT_FILES_MISSING\nDIR: ${DIR}\n\nMissing:\n- AUDIT.md? $([ -f "${AUD}" ] && echo OK || echo NG)\n- MERGED_DRAFT.md? $([ -f "${DRAFT}" ] && echo OK || echo NG)\n- INPUT_PACKET.md? $([ -f "${PKT}" ] && echo OK || echo NG)\n\nAction:\n- Re-run artifact generation for this issue."
             exit 0
           fi
+
+
           # read flags from INPUT_PACKET
           DOES_NOT_TRIGGER="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${PKT}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
           SAFE_MODE="$(grep -m1 -E '^SAFE_MODE:' "${PKT}" | sed -E 's/^SAFE_MODE:\s*//;s/\r//g' || true)"
+
           # conditions (FIX): do NOT gate on AUDIT.md containing "NG" (Issue body can be empty).
           # Gate on MERGED_DRAFT size + INPUT_PACKET ISSUE_NUMBER match, which are the actual 0->8 bridge artifacts.
           NG=0
           size="$(wc -c < "${DRAFT}" | tr -d ' ')"
           non_empty="NG"
           if [ "${size}" -ge 50 ]; then non_empty="OK"; else NG=1; fi
+          packet_lane="$(grep -m1 -E '^LANE:' "${PKT}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
           if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then NG=1; fi
+          if [ "${packet_lane}" != "${LANE}" ]; then NG=1; fi
           if [ "${NG}" -eq 1 ]; then
-            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
+            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n- Lane match (expected ${LANE}): $([ "${packet_lane}" = "${LANE}" ] && echo OK || echo NG:"${packet_lane}")\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
             exit 0
           fi
+
           # AUDIT OK
           if [ "${DOES_NOT_TRIGGER}" = "true" ]; then
             say "${header}\n\nAUDIT: OK\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: true\nDIR: ${DIR}\n\nNext:\n- This packet is marked as NOT triggering 8-gate.\n- If you want to run 8-gate, set DOES_NOT_TRIGGER_8GATE:false and re-generate INPUT_PACKET."
