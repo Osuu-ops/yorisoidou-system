@@ -25,9 +25,12 @@ jobs:
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
           set -euo pipefail
+          tmp_raw="${RUNNER_TEMP}/issue_raw.json"
           tmp="${RUNNER_TEMP}/mep_issue_event.json"
-          issue_json="$(gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}")"
-          printf '{"issue":%s}\n' "${issue_json}" > "${tmp}"
+          gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" > "${tmp_raw}"
+          jq -c '{issue: .}' "${tmp_raw}" > "${tmp}"
+          # sanity
+          jq -e '.issue.number' "${tmp}" > /dev/null
           echo "GITHUB_EVENT_PATH=${tmp}" >> "${GITHUB_ENV}"
       - name: Determine lane from labels (SYSTEM/BUSINESS)
         id: lane
@@ -115,4 +118,5 @@ jobs:
               issue_number: issue,
               body
             });
+
 
