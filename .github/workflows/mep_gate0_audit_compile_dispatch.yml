@@ -62,20 +62,6 @@ jobs:
           DIR="docs/MEP/ARTIFACTS/${LANE}/ISSUE_${N}"
           PKT="${DIR}/INPUT_PACKET.md"
           DRAFT="${DIR}/MERGED_DRAFT.md"
-          if [ ! -f "${PKT}" ] || [ ! -f "${DRAFT}" ]; then
-            ALT="SYSTEM"
-            if [ "${LANE}" = "SYSTEM" ]; then ALT="BUSINESS"; fi
-            ALT_DIR="docs/MEP/ARTIFACTS/${ALT}/ISSUE_${N}"
-            ALT_PKT="${ALT_DIR}/INPUT_PACKET.md"
-            ALT_DRAFT="${ALT_DIR}/MERGED_DRAFT.md"
-            if [ -f "${ALT_PKT}" ] && [ -f "${ALT_DRAFT}" ]; then
-              echo "Primary lane artifact missing; fallback lane=${ALT}"
-              LANE="${ALT}"
-              DIR="${ALT_DIR}"
-              PKT="${ALT_PKT}"
-              DRAFT="${ALT_DRAFT}"
-            fi
-          fi
 
           if [ ! -f "${PKT}" ]; then
             echo "INPUT_PACKET not found at ${PKT}; skip dispatch"
@@ -87,7 +73,18 @@ jobs:
           fi
 
           packet_lane="$(grep -m1 -E '^LANE:' "${PKT}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
-          case "${packet_lane}" in SYSTEM|BUSINESS) LANE="${packet_lane}" ;; *) ;; esac
+          case "${packet_lane}" in
+            SYSTEM|BUSINESS)
+              if [ "${packet_lane}" != "${LANE}" ]; then
+                echo "INPUT_PACKET lane mismatch (expected=${LANE} actual=${packet_lane}); skip dispatch"
+                exit 0
+              fi
+              ;;
+            *)
+              echo "INPUT_PACKET lane invalid (${packet_lane}); skip dispatch"
+              exit 0
+              ;;
+          esac
 
           size="$(wc -c < "${DRAFT}" | tr -d ' ')"
           if [ "${size}" -lt 50 ]; then
@@ -145,22 +142,6 @@ jobs:
           AUD="${DIR}/AUDIT.md"
           DRAFT="${DIR}/MERGED_DRAFT.md"
           PKT="${DIR}/INPUT_PACKET.md"
-          if [ ! -f "${AUD}" ] || [ ! -f "${DRAFT}" ] || [ ! -f "${PKT}" ]; then
-            ALT="SYSTEM"
-            if [ "${LANE}" = "SYSTEM" ]; then ALT="BUSINESS"; fi
-            ALT_DIR="docs/MEP/ARTIFACTS/${ALT}/ISSUE_${N}"
-            ALT_AUD="${ALT_DIR}/AUDIT.md"
-            ALT_DRAFT="${ALT_DIR}/MERGED_DRAFT.md"
-            ALT_PKT="${ALT_DIR}/INPUT_PACKET.md"
-            if [ -f "${ALT_AUD}" ] && [ -f "${ALT_DRAFT}" ] && [ -f "${ALT_PKT}" ]; then
-              echo "Primary lane artifact missing; fallback lane=${ALT}"
-              LANE="${ALT}"
-              DIR="${ALT_DIR}"
-              AUD="${ALT_AUD}"
-              DRAFT="${ALT_DRAFT}"
-              PKT="${ALT_PKT}"
-            fi
-          fi
 
 
           header="[MEP][G0] AUDIT RESULT"
@@ -173,25 +154,6 @@ jobs:
             exit 0
           fi
 
-          packet_lane="$(grep -m1 -E '^LANE:' "${PKT}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
-          case "${packet_lane}" in
-            SYSTEM|BUSINESS)
-              if [ "${packet_lane}" != "${LANE}" ]; then
-                CANDIDATE_DIR="docs/MEP/ARTIFACTS/${packet_lane}/ISSUE_${N}"
-                CANDIDATE_AUD="${CANDIDATE_DIR}/AUDIT.md"
-                CANDIDATE_DRAFT="${CANDIDATE_DIR}/MERGED_DRAFT.md"
-                CANDIDATE_PKT="${CANDIDATE_DIR}/INPUT_PACKET.md"
-                if [ -f "${CANDIDATE_AUD}" ] && [ -f "${CANDIDATE_DRAFT}" ] && [ -f "${CANDIDATE_PKT}" ]; then
-                  LANE="${packet_lane}"
-                  DIR="${CANDIDATE_DIR}"
-                  AUD="${CANDIDATE_AUD}"
-                  DRAFT="${CANDIDATE_DRAFT}"
-                  PKT="${CANDIDATE_PKT}"
-                fi
-              fi
-              ;;
-            *) ;;
-          esac
 
           # read flags from INPUT_PACKET
           DOES_NOT_TRIGGER="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${PKT}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
@@ -203,9 +165,11 @@ jobs:
           size="$(wc -c < "${DRAFT}" | tr -d ' ')"
           non_empty="NG"
           if [ "${size}" -ge 50 ]; then non_empty="OK"; else NG=1; fi
+          packet_lane="$(grep -m1 -E '^LANE:' "${PKT}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
           if ! grep -q -E "^ISSUE_NUMBER:\s*${N}\s*$" "${PKT}"; then NG=1; fi
+          if [ "${packet_lane}" != "${LANE}" ]; then NG=1; fi
           if [ "${NG}" -eq 1 ]; then
-            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
+            say "${header}\n\nSTOP_REASON: AUDIT_NG\nSAFE_MODE: ${SAFE_MODE}\nDOES_NOT_TRIGGER_8GATE: ${DOES_NOT_TRIGGER}\nDIR: ${DIR}\n\nAUDIT (head):\n$(sed -n '1,80p' "${AUD}")\n\nDERIVED (from MERGED_DRAFT.md):\n- Non-empty body: ${non_empty}\n- Size (bytes): ${size}\n- Lane match (expected ${LANE}): $([ "${packet_lane}" = "${LANE}" ] && echo OK || echo NG:"${packet_lane}")\n\n\nDRAFT_SIZE(bytes): ${size}\n\nAction:\n- Put non-empty draft body into Issue #${N}\n- Re-run artifact generation\n- Re-run Gate0"
             exit 0
           fi
 

@@ -161,12 +161,6 @@ jobs:
                   lane = "SYSTEM"
 
           restart_packet = f"docs/MEP/ARTIFACTS/{lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
-          if not Path(restart_packet).exists():
-              alt_lane = "BUSINESS" if lane == "SYSTEM" else "SYSTEM"
-              alt_path = f"docs/MEP/ARTIFACTS/{alt_lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
-              if Path(alt_path).exists():
-                  lane = alt_lane
-                  restart_packet = alt_path
 
           rs["run_id"] = new_run_id
           rs["run_status"] = "STILL_OPEN"
