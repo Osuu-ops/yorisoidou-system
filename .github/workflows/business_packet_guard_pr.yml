@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  business_packet_guard:
-    name: Business Packet Guard (PR)
+  business_packet_guard_probe:
+    name: Business Packet Guard Probe (PR)
     runs-on: ubuntu-latest
 
     steps:
