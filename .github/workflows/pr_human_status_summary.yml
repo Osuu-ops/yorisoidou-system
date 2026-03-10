@@ -1,0 +1,321 @@
+name: PR Human Status Summary
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to summarize"
+        required: false
+        type: string
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+      - converted_to_draft
+      - review_requested
+      - review_request_removed
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+      - dismissed
+  workflow_run:
+    workflows:
+      - Business Packet Guard (PR)
+      - CI Guard - BOM Check
+      - MEP Entry Gate (PR)
+      - EVIDENCE_FOLLOW_GUARD
+      - MEP Done Check
+      - Text Integrity Guard (PR)
+      - mep-required-checks-ci
+      - mep_scope_fence_guard_pr
+    types:
+      - requested
+      - in_progress
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+  statuses: read
+
+jobs:
+  summarize:
+    name: summarize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR context
+        id: resolve
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber = "";
+
+            if (context.eventName === "workflow_dispatch") {
+              prNumber = context.payload.inputs?.pr_number?.toString() || core.getInput("pr_number") || "";
+            } else if (context.eventName === "pull_request" || context.eventName === "pull_request_review") {
+              prNumber = context.payload.pull_request?.number?.toString() || "";
+            } else if (context.eventName === "workflow_run") {
+              const prs = context.payload.workflow_run?.pull_requests || [];
+              const mainPr = prs.find((pr) => pr?.base?.ref === "main");
+              prNumber = (mainPr || prs[0])?.number?.toString() || "";
+            }
+
+            core.setOutput("pr_number", prNumber);
+
+            if (!prNumber) {
+              core.notice("No PR context was resolved for this event.");
+            }
+
+      - name: Summarize human status
+        if: steps.resolve.outputs.pr_number != ''
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.resolve.outputs.pr_number }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = Number(process.env.PR_NUMBER);
+
+            const failureStates = new Set([
+              "ACTION_REQUIRED",
+              "CANCELLED",
+              "ERROR",
+              "FAILURE",
+              "FAILED",
+              "STALE",
+              "TIMED_OUT",
+            ]);
+            const pendingStates = new Set([
+              "",
+              "EXPECTED",
+              "IN_PROGRESS",
+              "PENDING",
+              "QUEUED",
+              "REQUESTED",
+              "WAITING",
+            ]);
+            const blockedMergeStates = new Set([
+              "BEHIND",
+              "BLOCKED",
+              "DIRTY",
+              "HAS_HOOKS",
+            ]);
+
+            const normalize = (value) => (value || "").toString().trim().toUpperCase();
+            const isPendingState = (value) => pendingStates.has(normalize(value));
+            const isFailureState = (value) => {
+              const normalized = normalize(value);
+              return failureStates.has(normalized) || (
+                normalized !== "SUCCESS" &&
+                !pendingStates.has(normalized)
+              );
+            };
+            const fmt = (items) => items.length > 0 ? items.join(", ") : "none";
+
+            const query = `
+              query($owner:String!, $repo:String!, $number:Int!) {
+                repository(owner:$owner, name:$repo) {
+                  pullRequest(number:$number) {
+                    number
+                    url
+                    state
+                    mergedAt
+                    isDraft
+                    reviewDecision
+                    mergeable
+                    mergeStateStatus
+                    baseRefName
+                    statusCheckRollup {
+                      contexts(first: 100) {
+                        nodes {
+                          __typename
+                          ... on CheckRun {
+                            name
+                            status
+                            conclusion
+                            detailsUrl
+                          }
+                          ... on StatusContext {
+                            context
+                            state
+                            targetUrl
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const response = await github.graphql(query, {
+              owner,
+              repo,
+              number: prNumber,
+            });
+
+            const pr = response?.repository?.pullRequest;
+            if (!pr) {
+              core.warning(`PR #${prNumber} was not found.`);
+              await core.summary
+                .addHeading("PR Human Status Summary")
+                .addRaw(`PR #${prNumber} could not be resolved.\n`)
+                .write();
+              return;
+            }
+
+            let requiredChecks = [];
+            let requiredSource = "docs/MEP/REQUIRED_CHECKS_SSOT.md";
+
+            try {
+              const content = await github.rest.repos.getContent({
+                owner,
+                repo,
+                path: "docs/MEP/REQUIRED_CHECKS_SSOT.md",
+                ref: pr.baseRefName,
+              });
+
+              if (!Array.isArray(content.data) && content.data.type === "file" && content.data.content) {
+                const decoded = Buffer
+                  .from(content.data.content, content.data.encoding || "base64")
+                  .toString("utf8");
+                requiredChecks = Array.from(
+                  decoded.matchAll(/^\s*-\s*"([^"]+)"\s*$/gm),
+                  (match) => match[1].trim()
+                );
+              }
+            } catch (error) {
+              requiredSource = "statusCheckRollup fallback";
+              core.warning(`Required checks SSOT could not be loaded: ${error.message}`);
+            }
+
+            const nodes = pr.statusCheckRollup?.contexts?.nodes || [];
+            const observed = new Map();
+
+            for (const node of nodes) {
+              if (!node) {
+                continue;
+              }
+
+              if (node.__typename === "CheckRun" && node.name) {
+                observed.set(node.name, {
+                  kind: "CheckRun",
+                  state: normalize(node.conclusion || node.status),
+                  url: node.detailsUrl || "",
+                });
+              } else if (node.__typename === "StatusContext" && node.context) {
+                observed.set(node.context, {
+                  kind: "StatusContext",
+                  state: normalize(node.state),
+                  url: node.targetUrl || "",
+                });
+              }
+            }
+
+            if (requiredChecks.length === 0) {
+              requiredChecks = Array.from(observed.keys()).sort();
+            }
+
+            const requiredFailing = [];
+            const requiredPending = [];
+            const requiredMissing = [];
+
+            for (const name of requiredChecks) {
+              const hit = observed.get(name);
+              if (!hit) {
+                requiredMissing.push(name);
+                continue;
+              }
+
+              if (hit.state === "SUCCESS") {
+                continue;
+              }
+
+              if (isPendingState(hit.state)) {
+                requiredPending.push(`${name} (${hit.state || "PENDING"})`);
+                continue;
+              }
+
+              if (isFailureState(hit.state)) {
+                requiredFailing.push(`${name} (${hit.state || "UNKNOWN"})`);
+              }
+            }
+
+            const reviewDecision = normalize(pr.reviewDecision);
+            const mergeable = normalize(pr.mergeable);
+            const mergeStateStatus = normalize(pr.mergeStateStatus);
+            const hasPendingWork = (
+              pr.isDraft === true ||
+              reviewDecision === "REVIEW_REQUIRED" ||
+              observed.size === 0 ||
+              requiredPending.length > 0 ||
+              requiredMissing.length > 0 ||
+              mergeable === "UNKNOWN" ||
+              mergeStateStatus === "UNKNOWN"
+            );
+
+            let humanState = "待機中";
+            let humanReason = "checks in progress / pending";
+            let humanAction = "まだ待機してください";
+
+            if (reviewDecision === "CHANGES_REQUESTED") {
+              humanState = "差し戻し";
+              humanReason = "Changes requested";
+              humanAction = "Codexに修正依頼してください";
+            } else if (requiredFailing.length > 0) {
+              humanState = "差し戻し";
+              humanReason = "Required checks fail";
+              humanAction = "Codexに修正依頼してください";
+            } else if (hasPendingWork) {
+              humanState = "待機中";
+              humanReason = "checks in progress / pending";
+              humanAction = "まだ待機してください";
+            } else if (mergeable === "CONFLICTING" || blockedMergeStates.has(mergeStateStatus)) {
+              humanState = "差し戻し";
+              humanReason = "Merge blocked";
+              humanAction = mergeStateStatus === "BEHIND"
+                ? "main を反映して再確認してください"
+                : "PR のブロック要因を解消してください";
+            } else {
+              humanState = "通過";
+              humanReason = "checks pass";
+              humanAction = "main反映へ進めてください";
+            }
+
+            const summary = [
+              "## PR Human Status Summary",
+              "",
+              "| 項目 | 内容 |",
+              "| --- | --- |",
+              `| 状態 | ${humanState} |`,
+              `| 根拠 | ${humanReason} |`,
+              `| 人間がやること | ${humanAction} |`,
+              "",
+              `- PR: #${pr.number} (${pr.url})`,
+              `- reviewDecision: ${reviewDecision || "NONE"}`,
+              `- mergeable: ${mergeable || "UNKNOWN"}`,
+              `- mergeStateStatus: ${mergeStateStatus || "UNKNOWN"}`,
+              `- mergedAt: ${pr.mergedAt || "not merged"}`,
+              `- required checks source: ${requiredSource}`,
+              `- required checks fail: ${fmt(requiredFailing)}`,
+              `- required checks pending: ${fmt(requiredPending)}`,
+              `- required checks missing: ${fmt(requiredMissing)}`,
+            ].join("\n");
+
+            core.notice(`状態=${humanState} / 根拠=${humanReason} / 人間がやること=${humanAction}`);
+            await core.summary.addRaw(summary).write();
+
+      - name: No PR context
+        if: steps.resolve.outputs.pr_number == ''
+        shell: bash
+        run: |
+          {
+            echo "## PR Human Status Summary"
+            echo
+            echo "This event had no PR context, so no human-facing PR summary was generated."
+          } >> "${GITHUB_STEP_SUMMARY}"

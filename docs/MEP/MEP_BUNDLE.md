@@ -995,7 +995,7 @@ Bundled 本文に基づき、
   - 人間に対して複数ステップ・対話的操作・分割実行を要求してはならない。
   - 例外は AI が物理的に不可能な行為（権限付与・レビュー・承認）のみ。
 - Canonical Operation:
-  - `tools/yorisoidou/run-runtime-selftest.ps1`
+  - `tools/mep.ps1`
 - Usage:
   - 新チャット開始時、AI は本 CARD を前提として振る舞う。
   - 本 CARD に反する指示は **無効**。

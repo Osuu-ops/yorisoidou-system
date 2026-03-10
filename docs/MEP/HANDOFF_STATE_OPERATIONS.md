@@ -9,6 +9,10 @@ It adds four safety layers:
 - TTL-based stale detection (`BOOT_EXPIRED`)
 - One-paste handoff packet output (`-Action packet`)
 
+## Scope note
+- `tools/mep_handoff_state.ps1` is for handoff state only.
+- For issue status, canonical standalone dispatch, run tracking, and PR tracking, use `tools/mep.ps1`.
+
 ## Files
 - `docs/MEP/HANDOFF_EVENTS.jsonl`: append-only event log
 - `docs/MEP/HANDOFF_STATE.json`: derived current snapshot
@@ -50,4 +54,3 @@ Behavior:
 - Events are idempotent per `event_type + boot_id`.
 - `observe` script remains read-only. State transitions are handled by this script.
 - If no `-PortfolioId` is passed, portfolio is resolved from `mep/run_state.json` when possible.
-
