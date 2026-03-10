@@ -38,7 +38,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  issues: write
+  pull-requests: write
   checks: read
   statuses: read
 
@@ -80,6 +81,8 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const prNumber = Number(process.env.PR_NUMBER);
+            const stickyMarker = "<!-- PR_HUMAN_STATUS_CODEX_REPAIR_PROMPT -->";
+            const summaryRunUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
             const failureStates = new Set([
               "ACTION_REQUIRED",
@@ -116,6 +119,17 @@ jobs:
               );
             };
             const fmt = (items) => items.length > 0 ? items.join(", ") : "none";
+            const trimLine = (value, maxLength = 220) => {
+              const singleLine = (value || "").toString().replace(/\s+/g, " ").trim();
+              if (!singleLine) {
+                return "";
+              }
+              if (singleLine.length <= maxLength) {
+                return singleLine;
+              }
+              return `${singleLine.slice(0, maxLength - 3)}...`;
+            };
+            const unique = (items) => Array.from(new Set(items.filter(Boolean)));
 
             const query = `
               query($owner:String!, $repo:String!, $number:Int!) {
@@ -145,6 +159,17 @@ jobs:
                             state
                             targetUrl
                           }
+                        }
+                      }
+                    }
+                    reviews(last: 20) {
+                      nodes {
+                        state
+                        body
+                        url
+                        submittedAt
+                        author {
+                          login
                         }
                       }
                     }
@@ -205,12 +230,14 @@ jobs:
               if (node.__typename === "CheckRun" && node.name) {
                 observed.set(node.name, {
                   kind: "CheckRun",
+                  name: node.name,
                   state: normalize(node.conclusion || node.status),
                   url: node.detailsUrl || "",
                 });
               } else if (node.__typename === "StatusContext" && node.context) {
                 observed.set(node.context, {
                   kind: "StatusContext",
+                  name: node.context,
                   state: normalize(node.state),
                   url: node.targetUrl || "",
                 });
@@ -237,18 +264,27 @@ jobs:
               }
 
               if (isPendingState(hit.state)) {
-                requiredPending.push(`${name} (${hit.state || "PENDING"})`);
+                requiredPending.push(hit);
                 continue;
               }
 
               if (isFailureState(hit.state)) {
-                requiredFailing.push(`${name} (${hit.state || "UNKNOWN"})`);
+                requiredFailing.push(hit);
               }
             }
 
             const reviewDecision = normalize(pr.reviewDecision);
             const mergeable = normalize(pr.mergeable);
             const mergeStateStatus = normalize(pr.mergeStateStatus);
+            const changesRequestedReviews = (pr.reviews?.nodes || [])
+              .filter((review) => normalize(review?.state) === "CHANGES_REQUESTED")
+              .sort((left, right) => new Date(left?.submittedAt || 0) - new Date(right?.submittedAt || 0))
+              .map((review) => ({
+                author: review?.author?.login ? `@${review.author.login}` : "reviewer",
+                body: trimLine(review?.body || ""),
+                url: review?.url || "",
+              }));
+
             const hasPendingWork = (
               pr.isDraft === true ||
               reviewDecision === "REVIEW_REQUIRED" ||
@@ -287,7 +323,65 @@ jobs:
               humanAction = "main反映へ進めてください";
             }
 
-            const summary = [
+            const requiredFailingSummary = requiredFailing.map((check) => `${check.name} (${check.state || "UNKNOWN"})`);
+            const requiredPendingSummary = requiredPending.map((check) => `${check.name} (${check.state || "PENDING"})`);
+            const reviewSummary = changesRequestedReviews.map((review) => review.url ? `${review.author} (${review.url})` : review.author);
+
+            const promptReasonLines = [];
+            if (reviewDecision === "CHANGES_REQUESTED") {
+              promptReasonLines.push("- Changes requested reviews are present.");
+              for (const review of changesRequestedReviews.slice(-5)) {
+                const snippet = review.body ? `: ${review.body}` : "";
+                promptReasonLines.push(`- ${review.author}${snippet}`);
+              }
+            }
+            if (requiredFailing.length > 0) {
+              for (const check of requiredFailing) {
+                promptReasonLines.push(`- Failing required check: ${check.name} (${check.state || "UNKNOWN"})`);
+              }
+            }
+            if (requiredMissing.length > 0) {
+              promptReasonLines.push(`- Missing required checks: ${requiredMissing.join(", ")}`);
+            }
+            if (humanReason === "Merge blocked" || mergeable === "CONFLICTING" || blockedMergeStates.has(mergeStateStatus)) {
+              promptReasonLines.push(`- mergeable: ${mergeable || "UNKNOWN"}`);
+              promptReasonLines.push(`- mergeStateStatus: ${mergeStateStatus || "UNKNOWN"}`);
+            }
+            if (promptReasonLines.length === 0) {
+              promptReasonLines.push("- 詳細は関連URLを確認してください。");
+            }
+
+            const relatedUrlLines = unique([
+              `PR: ${pr.url}`,
+              ...changesRequestedReviews.slice(-5).map((review, index) => review.url ? `Changes requested review ${index + 1}: ${review.url}` : ""),
+              ...requiredFailing.map((check) => check.url ? `Failing check ${check.name}: ${check.url}` : ""),
+            ]).map((item) => `- ${item}`);
+
+            const codexPrompt = [
+              `PR #${pr.number} の差し戻し対応をお願いします。`,
+              "",
+              "現在の判定:",
+              `- 状態: ${humanState}`,
+              `- 差し戻し理由: ${humanReason}`,
+              "",
+              "根拠:",
+              ...promptReasonLines,
+              "",
+              "関連URL:",
+              ...(relatedUrlLines.length > 0 ? relatedUrlLines : [`- PR: ${pr.url}`]),
+              "",
+              "制約:",
+              "- 既存の本体実装を壊さないこと",
+              "- required checks、merge条件、本体制御の意味を変えないこと",
+              "- 自動起動、自動修正、自動pushは追加しないこと",
+              "- 差し戻し理由の解消に必要な最小修正に限定すること",
+              "",
+              "依頼:",
+              "- 上記の差し戻し理由を解消する最小修正を提案・実装してください。",
+              "- 必要なら関連 review / failing check の指摘に直接対応してください。",
+            ].join("\n");
+
+            const summaryLines = [
               "## PR Human Status Summary",
               "",
               "| 項目 | 内容 |",
@@ -302,13 +396,83 @@ jobs:
               `- mergeStateStatus: ${mergeStateStatus || "UNKNOWN"}`,
               `- mergedAt: ${pr.mergedAt || "not merged"}`,
               `- required checks source: ${requiredSource}`,
-              `- required checks fail: ${fmt(requiredFailing)}`,
-              `- required checks pending: ${fmt(requiredPending)}`,
+              `- required checks fail: ${fmt(requiredFailingSummary)}`,
+              `- required checks pending: ${fmt(requiredPendingSummary)}`,
               `- required checks missing: ${fmt(requiredMissing)}`,
-            ].join("\n");
+              `- changes requested reviews: ${fmt(reviewSummary)}`,
+            ];
+
+            if (humanState === "差し戻し") {
+              summaryLines.push(
+                "",
+                "## Codex修正依頼文",
+                "",
+                "以下をそのままCodexへ貼り付けてください。",
+                "",
+                "```text",
+                codexPrompt,
+                "```"
+              );
+            }
 
             core.notice(`状態=${humanState} / 根拠=${humanReason} / 人間がやること=${humanAction}`);
-            await core.summary.addRaw(summary).write();
+            await core.summary.addRaw(summaryLines.join("\n")).write();
+
+            try {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: pr.number,
+                per_page: 100,
+              });
+              const stickyComment = comments.find((comment) => {
+                return (comment.user?.type === "Bot") && (comment.body || "").includes(stickyMarker);
+              });
+
+              if (humanState === "差し戻し") {
+                const commentBody = [
+                  stickyMarker,
+                  "## Codex修正依頼文",
+                  "",
+                  "このブロックをそのまま Codex へ貼り付けてください。",
+                  "",
+                  "```text",
+                  codexPrompt,
+                  "```",
+                  "",
+                  "更新元:",
+                  `- PR Human Status Summary: ${summaryRunUrl}`,
+                  `- PR: ${pr.url}`,
+                ].join("\n");
+
+                if (stickyComment) {
+                  await github.rest.issues.updateComment({
+                    owner,
+                    repo,
+                    comment_id: stickyComment.id,
+                    body: commentBody,
+                  });
+                  core.info(`Updated sticky Codex repair prompt comment: ${stickyComment.html_url}`);
+                } else {
+                  const created = await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    body: commentBody,
+                  });
+                  core.info(`Created sticky Codex repair prompt comment: ${created.data.html_url}`);
+                }
+              } else if (stickyComment) {
+                await github.rest.issues.deleteComment({
+                  owner,
+                  repo,
+                  comment_id: stickyComment.id,
+                });
+                core.info(`Deleted sticky Codex repair prompt comment: ${stickyComment.html_url}`);
+              }
+            } catch (error) {
+              core.warning(`Sticky comment sync failed: ${error.message}`);
+            }
 
       - name: No PR context
         if: steps.resolve.outputs.pr_number == ''
