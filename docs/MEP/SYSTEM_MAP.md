@@ -13,8 +13,8 @@
 ## 層構造（固定）
 Layer0: GitHub入口/起動
 Layer1: Runner Execution（完成：boot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact）
-Layer2: SSOT統合/検査（SSOT_SCAN / CONFLICT_SCAN：未統合）
-Layer3: Extract/派生生成（DECISION_LEDGER/INPUT_PACKET/health/cards：未実装）
+Layer2: SSOT統合/検査（loop v2 から既存 SSOT_SCAN / CONFLICT_SCAN 実装を呼出し。全体統合は未）
+Layer3: Extract/派生生成（loop v2 から extract_generate に接続。full completion は未）
 Layer4: Self-heal（最小版→完全版へ）
 Layer5: Governance（契約/停止/証跡/圧縮）
 ## 未統合レイヤー（固定）
