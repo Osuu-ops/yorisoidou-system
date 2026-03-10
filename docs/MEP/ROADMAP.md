@@ -12,17 +12,17 @@ A-5 Runner PyCompile Guard：DONE（PR #2254, mergeCommit 952c980c…）
 => **PHASE A は完了（運用上の完成）**
 ---
 ## PHASE B：完全OS化（仕様本体の統合）
-B-1 SSOT_SCAN：未
-B-2 CONFLICT_SCAN：未
-B-3 EXTRACT生成（LEDGER/INPUT_PACKET/health/cards）：未
-B-4 Self-heal 完全版（reason_code辞書→自動復帰）：未
+B-1 SSOT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
+B-2 CONFLICT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
+B-3 EXTRACT生成（LEDGER/INPUT_PACKET/health/cards）：dry-run 接続済 / phase state persisted / 本書込未
+B-4 Self-heal 完全版（reason_code辞書→自動復帰）：loop phase safe-stop まで / 完全版未
 ---
 ## Loop Canonical（現在）
 - Entry: `.github/workflows/mep_loop_entry.yml`
 - Engine: `.github/workflows/mep_loop_engine_v2.yml` (`workflow_dispatch`)
 - Legacy v1: `.github/workflows/mep_loop_engine.yml.txt`（sealed）
 - v2 wiring: `tools/checks/ssot_scan.py` / `tools/checks/conflict_scan.py` / `tools/extract/extract_generate.py` を呼ぶ
-- Scope note: EXTRACT は dry-run 接続まで。PHASE B の full completion は未
+- Scope note: EXTRACT は dry-run 接続まで。loop phase state は `mep/run_state.json` に保存するが、PHASE B の full completion は未
 ---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1

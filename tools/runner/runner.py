@@ -309,6 +309,9 @@ def default_run_state() -> dict:
         "handoff": None,
         "handoff_ack": None,
     }
+def _loop_state_from_rs(rs: dict) -> dict:
+    loop = (rs or {}).get("loop_state") or {}
+    return loop if isinstance(loop, dict) else {}
 def update_compiled(rs: dict) -> None:
     run_id = rs.get("run_id") or "NONE"
     run_status = rs.get("run_status", "")
@@ -322,45 +325,88 @@ def update_compiled(rs: dict) -> None:
     pr_url = ev.get("pr_url") or ""
     commit_sha = ev.get("commit_sha") or ""
     wf_url = ev.get("workflow_run_url") or ""
-    write_md(
-        STATUS_MD,
-        f"""# STATUS
-RUN_ID: {run_id}
-RUN_STATUS: {run_status}
-STOP_CLASS: {stop_class}
-REASON_CODE: {reason_code}
-NEXT_ACTION: {next_action}
-TIMESTAMP_UTC: {ts}
-EVIDENCE:
-- branch_name: {branch_name}
-- pr_url: {pr_url}
-- commit_sha: {commit_sha}
-""",
-    )
+    loop = _loop_state_from_rs(rs)
+    loop_phase = loop.get("current_phase", "")
+    loop_reason = loop.get("reason_code", "")
+    loop_next_action = loop.get("next_action", "")
+    loop_run_url = loop.get("workflow_run_url", "")
+    loop_result_path = loop.get("phase_result_path", "")
+    loop_summary_path = loop.get("phase_summary_path", "")
+    loop_pointers = loop.get("phase_pointers_json", "")
+    current_source = "LOOP_STATE" if loop else "LAST_RESULT"
+    lines = [
+        "# STATUS",
+        f"RUN_ID: {run_id}",
+        f"RUN_STATUS: {run_status}",
+        f"CURRENT_SOURCE: {current_source}",
+        f"STOP_CLASS: {stop_class}",
+        f"REASON_CODE: {reason_code}",
+        f"NEXT_ACTION: {next_action}",
+        f"TIMESTAMP_UTC: {ts}",
+        "EVIDENCE:",
+        f"- branch_name: {branch_name}",
+        f"- pr_url: {pr_url}",
+        f"- commit_sha: {commit_sha}",
+        f"- workflow_run_url: {wf_url}",
+    ]
+    if loop:
+        lines.extend([
+            "LOOP_STATE:",
+            f"- current_phase: {loop_phase}",
+            f"- next_action: {loop_next_action}",
+            f"- reason_code: {loop_reason}",
+            f"- workflow_run_url: {loop_run_url}",
+            f"- phase_result_path: {loop_result_path}",
+            f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_pointers_json: {loop_pointers}",
+        ])
+    write_md(STATUS_MD, "\n".join(lines))
     restart = _restart_contract_from_rs(rs)
-    write_md(
-        HANDOFF_AUDIT_MD,
-        f"""# HANDOFF_AUDIT
-SSOT_PATHS:
-- mep/boot_spec.yaml
-- mep/policy.yaml
-- mep/run_state.json
-LATEST_EVIDENCE_POINTERS:
-- pr_url: {pr_url}
-- commit_sha: {commit_sha}
-- workflow_run_url: {wf_url}
-RESTART_CONTRACT_POINTERS:
-- issue_number: {restart.get('issue_number', '')}
-- lane: {restart.get('lane', '')}
-- next_action: {restart.get('next_action', '')}
-- restart_packet_path: {restart.get('restart_packet_path', '')}
-""",
-    )
+    audit_lines = [
+        "# HANDOFF_AUDIT",
+        "SSOT_PATHS:",
+        "- mep/boot_spec.yaml",
+        "- mep/policy.yaml",
+        "- mep/run_state.json",
+        "LATEST_EVIDENCE_POINTERS:",
+        f"- pr_url: {pr_url}",
+        f"- commit_sha: {commit_sha}",
+        f"- workflow_run_url: {wf_url}",
+    ]
+    if loop:
+        audit_lines.extend([
+            "LOOP_STATE_POINTERS:",
+            f"- current_phase: {loop_phase}",
+            f"- next_action: {loop_next_action}",
+            f"- reason_code: {loop_reason}",
+            f"- workflow_run_url: {loop_run_url}",
+            f"- phase_result_path: {loop_result_path}",
+            f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_pointers_json: {loop_pointers}",
+        ])
+    audit_lines.extend([
+        "RESTART_CONTRACT_POINTERS:",
+        f"- issue_number: {restart.get('issue_number', '')}",
+        f"- lane: {restart.get('lane', '')}",
+        f"- next_action: {restart.get('next_action', '')}",
+        f"- restart_packet_path: {restart.get('restart_packet_path', '')}",
+    ])
+    write_md(HANDOFF_AUDIT_MD, "\n".join(audit_lines))
     lines = []
     lines.append("# HANDOFF_WORK")
     lines.append(f"NEXT_ACTION: {next_action}")
     lines.append(f"REASON_CODE: {reason_code}")
     lines.append(f"STOP_CLASS: {stop_class}")
+    if loop:
+        lines.append("")
+        lines.append("LOOP_STATE:")
+        lines.append(f"- current_phase: {loop_phase}")
+        lines.append(f"- next_action: {loop_next_action}")
+        lines.append(f"- reason_code: {loop_reason}")
+        lines.append(f"- workflow_run_url: {loop_run_url}")
+        lines.append(f"- phase_result_path: {loop_result_path}")
+        lines.append(f"- phase_summary_path: {loop_summary_path}")
+        lines.append(f"- phase_pointers_json: {loop_pointers}")
     if restart:
         lines.append("")
         lines.append("RESTART_CONTRACT:")
@@ -1697,4 +1743,3 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
-
