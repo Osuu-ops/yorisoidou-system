@@ -65,6 +65,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          MEP_REQUESTED_LANE: ${{ steps.ctx.outputs.lane }}
         run: |
           python3 tools/issue_artifact_loop.py
 
