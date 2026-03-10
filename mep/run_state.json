@@ -26,27 +26,28 @@
   "last_good": null,
   "last_result": {
     "stop_class": "",
-    "reason_code": "G8_RESTART_PACKET_READY",
-    "next_action": "RESTART_PACKET_READY",
-    "timestamp_utc": "2026-03-10T05:13:56Z",
+    "reason_code": "RESTART_BRIDGE_READY",
+    "next_action": "BOOT",
+    "timestamp_utc": "2026-03-10T13:41:47Z",
     "action": {
-      "name": "RESTART",
+      "name": "RESTART_BRIDGE",
       "outcome": "OK"
     },
     "evidence": {
-      "branch_name": "auto/standalone_issue_2920_22888185875",
-      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2961",
-      "commit_sha": "ccb3c41fa5091ad24dbbfd6ab41df65af3b7b37d",
-      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22888199464",
+      "branch_name": "auto/standalone_dispatch_2920_22905343282",
+      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2975",
+      "commit_sha": null,
+      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22905343282",
       "lane": "BUSINESS",
+      "packet_path": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/INPUT_PACKET.md",
       "restart_packet": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/RESTART_PACKET.txt"
     }
   },
-  "next_action": "RESTART_PACKET_READY",
+  "next_action": "BOOT",
   "repo": "Osuu-ops/yorisoidou-system",
-  "run_id": "RUN_RESTART_2920_22888185875",
+  "run_id": "RUN_RESTART_2920_22905343282",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-03-10T05:13:56Z",
+  "updated_at": "2026-03-10T13:41:47Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",
@@ -55,12 +56,27 @@
     "total": "unknown"
   },
   "restart_bridge": {
-    "source_issue_number": "2920",
-    "source_standalone_run_id": "22888185875",
-    "source_standalone_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22888185875",
-    "artifact_pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2961",
+    "contract_version": "v1",
+    "status": "READY",
+    "reason_code": "STANDALONE_ARTIFACT_READY",
+    "next_action": "DISPATCH_8GATE_ENTRY",
+    "issue_number": "2920",
     "lane": "BUSINESS",
+    "source_phase": "STANDALONE_ARTIFACT",
+    "source_workflow": ".github/workflows/mep_standalone_autoloop_dispatch_v2.yml",
+    "source_run_id": "22905343282",
+    "source_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22905343282",
+    "source_pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2975",
+    "packet_path": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/INPUT_PACKET.md",
+    "artifact_dir": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/",
+    "restart_packet_path": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/RESTART_PACKET.txt",
+    "generated_at_utc": "2026-03-10T13:41:47Z",
+    "schema": "restart_packet_contract",
+    "source_issue_number": "2920",
+    "source_standalone_run_id": "22905343282",
+    "source_standalone_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22905343282",
+    "artifact_pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2975",
     "restart_packet": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/RESTART_PACKET.txt",
-    "bridged_at": "2026-03-10T05:13:56Z"
+    "bridged_at": "2026-03-10T13:41:47Z"
   }
 }
