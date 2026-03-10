@@ -3,6 +3,9 @@
 実行の正は runner と SSOT（mep/run_state.json）。本図は人間の再開・監査・拡張判断のために用いる。
 ## 正の入口 / 正のSSOT
 - 実行入口（正）: python tools/runner/runner.py <cmd>
+- Loop entry（GitHub）: .github/workflows/mep_loop_entry.yml
+- Loop engine（canonical）: .github/workflows/mep_loop_engine_v2.yml (workflow_dispatch from loop entry)
+- Loop engine v1: .github/workflows/mep_loop_engine.yml.txt（sealed legacy）
 - 機械SSOT（正）: mep/run_state.json
 - 人間用再開口: docs/MEP/HANDOFF_WORK.md
 - 監査用: docs/MEP/HANDOFF_AUDIT.md
