@@ -99,6 +99,11 @@ checks:
 ```
 # MEP INDEX（入口） v1.0
 
+## Operational Rule
+- Normal human observe/dispatch starts from `tools/mep.ps1` via [HUMAN_POWERSHELL_ENTRY](./HUMAN_POWERSHELL_ENTRY.md).
+- Boot / handoff operations stay on `tools/mep_handoff_observe.ps1`, `tools/mep_handoff_state.ps1`, and bootstrap scripts.
+- `docs/MEP/ARTIFACTS/**` and `docs/MEP/90_CHANGES/**` are historical evidence, not current entrypoints.
+
 ## 参照順（固定）
 1. STATE_CURRENT（現在地）
 2. ARCHITECTURE（構造）

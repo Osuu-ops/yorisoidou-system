@@ -13,4 +13,5 @@
 - `PR_URL` / `PR_NUMBER` / `PR_STATE` / `PR_MERGE_STATE`
 - `NEXT_ACTION`
 互換:
-- `tools/runner/mep_observe_run.ps1` は `tools/mep.ps1 run-status` への wrapper。
+- `tools/runner/mep_observe_run.ps1` は deprecated compatibility wrapper。
+- 通常運用では `tools/mep.ps1 run-status` を直接使う。

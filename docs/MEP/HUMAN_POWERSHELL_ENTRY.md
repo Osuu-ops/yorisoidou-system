@@ -42,10 +42,11 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\mep.ps1 issue-status -Issu
 
 ## Deprecated / Legacy
 - `tools/runner/mep_observe_run.ps1`
-  - Wrapper to `tools/mep.ps1 run-status`.
+  - Deprecated compatibility wrapper. Prefer calling `tools/mep.ps1 run-status` directly.
 - `tools/mep_issue2400_structural_evidence.ps1`
-  - Legacy sealed script with obsolete workflow assumptions.
+  - Legacy sealed script with obsolete workflow assumptions. Do not use it as an operational entrypoint.
 
 ## Notes
 - This entry is for human observe/dispatch flow after Codex has prepared or updated code.
 - For canonical standalone artifact generation, this entry only dispatches `.github/workflows/mep_standalone_autoloop_dispatch.yml`.
+- If you arrive from `docs/MEP/ARTIFACTS/**` or `docs/MEP/90_CHANGES/**`, treat those files as historical evidence and return here for the current entrypoint.
