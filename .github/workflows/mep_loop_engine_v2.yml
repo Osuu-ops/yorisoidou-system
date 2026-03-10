@@ -68,7 +68,18 @@ jobs:
           HEAD_SHA=${GITHUB_SHA}
           CURRENT_PHASE=SSOT_SCAN
           NEXT_ACTION=SSOT_SCAN
+          RUN_STATE_PATH=mep/run_state.json
           EOF
+          python3 tools/mep_loop_state.py \
+            --phase SSOT_SCAN \
+            --phase-status PENDING \
+            --next-action SSOT_SCAN \
+            --reason-code LOOP_ENGINE_STARTED \
+            --outcome START \
+            --iter "${{ inputs.iter }}" \
+            --max-iter "${{ inputs.max_iter }}" \
+            --sleep-seconds "${{ inputs.sleep_seconds }}" \
+            --compile-docs
       - name: SSOT_SCAN (tool)
         shell: bash
         run: |
@@ -107,7 +118,15 @@ jobs:
               fh.write(f"SSOT_REASON={data.get('reason_code') or 'NONE'}\n")
               fh.write("NEXT_ACTION=CONFLICT_SCAN\n")
           PY
+          phase_status="$(python3 -c "import json; print(json.load(open('.mep/ssot_scan.json', encoding='utf-8')).get('ssot_scan_status', 'UNKNOWN'))")"
+          reason_code="$(python3 -c "import json; d=json.load(open('.mep/ssot_scan.json', encoding='utf-8')); print(d.get('reason_code') or ('SSOT_SCAN_OK' if d.get('ssot_scan_status') == 'GO' else 'SSOT_SCAN_STOP'))")"
+          next_action="CONFLICT_SCAN"
+          outcome="OK"
+          stop_class=""
           if [ "$status" -ne 0 ]; then
+            next_action="SSOT_SCAN"
+            outcome="STOP"
+            stop_class="HARD"
             python3 - <<'PY'
             import json
             from pathlib import Path
@@ -115,6 +134,20 @@ jobs:
             reason = data.get('reason_code') or 'SSOT_SCAN_STOP'
             print(f"::error::STOP_HARD: {reason}")
             PY
+          fi
+          python3 tools/mep_loop_state.py \
+            --phase SSOT_SCAN \
+            --phase-status "$phase_status" \
+            --next-action "$next_action" \
+            --reason-code "$reason_code" \
+            --outcome "$outcome" \
+            --stop-class "$stop_class" \
+            --phase-result-path .mep/ssot_scan.json \
+            --iter "${{ inputs.iter }}" \
+            --max-iter "${{ inputs.max_iter }}" \
+            --sleep-seconds "${{ inputs.sleep_seconds }}" \
+            --compile-docs
+          if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
       - name: CONFLICT_SCAN (tool)
@@ -152,7 +185,15 @@ jobs:
               fh.write(f"CONFLICT_DIFF_HEAD={data.get('diffHead')}\n")
               fh.write("NEXT_ACTION=EXTRACT_GENERATE\n")
           PY
+          phase_status="$(python3 -c "import json; print(json.load(open('.mep/conflict_scan.json', encoding='utf-8')).get('conflictStatus', 'UNKNOWN'))")"
+          reason_code="$(python3 -c "import json; d=json.load(open('.mep/conflict_scan.json', encoding='utf-8')); print(d.get('reason_code') or ('CONFLICT_SCAN_OK' if d.get('conflictStatus') == 'GO' else 'CONFLICT_SCAN_STOP'))")"
+          next_action="EXTRACT_GENERATE"
+          outcome="OK"
+          stop_class=""
           if [ "$status" -ne 0 ]; then
+            next_action="CONFLICT_SCAN"
+            outcome="STOP"
+            stop_class="HARD"
             python3 - <<'PY'
             import json
             from pathlib import Path
@@ -160,6 +201,20 @@ jobs:
             reason = data.get('reason_code') or 'CONFLICT_SCAN_STOP'
             print(f"::error::STOP_HARD: {reason}")
             PY
+          fi
+          python3 tools/mep_loop_state.py \
+            --phase CONFLICT_SCAN \
+            --phase-status "$phase_status" \
+            --next-action "$next_action" \
+            --reason-code "$reason_code" \
+            --outcome "$outcome" \
+            --stop-class "$stop_class" \
+            --phase-result-path .mep/conflict_scan.json \
+            --iter "${{ inputs.iter }}" \
+            --max-iter "${{ inputs.max_iter }}" \
+            --sleep-seconds "${{ inputs.sleep_seconds }}" \
+            --compile-docs
+          if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
       - name: EXTRACT_GENERATE (tool / dry-run)
@@ -206,10 +261,185 @@ jobs:
               fh.write(f"EXTRACT_OUT_DIR={data.get('out_dir')}\n")
               fh.write("NEXT_ACTION=WRITEBACK_PREFLIGHT\n")
           PY
+          phase_status="$(python3 -c "import json; print(json.load(open('.mep/extract_result.json', encoding='utf-8')).get('extract_status', 'UNKNOWN'))")"
+          reason_code="$(python3 -c "import json; d=json.load(open('.mep/extract_result.json', encoding='utf-8')); print(d.get('reason_code') or ('EXTRACT_DRY_RUN_OK' if d.get('extract_status') == 'GO' else 'EXTRACT_GENERATE_STOP'))")"
+          next_action="WRITEBACK_PREFLIGHT"
+          outcome="OK"
+          stop_class=""
           if [ "$status" -ne 0 ]; then
+            next_action="EXTRACT_GENERATE"
+            outcome="STOP"
+            stop_class="HARD"
             echo "::error::STOP_HARD: EXTRACT_GENERATE_STOP"
+          fi
+          python3 tools/mep_loop_state.py \
+            --phase EXTRACT_GENERATE \
+            --phase-status "$phase_status" \
+            --next-action "$next_action" \
+            --reason-code "$reason_code" \
+            --outcome "$outcome" \
+            --stop-class "$stop_class" \
+            --phase-result-path .mep/extract_result.json \
+            --iter "${{ inputs.iter }}" \
+            --max-iter "${{ inputs.max_iter }}" \
+            --sleep-seconds "${{ inputs.sleep_seconds }}" \
+            --compile-docs
+          if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
+      - name: WRITEBACK_PREFLIGHT (phase3 step1)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          parent="docs/MEP/MEP_BUNDLE.md"
+          evidence="docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
+          parent_version=""
+          evidence_version=""
+          if [ ! -f "$parent" ]; then
+            status=1
+            reason_code="WRITEBACK_PARENT_BUNDLE_MISSING"
+          elif [ ! -f "$evidence" ]; then
+            status=1
+            reason_code="WRITEBACK_EVIDENCE_BUNDLE_MISSING"
+          else
+            parent_version="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$parent" || true)"
+            evidence_version="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$evidence" || true)"
+            reason_code="WRITEBACK_PREFLIGHT_OK"
+          fi
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          data = {
+              "status": "GO" if ${status} == 0 else "STOP",
+              "reason_code": "${reason_code}",
+              "parent_bundle": "${parent}",
+              "evidence_bundle": "${evidence}",
+              "parent_bundle_version": "${parent_version}",
+              "evidence_bundle_version": "${evidence_version}",
+          }
+          Path('.mep/writeback_preflight.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+          print(json.dumps(data, ensure_ascii=False))
+          PY
+          cat .mep/writeback_preflight.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('.mep/writeback_preflight.json').read_text(encoding='utf-8'))
+          with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
+              fh.write(f"WRITEBACK_PREFLIGHT_STATUS={data.get('status')}\n")
+              fh.write(f"WRITEBACK_PREFLIGHT_REASON={data.get('reason_code')}\n")
+              fh.write("NEXT_ACTION=PHASE3_WRITEBACK_BUNDLE\n")
+          PY
+          next_action="PHASE3_WRITEBACK_BUNDLE"
+          outcome="OK"
+          stop_class=""
+          phase_status="GO"
+          if [ "$status" -ne 0 ]; then
+            next_action="WRITEBACK_PREFLIGHT"
+            outcome="STOP"
+            stop_class="HARD"
+            phase_status="STOP"
+            echo "::error::STOP_HARD: $reason_code"
+          fi
+          python3 tools/mep_loop_state.py \
+            --phase WRITEBACK_PREFLIGHT \
+            --phase-status "$phase_status" \
+            --next-action "$next_action" \
+            --reason-code "$reason_code" \
+            --outcome "$outcome" \
+            --stop-class "$stop_class" \
+            --phase-result-path .mep/writeback_preflight.json \
+            --iter "${{ inputs.iter }}" \
+            --max-iter "${{ inputs.max_iter }}" \
+            --sleep-seconds "${{ inputs.sleep_seconds }}" \
+            --compile-docs
+          if [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+      - name: PHASE3_WRITEBACK_BUNDLE
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          $reason = "PHASE3_WRITEBACK_BUNDLE_OK"
+          $phaseStatus = "GO"
+          $nextAction = "PHASE3_CREATE_PR"
+          $outcome = "OK"
+          $stopClass = ""
+          try {
+            Write-Host "PHASE3_WRITEBACK_BUNDLE_START"
+            if(-not (Test-Path -LiteralPath "tools/mep_writeback_bundle.ps1")){ throw "missing tools/mep_writeback_bundle.ps1" }
+            ./tools/mep_writeback_bundle.ps1
+            Write-Host "PHASE3_WRITEBACK_BUNDLE_OK"
+          } catch {
+            $reason = [string]$_.Exception.Message
+            $phaseStatus = "STOP"
+            $nextAction = "PHASE3_WRITEBACK_BUNDLE"
+            $outcome = "STOP"
+            $stopClass = "HARD"
+          }
+          @{ status=$phaseStatus; reason_code=$reason; bundle_path='docs/MEP/MEP_BUNDLE.md' } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/writeback_bundle.json -Encoding UTF8
+          python tools/mep_loop_state.py --phase PHASE3_WRITEBACK_BUNDLE --phase-status $phaseStatus --next-action $nextAction --reason-code $reason --outcome $outcome --stop-class $stopClass --phase-result-path .mep/writeback_bundle.json --iter "${{ inputs.iter }}" --max-iter "${{ inputs.max_iter }}" --sleep-seconds "${{ inputs.sleep_seconds }}" --compile-docs
+          if($stopClass){ throw $reason }
+      - name: PHASE3_CREATE_PR
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
+          MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          $reason = "PHASE3_CREATE_PR_NOOP"
+          $phaseStatus = "NOOP"
+          $nextAction = "ALL_DONE"
+          $outcome = "OK"
+          $stopClass = ""
+          $prUrl = ""
+          try {
+            $porc = (git status --porcelain | Out-String).Trim()
+            if([string]::IsNullOrWhiteSpace($porc)){
+              Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
+            } else {
+              Write-Host "PHASE3_CREATE_PR_START"
+              if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
+              ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
+              $head = (git rev-parse --abbrev-ref HEAD | Out-String).Trim()
+              if(-not [string]::IsNullOrWhiteSpace($head)){
+                try {
+                  $prUrl = (gh pr list --state open --head $head --json url --jq '.[0].url' 2>$null | Out-String).Trim()
+                } catch {
+                  $prUrl = ""
+                }
+              }
+              if([string]::IsNullOrWhiteSpace($prUrl)){
+                $reason = "WRITEBACK_PR_URL_UNAVAILABLE"
+                $phaseStatus = "WAIT"
+                $nextAction = "PHASE3_CREATE_PR"
+                $outcome = "WAIT"
+                $stopClass = "WAIT"
+              } else {
+                $reason = "WRITEBACK_PR_CREATED"
+                $phaseStatus = "WAIT"
+                $nextAction = "WAIT_PR_CHECKS"
+                $outcome = "OK"
+                $stopClass = ""
+              }
+              Write-Host "PHASE3_CREATE_PR_OK"
+            }
+          } catch {
+            $reason = [string]$_.Exception.Message
+            $phaseStatus = "STOP"
+            $nextAction = "PHASE3_CREATE_PR"
+            $outcome = "STOP"
+            $stopClass = "HARD"
+          }
+          @{ status=$phaseStatus; reason_code=$reason; pr_url=$prUrl; workflow_run_url=("https://github.com/{0}/actions/runs/{1}" -f $env:GITHUB_REPOSITORY,$env:GITHUB_RUN_ID) } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/create_pr.json -Encoding UTF8
+          python tools/mep_loop_state.py --phase PHASE3_CREATE_PR --phase-status $phaseStatus --next-action $nextAction --reason-code $reason --outcome $outcome --stop-class $stopClass --phase-result-path .mep/create_pr.json --pr-url $prUrl --iter "${{ inputs.iter }}" --max-iter "${{ inputs.max_iter }}" --sleep-seconds "${{ inputs.sleep_seconds }}" --compile-docs
+          if($stopClass -eq 'HARD'){ throw $reason }
       - name: Publish loop phase pointers
         if: always()
         shell: bash
@@ -223,10 +453,14 @@ jobs:
               'SSOT_SCAN': Path('.mep/ssot_scan.json'),
               'CONFLICT_SCAN': Path('.mep/conflict_scan.json'),
               'EXTRACT': Path('.mep/extract_result.json'),
+              'WRITEBACK_PREFLIGHT': Path('.mep/writeback_preflight.json'),
+              'PHASE3_WRITEBACK_BUNDLE': Path('.mep/writeback_bundle.json'),
+              'PHASE3_CREATE_PR': Path('.mep/create_pr.json'),
           }
           pointers = {
               'phase_files': {name: path.as_posix() for name, path in phase_files.items()},
               'restart_packet': '.mep/RESTART_PACKET.txt',
+              'run_state_path': 'mep/run_state.json',
               'summary_path': '.mep/phase_summary.md',
           }
           rows = ['# Loop engine phase pointers', '', '| Phase | Status | Pointer | Note |', '| --- | --- | --- | --- |']
@@ -235,15 +469,8 @@ jobs:
                   rows.append(f'| {name} | SKIPPED | `{path.as_posix()}` | file not generated |')
                   continue
               data = json.loads(path.read_text(encoding='utf-8'))
-              if name == 'SSOT_SCAN':
-                  status = data.get('ssot_scan_status', 'UNKNOWN')
-                  note = data.get('reason_code') or data.get('ssot_path') or ''
-              elif name == 'CONFLICT_SCAN':
-                  status = data.get('conflictStatus', 'UNKNOWN')
-                  note = data.get('reason_code') or data.get('conflictDetails') or ''
-              else:
-                  status = data.get('extract_status', 'UNKNOWN')
-                  note = f"mode={data.get('mode')} out={data.get('out_dir')}"
+              status = data.get('status') or data.get('phase_status') or data.get('ssot_scan_status') or data.get('conflictStatus') or data.get('extract_status') or 'UNKNOWN'
+              note = data.get('reason_code') or data.get('conflictDetails') or data.get('ssot_path') or data.get('out_dir') or ''
               rows.append(f'| {name} | {status} | `{path.as_posix()}` | {note} |')
           summary = "\n".join(rows) + "\n"
           Path('.mep/phase_summary.md').write_text(summary, encoding='utf-8')
@@ -251,54 +478,16 @@ jobs:
           with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
               fh.write('PHASE_POINTERS_JSON=.mep/loop_phase_pointers.json\n')
               fh.write('PHASE_SUMMARY=.mep/phase_summary.md\n')
+              fh.write('RUN_STATE_PATH=mep/run_state.json\n')
+              fh.write('STATUS_PATH=docs/MEP/STATUS.md\n')
+              fh.write('HANDOFF_AUDIT_PATH=docs/MEP/HANDOFF_AUDIT.md\n')
+              fh.write('HANDOFF_WORK_PATH=docs/MEP/HANDOFF_WORK.md\n')
           step_summary = os.environ.get('GITHUB_STEP_SUMMARY')
           if step_summary:
               with open(step_summary, 'a', encoding='utf-8') as fh:
                   fh.write(summary)
           print(summary)
           PY
-      - name: WRITEBACK_PREFLIGHT (phase3 step1)
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "WRITEBACK_PREFLIGHT_START"
-          PARENT="docs/MEP/MEP_BUNDLE.md"
-          EVI="docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-          if [ ! -f "$PARENT" ]; then echo "::error::missing $PARENT"; exit 1; fi
-          if [ ! -f "$EVI" ]; then echo "::error::missing $EVI"; exit 1; fi
-          echo "PARENT_BUNDLE_VERSION=$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$PARENT" || true)"
-          echo "EVIDENCE_BUNDLE_VERSION=$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$EVI" || true)"
-          git status --porcelain || true
-          echo "WRITEBACK_PREFLIGHT_OK"
-      - name: PHASE3_WRITEBACK_BUNDLE
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = "Stop"
-          Write-Host "PHASE3_WRITEBACK_BUNDLE_START"
-          if(-not (Test-Path -LiteralPath "tools/mep_writeback_bundle.ps1")){ throw "missing tools/mep_writeback_bundle.ps1" }
-          ./tools/mep_writeback_bundle.ps1
-          Write-Host "PHASE3_WRITEBACK_BUNDLE_OK"
-      - name: PHASE3_CREATE_PR
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
-          MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
-        run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = "Stop"
-          $porc = (git status --porcelain | Out-String).Trim()
-          if([string]::IsNullOrWhiteSpace($porc)){
-            Write-Host "PHASE3_CREATE_PR_NOOP (no changes)"
-            exit 0
-          }
-          Write-Host "PHASE3_CREATE_PR_START"
-          if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
-          ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
-          Write-Host "PHASE3_CREATE_PR_OK"
       - name: Upload RESTART_PACKET
         if: always()
         uses: actions/upload-artifact@v4
@@ -315,9 +504,16 @@ jobs:
             .mep/ssot_scan.json
             .mep/conflict_scan.json
             .mep/extract_result.json
+            .mep/writeback_preflight.json
+            .mep/writeback_bundle.json
+            .mep/create_pr.json
             .mep/loop_phase_pointers.json
             .mep/phase_summary.md
             .mep/extract_generate.log
+            mep/run_state.json
+            docs/MEP/STATUS.md
+            docs/MEP/HANDOFF_AUDIT.md
+            docs/MEP/HANDOFF_WORK.md
           if-no-files-found: warn
       - name: Smoke
-        run: echo "ENGINE_V2_WIRED_OK"
+        run: echo "ENGINE_V2_RUN_STATE_OK"
