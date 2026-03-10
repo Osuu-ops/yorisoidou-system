@@ -55,7 +55,7 @@ jobs:
             let prNumber = "";
 
             if (context.eventName === "workflow_dispatch") {
-              prNumber = core.getInput("pr_number") || "";
+              prNumber = context.payload.inputs?.pr_number?.toString() || core.getInput("pr_number") || "";
             } else if (context.eventName === "pull_request" || context.eventName === "pull_request_review") {
               prNumber = context.payload.pull_request?.number?.toString() || "";
             } else if (context.eventName === "workflow_run") {
