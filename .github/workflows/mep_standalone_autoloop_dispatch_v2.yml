@@ -243,10 +243,13 @@ jobs:
           sys.path.insert(0, str(Path("tools").resolve()))
           from mep_restart_contract import build_restart_record, restart_bridge_from_record, restart_record_from_bridge
 
-          issue_number = "${ISSUE_NUMBER}"
-          standalone_run_id = "${GITHUB_RUN_ID}"
-          standalone_run_url = "${GITHUB_RUN_URL}"
-          artifact_pr_url = "${ARTIFACT_PR_URL}"
+          issue_number = (os.environ.get("ISSUE_NUMBER") or "").strip()
+          standalone_run_id = (os.environ.get("GITHUB_RUN_ID") or "").strip()
+          standalone_run_url = (os.environ.get("GITHUB_RUN_URL") or "").strip()
+          artifact_pr_url = (os.environ.get("ARTIFACT_PR_URL") or "").strip()
+
+          if not issue_number or not standalone_run_id or not standalone_run_url:
+              raise SystemExit("STOP_HARD: restart bridge missing runtime identifiers")
 
           resolved_lane = (os.environ.get("MEP_RESOLVED_LANE") or "").strip().upper()
           if resolved_lane not in ("SYSTEM", "BUSINESS"):
