@@ -1,4 +1,4 @@
-name: "MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS) [SEALED]"
+name: "MEP Standalone Issue AutoLoop (Dual: SYSTEM/BUSINESS)"
 on:
   workflow_dispatch:
     inputs:
@@ -6,43 +6,241 @@ on:
         description: "Issue number to build artifacts for"
         required: true
         type: string
-      lane:
-        description: "SYSTEM or BUSINESS (optional explicit lane)"
-        required: false
-        default: ""
-        type: string
   issues:
     types: [opened, edited, labeled]
 permissions:
-  contents: read
+  actions: write
+  contents: write
   issues: write
+  pull-requests: write
+concurrency:
+  group: mep-standalone-issue-${{ github.event_name == 'workflow_dispatch' && inputs.issue_number || github.event.issue.number }}
+  cancel-in-progress: false
 jobs:
-  sealed:
+  build-artifacts:
     if: github.event_name == 'workflow_dispatch' || contains(join(github.event.issue.labels.*.name, ','), 'mep-loop')
     runs-on: ubuntu-latest
     steps:
-      - name: Reject legacy entry and point to canonical workflow
-        uses: actions/github-script@v7
+      - uses: actions/checkout@v4
+
+      - name: Resolve issue context
+        id: ctx
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            issue="${INPUT_ISSUE_NUMBER}"
+            [ -n "${issue}" ] || { echo "issue_number missing"; exit 1; }
+            issue_json="$(gh api -H "Accept: application/vnd.github+json" "repos/${GITHUB_REPOSITORY}/issues/${issue}")"
+            tmp="${RUNNER_TEMP}/mep_issue_event.json"
+            printf '{"issue":%s}\n' "${issue_json}" > "${tmp}"
+            echo "GITHUB_EVENT_PATH=${tmp}" >> "${GITHUB_ENV}"
+            labels="$(echo "${issue_json}" | jq -r '[.labels[]? | (if type=="string" then . else .name end)] | join(",")')"
+          else
+            issue="${{ github.event.issue.number }}"
+            labels="$(jq -r '[.issue.labels[]? | (if type=="string" then . else .name end)] | join(",")' "${GITHUB_EVENT_PATH}")"
+          fi
+
+          lane="SYSTEM"
+          if printf '%s\n' "${labels}" | tr ',' '\n' | grep -qx 'mep-biz'; then
+            lane="BUSINESS"
+          fi
+
+          artifact_dir="docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}"
+          packet_path="${artifact_dir}/INPUT_PACKET.md"
+          draft_path="${artifact_dir}/MERGED_DRAFT.md"
+
+          echo "issue_number=${issue}" >> "${GITHUB_OUTPUT}"
+          echo "lane=${lane}" >> "${GITHUB_OUTPUT}"
+          echo "artifact_dir=${artifact_dir}" >> "${GITHUB_OUTPUT}"
+          echo "packet_path=${packet_path}" >> "${GITHUB_OUTPUT}"
+          echo "draft_path=${draft_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
+        env:
+          GH_REPO: ${{ github.repository }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          MEP_REQUESTED_LANE: ${{ steps.ctx.outputs.lane }}
+        run: |
+          python3 tools/issue_artifact_loop.py
+
+      - name: Upload workflow artifacts (downloadable)
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            const payloadIssue = context.payload.issue?.number;
-            const inputIssue = Number(context.payload.inputs?.issue_number || "0");
-            const issue = payloadIssue || (Number.isFinite(inputIssue) && inputIssue > 0 ? inputIssue : 0);
-            const canonical = '.github/workflows/mep_standalone_autoloop_dispatch.yml';
-            const body = [
-              '[MEP][SEALED] Legacy standalone entry is sealed.',
-              '',
-              '- Canonical workflow: ' + canonical,
-              '- Run with workflow_dispatch inputs: issue_number (+ optional lane)',
-              '- Lane rule: explicit lane OR labels (mep-biz/mep-system).',
-              '- Unknown lane is STOP_HARD (no implicit SYSTEM fallback).'
-            ].join('\n');
-            if (issue > 0) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue,
-                body,
-              });
-            }
-            core.setFailed('SEALED_WORKFLOW: use mep_standalone_autoloop_dispatch.yml');
+          name: MEP_STANDALONE_ARTIFACTS_ISSUE_${{ steps.ctx.outputs.issue_number }}
+          path: docs/MEP/ARTIFACTS/**/ISSUE_${{ steps.ctx.outputs.issue_number }}/
+
+      - name: Create PR to store artifacts in repo
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          commit-message: "MEP: issue artifacts ISSUE #${{ steps.ctx.outputs.issue_number }}"
+          title: "MEP: issue artifacts ISSUE #${{ steps.ctx.outputs.issue_number }}"
+          body: |
+            Standalone AutoLoop generated artifacts (SYSTEM/BUSINESS).
+            - Issue: #${{ steps.ctx.outputs.issue_number }}
+            - Lane: ${{ steps.ctx.outputs.lane }}
+            - Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ steps.ctx.outputs.issue_number }}"
+          branch: auto/standalone_issue_${{ steps.ctx.outputs.issue_number }}_${{ github.run_id }}
+          base: main
+          labels: |
+            mep:controller=PC
+          add-paths: |
+            docs/MEP/ARTIFACTS/
+
+      - name: Auto-merge artifacts PR with required-check enforcement
+        id: merge
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          set -euo pipefail
+          stop_hard(){ echo "STOP_HARD REASON_CODE=$1"; exit 1; }
+          stop_wait(){ echo "STOP_WAIT REASON_CODE=$1"; exit 1; }
+
+          pr="${PR_NUM:-}"
+          [ -n "${pr}" ] || stop_hard AUTO_PR_NOT_CREATED
+
+          gh pr merge "${pr}" --repo "${GITHUB_REPOSITORY}" --squash --auto --delete-branch || stop_wait AUTO_PR_ENABLE_AUTOMERGE_FAILED
+
+          deadline=$(( $(date +%s) + 1800 ))
+          merged_at=""
+          merge_sha=""
+          pr_url=""
+
+          while [ -z "${merged_at}" ]; do
+            pr_json="$(gh pr view "${pr}" --repo "${GITHUB_REPOSITORY}" --json state,mergeStateStatus,mergedAt,isDraft,statusCheckRollup,url,mergeCommit)"
+            pr_state="$(echo "${pr_json}" | jq -r '.state // "UNKNOWN"')"
+            pr_merge="$(echo "${pr_json}" | jq -r '.mergeStateStatus // "UNKNOWN"')"
+            merged_at="$(echo "${pr_json}" | jq -r '.mergedAt // ""')"
+            is_draft="$(echo "${pr_json}" | jq -r '.isDraft // false')"
+            checks_total="$(echo "${pr_json}" | jq '.statusCheckRollup | length')"
+            checks_failed="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("FAILURE|FAILED|ERROR|CANCELLED|TIMED_OUT|ACTION_REQUIRED")))] | length')"
+            checks_pending="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("PENDING|IN_PROGRESS|QUEUED|WAITING|REQUESTED|EXPECTED")))] | length')"
+            pr_url="$(echo "${pr_json}" | jq -r '.url // ""')"
+            merge_sha="$(echo "${pr_json}" | jq -r '.mergeCommit.oid // ""')"
+
+            [ "${is_draft}" != "true" ] || stop_wait AUTO_PR_IS_DRAFT
+            if [ "${checks_total}" -le 0 ]; then
+              [ "$(date +%s)" -lt "${deadline}" ] || stop_hard AUTO_PR_CHECKS_MISSING
+              sleep 20
+              continue
+            fi
+            [ "${checks_failed}" -eq 0 ] || stop_hard AUTO_PR_CHECKS_FAILED
+
+            if [ -n "${merged_at}" ]; then
+              break
+            fi
+
+            [ "${pr_state}" = "OPEN" ] || stop_hard AUTO_PR_CLOSED_WITHOUT_MERGE
+            if [ "${pr_merge}" = "BEHIND" ]; then
+              gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/update-branch" >/dev/null || stop_wait AUTO_PR_UPDATE_BRANCH_FAILED
+              sleep 10
+              continue
+            fi
+            :
+            [ "$(date +%s)" -lt "${deadline}" ] || stop_wait AUTO_PR_MERGE_TIMEOUT
+            sleep 20
+          done
+
+          echo "pr_number=${pr}" >> "${GITHUB_OUTPUT}"
+          echo "pr_url=${pr_url}" >> "${GITHUB_OUTPUT}"
+          echo "merge_commit_sha=${merge_sha}" >> "${GITHUB_OUTPUT}"
+          echo "merged_at=${merged_at}" >> "${GITHUB_OUTPUT}"
+
+      - name: Gate0 auto audit on main
+        id: gate0
+        shell: bash
+        env:
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          SOURCE_LANE: ${{ steps.ctx.outputs.lane }}
+        run: |
+          set -euo pipefail
+          stop_hard(){ echo "STOP_HARD REASON_CODE=$1"; exit 1; }
+          stop_wait(){ echo "STOP_WAIT REASON_CODE=$1"; exit 1; }
+
+          issue="${ISSUE_NUMBER}"
+          lane="${SOURCE_LANE}"
+
+          git fetch origin main --prune
+          git checkout --detach origin/main
+
+          dir="docs/MEP/ARTIFACTS/${lane}/ISSUE_${issue}"
+          packet="${dir}/INPUT_PACKET.md"
+          draft="${dir}/MERGED_DRAFT.md"
+
+          if [ ! -f "${packet}" ] || [ ! -f "${draft}" ]; then
+            alt="SYSTEM"
+            if [ "${lane}" = "SYSTEM" ]; then alt="BUSINESS"; fi
+            alt_dir="docs/MEP/ARTIFACTS/${alt}/ISSUE_${issue}"
+            alt_packet="${alt_dir}/INPUT_PACKET.md"
+            alt_draft="${alt_dir}/MERGED_DRAFT.md"
+            if [ -f "${alt_packet}" ] && [ -f "${alt_draft}" ]; then
+              lane="${alt}"
+              dir="${alt_dir}"
+              packet="${alt_packet}"
+              draft="${alt_draft}"
+            fi
+          fi
+
+          [ -f "${packet}" ] || stop_hard G0_PACKET_MISSING
+          [ -f "${draft}" ] || stop_hard G0_DRAFT_MISSING
+
+          size="$(wc -c < "${draft}" | tr -d ' ')"
+          [ "${size}" -ge 50 ] || stop_hard G0_DRAFT_TOO_SMALL
+
+          packet_issue="$(grep -m1 -E '^ISSUE_NUMBER:' "${packet}" | sed -E 's/^ISSUE_NUMBER:\s*//;s/\r//g' || true)"
+          [ "${packet_issue}" = "${issue}" ] || stop_hard G0_ISSUE_MISMATCH
+
+          packet_lane="$(grep -m1 -E '^LANE:' "${packet}" | sed -E 's/^LANE:\s*//;s/\r//g' || true)"
+          case "${packet_lane}" in
+            SYSTEM|BUSINESS) lane="${packet_lane}" ;;
+            *) stop_hard G0_PACKET_LANE_INVALID ;;
+          esac
+
+          does_not_trigger="$(grep -m1 -E '^DOES_NOT_TRIGGER_8GATE:' "${packet}" | sed -E 's/^DOES_NOT_TRIGGER_8GATE:\s*//;s/\r//g' || true)"
+          if [ "${does_not_trigger}" = "true" ]; then
+            stop_wait G0_DOES_NOT_TRIGGER_8GATE_TRUE
+          fi
+
+          echo "lane=${lane}" >> "${GITHUB_OUTPUT}"
+          echo "packet_path=${packet}" >> "${GITHUB_OUTPUT}"
+          echo "draft_size=${size}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch MEP 8-Gate entry
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          LANE: ${{ steps.gate0.outputs.lane }}
+          PACKET_PATH: ${{ steps.gate0.outputs.packet_path }}
+        run: |
+          set -euo pipefail
+          gh workflow run ".github/workflows/mep_8gate_entry_filter.yml" --ref "${GITHUB_REF_NAME}" \
+            -f packet_path="${PACKET_PATH}"
+
+      - name: Comment pass evidence (machine-readable)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          LANE: ${{ steps.gate0.outputs.lane }}
+          PACKET_PATH: ${{ steps.gate0.outputs.packet_path }}
+          PR_URL: ${{ steps.merge.outputs.pr_url }}
+          PR_NUMBER: ${{ steps.merge.outputs.pr_number }}
+          MERGE_COMMIT_SHA: ${{ steps.merge.outputs.merge_commit_sha }}
+          MERGED_AT: ${{ steps.merge.outputs.merged_at }}
+          DRAFT_SIZE: ${{ steps.gate0.outputs.draft_size }}
+        run: |
+          set -euo pipefail
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          body="[MEP][STANDALONE_AUTOLOOP] PASS\n\n- issue: #${ISSUE_NUMBER}\n- lane: ${LANE}\n- packet_path: ${PACKET_PATH}\n- artifact_pr: #${PR_NUMBER}\n- artifact_pr_url: ${PR_URL}\n- merge_commit_sha: ${MERGE_COMMIT_SHA}\n- merged_at: ${MERGED_AT}\n- draft_size_bytes: ${DRAFT_SIZE}\n- run: ${run_url}\n\nRUN_ID=STANDALONE_AUTOLOOP\nOUTCOME=PASS\nSTOP_CLASS=\nREASON_CODE=AUTOLOOP_ENTRY_DISPATCHED\nNEXT_ACTION=WAIT_8GATE\nISSUE_NUMBER=${ISSUE_NUMBER}\nLANE=${LANE}\nPACKET_PATH=${PACKET_PATH}\nPR_URL=${PR_URL}\nCOMMIT_SHA=${MERGE_COMMIT_SHA}\nWORKFLOW_RUN_URL=${run_url}"
+          gh api "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null
