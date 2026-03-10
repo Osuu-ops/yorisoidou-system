@@ -2,7 +2,7 @@
 param(
   [int]$PrNumber = 0,
   [string]$Repo = "Osuu-ops/yorisoidou-system",
-  [string]$WorkflowFile = "mep_writeback_bundle_dispatch.yml",
+  [string]$WorkflowFile = "mep_writeback_bundle_dispatch_entry.yml",
   [string]$Ref = "main",
   [int]$TimeoutSec = 900,
   [int]$PollSec = 5,

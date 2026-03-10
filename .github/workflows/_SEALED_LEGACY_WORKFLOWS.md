@@ -8,6 +8,15 @@ Sealed files:
 - mep_writeback_bundle_dispatch_v2_20260201_035903.yml.txt
 - mep_writeback_bundle_dispatch.yml.txt
 - mep_writeback_bundle_evidence_dispatch.yml.txt
+- mep_writeback_bundle_manual.yml.txt
+- mep_writeback_bundle_on_push.yml.txt
+- mep_writeback_bundle_on_push_temp.yml.txt
+- mep_writeback_bundle_dispatch_reborn.yml.txt
+- mep_writeback_bundle_entry_with_system_pack_dispatch.yml.txt
+- mep_writeback_bundle_entry_with_system_pack_dispatch_v2.yml.txt
+- mep_writeback_bundle_entry_with_system_pack_dispatch_v3.yml.txt
+- mep_writeback_bundle_dispatch_entry__v2_20260212_115558.yml.txt
+- mep_writeback_bundle_dispatch_entry__v3_20260212_120949.yml.txt
 
 Do not restore these back to *.yml unless explicitly authorized by SSOT/CONFLICT_SCAN.
 - SEALED (dispatch 422): mep_issue_llm_to_pr_issue_entry.yml / mep_issue_llm_to_pr_dispatch_entry.yml / v2/v5 variants (use mep_llm_dispatch_entry.yml instead) @ 2026-02-14T23:54:53+09:00

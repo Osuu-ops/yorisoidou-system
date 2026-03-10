@@ -13,10 +13,10 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch canonical writeback workflow (id=218580147) on main
+      - name: Dispatch canonical writeback workflow (id=228815143) on main
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api -X POST \
-            repos/${{ github.repository }}/actions/workflows/218580147/dispatches \
+            repos/${{ github.repository }}/actions/workflows/228815143/dispatches \
             -f ref=main
