@@ -6,33 +6,80 @@ on:
         description: "Path to INPUT_PACKET.md"
         required: true
         type: string
+      source_entry_run_id:
+        description: "Source run id from upstream entry"
+        required: false
+        default: ""
+        type: string
+      source_issue_number:
+        description: "Issue number (optional override)"
+        required: false
+        default: ""
+        type: string
+      source_lane:
+        description: "SYSTEM or BUSINESS (optional override)"
+        required: false
+        default: ""
+        type: string
+  workflow_call:
+    inputs:
+      packet_path:
+        required: true
+        type: string
+      source_entry_run_id:
+        required: false
+        default: ""
+        type: string
+      source_issue_number:
+        required: false
+        default: ""
+        type: string
+      source_lane:
+        required: false
+        default: ""
+        type: string
 permissions:
   actions: write
   issues: write
+  pull-requests: write
   contents: read
 jobs:
-  validate-packet:
+  validate_packet:
     runs-on: ubuntu-latest
+    outputs:
+      packet_path: ${{ steps.meta.outputs.packet_path }}
+      source_entry_run_id: ${{ steps.meta.outputs.source_entry_run_id }}
+      source_issue_number: ${{ steps.meta.outputs.source_issue_number }}
+      source_lane: ${{ steps.meta.outputs.source_lane }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+
       - name: Validate INPUT_PACKET contract
         run: |
           python3 tools/validate_input_packet.py "${{ inputs.packet_path }}"
-      - name: MEP_GATE1_TO_GATE0_ISSUEOPS_BRIDGE
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const packetPath = "${{ inputs.packet_path }}";
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'mep_8gate_downstream.yml',
-              ref: 'main',
-              inputs: {
-                packet_path: packetPath,
-                source_entry_run_id: String(context.runId),
-                source_issue_number: '',
-                source_lane: ''
-              }
-            });
 
+      - name: Normalize bridge inputs
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_entry_run_id="${{ inputs.source_entry_run_id }}"
+          if [ -z "${source_entry_run_id}" ]; then
+            source_entry_run_id="${GITHUB_RUN_ID}"
+          fi
+
+          echo "packet_path=${{ inputs.packet_path }}" >> "${GITHUB_OUTPUT}"
+          echo "source_entry_run_id=${source_entry_run_id}" >> "${GITHUB_OUTPUT}"
+          echo "source_issue_number=${{ inputs.source_issue_number }}" >> "${GITHUB_OUTPUT}"
+          echo "source_lane=${{ inputs.source_lane }}" >> "${GITHUB_OUTPUT}"
+
+  downstream:
+    needs: validate_packet
+    uses: ./.github/workflows/mep_8gate_downstream.yml
+    with:
+      packet_path: ${{ needs.validate_packet.outputs.packet_path }}
+      source_entry_run_id: ${{ needs.validate_packet.outputs.source_entry_run_id }}
+      source_issue_number: ${{ needs.validate_packet.outputs.source_issue_number }}
+      source_lane: ${{ needs.validate_packet.outputs.source_lane }}
