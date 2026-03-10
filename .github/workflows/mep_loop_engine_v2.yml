@@ -32,6 +32,9 @@ permissions:
 jobs:
   zone:
     runs-on: ubuntu-latest
+    env:
+      MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
+      MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -15,14 +15,14 @@ A-5 Runner PyCompile Guard：DONE（PR #2254, mergeCommit 952c980c…）
 B-1 SSOT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
 B-2 CONFLICT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
 B-3 EXTRACT生成（LEDGER/INPUT_PACKET/health/cards）：write 接続済 / phase state persisted / writeback stage 接続済 / full completion 未
-B-4 Self-heal 完全版（reason_code辞書→自動復帰）：loop phase safe-stop まで / 完全版未
+B-4 Self-heal 完全版（reason_code辞書→自動復帰）：post-writeback resume 接続済 / loop phase safe-stop 残 / 完全版未
 ---
 ## Loop Canonical（現在）
 - Entry: `.github/workflows/mep_loop_entry.yml`
 - Engine: `.github/workflows/mep_loop_engine_v2.yml` (`workflow_dispatch`)
 - Legacy v1: `.github/workflows/mep_loop_engine.yml.txt`（sealed）
 - v2 wiring: `tools/checks/ssot_scan.py` / `tools/checks/conflict_scan.py` / `tools/extract/extract_generate.py` を呼ぶ
-- Scope note: EXTRACT は write + writeback stage 接続まで。loop phase state は `mep/run_state.json` に保存するが、PHASE B の full completion は未
+- Scope note: EXTRACT は write + writeback stage 接続済。post-writeback resume は `WAIT_PR_CHECKS -> merge -> canonical loop entry` まで接続済。full self-heal completion は未
 ---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1
