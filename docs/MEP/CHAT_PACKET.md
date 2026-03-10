@@ -107,6 +107,7 @@ checks:
 5. GOLDEN_PATH（完走例）
 
 ## Links
+- [HUMAN_POWERSHELL_ENTRY](./HUMAN_POWERSHELL_ENTRY.md) - Codex-first の人間用 PowerShell 正本入口
 - [OPS_POWERSHELL](./OPS_POWERSHELL.md)
 - [OPS_SCOPE_GUARD](./OPS_SCOPE_GUARD.md)
 - [AI_BOOT](./AI_BOOT.md)
