@@ -53,6 +53,8 @@ jobs:
       source_lane: ${{ steps.meta.outputs.source_lane }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Validate INPUT_PACKET contract
         run: |
@@ -81,4 +83,3 @@ jobs:
       source_entry_run_id: ${{ needs.validate_packet.outputs.source_entry_run_id }}
       source_issue_number: ${{ needs.validate_packet.outputs.source_issue_number }}
       source_lane: ${{ needs.validate_packet.outputs.source_lane }}
-
