@@ -15,10 +15,53 @@ jobs:
         with:
           script: |
             const workflow_id = '.github/workflows/mep_writeback_bundle_dispatch_entry.yml';
+            const { owner, repo } = context.repo;
+
+            async function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async function ensureWorkflowActive() {
+              const current = await github.rest.actions.getWorkflow({
+                owner,
+                repo,
+                workflow_id,
+              });
+              let state = current.data?.state || 'unknown';
+              core.info(`Workflow ${workflow_id} state=${state}`);
+              if (!String(state).startsWith('disabled')) {
+                return state;
+              }
+
+              core.info(`Enabling ${workflow_id} from state=${state}`);
+              await github.rest.actions.enableWorkflow({
+                owner,
+                repo,
+                workflow_id,
+              });
+
+              for (let attempt = 1; attempt <= 6; attempt += 1) {
+                await sleep(2000);
+                const refreshed = await github.rest.actions.getWorkflow({
+                  owner,
+                  repo,
+                  workflow_id,
+                });
+                state = refreshed.data?.state || 'unknown';
+                core.info(`Workflow ${workflow_id} state after enable attempt ${attempt}: ${state}`);
+                if (state === 'active') {
+                  return state;
+                }
+              }
+
+              throw new Error(`WORKFLOW_NOT_ACTIVE: ${workflow_id} state=${state}`);
+            }
+
             try {
+              await ensureWorkflowActive();
               await github.rest.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+                owner,
+                repo,
                 workflow_id,
                 ref: 'main',
                 inputs: { pr_number: '0' }
