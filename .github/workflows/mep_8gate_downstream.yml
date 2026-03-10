@@ -55,6 +55,7 @@ jobs:
     outputs:
       issue_number: ${{ steps.chain.outputs.issue_number }}
       lane: ${{ steps.chain.outputs.lane }}
+      packet_path: ${{ steps.chain.outputs.packet_path }}
       pr_number: ${{ steps.chain.outputs.pr_number }}
       pr_url: ${{ steps.chain.outputs.pr_url }}
       merge_commit_sha: ${{ steps.chain.outputs.merge_commit_sha }}
@@ -179,64 +180,71 @@ jobs:
           mkdir -p .mep/restart
           restart_packet_file=".mep/restart/ISSUE_${issue}_RESTART_PACKET.txt"
           cycle_evidence_file=".mep/restart/ISSUE_${issue}_CYCLE_EVIDENCE.json"
+          generated_at_utc="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          export issue lane pr pr_url merge_commit_sha merged_at SOURCE_ENTRY_RUN_ID workflow_run_url PACKET_PATH restart_packet_file cycle_evidence_file generated_at_utc GITHUB_RUN_ID
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
 
-          {
-            echo "RESTART_PACKET"
-            echo "STOP_KIND="
-            echo "STOP_REASON_CODE="
-            echo "STOP_CLASS="
-            echo "REASON_CODE=G8_RESTART_PACKET_READY"
-            echo "NEXT_ACTION=RESTART_PACKET_READY"
-            echo "ISSUE_NUMBER=${issue}"
-            echo "LANE=${lane}"
-            echo "PACKET_PATH=${PACKET_PATH}"
-            echo "PR_NUMBER=${pr}"
-            echo "PR_URL=${pr_url}"
-            echo "COMMIT_SHA=${merge_commit_sha}"
-            echo "PR_MERGED_AT=${merged_at}"
-            echo "SOURCE_ENTRY_RUN_ID=${SOURCE_ENTRY_RUN_ID}"
-            echo "WORKFLOW_RUN_URL=${workflow_run_url}"
-            echo "GATE_CHAIN_RUN_URL=${workflow_run_url}"
-          } > "${restart_packet_file}"
+          sys.path.insert(0, str(Path("tools").resolve()))
+          from mep_restart_contract import build_restart_record, render_restart_packet_text
 
-          jq -n \
-            --arg run_id "MEP_8GATE_CYCLE" \
-            --arg outcome "PASS" \
-            --arg stop_class "" \
-            --arg reason_code "G8_RESTART_PACKET_READY" \
-            --arg next_action "RESTART_PACKET_READY" \
-            --arg issue_number "${issue}" \
-            --arg lane "${lane}" \
-            --arg packet_path "${PACKET_PATH}" \
-            --arg pr_number "${pr}" \
-            --arg pr_url "${pr_url}" \
-            --arg commit_sha "${merge_commit_sha}" \
-            --arg merged_at "${merged_at}" \
-            --arg source_entry_run_id "${SOURCE_ENTRY_RUN_ID}" \
-            --arg workflow_run_url "${workflow_run_url}" \
-            --arg restart_packet_file "${restart_packet_file}" \
-            '{
-              run_id: $run_id,
-              outcome: $outcome,
-              stop_class: $stop_class,
-              reason_code: $reason_code,
-              next_action: $next_action,
-              issue_number: $issue_number,
-              lane: $lane,
-              packet_path: $packet_path,
-              pr_number: $pr_number,
-              pr_url: $pr_url,
-              commit_sha: $commit_sha,
-              merged_at: $merged_at,
-              source_entry_run_id: $source_entry_run_id,
-              workflow_run_url: $workflow_run_url,
-              restart_packet_file: $restart_packet_file
-            }' > "${cycle_evidence_file}"
+          issue = os.environ["issue"]
+          lane = os.environ["lane"]
+          packet_path = os.environ["PACKET_PATH"]
+          pr = os.environ["pr"]
+          pr_url = os.environ["pr_url"]
+          commit_sha = os.environ["merge_commit_sha"]
+          merged_at = os.environ["merged_at"]
+          source_entry_run_id = os.environ.get("SOURCE_ENTRY_RUN_ID", "")
+          workflow_run_url = os.environ["workflow_run_url"]
+          restart_packet_file = os.environ["restart_packet_file"]
+          cycle_evidence_file = os.environ["cycle_evidence_file"]
+          generated_at_utc = os.environ["generated_at_utc"]
+          source_run_id = os.environ.get("GITHUB_RUN_ID", "")
+          artifact_dir = f"docs/MEP/ARTIFACTS/{lane}/ISSUE_{issue}/"
+
+          restart_record = build_restart_record(
+              issue_number=issue,
+              lane=lane,
+              source_phase="GATE8_DOWNSTREAM",
+              source_workflow=".github/workflows/mep_8gate_downstream.yml",
+              source_run_id=source_run_id,
+              source_run_url=workflow_run_url,
+              source_pr_url=pr_url,
+              packet_path=packet_path,
+              artifact_dir=artifact_dir,
+              restart_packet_path=restart_packet_file,
+              next_action="RESTART_PACKET_READY",
+              reason_code="G8_RESTART_PACKET_READY",
+              generated_at_utc=generated_at_utc,
+          )
+          Path(restart_packet_file).write_text(render_restart_packet_text(restart_record), encoding="utf-8")
+          cycle = {
+              "run_id": "MEP_8GATE_CYCLE",
+              "outcome": "PASS",
+              "issue_number": issue,
+              "lane": lane,
+              "packet_path": packet_path,
+              "pr_number": pr,
+              "pr_url": pr_url,
+              "commit_sha": commit_sha,
+              "merged_at": merged_at,
+              "source_entry_run_id": source_entry_run_id,
+              "workflow_run_url": workflow_run_url,
+              "restart_packet_file": restart_packet_file,
+              "restart_contract": restart_record,
+          }
+          Path(cycle_evidence_file).write_text(json.dumps(cycle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
 
           pass G8_RESTART_PACKET_READY
 
           echo "issue_number=${issue}" >> "${GITHUB_OUTPUT}"
           echo "lane=${lane}" >> "${GITHUB_OUTPUT}"
+          echo "packet_path=${PACKET_PATH}" >> "${GITHUB_OUTPUT}"
           echo "pr_number=${pr}" >> "${GITHUB_OUTPUT}"
           echo "pr_url=${pr_url}" >> "${GITHUB_OUTPUT}"
           echo "merge_commit_sha=${merge_commit_sha}" >> "${GITHUB_OUTPUT}"
@@ -263,12 +271,51 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ needs.gate_chain.outputs.issue_number }}
           LANE: ${{ needs.gate_chain.outputs.lane }}
+          PACKET_PATH: ${{ needs.gate_chain.outputs.packet_path }}
           PR_NUMBER: ${{ needs.gate_chain.outputs.pr_number }}
           PR_URL: ${{ needs.gate_chain.outputs.pr_url }}
           COMMIT_SHA: ${{ needs.gate_chain.outputs.merge_commit_sha }}
+          RESTART_PACKET_PATH: ${{ needs.gate_chain.outputs.restart_packet_file }}
           RUN_URL: ${{ needs.gate_chain.outputs.workflow_run_url }}
         run: |
           set -euo pipefail
-          body="[MEP][8GATE][RESTART_PACKET] READY\n\n- artifact: mep_8gate_restart_packet_issue_${ISSUE_NUMBER}\n- lane: ${LANE}\n- pr: #${PR_NUMBER}\n- pr_url: ${PR_URL}\n- commit_sha: ${COMMIT_SHA}\n- run: ${RUN_URL}\n\nRUN_ID=MEP_8GATE_CYCLE\nOUTCOME=PASS\nSTOP_CLASS=\nREASON_CODE=G8_RESTART_PACKET_READY\nNEXT_ACTION=RESTART_PACKET_READY\nISSUE_NUMBER=${ISSUE_NUMBER}\nLANE=${LANE}\nPR_URL=${PR_URL}\nCOMMIT_SHA=${COMMIT_SHA}\nWORKFLOW_RUN_URL=${RUN_URL}"
+          mkdir -p _tmp
+          python3 - <<'PY' > _tmp/restart_comment.txt
+          import os
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path("tools").resolve()))
+          from mep_restart_contract import build_restart_record, render_restart_packet_text
+
+          generated_at_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          record = build_restart_record(
+              issue_number=os.environ["ISSUE_NUMBER"],
+              lane=os.environ["LANE"],
+              source_phase="GATE8_DOWNSTREAM",
+              source_workflow=".github/workflows/mep_8gate_downstream.yml",
+              source_run_id=os.environ.get("GITHUB_RUN_ID", ""),
+              source_run_url=os.environ["RUN_URL"],
+              source_pr_url=os.environ["PR_URL"],
+              packet_path=os.environ["PACKET_PATH"],
+              artifact_dir=f"docs/MEP/ARTIFACTS/{os.environ['LANE']}/ISSUE_{os.environ['ISSUE_NUMBER']}/",
+              restart_packet_path=os.environ["RESTART_PACKET_PATH"],
+              next_action="RESTART_PACKET_READY",
+              reason_code="G8_RESTART_PACKET_READY",
+              generated_at_utc=generated_at_utc,
+          )
+          summary = (
+              "[MEP][8GATE][RESTART_PACKET] READY\n\n"
+              f"- artifact: mep_8gate_restart_packet_issue_{os.environ['ISSUE_NUMBER']}\n"
+              f"- lane: {os.environ['LANE']}\n"
+              f"- pr: #{os.environ['PR_NUMBER']}\n"
+              f"- pr_url: {os.environ['PR_URL']}\n"
+              f"- commit_sha: {os.environ['COMMIT_SHA']}\n"
+              f"- run: {os.environ['RUN_URL']}"
+          )
+          print(summary + "\n\n" + render_restart_packet_text(record).rstrip())
+          PY
+          body="$(cat _tmp/restart_comment.txt)"
           gh api "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null
           echo "PASS REASON_CODE=RESTART_PACKET_EMITTED"
