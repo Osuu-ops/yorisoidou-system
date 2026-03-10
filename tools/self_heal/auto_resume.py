@@ -118,10 +118,26 @@ def main() -> int:
   reason_code = str(lr.get("reason_code") or "").strip()
   if not next_action:
     return stop_hard("NEXT_ACTION_MISSING", "run_state.next_action is empty")
+  loop_state = rs.get("loop_state") if isinstance(rs.get("loop_state"), dict) else {}
+  loop_actions = {
+    "SSOT_SCAN",
+    "CONFLICT_SCAN",
+    "EXTRACT_GENERATE",
+    "WRITEBACK_PREFLIGHT",
+    "PHASE3_WRITEBACK_BUNDLE",
+    "PHASE3_CREATE_PR",
+  }
   # map next_action -> runner command
-  # NOTE: conservative mapping. Unknown -> WAIT (human decision)
+  # NOTE: conservative mapping. Loop-owned phases stop with explicit WAIT until full self-heal is implemented.
   cmd = None
-  # Typical flow points
+  if next_action in loop_actions:
+    loop_phase = str(loop_state.get("current_phase") or next_action).strip()
+    loop_workflow = str(loop_state.get("workflow") or ".github/workflows/mep_loop_engine_v2.yml").strip()
+    loop_run_url = str(loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
+    return stop_wait(
+      "LOOP_ENGINE_RESUME_REQUIRED",
+      f"next_action={next_action} phase={loop_phase} is owned by {loop_workflow}; inspect or rerun the canonical loop engine. workflow_run_url={loop_run_url}",
+    )
   if next_action in {"WAIT_PR_CHECKS", "WAIT_FOR_CHECKS", "WAIT_FOR_MERGE", "WAIT_PR_MERGE"}:
     if not run_id:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
