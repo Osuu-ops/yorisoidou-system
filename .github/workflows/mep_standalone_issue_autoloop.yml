@@ -63,7 +63,6 @@ jobs:
       - name: Generate artifacts from Issue (SYSTEM/BUSINESS)
         env:
           GH_REPO: ${{ github.repository }}
-          GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH || github.event_path }}
           GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
         run: |
