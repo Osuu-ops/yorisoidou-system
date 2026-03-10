@@ -333,6 +333,9 @@ def update_compiled(rs: dict) -> None:
     loop_result_path = loop.get("phase_result_path", "")
     loop_summary_path = loop.get("phase_summary_path", "")
     loop_pointers = loop.get("phase_pointers_json", "")
+    loop_resume_via = loop.get("resume_via_workflow", "")
+    loop_resume_from = loop.get("resume_from_iter", "")
+    loop_resume_target = loop.get("resume_target_iter", "")
     current_source = "LOOP_STATE" if loop else "LAST_RESULT"
     lines = [
         "# STATUS",
@@ -359,6 +362,9 @@ def update_compiled(rs: dict) -> None:
             f"- phase_result_path: {loop_result_path}",
             f"- phase_summary_path: {loop_summary_path}",
             f"- phase_pointers_json: {loop_pointers}",
+            f"- resume_via_workflow: {loop_resume_via}",
+            f"- resume_from_iter: {loop_resume_from}",
+            f"- resume_target_iter: {loop_resume_target}",
         ])
     write_md(STATUS_MD, "\n".join(lines))
     restart = _restart_contract_from_rs(rs)
@@ -383,6 +389,9 @@ def update_compiled(rs: dict) -> None:
             f"- phase_result_path: {loop_result_path}",
             f"- phase_summary_path: {loop_summary_path}",
             f"- phase_pointers_json: {loop_pointers}",
+            f"- resume_via_workflow: {loop_resume_via}",
+            f"- resume_from_iter: {loop_resume_from}",
+            f"- resume_target_iter: {loop_resume_target}",
         ])
     audit_lines.extend([
         "RESTART_CONTRACT_POINTERS:",
@@ -407,6 +416,9 @@ def update_compiled(rs: dict) -> None:
         lines.append(f"- phase_result_path: {loop_result_path}")
         lines.append(f"- phase_summary_path: {loop_summary_path}")
         lines.append(f"- phase_pointers_json: {loop_pointers}")
+        lines.append(f"- resume_via_workflow: {loop_resume_via}")
+        lines.append(f"- resume_from_iter: {loop_resume_from}")
+        lines.append(f"- resume_target_iter: {loop_resume_target}")
     if restart:
         lines.append("")
         lines.append("RESTART_CONTRACT:")
@@ -446,6 +458,125 @@ def _run(cmd: list[str]) -> str:
     if p.returncode != 0:
         raise RuntimeError(p.stderr.strip() or "command failed")
     return p.stdout
+
+
+def _parse_loop_int(value) -> int | None:
+    text = str(value or "").strip()
+    if not text or not text.isdigit():
+        return None
+    return int(text)
+
+
+def _loop_resume_context(rs: dict) -> dict:
+    loop = _loop_state_from_rs(rs)
+    if not loop:
+        return {}
+    if (loop.get("mode") or "").strip() != "CANONICAL_LOOP_ENGINE_V2":
+        return {}
+    return {
+        "iter": _parse_loop_int(loop.get("iter")),
+        "max_iter": _parse_loop_int(loop.get("max_iter")),
+        "sleep_seconds": str(loop.get("sleep_seconds") or "5").strip() or "5",
+        "controller_label": str(loop.get("controller_label") or "").strip(),
+        "expected_controller_label": str(loop.get("expected_controller_label") or "").strip(),
+        "workflow": str(loop.get("workflow") or ".github/workflows/mep_loop_engine_v2.yml").strip(),
+        "workflow_run_url": str(loop.get("workflow_run_url") or "").strip(),
+    }
+
+
+def _route_post_merge(rs: dict, repo: str, pr_url: str, commit_sha: str = "") -> int:
+    rs["updated_at"] = utc_now_z()
+    rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+    evidence = rs.setdefault("last_result", {}).setdefault("evidence", {})
+    evidence["pr_url"] = pr_url
+    if commit_sha:
+        evidence["commit_sha"] = commit_sha
+    loop = _loop_state_from_rs(rs)
+    loop_ctx = _loop_resume_context(rs)
+    if not loop_ctx:
+        rs["run_status"] = "DONE"
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = ""
+        rs["next_action"] = "ALL_DONE"
+        rs["last_result"]["next_action"] = rs["next_action"]
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 0
+    current_iter = loop_ctx.get("iter")
+    max_iter = loop_ctx.get("max_iter")
+    if current_iter is None or max_iter is None or max_iter < 1 or current_iter < 1:
+        rs["run_status"] = "STILL_OPEN"
+        rs["last_result"]["stop_class"] = "WAIT"
+        rs["last_result"]["reason_code"] = "LOOP_CONTEXT_INVALID"
+        rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+        rs["last_result"]["next_action"] = rs["next_action"]
+        loop["current_phase"] = "POST_WRITEBACK_RESUME"
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "STOP"
+        loop["reason_code"] = "LOOP_CONTEXT_INVALID"
+        loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        loop["updated_at"] = rs["updated_at"]
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 2
+    if current_iter >= max_iter:
+        rs["run_status"] = "DONE"
+        rs["last_result"]["stop_class"] = ""
+        rs["last_result"]["reason_code"] = "LOOP_MAX_ITER_REACHED"
+        rs["next_action"] = "ALL_DONE"
+        rs["last_result"]["next_action"] = rs["next_action"]
+        loop["current_phase"] = "POST_WRITEBACK_RESUME"
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "DONE"
+        loop["reason_code"] = "LOOP_MAX_ITER_REACHED"
+        loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        loop["resume_from_iter"] = str(current_iter)
+        loop["resume_target_iter"] = ""
+        loop["updated_at"] = rs["updated_at"]
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 0
+    if rs.get("next_action") == "WAIT_LOOP_ENGINE" and (rs.get("last_result") or {}).get("reason_code") == "LOOP_NEXT_ITER_DISPATCHED":
+        loop["current_phase"] = "POST_WRITEBACK_RESUME"
+        loop["next_action"] = "WAIT_LOOP_ENGINE"
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = "LOOP_NEXT_ITER_DISPATCHED"
+        loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        loop["resume_from_iter"] = str(current_iter)
+        loop["resume_target_iter"] = str(loop.get("resume_target_iter") or (current_iter + 1))
+        loop["updated_at"] = rs["updated_at"]
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 0
+    cmd = [
+        "gh", "workflow", "run", "mep_loop_entry.yml", "--repo", repo, "--ref", "main",
+        "-f", f"iter={current_iter}",
+        "-f", f"max_iter={max_iter}",
+        "-f", f"sleep_seconds={loop_ctx['sleep_seconds']}",
+    ]
+    if loop_ctx["controller_label"]:
+        cmd.extend(["-f", f"controller_label={loop_ctx['controller_label']}"])
+    if loop_ctx["expected_controller_label"]:
+        cmd.extend(["-f", f"expected_controller_label={loop_ctx['expected_controller_label']}"])
+    _run(cmd)
+    target_iter = current_iter + 1
+    rs["run_status"] = "STILL_OPEN"
+    rs["last_result"]["stop_class"] = "WAIT"
+    rs["last_result"]["reason_code"] = "LOOP_NEXT_ITER_DISPATCHED"
+    rs["next_action"] = "WAIT_LOOP_ENGINE"
+    rs["last_result"]["next_action"] = rs["next_action"]
+    evidence["loop_entry_workflow"] = ".github/workflows/mep_loop_entry.yml"
+    evidence["loop_resume_target_iter"] = str(target_iter)
+    loop["current_phase"] = "POST_WRITEBACK_RESUME"
+    loop["next_action"] = "WAIT_LOOP_ENGINE"
+    loop["phase_status"] = "WAIT"
+    loop["reason_code"] = "LOOP_NEXT_ITER_DISPATCHED"
+    loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+    loop["resume_from_iter"] = str(current_iter)
+    loop["resume_target_iter"] = str(target_iter)
+    loop["updated_at"] = rs["updated_at"]
+    rs["loop_state"] = loop
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    return 0
 def _sha256_hex(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
 def compute_handoff_digest(head_sha: str, rs: dict) -> str:
@@ -1099,16 +1230,12 @@ def merge_finish(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     pr_num = int(pr_url.rstrip("/").split("/")[-1])
-    # If PR already MERGED, finalize immediately (idempotent)
+    # If PR already MERGED, route idempotently using the canonical post-writeback rule.
     try:
-        st0 = _run(["gh","pr","view", str(pr_num), "--repo", repo, "--json", "state", "-q", ".state"]).strip()
-        if st0 == "MERGED":
-            rs["run_status"] = "DONE"
-            rs["last_result"]["stop_class"] = ""
-            rs["last_result"]["reason_code"] = ""
-            rs["next_action"] = "ALL_DONE"
-            write_json(RUN_STATE, rs); update_compiled(rs)
-            return 0
+        pr0 = json.loads(_run(["gh", "pr", "view", str(pr_num), "--repo", repo, "--json", "state,mergeCommit", "-q", "."]))
+        if (pr0.get("state") or "").strip() == "MERGED":
+            merge_oid = ((pr0.get("mergeCommit") or {}).get("oid") or "").strip()
+            return _route_post_merge(rs, repo, pr_url, merge_oid)
     except Exception:
         pass
 
@@ -1135,12 +1262,9 @@ def merge_finish(run_id: str) -> int:
         rs["next_action"] = "WAIT_FOR_MERGE"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
-    rs["run_status"] = "DONE"
-    rs["last_result"]["stop_class"] = ""
-    rs["last_result"]["reason_code"] = ""
-    rs["next_action"] = "ALL_DONE"
-    write_json(RUN_STATE, rs); update_compiled(rs)
-    return 0
+    pr1 = json.loads(_run(["gh", "pr", "view", str(pr_num), "--repo", repo, "--json", "state,mergeCommit", "-q", "."]))
+    merge_oid = ((pr1.get("mergeCommit") or {}).get("oid") or "").strip()
+    return _route_post_merge(rs, repo, pr_url, merge_oid)
 
     # MERGE_FINISH_A3_AUTODONE
     # If PR already MERGED, automatically finalize run_state (no manual backfill).

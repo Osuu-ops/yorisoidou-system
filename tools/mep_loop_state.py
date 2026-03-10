@@ -105,6 +105,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--max-iter", default="")
     ap.add_argument("--sleep-seconds", default="")
     ap.add_argument("--pr-url", default="")
+    ap.add_argument("--controller-label", default=os.environ.get("MEP_CONTROLLER_LABEL", ""))
+    ap.add_argument("--expected-controller-label", default=os.environ.get("MEP_EXPECTED_CONTROLLER_LABEL", ""))
     ap.add_argument("--compile-docs", action="store_true")
     return ap
 
@@ -143,6 +145,8 @@ def main() -> int:
         "result_path": evidence["phase_result_path"],
         "updated_at": now,
     }
+    controller_label = (args.controller_label or existing_loop.get("controller_label") or "").strip()
+    expected_controller_label = (args.expected_controller_label or existing_loop.get("expected_controller_label") or "").strip()
     rs["gh_repo"] = repo or rs.get("gh_repo") or rs.get("repo") or ""
     rs["repo"] = repo or rs.get("repo") or rs.get("gh_repo") or ""
     rs["run_id"] = loop_run_id
@@ -170,6 +174,8 @@ def main() -> int:
         "iter": str(args.iter or ""),
         "max_iter": str(args.max_iter or ""),
         "sleep_seconds": str(args.sleep_seconds or ""),
+        "controller_label": controller_label,
+        "expected_controller_label": expected_controller_label,
         "current_phase": phase,
         "next_action": rs["next_action"],
         "phase_status": evidence["phase_status"],
@@ -178,6 +184,9 @@ def main() -> int:
         "phase_summary_path": evidence["phase_summary_path"],
         "phase_pointers_json": evidence["phase_pointers_json"],
         "restart_packet_path": evidence["restart_packet_path"],
+        "resume_via_workflow": existing_loop.get("resume_via_workflow") or "",
+        "resume_from_iter": existing_loop.get("resume_from_iter") or "",
+        "resume_target_iter": existing_loop.get("resume_target_iter") or "",
         "updated_at": now,
         "phase_results": phase_results,
     }
