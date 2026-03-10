@@ -153,8 +153,7 @@ if ($RunGate) {
 }
 if ($RunWriteback) {
   $wfCandidates = @(
-    ".github/workflows/mep_writeback_bundle_dispatch.yml",
-    ".github/workflows/mep_writeback_bundle_dispatch_v3.yml"
+    ".github/workflows/mep_writeback_bundle_dispatch_entry.yml"
   ) | ForEach-Object { Join-Path $repoRoot $_ } | Where-Object { Test-Path $_ } | Select-Object -First 1
   if (-not $wfCandidates) {
     Warn "Writeback workflow yaml not found (known candidates)."

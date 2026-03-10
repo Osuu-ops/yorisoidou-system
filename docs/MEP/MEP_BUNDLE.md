@@ -3,7 +3,7 @@ $1367e518
 
 BUNDLE_VERSION = $106d3a9d
 BUNDLED_AT = 2026-02-02T04:05:55+0900
-OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch); local runs are for debugging only.
+OPS: Bundled writeback is executed via workflow_dispatch (mep_writeback_bundle_dispatch_entry); local runs are for debugging only.
 # MEP_BUNDLE
 SOURCE_CONTEXT: 本ファイルは「MEPの唯一の正（main反映）」を前提に、次チャット開始時の再現性を最大化するための束ね（生成物）である。手編集は原則禁止。更新はゲートを経た反映（PR→main→Bundled）で行う。
 
@@ -444,7 +444,7 @@ BUSINESS側を構築すると、例外・分岐・用語・台帳参照が急増
 
 ### 機械貼り戻し（実装）
 - tools/mep_writeback_bundle.ps1（update / pr）
-- .github/workflows/mep_writeback_bundle_dispatch.yml（workflow_dispatch）
+- .github/workflows/mep_writeback_bundle_dispatch_entry.yml（workflow_dispatch）
 - .github/workflows/auto_merge_repair_prs.yml（auto/repair-evidence-log_* の自動マージ）
 
 ### 証跡ログ（自動貼り戻し）
@@ -777,7 +777,7 @@ Bundled 本文に基づき、
 <!-- BEGIN: BUNDLE_EVIDENCE_APPEND -->
 
 ### writeback inputs.pr_number
-- source: .github/workflows/mep_writeback_bundle_dispatch.yml
+- source: .github/workflows/mep_writeback_bundle_dispatch_entry.yml
 - evidence:
   - inputs.pr_number.description = "PR number to write back (optional; 0 = auto latest merged PR)"
   - inputs.pr_number.default = "0"

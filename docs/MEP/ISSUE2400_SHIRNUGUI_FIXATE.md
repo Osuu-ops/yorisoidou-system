@@ -10,7 +10,6 @@
 - 対象ワークフロー（固定）:
   - `mep_entry_clean.yml`
   - `mep_writeback_bundle_dispatch_entry.yml`
-  - `mep_writeback_bundle_on_push.yml`
   - `mep_autotrigger_next_cycle.yml`
   - `self_heal_auto_prs.yml`
 - `status` は機械可読な `workflow<TAB>state` を出力する。

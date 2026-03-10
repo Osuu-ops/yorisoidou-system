@@ -129,13 +129,13 @@ try {
   _Git 'pull main (ff-only)' @('pull','--ff-only','origin','main') | Out-Null
   $headMain = (& git rev-parse HEAD).Trim()
   _Info ('HEAD(main): {0}' -f $headMain)
-  _Info ('Writeback workflow id: {0}' -f 218580147)
-  $r1 = _Gh 'workflow run (try pr_number=0)' @('workflow','run','218580147','--ref','main','-f','pr_number=0') $true
+  _Info ('Writeback workflow id: {0}' -f 228815143)
+  $r1 = _Gh 'workflow run (try pr_number=0)' @('workflow','run','228815143','--ref','main','-f','pr_number=0') $true
   if ($r1.ec -ne 0){
     _Info 'workflow run with -f pr_number=0 failed; retry without -f.'
-    _Gh 'workflow run' @('workflow','run','218580147','--ref','main') | Out-Null
+    _Gh 'workflow run' @('workflow','run','228815143','--ref','main') | Out-Null
   }
-  _Gh 'run list (latest)' @('run','list','--workflow','218580147','--branch','main','--limit','1') $true | Out-Null
+  _Gh 'run list (latest)' @('run','list','--workflow','228815143','--branch','main','--limit','1') $true | Out-Null
   # single attempt with conflict-v2 recreate
   $t = _PickLatestWritebackPR
   if ($null -eq $t){
