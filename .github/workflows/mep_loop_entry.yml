@@ -14,6 +14,14 @@ on:
         description: "throttle seconds between hops. default 5"
         required: false
         default: "5"
+      controller_label:
+        description: "controller lock label for downstream writeback (optional)"
+        required: false
+        default: ""
+      expected_controller_label:
+        description: "exact expected controller label (optional)"
+        required: false
+        default: ""
 concurrency:
   group: mep-loop-entry
   cancel-in-progress: false
@@ -37,7 +45,7 @@ jobs:
           echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
           echo "BRANCH=${GITHUB_REF_NAME}"
           echo "HEAD_SHA=${GITHUB_SHA}"
-          echo "NEXT_ACTION=DISPATCH_ENGINE"
+          echo "NEXT_ACTION=DISPATCH_CANONICAL_ENGINE"
           echo "===== MEP_COPYPASTE_ZONE END ====="
       - name: Throttle
         shell: bash
@@ -47,7 +55,7 @@ jobs:
           if [ -z "${S}" ]; then S="5"; fi
           if [ "${S}" -gt 30 ]; then S="30"; fi
           sleep "${S}"
-      - name: Dispatch Engine (bounded, fail-fast)
+      - name: Dispatch canonical engine (v2, bounded)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -63,9 +71,9 @@ jobs:
             echo "[STOP] reached max_iter: ${MAX}"
             exit 0
           fi
-          echo "[GO] dispatch Engine: iter=${NEXT}/${MAX}"
+          echo "[GO] dispatch canonical engine: iter=${NEXT}/${MAX}"
           curl --fail-with-body -sS -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_engine_v2.yml/dispatches" \
-            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\"}}"
+            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\",\"controller_label\":\"${{ inputs.controller_label }}\",\"expected_controller_label\":\"${{ inputs.expected_controller_label }}\"}}"

@@ -1,7 +1,27 @@
-name: MEP Loop Engine v2 (phase3 writeback)
+name: MEP Loop Engine (Canonical v2 / phase3 writeback)
 "on":
-  push:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      iter:
+        description: "current iteration (1..)"
+        required: false
+        default: "1"
+      max_iter:
+        description: "max iterations (hard stop). default 50"
+        required: false
+        default: "50"
+      sleep_seconds:
+        description: "throttle seconds between hops. default 5"
+        required: false
+        default: "5"
+      controller_label:
+        description: "controller lock label for writeback PR creation (optional)"
+        required: false
+        default: ""
+      expected_controller_label:
+        description: "exact expected controller label (optional)"
+        required: false
+        default: ""
 concurrency:
   group: mep-loop-engine-v2
   cancel-in-progress: false
@@ -17,6 +37,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Emit MEP_COPYPASTE_ZONE
+        shell: bash
+        run: |
+          echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
+          echo "RESTART_PACKET"
+          echo "RUN_STATE_CODE=RUNNING"
+          echo "MODE=CANONICAL_LOOP_ENGINE_V2"
+          echo "ITER=${{ inputs.iter }}"
+          echo "MAX_ITER=${{ inputs.max_iter }}"
+          echo "SLEEP_SECONDS=${{ inputs.sleep_seconds }}"
+          echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
+          echo "BRANCH=${GITHUB_REF_NAME}"
+          echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "NEXT_ACTION=WRITEBACK_PREFLIGHT"
+          echo "===== MEP_COPYPASTE_ZONE END ====="
       - name: SSOT_SCAN (safe-min)
         shell: bash
         run: |
@@ -81,6 +116,8 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
+          MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
+          MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
         run: |
           Set-StrictMode -Version Latest
           $ErrorActionPreference = "Stop"
@@ -100,4 +137,4 @@ jobs:
           path: .mep/RESTART_PACKET.txt
           if-no-files-found: error
       - name: Smoke
-        run: echo "ENGINE_V2_PHASE3_OK"
+        run: echo "ENGINE_V2_CANONICAL_OK"

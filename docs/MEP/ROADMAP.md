@@ -17,8 +17,12 @@ B-2 CONFLICT_SCAN：未
 B-3 EXTRACT生成（LEDGER/INPUT_PACKET/health/cards）：未
 B-4 Self-heal 完全版（reason_code辞書→自動復帰）：未
 ---
+## Loop Canonical（現在）
+- Entry: `.github/workflows/mep_loop_entry.yml`
+- Engine: `.github/workflows/mep_loop_engine_v2.yml` (`workflow_dispatch`)
+- Legacy v1: `.github/workflows/mep_loop_engine.yml.txt`（sealed）
+---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1
 NEXT_ITEM: B-1 SSOT_SCAN
 更新: 2026-02-15T14:09:16Z
-
