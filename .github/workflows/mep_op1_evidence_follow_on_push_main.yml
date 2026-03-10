@@ -16,6 +16,8 @@ jobs:
           script: |
             const workflow_id = '.github/workflows/mep_writeback_bundle_dispatch_entry.yml';
             const { owner, repo } = context.repo;
+            const runId = process.env.GITHUB_RUN_ID || '0';
+            const controllerLabel = `mep:controller=CHAT_OP1_MAIN_${runId}`;
 
             async function sleep(ms) {
               return new Promise(resolve => setTimeout(resolve, ms));
@@ -64,9 +66,13 @@ jobs:
                 repo,
                 workflow_id,
                 ref: 'main',
-                inputs: { pr_number: '0' }
+                inputs: {
+                  pr_number: '0',
+                  controller_label: controllerLabel,
+                  expected_controller_label: controllerLabel,
+                }
               });
-              core.info(`Dispatched ${workflow_id} on main with pr_number=0`);
+              core.info(`Dispatched ${workflow_id} on main with pr_number=0 controller_label=${controllerLabel}`);
             } catch (e) {
               core.setFailed(`Dispatch failed for ${workflow_id}: ${e.message}`);
             }
