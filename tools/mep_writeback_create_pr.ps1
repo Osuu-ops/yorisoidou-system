@@ -1,15 +1,39 @@
 param(
   [Parameter(Mandatory=$true)]
   [ValidateNotNullOrEmpty()]
-  [string]$BundlePath
+  [string]$BundlePath,
+
+  [Parameter()]
+  [string[]]$AdditionalPaths = @()
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Info([string]$m){ Write-Host ("[INFO] {0}" -f $m) }
 function Warn([string]$m){ Write-Host ("[WARN] {0}" -f $m) }
-
 function StopHard([string]$m){ throw ("STOP_HARD: " + $m) }
+
+function Resolve-WritebackPaths {
+  param(
+    [Parameter(Mandatory=$true)]
+    [string]$PrimaryPath,
+
+    [Parameter()]
+    [string[]]$MorePaths = @()
+  )
+
+  $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+  $resolved = New-Object System.Collections.Generic.List[string]
+  foreach ($candidate in @($PrimaryPath) + @($MorePaths)) {
+    $path = [string]$candidate
+    if ([string]::IsNullOrWhiteSpace($path)) { continue }
+    $path = $path.Trim()
+    if ($seen.Add($path)) {
+      [void]$resolved.Add($path)
+    }
+  }
+  return ,$resolved.ToArray()
+}
 
 function Assert-ControllerLock {
   $label = [string]$env:MEP_CONTROLLER_LABEL
@@ -46,6 +70,14 @@ function Ensure-PrForHead([string]$head, [string]$base, [string]$title, [string]
 
 Assert-ControllerLock
 
+$writebackPaths = Resolve-WritebackPaths -PrimaryPath $BundlePath -MorePaths $AdditionalPaths
+Info ("WritebackPaths=" + ($writebackPaths -join ', '))
+foreach ($path in $writebackPaths) {
+  if (-not (Test-Path -LiteralPath $path)) {
+    StopHard ("WRITEBACK_PATH_MISSING: " + $path)
+  }
+}
+
 $repo = Resolve-FullRepo
 if ($repo) { Info ("Repo=" + $repo) } else { Warn "Repo unresolved; using gh defaults" }
 
@@ -61,9 +93,9 @@ if ($head -like "auto/writeback-bundle_*") {
   exit 0
 }
 
-$dirty = ([string](git status --porcelain)).Trim()
+$dirty = ((& git status --porcelain -- @writebackPaths) | Out-String).Trim()
 if (-not $dirty) {
-  Info "Working tree clean; nothing to write back."
+  Info "Working tree clean for writeback paths; nothing to write back."
   exit 0
 }
 
@@ -73,10 +105,10 @@ Warn ("Not on auto/writeback-bundle_*; creating branch " + $newHead)
 
 git switch -c $newHead | Out-Null
 
-git add -- $BundlePath | Out-Null
-$staged = ([string](git diff --cached --name-only)).Trim()
+& git add -- @writebackPaths | Out-Null
+$staged = ((& git diff --cached --name-only -- @writebackPaths) | Out-String).Trim()
 if (-not $staged) {
-  Info "No staged changes for bundle; skip push/PR."
+  Info "No staged changes for writeback paths; skip push/PR."
   exit 0
 }
 
@@ -85,9 +117,9 @@ git commit -m $msg | Out-Null
 
 try {
   pwsh -NoProfile -File tools/mep_fix_bundle_version_suffix_to_head.ps1 -BundlePath $BundlePath
-  $suffixChanged = ([string](git status --porcelain -- $BundlePath)).Trim()
+  $suffixChanged = ((& git status --porcelain -- @writebackPaths) | Out-String).Trim()
   if ($suffixChanged) {
-    git add -- $BundlePath | Out-Null
+    & git add -- @writebackPaths | Out-Null
     git commit -m ("chore(mep): align bundle version suffix to HEAD ({0})" -f $runId) | Out-Null
   }
 } catch {

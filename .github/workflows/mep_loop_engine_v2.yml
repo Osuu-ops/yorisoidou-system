@@ -217,12 +217,12 @@ jobs:
           if [ "$status" -ne 0 ]; then
             exit "$status"
           fi
-      - name: EXTRACT_GENERATE (tool / dry-run)
+      - name: EXTRACT_GENERATE (tool)
         shell: bash
         run: |
           set -euo pipefail
           status=0
-          python3 tools/extract/extract_generate.py --dry-run > .mep/extract_generate.log || status=$?
+          python3 tools/extract/extract_generate.py > .mep/extract_generate.log || status=$?
           cat .mep/extract_generate.log
           python3 - "$status" <<'PY'
           import json
@@ -235,21 +235,41 @@ jobs:
               'docs/MEP/EXTRACT/INPUT_PACKET.md',
               'docs/MEP/EXTRACT/CARDS.md',
           ]
+          payload = {}
+          for raw_line in Path('.mep/extract_generate.log').read_text(encoding='utf-8').splitlines():
+              line = raw_line.strip()
+              if not line.startswith('{'):
+                  continue
+              try:
+                  payload = json.loads(line)
+                  break
+              except json.JSONDecodeError:
+                  continue
+          mode = payload.get('mode') or 'unknown'
+          missing = [p for p in expected if not Path(p).exists()]
+          reason = None
+          if status != 0:
+              reason = 'EXTRACT_GENERATE_STOP'
+          elif mode != 'write':
+              reason = 'EXTRACT_MODE_NOT_WRITE'
+          elif missing:
+              reason = 'EXTRACT_OUTPUT_MISSING'
           data = {
-              'extract_status': 'GO' if status == 0 else 'STOP',
-              'reason_code': None if status == 0 else 'EXTRACT_GENERATE_STOP',
-              'mode': 'dry-run',
-              'run_state_path': 'mep/run_state.json',
-              'out_dir': 'docs/MEP/EXTRACT',
-              'generated_files': expected,
+              'extract_status': 'GO' if reason is None else 'STOP',
+              'reason_code': reason,
+              'mode': mode,
+              'run_state_path': payload.get('run_state_path') or 'mep/run_state.json',
+              'out_dir': payload.get('out_dir') or 'docs/MEP/EXTRACT',
+              'generated_files': payload.get('files') or expected,
               'existing_files': [p for p in expected if Path(p).exists()],
+              'missing_files': missing,
               'log_path': '.mep/extract_generate.log',
           }
           Path('.mep/extract_result.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
           print(f"EXTRACT_STATUS={data.get('extract_status')}")
           print(f"EXTRACT_MODE={data.get('mode')}")
           print(f"EXTRACT_OUT_DIR={data.get('out_dir')}")
-          print('EXTRACT_POINTERS=' + ','.join(expected))
+          print('EXTRACT_POINTERS=' + ','.join(data.get('generated_files') or expected))
           PY
           python3 - <<'PY'
           import json
@@ -259,18 +279,19 @@ jobs:
               fh.write(f"EXTRACT_STATUS={data.get('extract_status')}\n")
               fh.write(f"EXTRACT_MODE={data.get('mode')}\n")
               fh.write(f"EXTRACT_OUT_DIR={data.get('out_dir')}\n")
+              fh.write('EXTRACT_POINTERS=' + ','.join(data.get('generated_files') or []) + '\n')
               fh.write("NEXT_ACTION=WRITEBACK_PREFLIGHT\n")
           PY
           phase_status="$(python3 -c "import json; print(json.load(open('.mep/extract_result.json', encoding='utf-8')).get('extract_status', 'UNKNOWN'))")"
-          reason_code="$(python3 -c "import json; d=json.load(open('.mep/extract_result.json', encoding='utf-8')); print(d.get('reason_code') or ('EXTRACT_DRY_RUN_OK' if d.get('extract_status') == 'GO' else 'EXTRACT_GENERATE_STOP'))")"
+          reason_code="$(python3 -c "import json; d=json.load(open('.mep/extract_result.json', encoding='utf-8')); print(d.get('reason_code') or ('EXTRACT_WRITE_OK' if d.get('extract_status') == 'GO' else 'EXTRACT_GENERATE_STOP'))")"
           next_action="WRITEBACK_PREFLIGHT"
           outcome="OK"
           stop_class=""
-          if [ "$status" -ne 0 ]; then
+          if [ "$status" -ne 0 ] || [ "$phase_status" != "GO" ]; then
             next_action="EXTRACT_GENERATE"
             outcome="STOP"
             stop_class="HARD"
-            echo "::error::STOP_HARD: EXTRACT_GENERATE_STOP"
+            echo "::error::STOP_HARD: $reason_code"
           fi
           python3 tools/mep_loop_state.py \
             --phase EXTRACT_GENERATE \
@@ -284,42 +305,59 @@ jobs:
             --max-iter "${{ inputs.max_iter }}" \
             --sleep-seconds "${{ inputs.sleep_seconds }}" \
             --compile-docs
-          if [ "$status" -ne 0 ]; then
-            exit "$status"
+          if [ "$status" -ne 0 ] || [ "$phase_status" != "GO" ]; then
+            exit 1
           fi
       - name: WRITEBACK_PREFLIGHT (phase3 step1)
         shell: bash
         run: |
           set -euo pipefail
           status=0
-          parent="docs/MEP/MEP_BUNDLE.md"
-          evidence="docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md"
-          parent_version=""
-          evidence_version=""
-          if [ ! -f "$parent" ]; then
-            status=1
-            reason_code="WRITEBACK_PARENT_BUNDLE_MISSING"
-          elif [ ! -f "$evidence" ]; then
-            status=1
-            reason_code="WRITEBACK_EVIDENCE_BUNDLE_MISSING"
-          else
-            parent_version="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$parent" || true)"
-            evidence_version="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$evidence" || true)"
-            reason_code="WRITEBACK_PREFLIGHT_OK"
-          fi
-          python3 - <<PY
+          python3 - <<'PY' || status=$?
           import json
+          import re
+          import sys
           from pathlib import Path
-          data = {
-              "status": "GO" if ${status} == 0 else "STOP",
-              "reason_code": "${reason_code}",
-              "parent_bundle": "${parent}",
-              "evidence_bundle": "${evidence}",
-              "parent_bundle_version": "${parent_version}",
-              "evidence_bundle_version": "${evidence_version}",
+
+          version_re = re.compile(r'v[0-9]+\.[0-9]+\.[0-9]+\+[^\s]+')
+          parent = Path('docs/MEP/MEP_BUNDLE.md')
+          evidence = Path('docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md')
+          extract_outputs = [
+              'docs/MEP/EXTRACT/HEALTH.md',
+              'docs/MEP/EXTRACT/DECISION_LEDGER.md',
+              'docs/MEP/EXTRACT/INPUT_PACKET.md',
+              'docs/MEP/EXTRACT/CARDS.md',
+          ]
+          result = {
+              'status': 'GO',
+              'reason_code': 'WRITEBACK_PREFLIGHT_OK',
+              'parent_bundle': parent.as_posix(),
+              'evidence_bundle': evidence.as_posix(),
+              'extract_outputs': extract_outputs,
+              'missing_extract_outputs': [],
+              'parent_bundle_version': '',
+              'evidence_bundle_version': '',
           }
-          Path('.mep/writeback_preflight.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
-          print(json.dumps(data, ensure_ascii=False))
+          if not parent.exists():
+              result['status'] = 'STOP'
+              result['reason_code'] = 'WRITEBACK_PARENT_BUNDLE_MISSING'
+          elif not evidence.exists():
+              result['status'] = 'STOP'
+              result['reason_code'] = 'WRITEBACK_EVIDENCE_BUNDLE_MISSING'
+          else:
+              parent_text = parent.read_text(encoding='utf-8', errors='replace')
+              evidence_text = evidence.read_text(encoding='utf-8', errors='replace')
+              parent_match = version_re.search(parent_text)
+              evidence_match = version_re.search(evidence_text)
+              result['parent_bundle_version'] = parent_match.group(0) if parent_match else ''
+              result['evidence_bundle_version'] = evidence_match.group(0) if evidence_match else ''
+              result['missing_extract_outputs'] = [path for path in extract_outputs if not Path(path).exists()]
+              if result['missing_extract_outputs']:
+                  result['status'] = 'STOP'
+                  result['reason_code'] = 'WRITEBACK_EXTRACT_OUTPUT_MISSING'
+          Path('.mep/writeback_preflight.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+          print(json.dumps(result, ensure_ascii=False))
+          sys.exit(0 if result['status'] == 'GO' else 1)
           PY
           cat .mep/writeback_preflight.json
           python3 - <<'PY'
@@ -329,8 +367,11 @@ jobs:
           with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
               fh.write(f"WRITEBACK_PREFLIGHT_STATUS={data.get('status')}\n")
               fh.write(f"WRITEBACK_PREFLIGHT_REASON={data.get('reason_code')}\n")
+              fh.write('WRITEBACK_EXTRACT_OUTPUTS=' + ','.join(data.get('extract_outputs') or []) + '\n')
+              fh.write('WRITEBACK_MISSING_OUTPUTS=' + ','.join(data.get('missing_extract_outputs') or []) + '\n')
               fh.write("NEXT_ACTION=PHASE3_WRITEBACK_BUNDLE\n")
           PY
+          reason_code="$(python3 -c "import json; print(json.load(open('.mep/writeback_preflight.json', encoding='utf-8')).get('reason_code', 'WRITEBACK_PREFLIGHT_STOP'))")"
           next_action="PHASE3_WRITEBACK_BUNDLE"
           outcome="OK"
           stop_class=""
@@ -372,7 +413,12 @@ jobs:
           try {
             Write-Host "PHASE3_WRITEBACK_BUNDLE_START"
             if(-not (Test-Path -LiteralPath "tools/mep_writeback_bundle.ps1")){ throw "missing tools/mep_writeback_bundle.ps1" }
-            ./tools/mep_writeback_bundle.ps1
+            ./tools/mep_writeback_bundle.ps1 -AdditionalPaths @(
+              'docs/MEP/EXTRACT/HEALTH.md',
+              'docs/MEP/EXTRACT/DECISION_LEDGER.md',
+              'docs/MEP/EXTRACT/INPUT_PACKET.md',
+              'docs/MEP/EXTRACT/CARDS.md'
+            )
             Write-Host "PHASE3_WRITEBACK_BUNDLE_OK"
           } catch {
             $reason = [string]$_.Exception.Message
@@ -381,7 +427,7 @@ jobs:
             $outcome = "STOP"
             $stopClass = "HARD"
           }
-          @{ status=$phaseStatus; reason_code=$reason; bundle_path='docs/MEP/MEP_BUNDLE.md' } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/writeback_bundle.json -Encoding UTF8
+          @{ status=$phaseStatus; reason_code=$reason; bundle_path='docs/MEP/MEP_BUNDLE.md'; extract_outputs=@('docs/MEP/EXTRACT/HEALTH.md','docs/MEP/EXTRACT/DECISION_LEDGER.md','docs/MEP/EXTRACT/INPUT_PACKET.md','docs/MEP/EXTRACT/CARDS.md') } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/writeback_bundle.json -Encoding UTF8
           python tools/mep_loop_state.py --phase PHASE3_WRITEBACK_BUNDLE --phase-status $phaseStatus --next-action $nextAction --reason-code $reason --outcome $outcome --stop-class $stopClass --phase-result-path .mep/writeback_bundle.json --iter "${{ inputs.iter }}" --max-iter "${{ inputs.max_iter }}" --sleep-seconds "${{ inputs.sleep_seconds }}" --compile-docs
           if($stopClass){ throw $reason }
       - name: PHASE3_CREATE_PR
@@ -406,7 +452,7 @@ jobs:
             } else {
               Write-Host "PHASE3_CREATE_PR_START"
               if(-not (Test-Path -LiteralPath "tools/mep_writeback_create_pr.ps1")){ throw "missing tools/mep_writeback_create_pr.ps1" }
-              ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
+              ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md -AdditionalPaths @('docs/MEP/EXTRACT/HEALTH.md','docs/MEP/EXTRACT/DECISION_LEDGER.md','docs/MEP/EXTRACT/INPUT_PACKET.md','docs/MEP/EXTRACT/CARDS.md')
               $head = (git rev-parse --abbrev-ref HEAD | Out-String).Trim()
               if(-not [string]::IsNullOrWhiteSpace($head)){
                 try {
@@ -437,7 +483,7 @@ jobs:
             $outcome = "STOP"
             $stopClass = "HARD"
           }
-          @{ status=$phaseStatus; reason_code=$reason; pr_url=$prUrl; workflow_run_url=("https://github.com/{0}/actions/runs/{1}" -f $env:GITHUB_REPOSITORY,$env:GITHUB_RUN_ID) } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/create_pr.json -Encoding UTF8
+          @{ status=$phaseStatus; reason_code=$reason; pr_url=$prUrl; workflow_run_url=("https://github.com/{0}/actions/runs/{1}" -f $env:GITHUB_REPOSITORY,$env:GITHUB_RUN_ID); extract_outputs=@('docs/MEP/EXTRACT/HEALTH.md','docs/MEP/EXTRACT/DECISION_LEDGER.md','docs/MEP/EXTRACT/INPUT_PACKET.md','docs/MEP/EXTRACT/CARDS.md') } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath .mep/create_pr.json -Encoding UTF8
           python tools/mep_loop_state.py --phase PHASE3_CREATE_PR --phase-status $phaseStatus --next-action $nextAction --reason-code $reason --outcome $outcome --stop-class $stopClass --phase-result-path .mep/create_pr.json --pr-url $prUrl --iter "${{ inputs.iter }}" --max-iter "${{ inputs.max_iter }}" --sleep-seconds "${{ inputs.sleep_seconds }}" --compile-docs
           if($stopClass -eq 'HARD'){ throw $reason }
       - name: Publish loop phase pointers
@@ -514,6 +560,10 @@ jobs:
             docs/MEP/STATUS.md
             docs/MEP/HANDOFF_AUDIT.md
             docs/MEP/HANDOFF_WORK.md
+            docs/MEP/EXTRACT/HEALTH.md
+            docs/MEP/EXTRACT/DECISION_LEDGER.md
+            docs/MEP/EXTRACT/INPUT_PACKET.md
+            docs/MEP/EXTRACT/CARDS.md
           if-no-files-found: warn
       - name: Smoke
         run: echo "ENGINE_V2_RUN_STATE_OK"
