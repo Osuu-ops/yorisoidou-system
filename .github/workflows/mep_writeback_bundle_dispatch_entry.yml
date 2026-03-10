@@ -182,37 +182,80 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Resolve PR number
+      - name: Resolve writeback target PR
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           set -euo pipefail
+          mark_skip () {
+            local reason="$1"
+            echo "MEP_WRITEBACK_SKIP=1" >> "${GITHUB_ENV}"
+            echo "MEP_WRITEBACK_SKIP_REASON=${reason}" >> "${GITHUB_ENV}"
+            echo "[SKIP] ${reason}"
+          }
+
+          is_writeback_evidence_pr () {
+            local title="${1:-}"
+            local head_ref="${2:-}"
+            if [[ "${head_ref}" == auto/writeback-bundle_* ]]; then
+              return 0
+            fi
+            if [[ "${title}" == Writeback\ bundle\ evidence\ \(* ]]; then
+              return 0
+            fi
+            return 1
+          }
+
+          echo "MEP_WRITEBACK_SKIP=0" >> "${GITHUB_ENV}"
           PR_IN="${{ github.event.inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
-            PR_IN="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=50" --jq '[.[] | select(.merged_at!=null and .base.ref=="main")][0].number')"
+            PR_IN="$(
+              gh pr list --state merged --base main --limit 100 --json number,title,headRefName \
+                --jq '.[] | select((((.headRefName // "") | startswith("auto/writeback-bundle_")) | not) and (((.title // "") | startswith("Writeback bundle evidence (")) | not)) | .number' \
+                | head -n 1
+            )"
           fi
           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
-            echo "[NG] failed to resolve PR number"
-            exit 2
+            mark_skip "NO_ELIGIBLE_MERGED_PR"
+            exit 0
+          fi
+          TARGET_TITLE="$(gh pr view "${PR_IN}" --json title -q .title)"
+          TARGET_HEAD_REF="$(gh pr view "${PR_IN}" --json headRefName -q .headRefName)"
+          if is_writeback_evidence_pr "${TARGET_TITLE}" "${TARGET_HEAD_REF}"; then
+            mark_skip "TARGET_IS_WRITEBACK_EVIDENCE_PR"
+            exit 0
+          fi
+          if grep -Eq "PR\\s*#\\s*${PR_IN}\\b" docs/MEP/MEP_BUNDLE.md; then
+            mark_skip "TARGET_ALREADY_RECORDED"
+            exit 0
           fi
           echo "PR_NUMBER=${PR_IN}" >> "${GITHUB_ENV}"
+          echo "MEP_WRITEBACK_TARGET_TITLE=${TARGET_TITLE}" >> "${GITHUB_ENV}"
           echo "[OK] PR_NUMBER=${PR_IN}"
       - name: Bump Bundled version (parent)
+        if: env.MEP_WRITEBACK_SKIP != '1'
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
         run: |
           pwsh -NoProfile -File ./tools/mep_bump_bundle_version.ps1 -BundlePath "docs/MEP/MEP_BUNDLE.md"
       - name: Append full evidence line into parent Bundled
+        if: env.MEP_WRITEBACK_SKIP != '1'
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN }}
         run: |
           pwsh -NoProfile -File ./tools/mep_append_evidence_line_full.ps1 -PrNumber ${{ env.PR_NUMBER }} -BundlePath "docs/MEP/MEP_BUNDLE.md"
+      - name: Skip writeback when target is already satisfied
+        if: env.MEP_WRITEBACK_SKIP == '1'
+        shell: bash
+        run: |
+          echo "[OK] canonical writeback skipped: ${MEP_WRITEBACK_SKIP_REASON}"
       - name: Ensure writeback PR (helper)
+        if: env.MEP_WRITEBACK_SKIP != '1'
         shell: pwsh
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
