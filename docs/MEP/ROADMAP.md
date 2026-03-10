@@ -21,6 +21,8 @@ B-4 Self-heal 完全版（reason_code辞書→自動復帰）：未
 - Entry: `.github/workflows/mep_loop_entry.yml`
 - Engine: `.github/workflows/mep_loop_engine_v2.yml` (`workflow_dispatch`)
 - Legacy v1: `.github/workflows/mep_loop_engine.yml.txt`（sealed）
+- v2 wiring: `tools/checks/ssot_scan.py` / `tools/checks/conflict_scan.py` / `tools/extract/extract_generate.py` を呼ぶ
+- Scope note: EXTRACT は dry-run 接続まで。PHASE B の full completion は未
 ---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1

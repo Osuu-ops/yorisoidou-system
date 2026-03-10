@@ -37,9 +37,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Emit MEP_COPYPASTE_ZONE
         shell: bash
         run: |
+          set -euo pipefail
+          mkdir -p .mep
           echo "===== MEP_COPYPASTE_ZONE BEGIN ====="
           echo "RESTART_PACKET"
           echo "RUN_STATE_CODE=RUNNING"
@@ -50,44 +56,207 @@ jobs:
           echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
           echo "BRANCH=${GITHUB_REF_NAME}"
           echo "HEAD_SHA=${GITHUB_SHA}"
-          echo "NEXT_ACTION=WRITEBACK_PREFLIGHT"
+          echo "NEXT_ACTION=SSOT_SCAN"
           echo "===== MEP_COPYPASTE_ZONE END ====="
-      - name: SSOT_SCAN (safe-min)
+          cat > .mep/RESTART_PACKET.txt <<EOF
+          MODE=CANONICAL_LOOP_ENGINE_V2
+          ITER=${{ inputs.iter }}
+          MAX_ITER=${{ inputs.max_iter }}
+          SLEEP_SECONDS=${{ inputs.sleep_seconds }}
+          REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}
+          BRANCH=${GITHUB_REF_NAME}
+          HEAD_SHA=${GITHUB_SHA}
+          CURRENT_PHASE=SSOT_SCAN
+          NEXT_ACTION=SSOT_SCAN
+          EOF
+      - name: SSOT_SCAN (tool)
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .mep
-          SSOT="docs/MEP/MEP_SSOT_MASTER.md"
-          if [ ! -f "$SSOT" ]; then
-            echo "::error::SSOT not found: $SSOT"
-            exit 1
+          status=0
+          python3 tools/checks/ssot_scan.py docs/MEP/MEP_SSOT_MASTER.md > .mep/ssot_scan.json || status=$?
+          cat .mep/ssot_scan.json
+          python3 - <<'PY'
+          import hashlib, json, re
+          from pathlib import Path
+          ssot_path = Path("docs/MEP/MEP_SSOT_MASTER.md")
+          result_path = Path(".mep/ssot_scan.json")
+          data = json.loads(result_path.read_text(encoding="utf-8"))
+          text = ssot_path.read_text(encoding="utf-8", errors="replace")
+          match = re.search(r"v[0-9]+\.[0-9]+\.[0-9]+\+[^\s]+", text)
+          findings = data.get("findings") or []
+          data["ssot_hash"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
+          data["ssot_version"] = match.group(0) if match else "(unknown)"
+          data["reason_code"] = findings[0].get("type") if findings else None
+          result_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"SSOT_SCAN_STATUS={data.get('ssot_scan_status')}")
+          print(f"SSOT_PATH={data.get('ssot_path')}")
+          print(f"SSOT_HASH={data.get('ssot_hash')}")
+          print(f"SSOT_VERSION={data.get('ssot_version')}")
+          print(f"SSOT_REASON={data.get('reason_code') or 'NONE'}")
+          PY
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('.mep/ssot_scan.json').read_text(encoding='utf-8'))
+          with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
+              fh.write(f"SSOT_SCAN_STATUS={data.get('ssot_scan_status')}\n")
+              fh.write(f"SSOT_PATH={data.get('ssot_path')}\n")
+              fh.write(f"SSOT_HASH={data.get('ssot_hash')}\n")
+              fh.write(f"SSOT_VERSION={data.get('ssot_version')}\n")
+              fh.write(f"SSOT_REASON={data.get('reason_code') or 'NONE'}\n")
+              fh.write("NEXT_ACTION=CONFLICT_SCAN\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            python3 - <<'PY'
+            import json
+            from pathlib import Path
+            data = json.loads(Path('.mep/ssot_scan.json').read_text(encoding='utf-8'))
+            reason = data.get('reason_code') or 'SSOT_SCAN_STOP'
+            print(f"::error::STOP_HARD: {reason}")
+            PY
+            exit "$status"
           fi
-          HASH="$(sha256sum "$SSOT" | awk '{print $1}')"
-          VER="$(grep -m1 -Eo 'v[0-9]+\.[0-9]+\.[0-9]+\+[^[:space:]]+' "$SSOT" || true)"
-          if [ -z "$VER" ]; then VER="(unknown)"; fi
-          {
-            echo "SSOT_PATH=$SSOT"
-            echo "SSOT_HASH=$HASH"
-            echo "SSOT_VERSION=$VER"
-            echo "SSOT_VALID=true"
-          } > .mep/RESTART_PACKET.txt
-          echo "SSOT_SCAN_OK"
-      - name: CONFLICT_SCAN (safe-min)
+      - name: CONFLICT_SCAN (tool)
         shell: bash
         run: |
           set -euo pipefail
-          echo "CONFLICT_SCAN_START"
-          FILES="$(git diff --name-only HEAD^..HEAD || true)"
-          echo "$FILES" | sed -n '1,200p'
-          LEGACY=0
-          NEW=0
-          echo "$FILES" | grep -E '^docs/MEP/SSOT/WORK_ID|^docs/MEP/WORK_ID/' >/dev/null 2>&1 && LEGACY=1 || true
-          echo "$FILES" | grep -E '^docs/MEP/SSOT/WORK_ITEMS|^docs/MEP/WORK_ITEMS/' >/dev/null 2>&1 && NEW=1 || true
-          if [ "$LEGACY" -eq 1 ] && [ "$NEW" -eq 1 ]; then
-            echo "::error::WB0001 CONFLICT_SCAN failed: legacy+new execution-candidate sources modified together."
-            exit 1
+          base_ref="HEAD^"
+          if ! git rev-parse "$base_ref" >/dev/null 2>&1; then
+            base_ref="HEAD"
           fi
-          echo "CONFLICT_SCAN_OK"
+          status=0
+          python3 tools/checks/conflict_scan.py "$base_ref" HEAD > .mep/conflict_scan.json || status=$?
+          cat .mep/conflict_scan.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          result_path = Path('.mep/conflict_scan.json')
+          data = json.loads(result_path.read_text(encoding='utf-8'))
+          data['conflictStatus'] = 'STOP' if data.get('conflictDetected') else 'GO'
+          data['reason_code'] = data.get('conflictReason')
+          result_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+          print(f"CONFLICT_SCAN_STATUS={data.get('conflictStatus')}")
+          print(f"CONFLICT_REASON={data.get('reason_code') or 'NONE'}")
+          print(f"CONFLICT_DIFF_BASE={data.get('diffBase')}")
+          print(f"CONFLICT_DIFF_HEAD={data.get('diffHead')}")
+          PY
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('.mep/conflict_scan.json').read_text(encoding='utf-8'))
+          with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
+              fh.write(f"CONFLICT_SCAN_STATUS={data.get('conflictStatus')}\n")
+              fh.write(f"CONFLICT_REASON={data.get('reason_code') or 'NONE'}\n")
+              fh.write(f"CONFLICT_DIFF_BASE={data.get('diffBase')}\n")
+              fh.write(f"CONFLICT_DIFF_HEAD={data.get('diffHead')}\n")
+              fh.write("NEXT_ACTION=EXTRACT_GENERATE\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            python3 - <<'PY'
+            import json
+            from pathlib import Path
+            data = json.loads(Path('.mep/conflict_scan.json').read_text(encoding='utf-8'))
+            reason = data.get('reason_code') or 'CONFLICT_SCAN_STOP'
+            print(f"::error::STOP_HARD: {reason}")
+            PY
+            exit "$status"
+          fi
+      - name: EXTRACT_GENERATE (tool / dry-run)
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          python3 tools/extract/extract_generate.py --dry-run > .mep/extract_generate.log || status=$?
+          cat .mep/extract_generate.log
+          python3 - "$status" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          status = int(sys.argv[1])
+          expected = [
+              'docs/MEP/EXTRACT/HEALTH.md',
+              'docs/MEP/EXTRACT/DECISION_LEDGER.md',
+              'docs/MEP/EXTRACT/INPUT_PACKET.md',
+              'docs/MEP/EXTRACT/CARDS.md',
+          ]
+          data = {
+              'extract_status': 'GO' if status == 0 else 'STOP',
+              'reason_code': None if status == 0 else 'EXTRACT_GENERATE_STOP',
+              'mode': 'dry-run',
+              'run_state_path': 'mep/run_state.json',
+              'out_dir': 'docs/MEP/EXTRACT',
+              'generated_files': expected,
+              'existing_files': [p for p in expected if Path(p).exists()],
+              'log_path': '.mep/extract_generate.log',
+          }
+          Path('.mep/extract_result.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+          print(f"EXTRACT_STATUS={data.get('extract_status')}")
+          print(f"EXTRACT_MODE={data.get('mode')}")
+          print(f"EXTRACT_OUT_DIR={data.get('out_dir')}")
+          print('EXTRACT_POINTERS=' + ','.join(expected))
+          PY
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('.mep/extract_result.json').read_text(encoding='utf-8'))
+          with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
+              fh.write(f"EXTRACT_STATUS={data.get('extract_status')}\n")
+              fh.write(f"EXTRACT_MODE={data.get('mode')}\n")
+              fh.write(f"EXTRACT_OUT_DIR={data.get('out_dir')}\n")
+              fh.write("NEXT_ACTION=WRITEBACK_PREFLIGHT\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            echo "::error::STOP_HARD: EXTRACT_GENERATE_STOP"
+            exit "$status"
+          fi
+      - name: Publish loop phase pointers
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          phase_files = {
+              'SSOT_SCAN': Path('.mep/ssot_scan.json'),
+              'CONFLICT_SCAN': Path('.mep/conflict_scan.json'),
+              'EXTRACT': Path('.mep/extract_result.json'),
+          }
+          pointers = {
+              'phase_files': {name: path.as_posix() for name, path in phase_files.items()},
+              'restart_packet': '.mep/RESTART_PACKET.txt',
+              'summary_path': '.mep/phase_summary.md',
+          }
+          rows = ['# Loop engine phase pointers', '', '| Phase | Status | Pointer | Note |', '| --- | --- | --- | --- |']
+          for name, path in phase_files.items():
+              if not path.exists():
+                  rows.append(f'| {name} | SKIPPED | `{path.as_posix()}` | file not generated |')
+                  continue
+              data = json.loads(path.read_text(encoding='utf-8'))
+              if name == 'SSOT_SCAN':
+                  status = data.get('ssot_scan_status', 'UNKNOWN')
+                  note = data.get('reason_code') or data.get('ssot_path') or ''
+              elif name == 'CONFLICT_SCAN':
+                  status = data.get('conflictStatus', 'UNKNOWN')
+                  note = data.get('reason_code') or data.get('conflictDetails') or ''
+              else:
+                  status = data.get('extract_status', 'UNKNOWN')
+                  note = f"mode={data.get('mode')} out={data.get('out_dir')}"
+              rows.append(f'| {name} | {status} | `{path.as_posix()}` | {note} |')
+          summary = "\n".join(rows) + "\n"
+          Path('.mep/phase_summary.md').write_text(summary, encoding='utf-8')
+          Path('.mep/loop_phase_pointers.json').write_text(json.dumps(pointers, ensure_ascii=False, indent=2) + "\n", encoding='utf-8')
+          with Path('.mep/RESTART_PACKET.txt').open('a', encoding='utf-8') as fh:
+              fh.write('PHASE_POINTERS_JSON=.mep/loop_phase_pointers.json\n')
+              fh.write('PHASE_SUMMARY=.mep/phase_summary.md\n')
+          step_summary = os.environ.get('GITHUB_STEP_SUMMARY')
+          if step_summary:
+              with open(step_summary, 'a', encoding='utf-8') as fh:
+                  fh.write(summary)
+          print(summary)
+          PY
       - name: WRITEBACK_PREFLIGHT (phase3 step1)
         shell: bash
         run: |
@@ -131,10 +300,24 @@ jobs:
           ./tools/mep_writeback_create_pr.ps1 -BundlePath docs/MEP/MEP_BUNDLE.md
           Write-Host "PHASE3_CREATE_PR_OK"
       - name: Upload RESTART_PACKET
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: restart-packet
           path: .mep/RESTART_PACKET.txt
           if-no-files-found: error
+      - name: Upload loop phase pointers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loop-phase-pointers
+          path: |
+            .mep/ssot_scan.json
+            .mep/conflict_scan.json
+            .mep/extract_result.json
+            .mep/loop_phase_pointers.json
+            .mep/phase_summary.md
+            .mep/extract_generate.log
+          if-no-files-found: warn
       - name: Smoke
-        run: echo "ENGINE_V2_CANONICAL_OK"
+        run: echo "ENGINE_V2_WIRED_OK"
