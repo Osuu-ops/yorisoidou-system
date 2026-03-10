@@ -6,6 +6,12 @@ from datetime import datetime, timezone
 REPO = Path(__file__).resolve().parents[2]
 RUN_STATE = REPO / "mep" / "run_state.json"
 OUT_DIR = REPO / "docs" / "MEP" / "EXTRACT"
+EXPECTED_FILES = [
+  "HEALTH.md",
+  "DECISION_LEDGER.md",
+  "INPUT_PACKET.md",
+  "CARDS.md",
+]
 def utc_now_z() -> str:
   return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
 def read_json(p: Path) -> dict:
@@ -34,11 +40,6 @@ def main():
   stop_class = (lr.get("stop_class") or "").strip()
   reason_code = (lr.get("reason_code") or "").strip()
   ev = (lr.get("evidence") or {})
-  # Minimal EXTRACT set (B-3):
-  # - EXTRACT/HEALTH.md
-  # - EXTRACT/DECISION_LEDGER.md
-  # - EXTRACT/INPUT_PACKET.md
-  # - EXTRACT/CARDS.md (index)
   gen = utc_now_z()
   base = f"""# EXTRACT_HEALTH
 generated_at_utc: {gen}
@@ -74,11 +75,20 @@ generated_at_utc: {gen}
 - CARD: HEALTH -> docs/MEP/EXTRACT/HEALTH.md
 - CARD: DECISION_LEDGER -> docs/MEP/EXTRACT/DECISION_LEDGER.md
 - CARD: INPUT_PACKET -> docs/MEP/EXTRACT/INPUT_PACKET.md
+- CARD: CARDS -> docs/MEP/EXTRACT/CARDS.md
 """
   write_text(OUT_DIR / "HEALTH.md", base, args.dry_run)
   write_text(OUT_DIR / "DECISION_LEDGER.md", ledger, args.dry_run)
   write_text(OUT_DIR / "INPUT_PACKET.md", pkt, args.dry_run)
   write_text(OUT_DIR / "CARDS.md", cards, args.dry_run)
+  payload = {
+    "generated_at_utc": gen,
+    "mode": "dry-run" if args.dry_run else "write",
+    "run_state_path": RUN_STATE.as_posix().replace(REPO.as_posix() + "/", ""),
+    "out_dir": OUT_DIR.as_posix().replace(REPO.as_posix() + "/", ""),
+    "files": [str((OUT_DIR / name).as_posix().replace(REPO.as_posix() + "/", "")) for name in EXPECTED_FILES],
+  }
+  print(json.dumps(payload, ensure_ascii=False))
   print("EXTRACT_GENERATE_OK")
   return 0
 if __name__ == "__main__":
