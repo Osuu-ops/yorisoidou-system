@@ -6,7 +6,8 @@ on:
 permissions:
   contents: read
 jobs:
-  ssot_scan:
+  ssot_scan_probe:
+    name: ssot_scan_probe
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
