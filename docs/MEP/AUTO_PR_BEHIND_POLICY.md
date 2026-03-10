@@ -38,6 +38,7 @@
 - `.github/workflows/mep_standalone_issue_autoloop.yml`: sealed
 - `.github/workflows/mep_dispatch_from_issue.yml`: sealed
 - `.github/workflows/mep_standalone_issue_autoloop_dispatch.yml`: wrapper to canonical
+- These names remain only for deprecation tracking. Do not dispatch them directly.
 
 ## Manual Fallback (minimum)
 - If timeout persists: run update-branch manually, then rerun canonical standalone workflow for the same issue.
