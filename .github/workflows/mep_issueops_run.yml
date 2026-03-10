@@ -4,9 +4,8 @@ on:
   issue_comment:
     types: [created]
 permissions:
-  contents: write
+  contents: read
   issues: write
-  pull-requests: write
   actions: write
 jobs:
   run:
@@ -16,46 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install pyyaml
-      - name: Configure git identity (required for commit)
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name  "mep-issueops"
-          git config user.email "mep-issueops@users.noreply.github.com"
-      - name: Checkout IssueOps work branch (avoid pushing main)  # ISSUEOPS_WORK_BRANCH
-        shell: bash
-        run: |
-          set -euo pipefail
-          BR="mep/issueops-work-${GITHUB_RUN_ID}"
-          git checkout -B "$BR"
-          # best-effort: create remote branch to ensure subsequent pushes never touch main
-          git push -u origin "$BR" >/dev/null 2>&1 || true
-
-      - name: Run IssueOps
-        env:
-          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
-          GH_REPO:  ${{ github.repository }}
-          GIT_AUTHOR_NAME: "mep-issueops"
-          GIT_AUTHOR_EMAIL: "mep-issueops@users.noreply.github.com"
-          GIT_COMMITTER_NAME: "mep-issueops"
-          GIT_COMMITTER_EMAIL: "mep-issueops@users.noreply.github.com"
-        run: |
-          set -euo pipefail
-          python tools/agent/issueops.py
-
-      - name: Dispatch Gate0 (Audit/Compile/Dispatch)
+      - name: Resolve lane (strict, no implicit fallback)
+        id: lane
         env:
           GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
           GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p _tmp
@@ -63,13 +33,25 @@ jobs:
 
           if ! lane="$(python3 tools/mep_resolve_lane.py --issue-json-path _tmp/issue.json 2>_tmp/lane.err)"; then
             err="$(tr '\n' ' ' < _tmp/lane.err | sed -E 's/[[:space:]]+/ /g;s/^ //;s/ $//')"
-            body="[MEP][G0] STOP_HARD\n\nSTOP_REASON: LANE_UNRESOLVED\nDETAIL: ${err}\n\nAction:\n- Add exactly one label: mep-biz or mep-system\n- Or run canonical standalone workflow with explicit lane:\n  .github/workflows/mep_standalone_autoloop_dispatch.yml"
+            body="[MEP][STRICT_ISSUE_EVENT] STOP_HARD\n\nSTOP_REASON: LANE_UNRESOLVED\nDETAIL: ${err}\n\nAction:\n- Add exactly one label: mep-biz or mep-system\n- Or run canonical standalone workflow with explicit lane:\n  .github/workflows/mep_standalone_autoloop_dispatch.yml"
             gh api "repos/${GH_REPO}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null || true
             exit 1
           fi
 
-          echo "Dispatching Gate0 for issue #${ISSUE_NUMBER} lane=${lane}"
-          gh workflow run .github/workflows/mep_gate0_audit_compile_dispatch.yml -f issue_number="${ISSUE_NUMBER}" -f lane="${lane}"
+          echo "lane=${lane}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch canonical standalone workflow
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          LANE: ${{ steps.lane.outputs.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Dispatching canonical standalone workflow for issue #${ISSUE_NUMBER} lane=${LANE}"
+          gh workflow run ".github/workflows/mep_standalone_autoloop_dispatch.yml" --ref main \
+            -f issue_number="${ISSUE_NUMBER}" \
+            -f lane="${LANE}"
 concurrency:
-  group: mep-issueops-issue-$\{\{ github.event.issue.number \}\}
+  group: mep-issueops-issue-${{ github.event.issue.number }}
   cancel-in-progress: false

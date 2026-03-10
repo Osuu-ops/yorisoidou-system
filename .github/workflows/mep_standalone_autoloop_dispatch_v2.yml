@@ -131,18 +131,100 @@ jobs:
             - Download: Actions artifact "MEP_STANDALONE_ARTIFACTS_ISSUE_${{ env.ISSUE_NUMBER }}"
           branch: auto/standalone_dispatch_${{ env.ISSUE_NUMBER }}_${{ github.run_id }}
           base: main
+          labels: |
+            mep:controller=PC
           add-paths: |
             docs/MEP/ARTIFACTS/
 
-      - name: Enable auto-merge for artifacts PR
+      - name: Auto-merge artifacts PR with required-check enforcement
         if: ${{ github.event_name != 'pull_request' && steps.cpr.outputs.pull-request-number != '' }}
+        id: merge
         shell: bash
         env:
           PR_NUM: ${{ steps.cpr.outputs.pull-request-number }}
         run: |
           set -euo pipefail
-          gh pr merge "$PR_NUM" --squash --auto --delete-branch || true
-          gh pr checks "$PR_NUM" --watch --required || true
+          stop_hard(){ echo "STOP_HARD REASON_CODE=$1"; exit 1; }
+          stop_wait(){ echo "STOP_WAIT REASON_CODE=$1"; exit 1; }
+
+          pr="${PR_NUM:-}"
+          [ -n "${pr}" ] || stop_hard AUTO_PR_NOT_CREATED
+
+          gh pr merge "${pr}" --repo "${GITHUB_REPOSITORY}" --squash --auto --delete-branch || stop_wait AUTO_PR_ENABLE_AUTOMERGE_FAILED
+
+          deadline=$(( $(date +%s) + 1800 ))
+          merged_at=""
+          merge_sha=""
+          pr_url=""
+
+          while [ -z "${merged_at}" ]; do
+            pr_json="$(gh pr view "${pr}" --repo "${GITHUB_REPOSITORY}" --json state,mergeStateStatus,mergedAt,isDraft,statusCheckRollup,url,mergeCommit)"
+            pr_state="$(echo "${pr_json}" | jq -r '.state // "UNKNOWN"')"
+            pr_merge="$(echo "${pr_json}" | jq -r '.mergeStateStatus // "UNKNOWN"')"
+            merged_at="$(echo "${pr_json}" | jq -r '.mergedAt // ""')"
+            is_draft="$(echo "${pr_json}" | jq -r '.isDraft // false')"
+            checks_total="$(echo "${pr_json}" | jq '.statusCheckRollup | length')"
+            checks_failed="$(echo "${pr_json}" | jq '[.statusCheckRollup[]? | select((((.conclusion // .state // .status // "") | ascii_upcase) | test("FAILURE|FAILED|ERROR|CANCELLED|TIMED_OUT|ACTION_REQUIRED")))] | length')"
+            pr_url="$(echo "${pr_json}" | jq -r '.url // ""')"
+            merge_sha="$(echo "${pr_json}" | jq -r '.mergeCommit.oid // ""')"
+
+            [ "${is_draft}" != "true" ] || stop_wait AUTO_PR_IS_DRAFT
+            if [ "${checks_total}" -le 0 ]; then
+              [ "$(date +%s)" -lt "${deadline}" ] || stop_hard AUTO_PR_CHECKS_MISSING
+              sleep 20
+              continue
+            fi
+            [ "${checks_failed}" -eq 0 ] || stop_hard AUTO_PR_CHECKS_FAILED
+
+            if [ -n "${merged_at}" ]; then
+              break
+            fi
+
+            [ "${pr_state}" = "OPEN" ] || stop_hard AUTO_PR_CLOSED_WITHOUT_MERGE
+            if [ "${pr_merge}" = "BEHIND" ]; then
+              gh api -X PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/update-branch" >/dev/null || stop_wait AUTO_PR_UPDATE_BRANCH_FAILED
+              sleep 10
+              continue
+            fi
+            [ "$(date +%s)" -lt "${deadline}" ] || stop_wait AUTO_PR_MERGE_TIMEOUT
+            sleep 20
+          done
+
+          echo "pr_number=${pr}" >> "${GITHUB_OUTPUT}"
+          echo "pr_url=${pr_url}" >> "${GITHUB_OUTPUT}"
+          echo "merge_commit_sha=${merge_sha}" >> "${GITHUB_OUTPUT}"
+          echo "merged_at=${merged_at}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch Gate0 on merged artifact packet
+        if: ${{ github.event_name != 'pull_request' && steps.merge.outputs.pr_number != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
+          LANE: ${{ env.MEP_RESOLVED_LANE }}
+        run: |
+          set -euo pipefail
+          gh workflow run ".github/workflows/mep_gate0_audit_compile_dispatch.yml" --ref main \
+            -f issue_number="${ISSUE_NUMBER}" \
+            -f lane="${LANE}"
+
+      - name: Comment pass evidence (machine-readable)
+        if: ${{ github.event_name != 'pull_request' && steps.merge.outputs.pr_number != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.MEP_PR_TOKEN || github.token }}
+          ISSUE_NUMBER: ${{ env.ISSUE_NUMBER }}
+          LANE: ${{ env.MEP_RESOLVED_LANE }}
+          PACKET_PATH: docs/MEP/ARTIFACTS/${{ env.MEP_RESOLVED_LANE }}/ISSUE_${{ env.ISSUE_NUMBER }}/INPUT_PACKET.md
+          PR_URL: ${{ steps.merge.outputs.pr_url }}
+          PR_NUMBER: ${{ steps.merge.outputs.pr_number }}
+          MERGE_COMMIT_SHA: ${{ steps.merge.outputs.merge_commit_sha }}
+          MERGED_AT: ${{ steps.merge.outputs.merged_at }}
+        run: |
+          set -euo pipefail
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          body="[MEP][STANDALONE_AUTOLOOP] PASS\n\n- issue: #${ISSUE_NUMBER}\n- lane: ${LANE}\n- packet_path: ${PACKET_PATH}\n- artifact_pr: #${PR_NUMBER}\n- artifact_pr_url: ${PR_URL}\n- merge_commit_sha: ${MERGE_COMMIT_SHA}\n- merged_at: ${MERGED_AT}\n- run: ${run_url}\n\nRUN_ID=STANDALONE_AUTOLOOP\nOUTCOME=PASS\nSTOP_CLASS=\nREASON_CODE=AUTOLOOP_ENTRY_DISPATCHED\nNEXT_ACTION=WAIT_8GATE\nISSUE_NUMBER=${ISSUE_NUMBER}\nLANE=${LANE}\nPACKET_PATH=${PACKET_PATH}\nPR_URL=${PR_URL}\nCOMMIT_SHA=${MERGE_COMMIT_SHA}\nWORKFLOW_RUN_URL=${run_url}"
+          gh api "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="${body}" >/dev/null
 
       - name: Bridge restart state into SSOT
         if: ${{ github.event_name != 'pull_request' }}
@@ -243,6 +325,8 @@ jobs:
             - Artifact PR: ${{ steps.cpr.outputs.pull-request-url }}
           branch: mep/state-update/restart_${{ env.ISSUE_NUMBER }}_${{ github.run_id }}
           base: main
+          labels: |
+            mep:controller=PC
           add-paths: |
             mep/run_state.json
 
