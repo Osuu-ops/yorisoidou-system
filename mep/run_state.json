@@ -26,27 +26,25 @@
   "last_good": null,
   "last_result": {
     "stop_class": "",
-    "reason_code": "G8_RESTART_PACKET_READY",
-    "next_action": "RESTART_PACKET_READY",
-    "timestamp_utc": "2026-03-10T05:13:56Z",
+    "reason_code": "ISSUEOPS_BOOTSTRAP_OK",
+    "next_action": "OPEN_PR",
+    "timestamp_utc": "2026-03-10T12:52:42Z",
     "action": {
-      "name": "RESTART",
+      "name": "ISSUEOPS_BOOT",
       "outcome": "OK"
     },
     "evidence": {
-      "branch_name": "auto/standalone_issue_2920_22888185875",
-      "pr_url": "https://github.com/Osuu-ops/yorisoidou-system/pull/2961",
-      "commit_sha": "ccb3c41fa5091ad24dbbfd6ab41df65af3b7b37d",
-      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22888199464",
-      "lane": "BUSINESS",
-      "restart_packet": "docs/MEP/ARTIFACTS/BUSINESS/ISSUE_2920/RESTART_PACKET.txt"
+      "branch_name": "mep/issueops-run-run_5e169cad8820",
+      "pr_url": null,
+      "commit_sha": null,
+      "workflow_run_url": "https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22903367833"
     }
   },
-  "next_action": "RESTART_PACKET_READY",
+  "next_action": "OPEN_PR",
   "repo": "Osuu-ops/yorisoidou-system",
-  "run_id": "RUN_RESTART_2920_22888185875",
+  "run_id": "RUN_5e169cad8820",
   "run_status": "STILL_OPEN",
-  "updated_at": "2026-03-10T05:13:56Z",
+  "updated_at": "2026-03-10T12:52:42Z",
   "work_summary": {
     "done": "unknown",
     "in_progress": "unknown",

@@ -1,11 +1,17 @@
 # STATUS
-RUN_ID: RUN_RESTART_2920_22888185875
+
+RUN_ID: RUN_5e169cad8820
+
 RUN_STATUS: STILL_OPEN
+
 STOP_CLASS: 
-REASON_CODE: G8_RESTART_PACKET_READY
-NEXT_ACTION: RESTART_PACKET_READY
-TIMESTAMP_UTC: 2026-03-10T05:13:56Z
+
+REASON_CODE: ISSUEOPS_BOOTSTRAP_OK
+
+NEXT_ACTION: OPEN_PR
+
+TIMESTAMP_UTC: 2026-03-10T12:52:42Z
+
 EVIDENCE:
-- branch_name: auto/standalone_issue_2920_22888185875
-- pr_url: https://github.com/Osuu-ops/yorisoidou-system/pull/2961
-- commit_sha: ccb3c41fa5091ad24dbbfd6ab41df65af3b7b37d
+- pr_url: 
+- workflow_run_url: https://github.com/Osuu-ops/yorisoidou-system/actions/runs/22903367833
