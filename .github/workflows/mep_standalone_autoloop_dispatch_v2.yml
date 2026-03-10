@@ -106,6 +106,7 @@ jobs:
         env:
           GITHUB_EVENT_PATH: ${{ env.EVENT_JSON }}
           MEP_REQUESTED_LANE: ${{ env.MEP_RESOLVED_LANE }}
+          MEP_SOURCE_WORKFLOW: .github/workflows/mep_standalone_autoloop_dispatch_v2.yml
         run: python3 tools/issue_artifact_loop.py
 
       - name: Upload workflow artifacts
@@ -153,8 +154,12 @@ jobs:
           python3 - <<'PY'
           import json
           import os
+          import sys
           from datetime import datetime, timezone
           from pathlib import Path
+
+          sys.path.insert(0, str(Path("tools").resolve()))
+          from mep_restart_contract import build_restart_record, restart_bridge_from_record, restart_record_from_bridge
 
           issue_number = "${ISSUE_NUMBER}"
           standalone_run_id = "${GITHUB_RUN_ID}"
@@ -165,17 +170,35 @@ jobs:
           if resolved_lane not in ("SYSTEM", "BUSINESS"):
               raise SystemExit("STOP_HARD: lane unresolved in restart bridge")
 
+          now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          artifact_dir = f"docs/MEP/ARTIFACTS/{resolved_lane}/ISSUE_{issue_number}/"
+          packet_path = f"{artifact_dir}INPUT_PACKET.md"
+          restart_packet_path = f"{artifact_dir}RESTART_PACKET.txt"
+
           run_state = Path("mep/run_state.json")
           rs = json.loads(run_state.read_text(encoding="utf-8")) if run_state.exists() else {}
-          bridge = rs.get("restart_bridge") or {}
-          if bridge.get("source_standalone_run_id") == standalone_run_id:
+          bridge = restart_record_from_bridge(rs.get("restart_bridge") or {})
+          if bridge.get("source_run_id") == standalone_run_id and bridge.get("restart_packet_path") == restart_packet_path:
               print("RESTART_BRIDGE_NOOP=already_bridged")
               raise SystemExit(0)
 
-          now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-          new_run_id = f"RUN_RESTART_{issue_number}_{standalone_run_id}"
-          restart_packet = f"docs/MEP/ARTIFACTS/{resolved_lane}/ISSUE_{issue_number}/RESTART_PACKET.txt"
+          restart_record = build_restart_record(
+              issue_number=issue_number,
+              lane=resolved_lane,
+              source_phase="STANDALONE_ARTIFACT",
+              source_workflow=".github/workflows/mep_standalone_autoloop_dispatch_v2.yml",
+              source_run_id=standalone_run_id,
+              source_run_url=standalone_run_url,
+              source_pr_url=artifact_pr_url,
+              packet_path=packet_path,
+              artifact_dir=artifact_dir,
+              restart_packet_path=restart_packet_path,
+              next_action="DISPATCH_8GATE_ENTRY",
+              reason_code="STANDALONE_ARTIFACT_READY",
+              generated_at_utc=now,
+          )
 
+          new_run_id = f"RUN_RESTART_{issue_number}_{standalone_run_id}"
           rs["run_id"] = new_run_id
           rs["run_status"] = "STILL_OPEN"
           rs["next_action"] = "BOOT"
@@ -193,22 +216,15 @@ jobs:
               "commit_sha": None,
               "workflow_run_url": standalone_run_url,
               "lane": resolved_lane,
-              "restart_packet": restart_packet,
+              "packet_path": restart_record["packet_path"],
+              "restart_packet": restart_record["restart_packet_path"],
           }
           rs["last_result"] = lr
-          rs["restart_bridge"] = {
-              "source_issue_number": issue_number,
-              "source_standalone_run_id": standalone_run_id,
-              "source_standalone_run_url": standalone_run_url,
-              "artifact_pr_url": artifact_pr_url,
-              "lane": resolved_lane,
-              "restart_packet": restart_packet,
-              "bridged_at": now,
-          }
+          rs["restart_bridge"] = restart_bridge_from_record(restart_record)
 
           run_state.write_text(json.dumps(rs, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(f"RESTART_BRIDGE_RUN_ID={new_run_id}")
-          print(f"RESTART_BRIDGE_NEXT_ACTION={rs['next_action']}")
+          print(f"RESTART_BRIDGE_NEXT_ACTION={restart_record['next_action']}")
           PY
 
       - name: Create PR to persist restart bridge SSOT

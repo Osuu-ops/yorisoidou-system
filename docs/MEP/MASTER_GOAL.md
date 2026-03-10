@@ -45,12 +45,12 @@ MEPは、人間操作なしで end-to-end の閉ループを完了する（SUCCE
 - docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/MERGED_DRAFT.md（草案本文1つ）
 - docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/INPUT_PACKET.md（8ゲート入口へ差し込み可能）
 - docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/RUN_SUMMARY.md
-- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/RESTART_PACKET.txt
+- docs/MEP/ARTIFACTS/SYSTEM/ISSUE_<n>/RESTART_PACKET.txt（canonical restart contract。詳細は docs/MEP/RESTART_PACKET_CONTRACT.md）
 - docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/AUDIT.md
 - docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/MERGED_DRAFT.md（草案本文1つ）
 - docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/INPUT_PACKET.md（8ゲート入口へ差し込み可能）
 - docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/RUN_SUMMARY.md
-- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/RESTART_PACKET.txt
+- docs/MEP/ARTIFACTS/BUSINESS/ISSUE_<n>/RESTART_PACKET.txt（canonical restart contract。詳細は docs/MEP/RESTART_PACKET_CONTRACT.md）
 ### 接続条件（次ゲートへ入る前提）
 - 単体AUTO_LOOPが上記成果物を生成し、ユーザーがダウンロードできること
 - INPUT_PACKET.md が生成済みであること

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from mep_lane import LaneResolutionError, resolve_lane
+from mep_restart_contract import build_restart_record, render_restart_packet_text
 
 
 def utc_z() -> str:
@@ -75,10 +76,14 @@ def main() -> int:
     repo = os.environ.get("GH_REPO", "") or os.environ.get("GITHUB_REPOSITORY", "")
     issue_url = issue.get("html_url", "") or (("https://github.com/" + repo + "/issues/" + str(num)) if repo else "")
     run_url = os.environ.get("GITHUB_RUN_URL", "") or ""
+    generated_at = utc_z()
     body_raw = issue.get("body") or ""
     draft = extract_draft(body_raw)
     outdir = Path("docs") / "MEP" / "ARTIFACTS" / lane / f"ISSUE_{num}"
     outdir.mkdir(parents=True, exist_ok=True)
+    artifact_dir = f"docs/MEP/ARTIFACTS/{lane}/ISSUE_{num}/"
+    packet_path = f"{artifact_dir}INPUT_PACKET.md"
+    restart_packet_path = f"{artifact_dir}RESTART_PACKET.txt"
 
     # AUDIT.md (audit the DRAFT extracted from issue body)
     audit = []
@@ -86,7 +91,7 @@ def main() -> int:
     audit.append(f"ISSUE: #{num}")
     audit.append(f"LANE: {lane}")
     audit.append(f"TITLE: {title}")
-    audit.append(f"TIMESTAMP_UTC: {utc_z()}")
+    audit.append(f"TIMESTAMP_UTC: {generated_at}")
     audit.append("")
     audit.append("## Checks (minimal)")
     audit.append("- Non-empty body: " + ("OK" if draft.strip() else "NG"))
@@ -99,7 +104,7 @@ def main() -> int:
     merged.append("# MERGED_DRAFT")
     merged.append(f"ISSUE: #{num}")
     merged.append(f"LANE: {lane}")
-    merged.append(f"TIMESTAMP_UTC: {utc_z()}")
+    merged.append(f"TIMESTAMP_UTC: {generated_at}")
     merged.append("")
     merged.append(draft.rstrip())
     merged_path = outdir / "MERGED_DRAFT.md"
@@ -133,7 +138,7 @@ def main() -> int:
     summary.append("# RUN_SUMMARY")
     summary.append(f"ISSUE: #{num}")
     summary.append(f"LANE: {lane}")
-    summary.append(f"TIMESTAMP_UTC: {utc_z()}")
+    summary.append(f"TIMESTAMP_UTC: {generated_at}")
     summary.append(f"RUN_URL: {run_url}")
     summary.append("")
     summary.append("Generated files:")
@@ -145,14 +150,22 @@ def main() -> int:
     (outdir / "RUN_SUMMARY.md").write_text("\n".join(summary).rstrip() + "\n", encoding="utf-8")
 
     # RESTART_PACKET.txt
-    rp = []
-    rp.append("RESTART_PACKET")
-    rp.append(f"ISSUE={num}")
-    rp.append(f"LANE={lane}")
-    rp.append(f"TIMESTAMP_UTC={utc_z()}")
-    rp.append(f"ARTIFACT_DIR=docs/MEP/ARTIFACTS/{lane}/ISSUE_{num}/")
-    rp.append("NEXT=OPTIONAL: feed INPUT_PACKET.md into 8-gate entry (separate workflow)")
-    (outdir / "RESTART_PACKET.txt").write_text("\n".join(rp).rstrip() + "\n", encoding="utf-8")
+    restart_record = build_restart_record(
+        issue_number=num,
+        lane=lane,
+        source_phase="STANDALONE_ARTIFACT",
+        source_workflow=os.environ.get("MEP_SOURCE_WORKFLOW") or "tools/issue_artifact_loop.py",
+        source_run_id=os.environ.get("GITHUB_RUN_ID") or "",
+        source_run_url=run_url,
+        source_pr_url="",
+        packet_path=packet_path,
+        artifact_dir=artifact_dir,
+        restart_packet_path=restart_packet_path,
+        next_action="DISPATCH_8GATE_ENTRY",
+        reason_code="STANDALONE_ARTIFACT_READY",
+        generated_at_utc=generated_at,
+    )
+    (outdir / "RESTART_PACKET.txt").write_text(render_restart_packet_text(restart_record), encoding="utf-8")
 
     print("OK: artifacts written to", str(outdir))
     return 0

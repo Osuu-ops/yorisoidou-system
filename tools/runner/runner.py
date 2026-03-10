@@ -12,11 +12,18 @@ import re
 import secrets
 
 THIS_DIR = Path(__file__).resolve().parent
-if str(THIS_DIR) not in sys.path:
-    sys.path.insert(0, str(THIS_DIR))
+TOOLS_DIR = THIS_DIR.parent
+for candidate in (THIS_DIR, TOOLS_DIR):
+    if str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
 
 from live_state import update_live_state
 from progress_journal import append_journal_event, new_event_id
+from mep_restart_contract import restart_record_from_bridge
+
+
+def _restart_contract_from_rs(rs: dict) -> dict[str, str]:
+    return restart_record_from_bridge((rs or {}).get("restart_bridge") or {})
 
 
 def _resolve_portfolio_id_for_ledger(portfolio_id: str, allow_unselected: bool, rs: dict) -> str:
@@ -25,7 +32,7 @@ def _resolve_portfolio_id_for_ledger(portfolio_id: str, allow_unselected: bool, 
     Priority:
       1) explicit non-UNSELECTED
       2) last_result.evidence.pr_url -> PR_<n>
-      3) restart_bridge.source_issue_number -> ISSUE_<n>
+      3) restart_bridge.issue_number (canonical contract) -> ISSUE_<n>
       4) COORD_MAIN
     UNSELECTED is forbidden unless allow_unselected=True.
     """
@@ -37,8 +44,8 @@ def _resolve_portfolio_id_for_ledger(portfolio_id: str, allow_unselected: bool, 
     m = re.search(r"/pull/(?P<n>\d+)\b", pr_url)
     if m:
         return f"PR_{m.group('n')}"
-    rb = (rs or {}).get("restart_bridge") or {}
-    issue = str(rb.get("source_issue_number") or "").strip()
+    restart = _restart_contract_from_rs(rs)
+    issue = str(restart.get("issue_number") or "").strip()
     if issue.isdigit():
         return f"ISSUE_{issue}"
     # fallback (valid + stable)
@@ -330,6 +337,7 @@ EVIDENCE:
 - commit_sha: {commit_sha}
 """,
     )
+    restart = _restart_contract_from_rs(rs)
     write_md(
         HANDOFF_AUDIT_MD,
         f"""# HANDOFF_AUDIT
@@ -341,6 +349,11 @@ LATEST_EVIDENCE_POINTERS:
 - pr_url: {pr_url}
 - commit_sha: {commit_sha}
 - workflow_run_url: {wf_url}
+RESTART_CONTRACT_POINTERS:
+- issue_number: {restart.get('issue_number', '')}
+- lane: {restart.get('lane', '')}
+- next_action: {restart.get('next_action', '')}
+- restart_packet_path: {restart.get('restart_packet_path', '')}
 """,
     )
     lines = []
@@ -348,6 +361,13 @@ LATEST_EVIDENCE_POINTERS:
     lines.append(f"NEXT_ACTION: {next_action}")
     lines.append(f"REASON_CODE: {reason_code}")
     lines.append(f"STOP_CLASS: {stop_class}")
+    if restart:
+        lines.append("")
+        lines.append("RESTART_CONTRACT:")
+        lines.append(f"- issue_number: {restart.get('issue_number', '')}")
+        lines.append(f"- lane: {restart.get('lane', '')}")
+        lines.append(f"- next_action: {restart.get('next_action', '')}")
+        lines.append(f"- restart_packet_path: {restart.get('restart_packet_path', '')}")
     opts = lr.get("options") or []
     if isinstance(opts, list) and opts:
         lines.append("")
@@ -1677,11 +1697,4 @@ if __name__ == "__main__":
     sys.exit(main())
 
 # mep: ci-retrigger 2026-02-15T11:16:08Z
-
-
-
-
-
-
-
 
