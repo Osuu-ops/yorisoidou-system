@@ -1,4 +1,6 @@
 name: MEP Standalone AutoLoop (Dispatch)
+run-name: >-
+  MEP Standalone AutoLoop (Dispatch) / issue #${{ inputs.issue_number || github.event.inputs.issue_number || 'n/a' }} / lane ${{ inputs.lane || github.event.inputs.lane || 'AUTO' }}
 on:
   workflow_call:
     inputs:

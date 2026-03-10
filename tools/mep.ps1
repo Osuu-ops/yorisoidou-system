@@ -215,12 +215,31 @@ function Get-IssueContext([string]$RepoName, [int]$Number, [string]$RequestedLan
   }
 }
 
-function Get-LatestStandaloneRun([string]$RepoName) {
+function Get-StandaloneRunName([int]$IssueNumber, [string]$ResolvedLane) {
+  return ("MEP Standalone AutoLoop (Dispatch) / issue #{0} / lane {1}" -f $IssueNumber, $ResolvedLane)
+}
+
+function Get-LatestStandaloneRun([string]$RepoName, [int]$IssueNumber, [string]$ResolvedLane, [datetime]$DispatchedAfter) {
   $raw = (gh run list --repo $RepoName --workflow ".github/workflows/mep_standalone_autoloop_dispatch.yml" --limit 10 --json databaseId,status,conclusion,createdAt,url,event,displayTitle 2>$null | Out-String).Trim()
   if (-not $raw) { return $null }
   $runs = @($raw | ConvertFrom-Json | Where-Object { $_.event -eq "workflow_dispatch" } | Sort-Object createdAt -Descending)
   if ($runs.Count -eq 0) { return $null }
-  return $runs[0]
+
+  $expectedTitle = Get-StandaloneRunName -IssueNumber $IssueNumber -ResolvedLane $ResolvedLane
+  $titleMatches = @($runs | Where-Object { [string]$_.displayTitle -eq $expectedTitle })
+  if ($titleMatches.Count -gt 0) { return $titleMatches[0] }
+
+  $recentRuns = @(
+    $runs | Where-Object {
+      try {
+        [datetime]::Parse([string]$_.createdAt).ToUniversalTime() -ge $DispatchedAfter.ToUniversalTime()
+      } catch {
+        $false
+      }
+    }
+  )
+  if ($recentRuns.Count -eq 1) { return $recentRuns[0] }
+  return $null
 }
 
 function Get-RunContext([string]$RepoName, [long]$TargetRunId) {
@@ -232,9 +251,17 @@ function Get-RunContext([string]$RepoName, [long]$TargetRunId) {
   $prState = ""
   $prMergedAt = ""
   $prMergeState = ""
-  if ($prUrl) {
+  if (-not $prUrl) {
+    $prNumberMatch = [regex]::Match($log, 'Created pull request #(\d+)')
+    if ($prNumberMatch.Success) {
+      $prNumberFound = [int]$prNumberMatch.Groups[1].Value
+    }
+  } elseif ($prUrl) {
     $prNumberFound = [int]($prUrl -replace '^.*/pull/(\d+)$', '$1')
+  }
+  if ($prNumberFound -gt 0) {
     $pr = gh pr view $prNumberFound --repo $RepoName --json state,mergedAt,mergeStateStatus,url | ConvertFrom-Json
+    if (-not $prUrl) { $prUrl = [string]$pr.url }
     $prState = [string]$pr.state
     $prMergedAt = [string]$pr.mergedAt
     $prMergeState = [string]$pr.mergeStateStatus
@@ -355,6 +382,8 @@ function Show-PrStatus([object]$Context) {
   $nextAction = ""
   if ($Context.state -eq "MERGED") {
     $nextAction = "PR is already merged. No further PR action is required."
+  } elseif ($Context.state -eq "CLOSED") {
+    $nextAction = "PR is closed without merge. Inspect the related run/issue or hand the branch back to Codex."
   } elseif ($Context.failed_count -gt 0) {
     $nextAction = "Checks failed. Hand the failure back to Codex for code changes."
   } elseif ($Context.pending_count -gt 0 -or $Context.merge_state -eq "BEHIND" -or $Context.merge_state -eq "BLOCKED") {
@@ -421,9 +450,10 @@ function Cmd-DispatchStandalone {
   $context = Get-IssueContext -RepoName $repoName -Number $IssueNumber -RequestedLane $Lane
   if (-not $context.resolved_lane) { Fail $context.lane_error }
 
+  $dispatchStartedAt = (Get-Date).ToUniversalTime().AddSeconds(-5)
   gh workflow run ".github/workflows/mep_standalone_autoloop_dispatch.yml" --repo $repoName --ref $Ref -f issue_number="$IssueNumber" -f lane="$($context.resolved_lane)" | Out-Null
   Start-Sleep -Seconds 2
-  $run = Get-LatestStandaloneRun -RepoName $repoName
+  $run = Get-LatestStandaloneRun -RepoName $repoName -IssueNumber $IssueNumber -ResolvedLane $context.resolved_lane -DispatchedAfter $dispatchStartedAt
 
   Write-Title "MEP dispatch-standalone"
   Write-Field "repo" $repoName
@@ -450,7 +480,7 @@ function Cmd-DispatchStandalone {
   $nextAction = if ($run) {
     ("pwsh -NoProfile -ExecutionPolicy Bypass -File .\tools\mep.ps1 run-status -RunId {0}" -f $run.databaseId)
   } else {
-    "Open the Actions page and inspect the latest run for the canonical standalone workflow."
+    ("Run could not be resolved automatically. Open the Actions page for '.github/workflows/mep_standalone_autoloop_dispatch.yml' and pick the run for issue #{0} lane {1}." -f $IssueNumber, $context.resolved_lane)
   }
   Write-Field "next_action" $nextAction
 }
