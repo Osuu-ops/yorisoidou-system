@@ -1,12 +1,21 @@
-# HANDOFF Official Entrypoint
-目的（OP-2）
-- handoff が壊れても復帰可能な最小系を常に保持する
-- クラッシュ復帰時の入口を固定し、引継ぎ生成を止めない
-運用
-- 公式入口: tools/mep_handoff.ps1
-- 実体: tools/mep_handoff_min.ps1（最小系）
-- tools/mep_handoff.ps1 は wrapper として最小系へ委譲し、例外時も終了コードで失敗を返す
-変更ポリシー
-- handoff の高機能化は別ファイル・別PRで行う
-- 公式入口（wrapper）は「壊れにくさ」最優先で肥大化させない
-- 旧実装は tools/_deprecated/ に証跡として退避する
+# Handoff Official Entrypoint
+
+## Policy
+- `tools/mep_handoff_state.ps1` is the operational entrypoint for all handoff state transitions.
+- `tools/mep_handoff_live.py` is the single mutation engine.
+- `tools/mep_handoff.ps1` and `tools/mep_handoff_min.ps1` are packet-oriented wrappers only.
+- `docs/WORKROOM` is the only source of truth.
+- `docs/MEP/HANDOFF_*` exists only as compatibility mirror output generated from `docs/WORKROOM`.
+
+## Human Flow
+1. Work inside the active chat and update state through the entrypoint.
+2. Emit one packet.
+3. Paste that packet into the next chat.
+4. The next chat accepts the packet before continuing.
+
+## File Targets
+- Canonical packet: `docs/WORKROOM/WORK_ITEMS/WORK_<ID>/HANDOFF_PACKET.txt`
+- Compatibility packet mirror: `docs/MEP/HANDOFF_PACKET.txt`
+- Live work index: `docs/WORKROOM/ACTIVE_INDEX.json`
+- Archive index: `docs/WORKROOM/ARCHIVE_INDEX.json`
+- Control tower: `docs/WORKROOM/CONTROL_TOWER.md`
