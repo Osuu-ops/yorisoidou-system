@@ -107,6 +107,10 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--pr-url", default="")
     ap.add_argument("--controller-label", default=os.environ.get("MEP_CONTROLLER_LABEL", ""))
     ap.add_argument("--expected-controller-label", default=os.environ.get("MEP_EXPECTED_CONTROLLER_LABEL", ""))
+    ap.add_argument("--resume-origin-phase", default="")
+    ap.add_argument("--resume-dispatch-requested-at", default="")
+    ap.add_argument("--resume-dispatched-entry-run-id", default="")
+    ap.add_argument("--resume-dispatched-entry-run-url", default="")
     ap.add_argument("--compile-docs", action="store_true")
     return ap
 
@@ -184,9 +188,13 @@ def main() -> int:
         "phase_summary_path": evidence["phase_summary_path"],
         "phase_pointers_json": evidence["phase_pointers_json"],
         "restart_packet_path": evidence["restart_packet_path"],
+        "resume_origin_phase": (args.resume_origin_phase or existing_loop.get("resume_origin_phase") or "").strip(),
         "resume_via_workflow": existing_loop.get("resume_via_workflow") or "",
         "resume_from_iter": existing_loop.get("resume_from_iter") or "",
         "resume_target_iter": existing_loop.get("resume_target_iter") or "",
+        "resume_dispatch_requested_at": (args.resume_dispatch_requested_at or existing_loop.get("resume_dispatch_requested_at") or "").strip(),
+        "resume_dispatched_entry_run_id": (args.resume_dispatched_entry_run_id or existing_loop.get("resume_dispatched_entry_run_id") or "").strip(),
+        "resume_dispatched_entry_run_url": (args.resume_dispatched_entry_run_url or existing_loop.get("resume_dispatched_entry_run_url") or "").strip(),
         "updated_at": now,
         "phase_results": phase_results,
     }
