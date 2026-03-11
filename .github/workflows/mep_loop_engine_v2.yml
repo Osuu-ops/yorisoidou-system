@@ -1,4 +1,5 @@
 name: MEP Loop Engine (Canonical v2 / phase3 writeback)
+run-name: MEP Loop Engine / iter ${{ inputs.iter }} / max ${{ inputs.max_iter }} / token ${{ inputs.resume_token || 'none' }}
 "on":
   workflow_dispatch:
     inputs:
@@ -22,6 +23,10 @@ name: MEP Loop Engine (Canonical v2 / phase3 writeback)
         description: "exact expected controller label (optional)"
         required: false
         default: ""
+      resume_token:
+        description: "resume tracking token from loop entry (optional)"
+        required: false
+        default: ""
 concurrency:
   group: mep-loop-engine-v2
   cancel-in-progress: false
@@ -35,6 +40,7 @@ jobs:
     env:
       MEP_CONTROLLER_LABEL: ${{ github.event.inputs.controller_label }}
       MEP_EXPECTED_CONTROLLER_LABEL: ${{ github.event.inputs.expected_controller_label }}
+      MEP_LOOP_RESUME_TOKEN: ${{ github.event.inputs.resume_token }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,6 +65,7 @@ jobs:
           echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
           echo "BRANCH=${GITHUB_REF_NAME}"
           echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "RESUME_TOKEN=${{ inputs.resume_token }}"
           echo "NEXT_ACTION=SSOT_SCAN"
           echo "===== MEP_COPYPASTE_ZONE END ====="
           cat > .mep/RESTART_PACKET.txt <<EOF
@@ -69,6 +76,7 @@ jobs:
           REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}
           BRANCH=${GITHUB_REF_NAME}
           HEAD_SHA=${GITHUB_SHA}
+          RESUME_TOKEN=${{ inputs.resume_token }}
           CURRENT_PHASE=SSOT_SCAN
           NEXT_ACTION=SSOT_SCAN
           RUN_STATE_PATH=mep/run_state.json
