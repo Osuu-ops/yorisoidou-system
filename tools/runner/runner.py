@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -100,6 +101,24 @@ RUN_STATE = MEP_DIR / "run_state.json"
 STATUS_MD = DOCS_MEP / "STATUS.md"
 HANDOFF_AUDIT_MD = DOCS_MEP / "HANDOFF_AUDIT.md"
 HANDOFF_WORK_MD = DOCS_MEP / "HANDOFF_WORK.md"
+LOOP_WAIT_ACTIONS = {
+    "WAIT_PR_CHECKS",
+    "WAIT_FOR_CHECKS",
+    "WAIT_FOR_MERGE",
+    "WAIT_PR_MERGE",
+    "WAIT_LOOP_ENGINE",
+}
+LOOP_OWNED_ACTIONS = {
+    "SSOT_SCAN",
+    "CONFLICT_SCAN",
+    "EXTRACT_GENERATE",
+    "WRITEBACK_PREFLIGHT",
+    "PHASE3_WRITEBACK_BUNDLE",
+    "PHASE3_CREATE_PR",
+}
+LOOP_CONTINUATION_ACTIONS = LOOP_WAIT_ACTIONS | LOOP_OWNED_ACTIONS
+LOOP_TERMINAL_ACTIONS = {"ALL_DONE", "STATUS", "COMPACT"}
+LOOP_MANUAL_ACTIONS = {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}
 
 
 def _evidence_from_rs(rs: dict, note: str = "") -> dict:
@@ -686,6 +705,62 @@ def _observe_run_completion(repo: str, run_id: str, run_url: str = "") -> dict:
     }
 
 
+def _download_run_artifact_json(repo: str, run_id: str, artifact_name: str, member_path: str) -> dict:
+    repo = str(repo or "").strip()
+    run_id = str(run_id or "").strip()
+    artifact_name = str(artifact_name or "").strip()
+    member_path = str(member_path or "").strip().replace("\\", "/").lstrip("./")
+    if not repo or not run_id or not artifact_name or not member_path:
+        return {}
+    try:
+        with tempfile.TemporaryDirectory(prefix="mep-run-artifact-") as tmpdir:
+            _run([
+                "gh",
+                "run",
+                "download",
+                run_id,
+                "--repo",
+                repo,
+                "-n",
+                artifact_name,
+                "-D",
+                tmpdir,
+            ])
+            root = Path(tmpdir)
+            for candidate in root.rglob("*"):
+                if not candidate.is_file():
+                    continue
+                rel = candidate.relative_to(root).as_posix()
+                if rel == member_path or rel.endswith(f"/{member_path}") or rel.endswith(member_path):
+                    return json.loads(candidate.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return {}
+
+
+def _child_engine_state_snapshot(child_rs: dict) -> dict:
+    if not isinstance(child_rs, dict):
+        return {}
+    lr = child_rs.get("last_result") if isinstance(child_rs.get("last_result"), dict) else {}
+    loop = child_rs.get("loop_state") if isinstance(child_rs.get("loop_state"), dict) else {}
+    evidence = lr.get("evidence") if isinstance(lr.get("evidence"), dict) else {}
+    top_next_action = str(child_rs.get("next_action") or "").strip()
+    loop_next_action = str(loop.get("next_action") or "").strip()
+    return {
+        "run_status": str(child_rs.get("run_status") or "").strip(),
+        "next_action": top_next_action or loop_next_action,
+        "top_next_action": top_next_action,
+        "loop_next_action": loop_next_action,
+        "stop_class": str(lr.get("stop_class") or "").strip(),
+        "reason_code": str(lr.get("reason_code") or loop.get("reason_code") or "").strip(),
+        "current_phase": str(loop.get("current_phase") or "").strip(),
+        "phase_status": str(loop.get("phase_status") or "").strip(),
+        "workflow_run_url": str(loop.get("workflow_run_url") or evidence.get("workflow_run_url") or "").strip(),
+        "evidence": evidence,
+        "loop_state": loop,
+    }
+
+
 def _dispatch_loop_entry_wait_state(
     rs: dict,
     repo: str,
@@ -978,18 +1053,115 @@ def loop_wait_refresh(run_id: str) -> int:
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
+    child_state = _download_run_artifact_json(repo, engine_run_id, "loop-phase-pointers", "mep/run_state.json") if engine_run_id else {}
+    child = _child_engine_state_snapshot(child_state)
+    if child:
+        child_evidence = child.get("evidence") if isinstance(child.get("evidence"), dict) else {}
+        if child_evidence:
+            for key, value in child_evidence.items():
+                if isinstance(value, str):
+                    if value.strip():
+                        evidence[key] = value.strip()
+                elif value:
+                    evidence[key] = value
+        child_loop = child.get("loop_state") if isinstance(child.get("loop_state"), dict) else {}
+        if child_loop:
+            merged_loop = dict(loop)
+            merged_loop.update(child_loop)
+            loop = merged_loop
+        child_next_action = str(child.get("next_action") or "").strip()
+        child_reason_code = str(child.get("reason_code") or "").strip()
+        child_stop_class = str(child.get("stop_class") or "").strip()
+        child_phase = str(child.get("current_phase") or loop.get("current_phase") or "WAIT_LOOP_ENGINE").strip()
+        child_phase_status = str(child.get("phase_status") or "").strip()
+        child_run_status = str(child.get("run_status") or "").strip()
+        evidence["loop_child_next_action"] = child_next_action
+        evidence["loop_child_reason_code"] = child_reason_code
+        evidence["loop_child_current_phase"] = child_phase
+        evidence["loop_child_run_status"] = child_run_status
+        evidence["loop_child_stop_class"] = child_stop_class
+        evidence["workflow_run_url"] = engine_run_url or str(child_evidence.get("workflow_run_url") or entry_run_url).strip()
+        evidence["phase_summary_pointer"] = str(child_evidence.get("phase_summary_pointer") or engine_pointers["resume_engine_phase_summary_pointer"] or "").strip()
+        evidence["phase_pointers_pointer"] = str(child_evidence.get("phase_pointers_pointer") or engine_pointers["resume_engine_phase_pointers_pointer"] or "").strip()
+        evidence["restart_packet_pointer"] = str(child_evidence.get("restart_packet_pointer") or engine_pointers["resume_engine_restart_packet_pointer"] or "").strip()
+        loop["current_phase"] = child_phase
+        loop["workflow"] = ".github/workflows/mep_loop_engine_v2.yml"
+        loop["workflow_run_id"] = engine_run_id or str(loop.get("workflow_run_id") or "").strip()
+        loop["workflow_run_url"] = engine_run_url or str(child.get("workflow_run_url") or loop.get("workflow_run_url") or entry_run_url).strip()
+        loop["resume_token"] = resume_token
+        loop["resume_dispatched_entry_run_id"] = entry_run_id
+        loop["resume_dispatched_entry_run_url"] = entry_run_url
+        loop["resume_dispatched_engine_run_id"] = engine_run_id
+        loop["resume_dispatched_engine_run_url"] = engine_run_url
+        loop["resume_dispatched_engine_status"] = engine_status
+        loop["resume_dispatched_engine_conclusion"] = engine_conclusion
+        loop["resume_dispatched_engine_completed_at"] = engine_completed_at
+        loop["phase_summary_pointer"] = str(child_loop.get("phase_summary_pointer") or engine_pointers["resume_engine_phase_summary_pointer"] or loop.get("phase_summary_pointer") or "").strip()
+        loop["phase_pointers_pointer"] = str(child_loop.get("phase_pointers_pointer") or engine_pointers["resume_engine_phase_pointers_pointer"] or loop.get("phase_pointers_pointer") or "").strip()
+        loop["restart_packet_pointer"] = str(child_loop.get("restart_packet_pointer") or engine_pointers["resume_engine_restart_packet_pointer"] or loop.get("restart_packet_pointer") or "").strip()
+        loop["reason_code"] = child_reason_code or str(loop.get("reason_code") or "").strip()
+        loop["phase_status"] = child_phase_status or str(loop.get("phase_status") or "").strip()
+        if child_next_action in LOOP_CONTINUATION_ACTIONS:
+            rs["run_status"] = child_run_status or "STILL_OPEN"
+            if rs["run_status"] == "DONE":
+                rs["run_status"] = "STILL_OPEN"
+            lr["stop_class"] = child_stop_class or ("WAIT" if child_next_action in LOOP_WAIT_ACTIONS else "")
+            lr["reason_code"] = child_reason_code or "LOOP_CHILD_STATE_PROPAGATED"
+            rs["next_action"] = child_next_action
+            lr["next_action"] = rs["next_action"]
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = child_phase_status or ("WAIT" if child_next_action in LOOP_WAIT_ACTIONS else str(loop.get("phase_status") or ""))
+            rs["loop_state"] = loop
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 2 if rs["next_action"] in LOOP_WAIT_ACTIONS or lr["stop_class"] == "WAIT" else 0
+        if child_next_action in LOOP_TERMINAL_ACTIONS or (child_run_status == "DONE" and child_next_action in {"", "ALL_DONE"}):
+            rs["run_status"] = "DONE"
+            lr["stop_class"] = ""
+            lr["reason_code"] = child_reason_code or "LOOP_ENGINE_COMPLETED"
+            rs["next_action"] = "ALL_DONE"
+            lr["next_action"] = rs["next_action"]
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "DONE"
+            loop["reason_code"] = child_reason_code or "LOOP_ENGINE_COMPLETED"
+            rs["loop_state"] = loop
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 0
+        if child_next_action in LOOP_MANUAL_ACTIONS:
+            rs["run_status"] = "STILL_OPEN"
+            lr["stop_class"] = child_stop_class or "WAIT"
+            lr["reason_code"] = child_reason_code or child_next_action
+            rs["next_action"] = child_next_action
+            lr["next_action"] = rs["next_action"]
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = child_phase_status or "STOP"
+            loop["reason_code"] = child_reason_code or child_next_action
+            rs["loop_state"] = loop
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 0
+        if child_next_action:
+            rs["run_status"] = child_run_status or "STILL_OPEN"
+            lr["stop_class"] = child_stop_class or ""
+            lr["reason_code"] = child_reason_code or child_next_action
+            rs["next_action"] = child_next_action
+            lr["next_action"] = rs["next_action"]
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = child_phase_status or str(loop.get("phase_status") or "").strip()
+            loop["reason_code"] = child_reason_code or child_next_action
+            rs["loop_state"] = loop
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 2 if lr["stop_class"] == "WAIT" else 0
     if engine_conclusion in {"success", "neutral", "skipped"} or (engine_status == "completed" and not engine_conclusion):
-        rs["run_status"] = "DONE"
-        lr["stop_class"] = ""
-        lr["reason_code"] = "LOOP_ENGINE_COMPLETED"
-        rs["next_action"] = "ALL_DONE"
+        rs["run_status"] = "STILL_OPEN"
+        lr["stop_class"] = "WAIT"
+        lr["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
+        rs["next_action"] = "WAIT_LOOP_ENGINE"
         lr["next_action"] = rs["next_action"]
         loop["next_action"] = rs["next_action"]
-        loop["phase_status"] = "DONE"
-        loop["reason_code"] = "LOOP_ENGINE_COMPLETED"
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
-        return 0
+        return 2
     rs["run_status"] = "STILL_OPEN"
     lr["stop_class"] = "WAIT"
     lr["reason_code"] = "LOOP_ENGINE_COMPLETED_WITH_FAILURE"
