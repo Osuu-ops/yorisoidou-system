@@ -1,4 +1,5 @@
 name: MEP Loop Entry
+run-name: MEP Loop Entry / iter ${{ inputs.iter }} / max ${{ inputs.max_iter }}
 on:
   workflow_dispatch:
     inputs:

@@ -128,27 +128,23 @@ def main() -> int:
     "PHASE3_CREATE_PR",
   }
   # map next_action -> runner command
-  # NOTE: conservative mapping. Loop-owned phases stop with explicit WAIT until full self-heal is implemented.
   cmd = None
   if next_action in loop_actions:
-    loop_phase = str(loop_state.get("current_phase") or next_action).strip()
-    loop_workflow = str(loop_state.get("workflow") or ".github/workflows/mep_loop_engine_v2.yml").strip()
-    loop_run_url = str(loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
-    return stop_wait(
-      "LOOP_ENGINE_RESUME_REQUIRED",
-      f"next_action={next_action} phase={loop_phase} is owned by {loop_workflow}; inspect or rerun the canonical loop engine. workflow_run_url={loop_run_url}",
-    )
-  if next_action in {"WAIT_PR_CHECKS", "WAIT_FOR_CHECKS", "WAIT_FOR_MERGE", "WAIT_PR_MERGE"}:
+    if not run_id:
+      return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
+    cmd = ["python", str(RUNNER), "loop-resume", "--run-id", run_id]
+  elif next_action in {"WAIT_PR_CHECKS", "WAIT_FOR_CHECKS", "WAIT_FOR_MERGE", "WAIT_PR_MERGE"}:
     if not run_id:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
     cmd = ["python", str(RUNNER), "merge-finish", "--run-id", run_id]
   elif next_action in {"WAIT_LOOP_ENGINE"}:
-    loop_run_url = str(loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
+    loop_run_url = str(loop_state.get("resume_dispatched_entry_run_url") or loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("loop_entry_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
     resume_via = str(loop_state.get("resume_via_workflow") or ".github/workflows/mep_loop_entry.yml").strip()
+    resume_origin = str(loop_state.get("resume_origin_phase") or "").strip()
     resume_target = str(loop_state.get("resume_target_iter") or "").strip()
     return stop_wait(
       "LOOP_ENGINE_RUNNING",
-      f"next_action={next_action} is waiting for canonical loop resume via {resume_via}; target_iter={resume_target or '(unknown)'} workflow_run_url={loop_run_url}",
+      f"next_action={next_action} is waiting for canonical loop resume via {resume_via}; origin_phase={resume_origin or '(unknown)'} target_iter={resume_target or '(unknown)'} workflow_run_url={loop_run_url}",
     )
   elif next_action in {"CREATE_PR_FOR_RUN", "OPEN_NEW_PR_FOR_RUN"}:
     if not run_id:
@@ -162,6 +158,8 @@ def main() -> int:
     cmd = ["python", str(RUNNER), "status"]
   elif next_action in {"ALL_DONE"}:
     cmd = ["python", str(RUNNER), "compact"]
+  elif next_action in {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}:
+    return stop_wait(next_action, f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   else:
     return stop_wait("UNKNOWN_NEXT_ACTION", f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   # pass GH_REPO if present in run_state

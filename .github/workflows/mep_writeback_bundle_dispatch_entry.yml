@@ -211,11 +211,7 @@ jobs:
           PR_IN="${{ github.event.inputs.pr_number }}"
           if [ -z "${PR_IN}" ]; then PR_IN="0"; fi
           if [ "${PR_IN}" = "0" ]; then
-            PR_IN="$(
-              gh pr list --state merged --base main --limit 100 --json number,title,headRefName \
-                --jq '.[] | select((((.headRefName // "") | startswith("auto/writeback-bundle_")) | not) and (((.title // "") | startswith("Writeback bundle evidence (")) | not)) | .number' \
-                | head -n 1
-            )"
+            PR_IN="$(gh pr list --state merged --base main --limit 100 --json number,title,headRefName --jq '[.[] | select((((.headRefName // "") | startswith("auto/writeback-bundle_")) | not) and (((.title // "") | startswith("Writeback bundle evidence (")) | not)) | .number][0] // ""')"
           fi
           if [ -z "${PR_IN}" ] || [ "${PR_IN}" = "null" ]; then
             mark_skip "NO_ELIGIBLE_MERGED_PR"
