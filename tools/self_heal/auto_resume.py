@@ -30,8 +30,8 @@ REASON_CODE_RULES = {
     "stop": "hard",
   },
   "LOOP_ENGINE_COMPLETED_WITH_FAILURE": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "rerun canonical engine refresh",
+    "runner_cmd": "loop-wait-refresh",
   },
   "LOOP_REPO_UNRESOLVED": {
     "category": "hard stop",
@@ -46,8 +46,8 @@ REASON_CODE_RULES = {
     "stop": "hard",
   },
   "MULTIPLE_PR_FOR_ONE_RUN": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "rerun canonical evidence probe",
+    "runner_cmd": "pr-probe",
   },
 }
 def stop_wait(code: str, msg: str):
