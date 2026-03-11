@@ -138,17 +138,9 @@ def main() -> int:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
     cmd = ["python", str(RUNNER), "merge-finish", "--run-id", run_id]
   elif next_action in {"WAIT_LOOP_ENGINE"}:
-    engine_run_url = str(loop_state.get("resume_dispatched_engine_run_url") or loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("loop_engine_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
-    entry_run_url = str(loop_state.get("resume_dispatched_entry_run_url") or (lr.get("evidence") or {}).get("loop_entry_run_url") or "").strip()
-    phase_summary_pointer = str(loop_state.get("resume_engine_phase_summary_pointer") or loop_state.get("phase_summary_pointer") or (lr.get("evidence") or {}).get("phase_summary_pointer") or "").strip()
-    resume_via = str(loop_state.get("resume_via_workflow") or ".github/workflows/mep_loop_entry.yml").strip()
-    resume_origin = str(loop_state.get("resume_origin_phase") or "").strip()
-    resume_target = str(loop_state.get("resume_target_iter") or "").strip()
-    resume_token = str(loop_state.get("resume_token") or (lr.get("evidence") or {}).get("loop_resume_token") or "").strip()
-    return stop_wait(
-      "LOOP_ENGINE_RUNNING",
-      f"next_action={next_action} is waiting for canonical loop engine run via {resume_via}; origin_phase={resume_origin or '(unknown)'} target_iter={resume_target or '(unknown)'} resume_token={resume_token or '(unknown)'} engine_run_url={engine_run_url or '(unresolved)'} entry_run_url={entry_run_url or '(unresolved)'} phase_summary_pointer={phase_summary_pointer or '(unresolved)'}",
-    )
+    if not run_id:
+      return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
+    cmd = ["python", str(RUNNER), "loop-wait-refresh", "--run-id", run_id]
   elif next_action in {"CREATE_PR_FOR_RUN", "OPEN_NEW_PR_FOR_RUN"}:
     if not run_id:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
