@@ -119,6 +119,7 @@ LOOP_OWNED_ACTIONS = {
 LOOP_CONTINUATION_ACTIONS = LOOP_WAIT_ACTIONS | LOOP_OWNED_ACTIONS
 LOOP_TERMINAL_ACTIONS = {"ALL_DONE", "STATUS", "COMPACT"}
 LOOP_MANUAL_ACTIONS = {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}
+LOOP_WAIT_REFRESH_REENTRY_REASON_CODES = {"LOOP_ENGINE_COMPLETED_WITH_FAILURE"}
 
 
 def _evidence_from_rs(rs: dict, note: str = "") -> dict:
@@ -952,7 +953,14 @@ def loop_wait_refresh(run_id: str) -> int:
     lr["action"] = {"name": "WAIT_LOOP_ENGINE_REFRESH", "outcome": "WAIT"}
     repo = _get_repo(rs)
     loop = _loop_state_from_rs(rs)
-    if rs.get("next_action") != "WAIT_LOOP_ENGINE":
+    next_action = str(rs.get("next_action") or "").strip()
+    reason_code = str(lr.get("reason_code") or loop.get("reason_code") or "").strip()
+    manual_refresh_reentry = (
+        next_action in LOOP_MANUAL_ACTIONS
+        and reason_code in LOOP_WAIT_REFRESH_REENTRY_REASON_CODES
+        and str(loop.get("current_phase") or "").strip() == "WAIT_LOOP_ENGINE"
+    )
+    if next_action != "WAIT_LOOP_ENGINE" and not manual_refresh_reentry:
         rs["run_status"] = "STILL_OPEN"
         lr["stop_class"] = "WAIT"
         lr["reason_code"] = "LOOP_WAIT_ACTION_UNSUPPORTED"
@@ -966,6 +974,12 @@ def loop_wait_refresh(run_id: str) -> int:
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
+    if manual_refresh_reentry:
+        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        lr["next_action"] = rs["next_action"]
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = reason_code
     if not repo:
         rs["run_status"] = "STILL_OPEN"
         lr["stop_class"] = "WAIT"
@@ -1274,6 +1288,12 @@ def loop_resume(run_id: str) -> int:
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
+    if manual_refresh_reentry:
+        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        lr["next_action"] = rs["next_action"]
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = reason_code
     if not repo:
         rs["run_status"] = "STILL_OPEN"
         rs["last_result"]["stop_class"] = "WAIT"
