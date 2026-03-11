@@ -15,14 +15,14 @@ A-5 Runner PyCompile Guard：DONE（PR #2254, mergeCommit 952c980c…）
 B-1 SSOT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
 B-2 CONFLICT_SCAN：loop v2 から接続済 / phase state persisted / full completion 未
 B-3 EXTRACT生成（LEDGER/INPUT_PACKET/health/cards）：write 接続済 / phase state persisted / writeback stage 接続済 / full completion 未
-B-4 Self-heal 完全版（reason_code辞書→自動復帰）：post-writeback + loop owned phase resume 接続済 / full completion 未
+B-4 Self-heal 完全版（reason_code辞書→自動復帰）：post-writeback + loop owned phase resume 接続済 / `WAIT_LOOP_ENGINE` は canonical engine run の completion refresh と durable pointer 追跡まで接続済 / full completion 未
 ---
 ## Loop Canonical（現在）
 - Entry: `.github/workflows/mep_loop_entry.yml`
 - Engine: `.github/workflows/mep_loop_engine_v2.yml` (`workflow_dispatch`)
 - Legacy v1: `.github/workflows/mep_loop_engine.yml.txt`（sealed）
 - v2 wiring: `tools/checks/ssot_scan.py` / `tools/checks/conflict_scan.py` / `tools/extract/extract_generate.py` を呼ぶ
-- Scope note: EXTRACT は write + writeback stage 接続済。post-writeback と loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は dispatched entry run 観測を保持する。full self-heal completion は未
+- Scope note: EXTRACT は write + writeback stage 接続済。post-writeback と loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run url/status/conclusion と durable artifact pointer を保持し、completed まで追跡する。full self-heal completion は未
 ---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1

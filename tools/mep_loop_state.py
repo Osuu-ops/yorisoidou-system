@@ -72,6 +72,18 @@ def workflow_run_url(repo: str, workflow_run_id: str) -> str:
     return f"https://github.com/{repo}/actions/runs/{workflow_run_id}"
 
 
+def artifact_pointer(run_url: str, artifact_name: str, member_path: str = "") -> str:
+    run_url = (run_url or "").strip()
+    artifact_name = (artifact_name or "").strip()
+    member_path = (member_path or "").strip()
+    if not run_url or not artifact_name:
+        return ""
+    pointer = f"{run_url}#artifact={artifact_name}"
+    if member_path:
+        pointer += f"&path={member_path}"
+    return pointer
+
+
 def normalize_stop_class(outcome: str, stop_class: str) -> str:
     normalized = (stop_class or "").strip().upper()
     if normalized:
@@ -108,6 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--controller-label", default=os.environ.get("MEP_CONTROLLER_LABEL", ""))
     ap.add_argument("--expected-controller-label", default=os.environ.get("MEP_EXPECTED_CONTROLLER_LABEL", ""))
     ap.add_argument("--resume-origin-phase", default="")
+    ap.add_argument("--resume-token", default=os.environ.get("MEP_LOOP_RESUME_TOKEN", ""))
     ap.add_argument("--resume-dispatch-requested-at", default="")
     ap.add_argument("--resume-dispatched-entry-run-id", default="")
     ap.add_argument("--resume-dispatched-entry-run-url", default="")
@@ -127,6 +140,21 @@ def main() -> int:
     wf_url = workflow_run_url(repo, workflow_run_id)
     phase = args.phase.strip()
     stop_class = normalize_stop_class(args.outcome.strip().upper(), args.stop_class)
+    phase_result_path = (args.phase_result_path or "").strip()
+    phase_summary_path = (args.phase_summary_path or "").strip()
+    phase_pointers_json = (args.phase_pointers_json or "").strip()
+    restart_packet_path = (args.restart_packet_path or "").strip()
+    phase_artifact_name = "loop-phase-pointers"
+    restart_artifact_name = "restart-packet"
+    phase_artifact_pointer = artifact_pointer(wf_url, phase_artifact_name)
+    restart_artifact_pointer = artifact_pointer(wf_url, restart_artifact_name)
+    phase_result_pointer = artifact_pointer(wf_url, phase_artifact_name, phase_result_path)
+    phase_summary_pointer = artifact_pointer(wf_url, phase_artifact_name, phase_summary_path)
+    phase_pointers_pointer = artifact_pointer(wf_url, phase_artifact_name, phase_pointers_json)
+    restart_packet_pointer = artifact_pointer(wf_url, restart_artifact_name, restart_packet_path)
+    resume_token = (args.resume_token or existing_loop.get("resume_token") or "").strip()
+    resume_engine_run_id = workflow_run_id or str(existing_loop.get("resume_dispatched_engine_run_id") or "").strip()
+    resume_engine_run_url = wf_url or str(existing_loop.get("resume_dispatched_engine_run_url") or "").strip()
     evidence = {
         "branch_name": (args.branch_name or "").strip(),
         "pr_url": (args.pr_url or "").strip(),
@@ -134,11 +162,19 @@ def main() -> int:
         "workflow_run_url": wf_url,
         "phase": phase,
         "phase_status": (args.phase_status or "").strip(),
-        "phase_result_path": (args.phase_result_path or "").strip(),
-        "phase_summary_path": (args.phase_summary_path or "").strip(),
-        "phase_pointers_json": (args.phase_pointers_json or "").strip(),
+        "phase_result_path": phase_result_path,
+        "phase_summary_path": phase_summary_path,
+        "phase_pointers_json": phase_pointers_json,
         "loop_workflow": (args.workflow_path or "").strip(),
-        "restart_packet_path": (args.restart_packet_path or "").strip(),
+        "restart_packet_path": restart_packet_path,
+        "phase_artifact_name": phase_artifact_name,
+        "restart_artifact_name": restart_artifact_name,
+        "phase_artifact_pointer": phase_artifact_pointer,
+        "restart_artifact_pointer": restart_artifact_pointer,
+        "phase_result_pointer": phase_result_pointer,
+        "phase_summary_pointer": phase_summary_pointer,
+        "phase_pointers_pointer": phase_pointers_pointer,
+        "restart_packet_pointer": restart_packet_pointer,
     }
     phase_results = dict(existing_results)
     phase_results[phase] = {
@@ -147,6 +183,7 @@ def main() -> int:
         "stop_class": stop_class,
         "reason_code": (args.reason_code or "").strip(),
         "result_path": evidence["phase_result_path"],
+        "result_pointer": evidence["phase_result_pointer"],
         "updated_at": now,
     }
     controller_label = (args.controller_label or existing_loop.get("controller_label") or "").strip()
@@ -188,13 +225,28 @@ def main() -> int:
         "phase_summary_path": evidence["phase_summary_path"],
         "phase_pointers_json": evidence["phase_pointers_json"],
         "restart_packet_path": evidence["restart_packet_path"],
+        "phase_artifact_name": phase_artifact_name,
+        "restart_artifact_name": restart_artifact_name,
+        "phase_artifact_pointer": phase_artifact_pointer,
+        "restart_artifact_pointer": restart_artifact_pointer,
+        "phase_result_pointer": phase_result_pointer,
+        "phase_summary_pointer": phase_summary_pointer,
+        "phase_pointers_pointer": phase_pointers_pointer,
+        "restart_packet_pointer": restart_packet_pointer,
         "resume_origin_phase": (args.resume_origin_phase or existing_loop.get("resume_origin_phase") or "").strip(),
+        "resume_token": resume_token,
         "resume_via_workflow": existing_loop.get("resume_via_workflow") or "",
         "resume_from_iter": existing_loop.get("resume_from_iter") or "",
         "resume_target_iter": existing_loop.get("resume_target_iter") or "",
         "resume_dispatch_requested_at": (args.resume_dispatch_requested_at or existing_loop.get("resume_dispatch_requested_at") or "").strip(),
         "resume_dispatched_entry_run_id": (args.resume_dispatched_entry_run_id or existing_loop.get("resume_dispatched_entry_run_id") or "").strip(),
         "resume_dispatched_entry_run_url": (args.resume_dispatched_entry_run_url or existing_loop.get("resume_dispatched_entry_run_url") or "").strip(),
+        "resume_dispatched_engine_run_id": resume_engine_run_id,
+        "resume_dispatched_engine_run_url": resume_engine_run_url,
+        "resume_engine_phase_artifact_pointer": phase_artifact_pointer,
+        "resume_engine_phase_summary_pointer": phase_summary_pointer,
+        "resume_engine_phase_pointers_pointer": phase_pointers_pointer,
+        "resume_engine_restart_packet_pointer": restart_packet_pointer,
         "updated_at": now,
         "phase_results": phase_results,
     }

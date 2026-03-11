@@ -312,6 +312,28 @@ def default_run_state() -> dict:
 def _loop_state_from_rs(rs: dict) -> dict:
     loop = (rs or {}).get("loop_state") or {}
     return loop if isinstance(loop, dict) else {}
+
+
+def _artifact_pointer(run_url: str, artifact_name: str, member_path: str = "") -> str:
+    run_url = str(run_url or "").strip()
+    artifact_name = str(artifact_name or "").strip()
+    member_path = str(member_path or "").strip()
+    if not run_url or not artifact_name:
+        return ""
+    pointer = f"{run_url}#artifact={artifact_name}"
+    if member_path:
+        pointer += f"&path={member_path}"
+    return pointer
+
+
+def _engine_pointer_fields(run_url: str) -> dict[str, str]:
+    run_url = str(run_url or "").strip()
+    return {
+        "resume_engine_phase_artifact_pointer": _artifact_pointer(run_url, "loop-phase-pointers"),
+        "resume_engine_phase_summary_pointer": _artifact_pointer(run_url, "loop-phase-pointers", ".mep/phase_summary.md"),
+        "resume_engine_phase_pointers_pointer": _artifact_pointer(run_url, "loop-phase-pointers", ".mep/loop_phase_pointers.json"),
+        "resume_engine_restart_packet_pointer": _artifact_pointer(run_url, "restart-packet", ".mep/RESTART_PACKET.txt"),
+    }
 def update_compiled(rs: dict) -> None:
     run_id = rs.get("run_id") or "NONE"
     run_status = rs.get("run_status", "")
@@ -331,15 +353,30 @@ def update_compiled(rs: dict) -> None:
     loop_next_action = loop.get("next_action", "")
     loop_run_url = loop.get("workflow_run_url", "")
     loop_result_path = loop.get("phase_result_path", "")
+    loop_result_pointer = loop.get("phase_result_pointer", "")
     loop_summary_path = loop.get("phase_summary_path", "")
+    loop_summary_pointer = loop.get("phase_summary_pointer", "")
     loop_pointers = loop.get("phase_pointers_json", "")
+    loop_pointers_pointer = loop.get("phase_pointers_pointer", "")
+    loop_restart_pointer = loop.get("restart_packet_pointer", "")
     loop_resume_origin = loop.get("resume_origin_phase", "")
     loop_resume_via = loop.get("resume_via_workflow", "")
     loop_resume_from = loop.get("resume_from_iter", "")
     loop_resume_target = loop.get("resume_target_iter", "")
     loop_resume_requested_at = loop.get("resume_dispatch_requested_at", "")
-    loop_resume_run_id = loop.get("resume_dispatched_entry_run_id", "")
-    loop_resume_run_url = loop.get("resume_dispatched_entry_run_url", "")
+    loop_resume_token = loop.get("resume_token", "")
+    loop_resume_entry_run_id = loop.get("resume_dispatched_entry_run_id", "")
+    loop_resume_entry_run_url = loop.get("resume_dispatched_entry_run_url", "")
+    loop_resume_engine_run_id = loop.get("resume_dispatched_engine_run_id", "")
+    loop_resume_engine_run_url = loop.get("resume_dispatched_engine_run_url", "")
+    loop_resume_engine_status = loop.get("resume_dispatched_engine_status", "")
+    loop_resume_engine_conclusion = loop.get("resume_dispatched_engine_conclusion", "")
+    loop_resume_engine_completed_at = loop.get("resume_dispatched_engine_completed_at", "")
+    loop_resume_engine_phase_artifact_pointer = loop.get("resume_engine_phase_artifact_pointer", "")
+    loop_resume_engine_phase_summary_pointer = loop.get("resume_engine_phase_summary_pointer", "")
+    loop_resume_engine_phase_pointers_pointer = loop.get("resume_engine_phase_pointers_pointer", "")
+    loop_resume_engine_restart_packet_pointer = loop.get("resume_engine_restart_packet_pointer", "")
+    loop_primary_run_url = loop_resume_engine_run_url or loop_run_url or loop_resume_entry_run_url
     current_source = "LOOP_STATE" if loop else "LAST_RESULT"
     lines = [
         "# STATUS",
@@ -362,17 +399,31 @@ def update_compiled(rs: dict) -> None:
             f"- current_phase: {loop_phase}",
             f"- next_action: {loop_next_action}",
             f"- reason_code: {loop_reason}",
-            f"- workflow_run_url: {loop_run_url}",
+            f"- workflow_run_url: {loop_primary_run_url}",
             f"- phase_result_path: {loop_result_path}",
+            f"- phase_result_pointer: {loop_result_pointer}",
             f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_summary_pointer: {loop_summary_pointer}",
             f"- phase_pointers_json: {loop_pointers}",
+            f"- phase_pointers_pointer: {loop_pointers_pointer}",
+            f"- restart_packet_pointer: {loop_restart_pointer}",
             f"- resume_origin_phase: {loop_resume_origin}",
             f"- resume_via_workflow: {loop_resume_via}",
             f"- resume_from_iter: {loop_resume_from}",
             f"- resume_target_iter: {loop_resume_target}",
             f"- resume_dispatch_requested_at: {loop_resume_requested_at}",
-            f"- resume_dispatched_entry_run_id: {loop_resume_run_id}",
-            f"- resume_dispatched_entry_run_url: {loop_resume_run_url}",
+            f"- resume_token: {loop_resume_token}",
+            f"- resume_dispatched_entry_run_id: {loop_resume_entry_run_id}",
+            f"- resume_dispatched_entry_run_url: {loop_resume_entry_run_url}",
+            f"- resume_dispatched_engine_run_id: {loop_resume_engine_run_id}",
+            f"- resume_dispatched_engine_run_url: {loop_resume_engine_run_url}",
+            f"- resume_dispatched_engine_status: {loop_resume_engine_status}",
+            f"- resume_dispatched_engine_conclusion: {loop_resume_engine_conclusion}",
+            f"- resume_dispatched_engine_completed_at: {loop_resume_engine_completed_at}",
+            f"- resume_engine_phase_artifact_pointer: {loop_resume_engine_phase_artifact_pointer}",
+            f"- resume_engine_phase_summary_pointer: {loop_resume_engine_phase_summary_pointer}",
+            f"- resume_engine_phase_pointers_pointer: {loop_resume_engine_phase_pointers_pointer}",
+            f"- resume_engine_restart_packet_pointer: {loop_resume_engine_restart_packet_pointer}",
         ])
     write_md(STATUS_MD, "\n".join(lines))
     restart = _restart_contract_from_rs(rs)
@@ -393,17 +444,31 @@ def update_compiled(rs: dict) -> None:
             f"- current_phase: {loop_phase}",
             f"- next_action: {loop_next_action}",
             f"- reason_code: {loop_reason}",
-            f"- workflow_run_url: {loop_run_url}",
+            f"- workflow_run_url: {loop_primary_run_url}",
             f"- phase_result_path: {loop_result_path}",
+            f"- phase_result_pointer: {loop_result_pointer}",
             f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_summary_pointer: {loop_summary_pointer}",
             f"- phase_pointers_json: {loop_pointers}",
+            f"- phase_pointers_pointer: {loop_pointers_pointer}",
+            f"- restart_packet_pointer: {loop_restart_pointer}",
             f"- resume_origin_phase: {loop_resume_origin}",
             f"- resume_via_workflow: {loop_resume_via}",
             f"- resume_from_iter: {loop_resume_from}",
             f"- resume_target_iter: {loop_resume_target}",
             f"- resume_dispatch_requested_at: {loop_resume_requested_at}",
-            f"- resume_dispatched_entry_run_id: {loop_resume_run_id}",
-            f"- resume_dispatched_entry_run_url: {loop_resume_run_url}",
+            f"- resume_token: {loop_resume_token}",
+            f"- resume_dispatched_entry_run_id: {loop_resume_entry_run_id}",
+            f"- resume_dispatched_entry_run_url: {loop_resume_entry_run_url}",
+            f"- resume_dispatched_engine_run_id: {loop_resume_engine_run_id}",
+            f"- resume_dispatched_engine_run_url: {loop_resume_engine_run_url}",
+            f"- resume_dispatched_engine_status: {loop_resume_engine_status}",
+            f"- resume_dispatched_engine_conclusion: {loop_resume_engine_conclusion}",
+            f"- resume_dispatched_engine_completed_at: {loop_resume_engine_completed_at}",
+            f"- resume_engine_phase_artifact_pointer: {loop_resume_engine_phase_artifact_pointer}",
+            f"- resume_engine_phase_summary_pointer: {loop_resume_engine_phase_summary_pointer}",
+            f"- resume_engine_phase_pointers_pointer: {loop_resume_engine_phase_pointers_pointer}",
+            f"- resume_engine_restart_packet_pointer: {loop_resume_engine_restart_packet_pointer}",
         ])
     audit_lines.extend([
         "RESTART_CONTRACT_POINTERS:",
@@ -424,17 +489,31 @@ def update_compiled(rs: dict) -> None:
         lines.append(f"- current_phase: {loop_phase}")
         lines.append(f"- next_action: {loop_next_action}")
         lines.append(f"- reason_code: {loop_reason}")
-        lines.append(f"- workflow_run_url: {loop_run_url}")
+        lines.append(f"- workflow_run_url: {loop_primary_run_url}")
         lines.append(f"- phase_result_path: {loop_result_path}")
+        lines.append(f"- phase_result_pointer: {loop_result_pointer}")
         lines.append(f"- phase_summary_path: {loop_summary_path}")
+        lines.append(f"- phase_summary_pointer: {loop_summary_pointer}")
         lines.append(f"- phase_pointers_json: {loop_pointers}")
+        lines.append(f"- phase_pointers_pointer: {loop_pointers_pointer}")
+        lines.append(f"- restart_packet_pointer: {loop_restart_pointer}")
         lines.append(f"- resume_origin_phase: {loop_resume_origin}")
         lines.append(f"- resume_via_workflow: {loop_resume_via}")
         lines.append(f"- resume_from_iter: {loop_resume_from}")
         lines.append(f"- resume_target_iter: {loop_resume_target}")
         lines.append(f"- resume_dispatch_requested_at: {loop_resume_requested_at}")
-        lines.append(f"- resume_dispatched_entry_run_id: {loop_resume_run_id}")
-        lines.append(f"- resume_dispatched_entry_run_url: {loop_resume_run_url}")
+        lines.append(f"- resume_token: {loop_resume_token}")
+        lines.append(f"- resume_dispatched_entry_run_id: {loop_resume_entry_run_id}")
+        lines.append(f"- resume_dispatched_entry_run_url: {loop_resume_entry_run_url}")
+        lines.append(f"- resume_dispatched_engine_run_id: {loop_resume_engine_run_id}")
+        lines.append(f"- resume_dispatched_engine_run_url: {loop_resume_engine_run_url}")
+        lines.append(f"- resume_dispatched_engine_status: {loop_resume_engine_status}")
+        lines.append(f"- resume_dispatched_engine_conclusion: {loop_resume_engine_conclusion}")
+        lines.append(f"- resume_dispatched_engine_completed_at: {loop_resume_engine_completed_at}")
+        lines.append(f"- resume_engine_phase_artifact_pointer: {loop_resume_engine_phase_artifact_pointer}")
+        lines.append(f"- resume_engine_phase_summary_pointer: {loop_resume_engine_phase_summary_pointer}")
+        lines.append(f"- resume_engine_phase_pointers_pointer: {loop_resume_engine_phase_pointers_pointer}")
+        lines.append(f"- resume_engine_restart_packet_pointer: {loop_resume_engine_restart_packet_pointer}")
     if restart:
         lines.append("")
         lines.append("RESTART_CONTRACT:")
@@ -508,22 +587,33 @@ def _loop_resume_context(rs: dict) -> dict:
         "workflow": str(loop.get("workflow") or ".github/workflows/mep_loop_engine_v2.yml").strip(),
         "workflow_run_url": str(loop.get("workflow_run_url") or "").strip(),
         "resume_origin_phase": str(loop.get("resume_origin_phase") or "").strip(),
+        "resume_token": str(loop.get("resume_token") or "").strip(),
         "resume_dispatch_requested_at": str(loop.get("resume_dispatch_requested_at") or "").strip(),
         "resume_dispatched_entry_run_id": str(loop.get("resume_dispatched_entry_run_id") or "").strip(),
         "resume_dispatched_entry_run_url": str(loop.get("resume_dispatched_entry_run_url") or "").strip(),
+        "resume_dispatched_engine_run_id": str(loop.get("resume_dispatched_engine_run_id") or "").strip(),
+        "resume_dispatched_engine_run_url": str(loop.get("resume_dispatched_engine_run_url") or "").strip(),
+        "resume_dispatched_engine_status": str(loop.get("resume_dispatched_engine_status") or "").strip(),
+        "resume_dispatched_engine_conclusion": str(loop.get("resume_dispatched_engine_conclusion") or "").strip(),
+        "resume_dispatched_engine_completed_at": str(loop.get("resume_dispatched_engine_completed_at") or "").strip(),
+        "resume_engine_phase_artifact_pointer": str(loop.get("resume_engine_phase_artifact_pointer") or "").strip(),
+        "resume_engine_phase_summary_pointer": str(loop.get("resume_engine_phase_summary_pointer") or "").strip(),
+        "resume_engine_phase_pointers_pointer": str(loop.get("resume_engine_phase_pointers_pointer") or "").strip(),
+        "resume_engine_restart_packet_pointer": str(loop.get("resume_engine_restart_packet_pointer") or "").strip(),
     }
 
 
-def _observe_loop_entry_run(repo: str, requested_at: str, target_iter: int) -> dict:
+def _observe_workflow_run(repo: str, workflow_path: str, requested_at: str, target_iter: int, resume_token: str = "") -> dict:
     if not repo:
         return {}
     requested_dt = _parse_iso_utc(requested_at)
+    resume_token = str(resume_token or "").strip()
     title_needles = [f"iter {target_iter}", f"iter={target_iter}"]
     for _ in range(5):
         try:
             raw = _run([
                 "gh", "run", "list",
-                "--workflow", ".github/workflows/mep_loop_entry.yml",
+                "--workflow", workflow_path,
                 "--repo", repo,
                 "--json", "databaseId,url,createdAt,event,displayTitle,status",
                 "--limit", "10",
@@ -542,7 +632,10 @@ def _observe_loop_entry_run(repo: str, requested_at: str, target_iter: int) -> d
             created_dt = _parse_iso_utc(created_at)
             if requested_dt and created_dt and created_dt < (requested_dt - timedelta(seconds=15)):
                 continue
-            if title and not any(needle in title for needle in title_needles):
+            if resume_token:
+                if resume_token not in title:
+                    continue
+            elif title and not any(needle in title for needle in title_needles):
                 continue
             run_id = str(item.get("databaseId") or "").strip()
             run_url = str(item.get("url") or "").strip()
@@ -558,6 +651,41 @@ def _observe_loop_entry_run(repo: str, requested_at: str, target_iter: int) -> d
     return {}
 
 
+def _observe_loop_entry_run(repo: str, requested_at: str, target_iter: int, resume_token: str = "") -> dict:
+    return _observe_workflow_run(repo, ".github/workflows/mep_loop_entry.yml", requested_at, target_iter, resume_token)
+
+
+def _observe_loop_engine_run(repo: str, requested_at: str, target_iter: int, resume_token: str = "") -> dict:
+    return _observe_workflow_run(repo, ".github/workflows/mep_loop_engine_v2.yml", requested_at, target_iter, resume_token)
+
+
+def _observe_run_completion(repo: str, run_id: str, run_url: str = "") -> dict:
+    repo = str(repo or "").strip()
+    run_id = str(run_id or "").strip()
+    run_url = str(run_url or "").strip()
+    if not repo or not run_id:
+        return {}
+    try:
+        raw = _run(["gh", "api", f"repos/{repo}/actions/runs/{run_id}"])
+        data = json.loads(raw) if raw.strip() else {}
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    status = str(data.get("status") or "").strip()
+    conclusion = str(data.get("conclusion") or "").strip()
+    updated_at = str(data.get("updated_at") or data.get("created_at") or "").strip()
+    completed_at = updated_at if status == "completed" else ""
+    return {
+        "run_id": str(data.get("id") or run_id).strip(),
+        "run_url": str(data.get("html_url") or run_url).strip() or run_url,
+        "status": status,
+        "conclusion": conclusion,
+        "updated_at": updated_at,
+        "completed_at": completed_at,
+    }
+
+
 def _dispatch_loop_entry_wait_state(
     rs: dict,
     repo: str,
@@ -570,11 +698,14 @@ def _dispatch_loop_entry_wait_state(
     target_iter: int,
 ) -> int:
     now = utc_now_z()
+    entry_workflow = ".github/workflows/mep_loop_entry.yml"
+    engine_workflow = ".github/workflows/mep_loop_engine_v2.yml"
     rs["updated_at"] = now
     rs.setdefault("last_result", {})["timestamp_utc"] = now
     rs.setdefault("last_result", {})["action"] = {"name": wait_phase, "outcome": "WAIT"}
     evidence = rs.setdefault("last_result", {}).setdefault("evidence", {})
     loop = _loop_state_from_rs(rs)
+    resume_token = str(loop.get("resume_token") or loop_ctx.get("resume_token") or f"loop-{target_iter}-{secrets.token_hex(4)}").strip()
 
     already_waiting = (
         rs.get("next_action") == "WAIT_LOOP_ENGINE"
@@ -583,22 +714,55 @@ def _dispatch_loop_entry_wait_state(
         and str(loop.get("resume_origin_phase") or "").strip() == origin_phase
     )
     if already_waiting:
-        observed = {}
+        requested_at = str(loop.get("resume_dispatch_requested_at") or now)
+        observed_entry = {}
+        observed_engine = {}
         if not str(loop.get("resume_dispatched_entry_run_id") or "").strip() and not str(loop.get("resume_dispatched_entry_run_url") or "").strip():
-            observed = _observe_loop_entry_run(repo, str(loop.get("resume_dispatch_requested_at") or now), target_iter)
-        if observed:
-            loop["resume_dispatched_entry_run_id"] = observed.get("run_id", "")
-            loop["resume_dispatched_entry_run_url"] = observed.get("run_url", "")
-            evidence["loop_entry_run_id"] = observed.get("run_id", "")
-            evidence["loop_entry_run_url"] = observed.get("run_url", "")
+            observed_entry = _observe_loop_entry_run(repo, requested_at, target_iter, resume_token)
+        if not str(loop.get("resume_dispatched_engine_run_id") or "").strip() and not str(loop.get("resume_dispatched_engine_run_url") or "").strip():
+            observed_engine = _observe_loop_engine_run(repo, requested_at, target_iter, resume_token)
+        entry_run_id = str(loop.get("resume_dispatched_entry_run_id") or observed_entry.get("run_id") or "").strip()
+        entry_run_url = str(loop.get("resume_dispatched_entry_run_url") or observed_entry.get("run_url") or "").strip()
+        engine_run_id = str(loop.get("resume_dispatched_engine_run_id") or observed_engine.get("run_id") or "").strip()
+        engine_run_url = str(loop.get("resume_dispatched_engine_run_url") or observed_engine.get("run_url") or "").strip()
+        engine_pointers = _engine_pointer_fields(engine_run_url or str(loop.get("workflow_run_url") or "").strip())
+        evidence["loop_entry_workflow"] = entry_workflow
+        evidence["loop_engine_workflow"] = engine_workflow
+        evidence["loop_resume_origin_phase"] = origin_phase
+        evidence["loop_resume_target_iter"] = str(target_iter)
+        evidence["loop_resume_token"] = resume_token
+        evidence["loop_entry_run_id"] = entry_run_id
+        evidence["loop_entry_run_url"] = entry_run_url
+        evidence["loop_engine_run_id"] = engine_run_id
+        evidence["loop_engine_run_url"] = engine_run_url
+        if engine_run_url:
+            evidence["workflow_run_url"] = engine_run_url
+            evidence["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"]
+            evidence["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"]
+            evidence["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"]
+        elif entry_run_url and not str(evidence.get("workflow_run_url") or "").strip():
+            evidence["workflow_run_url"] = entry_run_url
         loop["current_phase"] = wait_phase
         loop["next_action"] = "WAIT_LOOP_ENGINE"
         loop["phase_status"] = "WAIT"
         loop["reason_code"] = reason_code
+        loop["workflow"] = engine_workflow
+        loop["workflow_run_id"] = engine_run_id or str(loop.get("workflow_run_id") or "").strip()
+        loop["workflow_run_url"] = engine_run_url or str(loop.get("workflow_run_url") or entry_run_url or "").strip()
         loop["resume_origin_phase"] = origin_phase
-        loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        loop["resume_via_workflow"] = entry_workflow
+        loop["resume_token"] = resume_token
         loop["resume_from_iter"] = str(entry_iter)
         loop["resume_target_iter"] = str(target_iter)
+        loop["resume_dispatch_requested_at"] = requested_at
+        loop["resume_dispatched_entry_run_id"] = entry_run_id
+        loop["resume_dispatched_entry_run_url"] = entry_run_url
+        loop["resume_dispatched_engine_run_id"] = engine_run_id
+        loop["resume_dispatched_engine_run_url"] = engine_run_url
+        loop.update(engine_pointers)
+        loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
+        loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
+        loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
         loop["updated_at"] = rs["updated_at"]
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
@@ -610,6 +774,7 @@ def _dispatch_loop_entry_wait_state(
         "-f", f"iter={entry_iter}",
         "-f", f"max_iter={loop_ctx['max_iter']}",
         "-f", f"sleep_seconds={loop_ctx['sleep_seconds']}",
+        "-f", f"resume_token={resume_token}",
     ]
     if loop_ctx["controller_label"]:
         cmd.extend(["-f", f"controller_label={loop_ctx['controller_label']}"])
@@ -627,48 +792,215 @@ def _dispatch_loop_entry_wait_state(
         loop["next_action"] = rs["next_action"]
         loop["phase_status"] = "STOP"
         loop["reason_code"] = "LOOP_ENTRY_DISPATCH_FAILED"
+        loop["workflow"] = engine_workflow
+        loop["workflow_run_id"] = ""
+        loop["workflow_run_url"] = ""
         loop["resume_origin_phase"] = origin_phase
-        loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        loop["resume_via_workflow"] = entry_workflow
+        loop["resume_token"] = resume_token
         loop["resume_from_iter"] = str(entry_iter)
         loop["resume_target_iter"] = str(target_iter)
         loop["resume_dispatch_requested_at"] = dispatch_requested_at
         loop["resume_dispatched_entry_run_id"] = ""
         loop["resume_dispatched_entry_run_url"] = ""
+        loop["resume_dispatched_engine_run_id"] = ""
+        loop["resume_dispatched_engine_run_url"] = ""
+        loop.update(_engine_pointer_fields(""))
         loop["updated_at"] = rs["updated_at"]
         rs["loop_state"] = loop
-        evidence["loop_entry_workflow"] = ".github/workflows/mep_loop_entry.yml"
+        evidence["loop_entry_workflow"] = entry_workflow
+        evidence["loop_engine_workflow"] = engine_workflow
         evidence["loop_resume_origin_phase"] = origin_phase
         evidence["loop_resume_target_iter"] = str(target_iter)
+        evidence["loop_resume_token"] = resume_token
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
 
-    observed = _observe_loop_entry_run(repo, dispatch_requested_at, target_iter)
+    observed_entry = _observe_loop_entry_run(repo, dispatch_requested_at, target_iter, resume_token)
+    observed_engine = _observe_loop_engine_run(repo, dispatch_requested_at, target_iter, resume_token)
+    entry_run_id = str(observed_entry.get("run_id") or "").strip()
+    entry_run_url = str(observed_entry.get("run_url") or "").strip()
+    engine_run_id = str(observed_engine.get("run_id") or "").strip()
+    engine_run_url = str(observed_engine.get("run_url") or "").strip()
+    engine_pointers = _engine_pointer_fields(engine_run_url)
     rs["run_status"] = "STILL_OPEN"
     rs["last_result"]["stop_class"] = "WAIT"
     rs["last_result"]["reason_code"] = reason_code
     rs["next_action"] = "WAIT_LOOP_ENGINE"
     rs["last_result"]["next_action"] = rs["next_action"]
-    evidence["loop_entry_workflow"] = ".github/workflows/mep_loop_entry.yml"
+    evidence["loop_entry_workflow"] = entry_workflow
+    evidence["loop_engine_workflow"] = engine_workflow
     evidence["loop_resume_origin_phase"] = origin_phase
     evidence["loop_resume_target_iter"] = str(target_iter)
-    evidence["loop_entry_run_id"] = observed.get("run_id", "")
-    evidence["loop_entry_run_url"] = observed.get("run_url", "")
+    evidence["loop_resume_token"] = resume_token
+    evidence["loop_entry_run_id"] = entry_run_id
+    evidence["loop_entry_run_url"] = entry_run_url
+    evidence["loop_engine_run_id"] = engine_run_id
+    evidence["loop_engine_run_url"] = engine_run_url
+    evidence["workflow_run_url"] = engine_run_url or entry_run_url
+    evidence["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"]
+    evidence["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"]
+    evidence["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"]
     loop["current_phase"] = wait_phase
     loop["next_action"] = "WAIT_LOOP_ENGINE"
     loop["phase_status"] = "WAIT"
     loop["reason_code"] = reason_code
+    loop["workflow"] = engine_workflow
+    loop["workflow_run_id"] = engine_run_id
+    loop["workflow_run_url"] = engine_run_url or entry_run_url
     loop["resume_origin_phase"] = origin_phase
-    loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
+    loop["resume_via_workflow"] = entry_workflow
+    loop["resume_token"] = resume_token
     loop["resume_from_iter"] = str(entry_iter)
     loop["resume_target_iter"] = str(target_iter)
     loop["resume_dispatch_requested_at"] = dispatch_requested_at
-    loop["resume_dispatched_entry_run_id"] = observed.get("run_id", "")
-    loop["resume_dispatched_entry_run_url"] = observed.get("run_url", "")
+    loop["resume_dispatched_entry_run_id"] = entry_run_id
+    loop["resume_dispatched_entry_run_url"] = entry_run_url
+    loop["resume_dispatched_engine_run_id"] = engine_run_id
+    loop["resume_dispatched_engine_run_url"] = engine_run_url
+    loop.update(engine_pointers)
+    loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
+    loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
+    loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
     loop["updated_at"] = rs["updated_at"]
     rs["loop_state"] = loop
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
 
+
+def loop_wait_refresh(run_id: str) -> int:
+    rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
+    rs["run_id"] = run_id
+    rs["updated_at"] = utc_now_z()
+    lr = rs.setdefault("last_result", {})
+    lr["timestamp_utc"] = rs["updated_at"]
+    lr["action"] = {"name": "WAIT_LOOP_ENGINE_REFRESH", "outcome": "WAIT"}
+    repo = _get_repo(rs)
+    loop = _loop_state_from_rs(rs)
+    if rs.get("next_action") != "WAIT_LOOP_ENGINE":
+        rs["run_status"] = "STILL_OPEN"
+        lr["stop_class"] = "WAIT"
+        lr["reason_code"] = "LOOP_WAIT_ACTION_UNSUPPORTED"
+        rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+        lr["next_action"] = rs["next_action"]
+        loop["current_phase"] = "WAIT_LOOP_ENGINE"
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "STOP"
+        loop["reason_code"] = "LOOP_WAIT_ACTION_UNSUPPORTED"
+        loop["updated_at"] = rs["updated_at"]
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 2
+    if not repo:
+        rs["run_status"] = "STILL_OPEN"
+        lr["stop_class"] = "WAIT"
+        lr["reason_code"] = "LOOP_REPO_UNRESOLVED"
+        rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+        lr["next_action"] = rs["next_action"]
+        loop["current_phase"] = "WAIT_LOOP_ENGINE"
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "STOP"
+        loop["reason_code"] = "LOOP_REPO_UNRESOLVED"
+        loop["updated_at"] = rs["updated_at"]
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 2
+    target_iter = _parse_loop_int(loop.get("resume_target_iter"))
+    requested_at = str(loop.get("resume_dispatch_requested_at") or rs.get("updated_at") or utc_now_z()).strip()
+    resume_token = str(loop.get("resume_token") or "").strip()
+    evidence = lr.setdefault("evidence", {})
+    observed_entry = {}
+    observed_engine = {}
+    if target_iter is not None and not str(loop.get("resume_dispatched_entry_run_id") or "").strip() and not str(loop.get("resume_dispatched_entry_run_url") or "").strip():
+        observed_entry = _observe_loop_entry_run(repo, requested_at, target_iter, resume_token)
+    if target_iter is not None and not str(loop.get("resume_dispatched_engine_run_id") or "").strip() and not str(loop.get("resume_dispatched_engine_run_url") or "").strip():
+        observed_engine = _observe_loop_engine_run(repo, requested_at, target_iter, resume_token)
+    entry_run_id = str(loop.get("resume_dispatched_entry_run_id") or observed_entry.get("run_id") or "").strip()
+    entry_run_url = str(loop.get("resume_dispatched_entry_run_url") or observed_entry.get("run_url") or "").strip()
+    engine_run_id = str(loop.get("resume_dispatched_engine_run_id") or observed_engine.get("run_id") or "").strip()
+    engine_run_url = str(loop.get("resume_dispatched_engine_run_url") or observed_engine.get("run_url") or "").strip()
+    completion = _observe_run_completion(repo, engine_run_id, engine_run_url) if engine_run_id else {}
+    engine_status = str(completion.get("status") or observed_engine.get("status") or loop.get("resume_dispatched_engine_status") or "").strip()
+    engine_conclusion = str(completion.get("conclusion") or loop.get("resume_dispatched_engine_conclusion") or "").strip()
+    engine_run_url = str(completion.get("run_url") or engine_run_url).strip()
+    engine_run_id = str(completion.get("run_id") or engine_run_id).strip()
+    engine_completed_at = str(completion.get("completed_at") or loop.get("resume_dispatched_engine_completed_at") or "").strip()
+    engine_pointers = _engine_pointer_fields(engine_run_url or str(loop.get("workflow_run_url") or "").strip())
+    evidence["loop_entry_workflow"] = ".github/workflows/mep_loop_entry.yml"
+    evidence["loop_engine_workflow"] = ".github/workflows/mep_loop_engine_v2.yml"
+    evidence["loop_resume_token"] = resume_token
+    evidence["loop_entry_run_id"] = entry_run_id
+    evidence["loop_entry_run_url"] = entry_run_url
+    evidence["loop_engine_run_id"] = engine_run_id
+    evidence["loop_engine_run_url"] = engine_run_url
+    evidence["workflow_run_url"] = engine_run_url or entry_run_url
+    evidence["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"]
+    evidence["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"]
+    evidence["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"]
+    loop["current_phase"] = "WAIT_LOOP_ENGINE"
+    loop["workflow"] = ".github/workflows/mep_loop_engine_v2.yml"
+    loop["workflow_run_id"] = engine_run_id or str(loop.get("workflow_run_id") or "").strip()
+    loop["workflow_run_url"] = engine_run_url or entry_run_url or str(loop.get("workflow_run_url") or "").strip()
+    loop["resume_token"] = resume_token
+    loop["resume_dispatched_entry_run_id"] = entry_run_id
+    loop["resume_dispatched_entry_run_url"] = entry_run_url
+    loop["resume_dispatched_engine_run_id"] = engine_run_id
+    loop["resume_dispatched_engine_run_url"] = engine_run_url
+    loop["resume_dispatched_engine_status"] = engine_status
+    loop["resume_dispatched_engine_conclusion"] = engine_conclusion
+    loop["resume_dispatched_engine_completed_at"] = engine_completed_at
+    loop.update(engine_pointers)
+    loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
+    loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
+    loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
+    loop["updated_at"] = rs["updated_at"]
+    if not engine_run_id and not engine_run_url:
+        rs["run_status"] = "STILL_OPEN"
+        lr["stop_class"] = "WAIT"
+        lr["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
+        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        lr["next_action"] = rs["next_action"]
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 2
+    if engine_status and engine_status != "completed":
+        rs["run_status"] = "STILL_OPEN"
+        lr["stop_class"] = "WAIT"
+        lr["reason_code"] = "LOOP_ENGINE_RUNNING"
+        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        lr["next_action"] = rs["next_action"]
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "WAIT"
+        loop["reason_code"] = "LOOP_ENGINE_RUNNING"
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 2
+    if engine_conclusion in {"success", "neutral", "skipped"} or (engine_status == "completed" and not engine_conclusion):
+        rs["run_status"] = "DONE"
+        lr["stop_class"] = ""
+        lr["reason_code"] = "LOOP_ENGINE_COMPLETED"
+        rs["next_action"] = "ALL_DONE"
+        lr["next_action"] = rs["next_action"]
+        loop["next_action"] = rs["next_action"]
+        loop["phase_status"] = "DONE"
+        loop["reason_code"] = "LOOP_ENGINE_COMPLETED"
+        rs["loop_state"] = loop
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        return 0
+    rs["run_status"] = "STILL_OPEN"
+    lr["stop_class"] = "WAIT"
+    lr["reason_code"] = "LOOP_ENGINE_COMPLETED_WITH_FAILURE"
+    rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+    lr["next_action"] = rs["next_action"]
+    loop["next_action"] = rs["next_action"]
+    loop["phase_status"] = "STOP"
+    loop["reason_code"] = "LOOP_ENGINE_COMPLETED_WITH_FAILURE"
+    rs["loop_state"] = loop
+    write_json(RUN_STATE, rs); update_compiled(rs)
+    return 0
 
 def _route_post_merge(rs: dict, repo: str, pr_url: str, commit_sha: str = "") -> int:
     rs["updated_at"] = utc_now_z()
@@ -1981,6 +2313,8 @@ def main() -> int:
     ap_finish.add_argument("--run-id", required=True)
     ap_loop_resume = sub.add_parser("loop-resume")
     ap_loop_resume.add_argument("--run-id", required=True)
+    ap_loop_wait = sub.add_parser("loop-wait-refresh")
+    ap_loop_wait.add_argument("--run-id", required=True)
     sub.add_parser("compact")
 
     ap_li = sub.add_parser("ledger-in")
@@ -2061,6 +2395,8 @@ def main() -> int:
             return _run_gate("merge-finish", lambda: merge_finish(args.run_id), args.run_id)
         if args.cmd == "loop-resume":
             return _run_gate("loop-resume", lambda: loop_resume(args.run_id), args.run_id)
+        if args.cmd == "loop-wait-refresh":
+            return _run_gate("loop-wait-refresh", lambda: loop_wait_refresh(args.run_id), args.run_id)
         if args.cmd == "compact":
             return _run_gate("compact", compact)
 

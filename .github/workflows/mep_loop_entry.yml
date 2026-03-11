@@ -1,5 +1,5 @@
 name: MEP Loop Entry
-run-name: MEP Loop Entry / iter ${{ inputs.iter }} / max ${{ inputs.max_iter }}
+run-name: MEP Loop Entry / iter ${{ inputs.iter }} / max ${{ inputs.max_iter }} / token ${{ inputs.resume_token || 'none' }}
 on:
   workflow_dispatch:
     inputs:
@@ -21,6 +21,10 @@ on:
         default: ""
       expected_controller_label:
         description: "exact expected controller label (optional)"
+        required: false
+        default: ""
+      resume_token:
+        description: "resume tracking token for engine run observation (optional)"
         required: false
         default: ""
 concurrency:
@@ -46,6 +50,7 @@ jobs:
           echo "REPO_ORIGIN=https://github.com/${GITHUB_REPOSITORY}"
           echo "BRANCH=${GITHUB_REF_NAME}"
           echo "HEAD_SHA=${GITHUB_SHA}"
+          echo "RESUME_TOKEN=${{ inputs.resume_token }}"
           echo "NEXT_ACTION=DISPATCH_CANONICAL_ENGINE"
           echo "===== MEP_COPYPASTE_ZONE END ====="
       - name: Throttle
@@ -77,4 +82,91 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             "https://api.github.com/repos/${REPO}/actions/workflows/mep_loop_engine_v2.yml/dispatches" \
-            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\",\"controller_label\":\"${{ inputs.controller_label }}\",\"expected_controller_label\":\"${{ inputs.expected_controller_label }}\"}}"
+            -d "{\"ref\":\"main\",\"inputs\":{\"iter\":\"${NEXT}\",\"max_iter\":\"${MAX}\",\"sleep_seconds\":\"${{ inputs.sleep_seconds }}\",\"controller_label\":\"${{ inputs.controller_label }}\",\"expected_controller_label\":\"${{ inputs.expected_controller_label }}\",\"resume_token\":\"${{ inputs.resume_token }}\"}}"
+      - name: Observe dispatched engine run (best effort)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TOKEN: ${{ inputs.resume_token }}
+          ENTRY_ITER: ${{ inputs.iter }}
+        run: |
+          set -euo pipefail
+          NEXT=$((ENTRY_ITER+1))
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          import time
+          from datetime import datetime, timedelta, timezone
+
+          repo = os.environ["REPO"]
+          token = os.environ.get("TOKEN", "").strip()
+          entry_iter = str(os.environ.get("ENTRY_ITER", "0")).strip()
+          try:
+              target_iter = str(int(entry_iter) + 1)
+          except ValueError:
+              target_iter = ""
+
+          def parse_utc(text: str):
+              text = (text or "").strip()
+              if not text:
+                  return None
+              try:
+                  return datetime.fromisoformat(text.replace("Z", "+00:00"))
+              except ValueError:
+                  return None
+
+          requested_at = datetime.now(timezone.utc)
+          observed = {}
+          for _ in range(6):
+              proc = subprocess.run(
+                  [
+                      "gh", "run", "list",
+                      "--workflow", ".github/workflows/mep_loop_engine_v2.yml",
+                      "--repo", repo,
+                      "--json", "databaseId,url,createdAt,event,displayTitle,status",
+                      "--limit", "10",
+                  ],
+                  capture_output=True,
+                  text=True,
+                  encoding="utf-8",
+                  errors="replace",
+                  check=False,
+              )
+              rows = json.loads(proc.stdout or "[]") if proc.returncode == 0 else []
+              for row in rows:
+                  event = str(row.get("event") or "").strip()
+                  if event and event != "workflow_dispatch":
+                      continue
+                  created_at = parse_utc(str(row.get("createdAt") or ""))
+                  if created_at and created_at < (requested_at - timedelta(seconds=15)):
+                      continue
+                  title = str(row.get("displayTitle") or "").strip()
+                  if token:
+                      if token not in title:
+                          continue
+                  elif f"iter {target_iter}" not in title and f"iter={target_iter}" not in title:
+                      continue
+                  observed = {
+                      "run_id": str(row.get("databaseId") or "").strip(),
+                      "run_url": str(row.get("url") or "").strip(),
+                      "display_title": title,
+                      "status": str(row.get("status") or "").strip(),
+                  }
+                  break
+              if observed:
+                  break
+              time.sleep(2)
+
+          print(f"ENGINE_RUN_ID={observed.get('run_id', '')}")
+          print(f"ENGINE_RUN_URL={observed.get('run_url', '')}")
+          print(f"ENGINE_RUN_STATUS={observed.get('status', '')}")
+          step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
+          if step_summary:
+              with open(step_summary, "a", encoding="utf-8") as fh:
+                  fh.write("## Durable Loop Pointers\n")
+                  fh.write(f"- resume_token: {token or '(none)'}\n")
+                  fh.write(f"- target_iter: {target_iter or '(unknown)'}\n")
+                  fh.write(f"- canonical_engine_run_url: {observed.get('run_url', '(unresolved)')}\n")
+          PY

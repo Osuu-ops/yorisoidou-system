@@ -138,14 +138,9 @@ def main() -> int:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
     cmd = ["python", str(RUNNER), "merge-finish", "--run-id", run_id]
   elif next_action in {"WAIT_LOOP_ENGINE"}:
-    loop_run_url = str(loop_state.get("resume_dispatched_entry_run_url") or loop_state.get("workflow_run_url") or (lr.get("evidence") or {}).get("loop_entry_run_url") or (lr.get("evidence") or {}).get("workflow_run_url") or "").strip()
-    resume_via = str(loop_state.get("resume_via_workflow") or ".github/workflows/mep_loop_entry.yml").strip()
-    resume_origin = str(loop_state.get("resume_origin_phase") or "").strip()
-    resume_target = str(loop_state.get("resume_target_iter") or "").strip()
-    return stop_wait(
-      "LOOP_ENGINE_RUNNING",
-      f"next_action={next_action} is waiting for canonical loop resume via {resume_via}; origin_phase={resume_origin or '(unknown)'} target_iter={resume_target or '(unknown)'} workflow_run_url={loop_run_url}",
-    )
+    if not run_id:
+      return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
+    cmd = ["python", str(RUNNER), "loop-wait-refresh", "--run-id", run_id]
   elif next_action in {"CREATE_PR_FOR_RUN", "OPEN_NEW_PR_FOR_RUN"}:
     if not run_id:
       return stop_wait("RUN_ID_MISSING", f"next_action={next_action} requires run_id")
