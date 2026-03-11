@@ -16,6 +16,40 @@ SSOT_PATHS = [
   "docs/MEP/HANDOFF_AUDIT.md",
   "docs/MEP/HANDOFF_WORK.md",
 ]
+REASON_CODE_RULES = {
+  "EVIDENCE_REQUIRED_BUT_UNAVAILABLE": {
+    "category": "rerun canonical evidence probe",
+    "runner_cmd": "pr-probe",
+  },
+  "LOOP_ENTRY_DISPATCH_FAILED": {
+    "category": "rerun canonical loop entry",
+    "runner_cmd": "loop-resume",
+  },
+  "LOOP_CONTEXT_INVALID": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+  "LOOP_ENGINE_COMPLETED_WITH_FAILURE": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+  "LOOP_REPO_UNRESOLVED": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+  "LOOP_RESUME_ACTION_UNSUPPORTED": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+  "LOOP_WAIT_ACTION_UNSUPPORTED": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+  "MULTIPLE_PR_FOR_ONE_RUN": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
+}
 def stop_wait(code: str, msg: str):
   print(f"STOP_WAIT: {code}\n{msg}", file=sys.stderr)
   return 2
@@ -47,6 +81,28 @@ def _sanitize_run_id(run_id: str) -> str:
     out.append(c if (c.isalnum() or c in "-_.") else "-")
   s = "".join(out).strip("-.")
   return s or "unknown-run"
+
+
+def _runner_cmd_from_reason_code(reason_code: str, run_id: str) -> list[str] | None:
+  rule = REASON_CODE_RULES.get(str(reason_code or "").strip())
+  if not rule:
+    return None
+  runner_cmd = str(rule.get("runner_cmd") or "").strip()
+  if not runner_cmd:
+    return None
+  if not run_id:
+    raise RuntimeError(f"reason_code={reason_code} requires run_id")
+  return ["python", str(RUNNER), runner_cmd, "--run-id", run_id]
+
+
+def _stop_from_reason_code(reason_code: str, stop_class: str) -> int | None:
+  rule = REASON_CODE_RULES.get(str(reason_code or "").strip())
+  if not rule:
+    return None
+  category = str(rule.get("category") or "").strip()
+  if str(rule.get("stop") or "").strip() == "hard":
+    return stop_hard(reason_code or "MANUAL_RESOLUTION_REQUIRED", f"reason_code={reason_code} category={category} stop_class={stop_class}")
+  return None
 
 
 def _ensure_ssot_writeback_pr(run_id: str) -> tuple[bool, str | None]:
@@ -115,10 +171,10 @@ def main() -> int:
   next_action = str(rs.get("next_action") or "").strip()
   lr = rs.get("last_result") or {}
   stop_class = str(lr.get("stop_class") or "").strip()
-  reason_code = str(lr.get("reason_code") or "").strip()
+  loop_state = rs.get("loop_state") if isinstance(rs.get("loop_state"), dict) else {}
+  reason_code = str(lr.get("reason_code") or loop_state.get("reason_code") or "").strip()
   if not next_action:
     return stop_hard("NEXT_ACTION_MISSING", "run_state.next_action is empty")
-  loop_state = rs.get("loop_state") if isinstance(rs.get("loop_state"), dict) else {}
   loop_actions = {
     "SSOT_SCAN",
     "CONFLICT_SCAN",
@@ -154,7 +210,15 @@ def main() -> int:
   elif next_action in {"ALL_DONE"}:
     cmd = ["python", str(RUNNER), "compact"]
   elif next_action in {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}:
-    return stop_wait(next_action, f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
+    stop_result = _stop_from_reason_code(reason_code, stop_class)
+    if stop_result is not None:
+      return stop_result
+    try:
+      cmd = _runner_cmd_from_reason_code(reason_code, run_id)
+    except RuntimeError as e:
+      return stop_wait("RUN_ID_MISSING", str(e))
+    if not cmd:
+      return stop_wait(next_action, f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   else:
     return stop_wait("UNKNOWN_NEXT_ACTION", f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   # pass GH_REPO if present in run_state
@@ -162,6 +226,9 @@ def main() -> int:
   env = dict(os.environ)
   if gh_repo:
     env["GH_REPO"] = gh_repo
+  rule = REASON_CODE_RULES.get(reason_code)
+  if rule and next_action in {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}:
+    print(f"REASON_CODE_RULE={reason_code} category={rule.get('category','')}")
   print("AUTO_RESUME:", " ".join(cmd))
   p = subprocess.run(cmd, env=env, text=True, encoding="utf-8", errors="replace")
   try:
