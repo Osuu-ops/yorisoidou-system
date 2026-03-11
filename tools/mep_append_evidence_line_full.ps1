@@ -22,6 +22,14 @@ $OutputEncoding = [Console]::OutputEncoding
 $env:GIT_PAGER="cat"; $env:PAGER="cat"
 function Fail($m){ throw $m }
 function Info($m){ Write-Host ("[INFO] {0}" -f $m) }
+function Test-IsWritebackEvidencePr([object]$Pr){
+  if ($null -eq $Pr) { return $false }
+  $title = [string]($Pr.title)
+  $headRefName = [string]($Pr.headRefName)
+  if ($headRefName -like 'auto/writeback-bundle_*') { return $true }
+  if ($title.StartsWith('Writeback bundle evidence (', [System.StringComparison]::OrdinalIgnoreCase)) { return $true }
+  return $false
+}
 # defaults (NO default assignment in param)
 if (-not $PSBoundParameters.ContainsKey("PrNumber")) { $PrNumber = 0 }
 if (-not $PSBoundParameters.ContainsKey("BundlePath") -or [string]::IsNullOrWhiteSpace($BundlePath)) { $BundlePath = "docs/MEP/MEP_BUNDLE.md" }
@@ -34,11 +42,19 @@ if ($bundle -notmatch '(?m)^BUNDLE_VERSION\s*=\s*(.+)$') { Fail "BUNDLE_VERSION 
 $bundleVersion = ($Matches[1]).Trim()
 # Resolve target PR (0 = latest merged into main)
 if ($PrNumber -eq 0) {
-  $prJson = gh pr list --state merged --base main --limit 1 --json number,mergedAt,mergeCommit,url | ConvertFrom-Json
+  $prJson = gh pr list --state merged --base main --limit 100 --json number,mergedAt,mergeCommit,url,title,headRefName | ConvertFrom-Json
   if (-not $prJson) { Fail "No merged PR found for base=main" }
-  $pr = $prJson[0]
+  $pr = $prJson | Where-Object { -not (Test-IsWritebackEvidencePr $_) } | Select-Object -First 1
+  if (-not $pr) {
+    Info "No eligible merged PR found for evidence append. Skip."
+    exit 0
+  }
 } else {
-  $pr = gh pr view $PrNumber --json number,mergedAt,mergeCommit,url | ConvertFrom-Json
+  $pr = gh pr view $PrNumber --json number,mergedAt,mergeCommit,url,title,headRefName | ConvertFrom-Json
+}
+if (Test-IsWritebackEvidencePr $pr) {
+  Info ("PR #{0} is a writeback evidence PR. Skip." -f [int]$pr.number)
+  exit 0
 }
 $prNum       = [int]$pr.number
 $mergedAt    = $pr.mergedAt
@@ -106,7 +122,3 @@ $appendLine = "PR #$prNum | audit=OK,WB0000 | appended_at=$(Get-Date -Format o) 
 Add-Content -Path $BundlePath -Value $detailLine
 Add-Content -Path $BundlePath -Value $appendLine
 Info ("Appended full evidence for PR #" + $prNum + " -> " + $BundlePath)
-
-
-
-
