@@ -1,26 +1,28 @@
-name: MEP Bundle AutoFix (Allowlist)
+name: mep_bundle_autofix [SEALED]
 
 on:
   workflow_dispatch:
-  # schedule: (disabled)
-    # - cron: "13 */2 * * *" (disabled)
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  autofix:
+  sealed:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Reject legacy bundle autofix entry
+        uses: actions/github-script@v7
         with:
-          fetch-depth: 0
-      - name: Bundle allowlist audit+autofix -> PR
-        shell: pwsh
-        env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
-        run: |
-          pwsh -NoProfile -File tools/mep_bundle_autofix.ps1 -Mode pr -AutoMerge
-
-
+          script: |
+            const body = [
+              'Legacy bundle autofix entry is sealed.',
+              '',
+              '- This workflow is a non-canonical path.',
+              '- Do not use this entry for active main operations.',
+              '- Workflow: .github/workflows/mep_bundle_autofix.yml'
+            ].join('\\n');
+            await core.summary
+              .addHeading('SEALED_WORKFLOW')
+              .addRaw(body, true)
+              .write();
+            core.setFailed('SEALED_WORKFLOW: legacy bundle autofix entry is sealed');
