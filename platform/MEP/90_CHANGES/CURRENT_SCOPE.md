@@ -3,5 +3,6 @@
 - docs/MEP/MEP_BUNDLE.md
 - docs/MEP_SUB/EVIDENCE/MEP_BUNDLE.md
 - .github/workflows/scope_guard_pr.yml
+- .github/workflows/mep_entry_gate_pr.yml
 - platform/MEP/90_CHANGES/CURRENT_SCOPE.md
 - tools/runner/runner.py
