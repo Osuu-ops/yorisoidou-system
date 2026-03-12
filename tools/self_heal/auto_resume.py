@@ -25,6 +25,14 @@ REASON_CODE_RULES = {
     "category": "rerun canonical loop entry",
     "runner_cmd": "loop-resume",
   },
+  "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE": {
+    "category": "rerun canonical engine refresh",
+    "runner_cmd": "loop-wait-refresh",
+  },
+  "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT": {
+    "category": "hard stop",
+    "stop": "hard",
+  },
   "LOOP_CONTEXT_INVALID": {
     "category": "hard stop",
     "stop": "hard",
@@ -32,6 +40,14 @@ REASON_CODE_RULES = {
   "LOOP_ENGINE_COMPLETED_WITH_FAILURE": {
     "category": "rerun canonical engine refresh",
     "runner_cmd": "loop-wait-refresh",
+  },
+  "LOOP_ENGINE_RUN_UNRESOLVED": {
+    "category": "rerun canonical loop entry after unresolved engine wait",
+    "runner_cmd": "loop-resume",
+  },
+  "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT": {
+    "category": "hard stop",
+    "stop": "hard",
   },
   "LOOP_REPO_UNRESOLVED": {
     "category": "hard stop",
