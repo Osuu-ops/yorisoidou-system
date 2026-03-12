@@ -657,6 +657,17 @@ def _run(cmd: list[str]) -> str:
         raise RuntimeError(p.stderr.strip() or "command failed")
     return p.stdout
 
+def _list_prs_by_state(repo: str, branch: str, state: str) -> list[dict]:
+    out = _run([
+        "gh", "pr", "list",
+        "--repo", repo,
+        "--head", branch,
+        "--state", state,
+        "--json", "number,url",
+        "-q", ".",
+    ])
+    return json.loads(out) if out.strip() else []
+
 
 def _parse_loop_int(value) -> int | None:
     text = str(value or "").strip()
@@ -1693,10 +1704,8 @@ def pr_probe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
     try:
-        open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
-        closed_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "closed", "--json", "number,url", "-q", "."])
-        open_prs = json.loads(open_json) if open_json.strip() else []
-        closed_prs = json.loads(closed_json) if closed_json.strip() else []
+        open_prs = _list_prs_by_state(repo, branch, "open")
+        closed_prs = _list_prs_by_state(repo, branch, "closed")
     except Exception:
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "EVIDENCE_REQUIRED_BUT_UNAVAILABLE"
@@ -1807,8 +1816,7 @@ def pr_create(run_id: str) -> int:
             _run(["git", "ls-remote", "--exit-code", "--heads", "origin", branch])
         except Exception:
             _run(["git", "push", "-u", "origin", branch])
-    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
-    open_prs = json.loads(open_json) if open_json.strip() else []
+    open_prs = _list_prs_by_state(repo, branch, "open")
     if len(open_prs) > 1:
         rs["last_result"]["stop_class"] = "HARD"
         rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
@@ -2107,8 +2115,7 @@ def apply_safe(run_id: str) -> int:
     _run(["git", "commit", "-m", f"mep: apply patches for {run_id}"])
     _run(["git", "push", "origin", branch, "--force-with-lease"])
 
-    open_json = _run(["gh", "pr", "list", "--repo", repo, "--head", branch, "--state", "all", "--json", "number,url", "-q", "."])
-    open_prs = json.loads(open_json) if open_json.strip() else []
+    open_prs = _list_prs_by_state(repo, branch, "open")
 
     if len(open_prs) > 1:
         rs["last_result"]["stop_class"] = "HARD"
