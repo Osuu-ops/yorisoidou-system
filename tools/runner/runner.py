@@ -336,9 +336,56 @@ def default_run_state() -> dict:
         "handoff": None,
         "handoff_ack": None,
     }
+def _first_nonempty(*values) -> str:
+    for value in values:
+        text = str(value or "").strip()
+        if text:
+            return text
+    return ""
+
+
+def _normalize_loop_state(loop: dict) -> dict:
+    if not isinstance(loop, dict):
+        return {}
+    normalized = dict(loop)
+    normalized["primary_workflow_run_url"] = _first_nonempty(
+        normalized.get("primary_workflow_run_url"),
+        normalized.get("resume_dispatched_engine_run_url"),
+        normalized.get("workflow_run_url"),
+        normalized.get("resume_dispatched_entry_run_url"),
+    )
+    normalized["phase_result_local_path"] = _first_nonempty(normalized.get("phase_result_local_path"), normalized.get("phase_result_path"))
+    normalized["phase_summary_local_path"] = _first_nonempty(normalized.get("phase_summary_local_path"), normalized.get("phase_summary_path"))
+    normalized["phase_pointers_local_path"] = _first_nonempty(normalized.get("phase_pointers_local_path"), normalized.get("phase_pointers_json"))
+    normalized["restart_packet_local_path"] = _first_nonempty(normalized.get("restart_packet_local_path"), normalized.get("restart_packet_path"))
+    normalized["primary_phase_result_pointer"] = _first_nonempty(normalized.get("primary_phase_result_pointer"), normalized.get("phase_result_pointer"))
+    normalized["primary_phase_summary_pointer"] = _first_nonempty(normalized.get("primary_phase_summary_pointer"), normalized.get("phase_summary_pointer"), normalized.get("resume_engine_phase_summary_pointer"))
+    normalized["primary_phase_pointers_pointer"] = _first_nonempty(normalized.get("primary_phase_pointers_pointer"), normalized.get("phase_pointers_pointer"), normalized.get("resume_engine_phase_pointers_pointer"))
+    normalized["primary_restart_packet_pointer"] = _first_nonempty(normalized.get("primary_restart_packet_pointer"), normalized.get("restart_packet_pointer"), normalized.get("resume_engine_restart_packet_pointer"))
+    if normalized["primary_workflow_run_url"] and not str(normalized.get("workflow_run_url") or "").strip():
+        normalized["workflow_run_url"] = normalized["primary_workflow_run_url"]
+    if normalized["phase_result_local_path"] and not str(normalized.get("phase_result_path") or "").strip():
+        normalized["phase_result_path"] = normalized["phase_result_local_path"]
+    if normalized["phase_summary_local_path"] and not str(normalized.get("phase_summary_path") or "").strip():
+        normalized["phase_summary_path"] = normalized["phase_summary_local_path"]
+    if normalized["phase_pointers_local_path"] and not str(normalized.get("phase_pointers_json") or "").strip():
+        normalized["phase_pointers_json"] = normalized["phase_pointers_local_path"]
+    if normalized["restart_packet_local_path"] and not str(normalized.get("restart_packet_path") or "").strip():
+        normalized["restart_packet_path"] = normalized["restart_packet_local_path"]
+    if normalized["primary_phase_result_pointer"] and not str(normalized.get("phase_result_pointer") or "").strip():
+        normalized["phase_result_pointer"] = normalized["primary_phase_result_pointer"]
+    if normalized["primary_phase_summary_pointer"] and not str(normalized.get("phase_summary_pointer") or "").strip():
+        normalized["phase_summary_pointer"] = normalized["primary_phase_summary_pointer"]
+    if normalized["primary_phase_pointers_pointer"] and not str(normalized.get("phase_pointers_pointer") or "").strip():
+        normalized["phase_pointers_pointer"] = normalized["primary_phase_pointers_pointer"]
+    if normalized["primary_restart_packet_pointer"] and not str(normalized.get("restart_packet_pointer") or "").strip():
+        normalized["restart_packet_pointer"] = normalized["primary_restart_packet_pointer"]
+    return normalized
+
+
 def _loop_state_from_rs(rs: dict) -> dict:
     loop = (rs or {}).get("loop_state") or {}
-    return loop if isinstance(loop, dict) else {}
+    return _normalize_loop_state(loop)
 
 
 def _loop_retry_count(loop: dict, key: str) -> int:
@@ -368,6 +415,19 @@ def _engine_pointer_fields(run_url: str) -> dict[str, str]:
         "resume_engine_phase_pointers_pointer": _artifact_pointer(run_url, "loop-phase-pointers", ".mep/loop_phase_pointers.json"),
         "resume_engine_restart_packet_pointer": _artifact_pointer(run_url, "restart-packet", ".mep/RESTART_PACKET.txt"),
     }
+
+
+def _apply_loop_durable_primary(loop: dict, workflow_run_url: str = "") -> dict:
+    normalized = _normalize_loop_state(loop)
+    workflow_run_url = _first_nonempty(workflow_run_url, normalized.get("primary_workflow_run_url"), normalized.get("workflow_run_url"))
+    normalized["primary_workflow_run_url"] = workflow_run_url
+    if workflow_run_url and not str(normalized.get("workflow_run_url") or "").strip():
+        normalized["workflow_run_url"] = workflow_run_url
+    normalized["primary_phase_result_pointer"] = _first_nonempty(normalized.get("primary_phase_result_pointer"), normalized.get("phase_result_pointer"))
+    normalized["primary_phase_summary_pointer"] = _first_nonempty(normalized.get("primary_phase_summary_pointer"), normalized.get("phase_summary_pointer"), normalized.get("resume_engine_phase_summary_pointer"))
+    normalized["primary_phase_pointers_pointer"] = _first_nonempty(normalized.get("primary_phase_pointers_pointer"), normalized.get("phase_pointers_pointer"), normalized.get("resume_engine_phase_pointers_pointer"))
+    normalized["primary_restart_packet_pointer"] = _first_nonempty(normalized.get("primary_restart_packet_pointer"), normalized.get("restart_packet_pointer"), normalized.get("resume_engine_restart_packet_pointer"))
+    return normalized
 def update_compiled(rs: dict) -> None:
     run_id = rs.get("run_id") or "NONE"
     run_status = rs.get("run_status", "")
@@ -385,14 +445,20 @@ def update_compiled(rs: dict) -> None:
     loop_phase = loop.get("current_phase", "")
     loop_reason = loop.get("reason_code", "")
     loop_next_action = loop.get("next_action", "")
-    loop_run_url = loop.get("workflow_run_url", "")
-    loop_result_path = loop.get("phase_result_path", "")
-    loop_result_pointer = loop.get("phase_result_pointer", "")
-    loop_summary_path = loop.get("phase_summary_path", "")
-    loop_summary_pointer = loop.get("phase_summary_pointer", "")
-    loop_pointers = loop.get("phase_pointers_json", "")
-    loop_pointers_pointer = loop.get("phase_pointers_pointer", "")
-    loop_restart_pointer = loop.get("restart_packet_pointer", "")
+    loop_primary_run_url = _first_nonempty(
+        loop.get("primary_workflow_run_url", ""),
+        loop.get("workflow_run_url", ""),
+        loop.get("resume_dispatched_engine_run_url", ""),
+        loop.get("resume_dispatched_entry_run_url", ""),
+    )
+    loop_result_local_path = _first_nonempty(loop.get("phase_result_local_path", ""), loop.get("phase_result_path", ""))
+    loop_result_pointer = _first_nonempty(loop.get("primary_phase_result_pointer", ""), loop.get("phase_result_pointer", ""))
+    loop_summary_local_path = _first_nonempty(loop.get("phase_summary_local_path", ""), loop.get("phase_summary_path", ""))
+    loop_summary_pointer = _first_nonempty(loop.get("primary_phase_summary_pointer", ""), loop.get("phase_summary_pointer", ""))
+    loop_pointers_local_path = _first_nonempty(loop.get("phase_pointers_local_path", ""), loop.get("phase_pointers_json", ""))
+    loop_pointers_pointer = _first_nonempty(loop.get("primary_phase_pointers_pointer", ""), loop.get("phase_pointers_pointer", ""))
+    loop_restart_local_path = _first_nonempty(loop.get("restart_packet_local_path", ""), loop.get("restart_packet_path", ""))
+    loop_restart_pointer = _first_nonempty(loop.get("primary_restart_packet_pointer", ""), loop.get("restart_packet_pointer", ""))
     loop_resume_origin = loop.get("resume_origin_phase", "")
     loop_resume_via = loop.get("resume_via_workflow", "")
     loop_resume_from = loop.get("resume_from_iter", "")
@@ -410,7 +476,7 @@ def update_compiled(rs: dict) -> None:
     loop_resume_engine_phase_summary_pointer = loop.get("resume_engine_phase_summary_pointer", "")
     loop_resume_engine_phase_pointers_pointer = loop.get("resume_engine_phase_pointers_pointer", "")
     loop_resume_engine_restart_packet_pointer = loop.get("resume_engine_restart_packet_pointer", "")
-    loop_primary_run_url = loop_resume_engine_run_url or loop_run_url or loop_resume_entry_run_url
+    loop_primary_run_url = _first_nonempty(loop_resume_engine_run_url, loop_primary_run_url, loop_resume_entry_run_url)
     current_source = "LOOP_STATE" if loop else "LAST_RESULT"
     lines = [
         "# STATUS",
@@ -434,13 +500,14 @@ def update_compiled(rs: dict) -> None:
             f"- next_action: {loop_next_action}",
             f"- reason_code: {loop_reason}",
             f"- workflow_run_url: {loop_primary_run_url}",
-            f"- phase_result_path: {loop_result_path}",
             f"- phase_result_pointer: {loop_result_pointer}",
-            f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_result_local_path: {loop_result_local_path}",
             f"- phase_summary_pointer: {loop_summary_pointer}",
-            f"- phase_pointers_json: {loop_pointers}",
+            f"- phase_summary_local_path: {loop_summary_local_path}",
             f"- phase_pointers_pointer: {loop_pointers_pointer}",
+            f"- phase_pointers_local_path: {loop_pointers_local_path}",
             f"- restart_packet_pointer: {loop_restart_pointer}",
+            f"- restart_packet_local_path: {loop_restart_local_path}",
             f"- resume_origin_phase: {loop_resume_origin}",
             f"- resume_via_workflow: {loop_resume_via}",
             f"- resume_from_iter: {loop_resume_from}",
@@ -479,13 +546,14 @@ def update_compiled(rs: dict) -> None:
             f"- next_action: {loop_next_action}",
             f"- reason_code: {loop_reason}",
             f"- workflow_run_url: {loop_primary_run_url}",
-            f"- phase_result_path: {loop_result_path}",
             f"- phase_result_pointer: {loop_result_pointer}",
-            f"- phase_summary_path: {loop_summary_path}",
+            f"- phase_result_local_path: {loop_result_local_path}",
             f"- phase_summary_pointer: {loop_summary_pointer}",
-            f"- phase_pointers_json: {loop_pointers}",
+            f"- phase_summary_local_path: {loop_summary_local_path}",
             f"- phase_pointers_pointer: {loop_pointers_pointer}",
+            f"- phase_pointers_local_path: {loop_pointers_local_path}",
             f"- restart_packet_pointer: {loop_restart_pointer}",
+            f"- restart_packet_local_path: {loop_restart_local_path}",
             f"- resume_origin_phase: {loop_resume_origin}",
             f"- resume_via_workflow: {loop_resume_via}",
             f"- resume_from_iter: {loop_resume_from}",
@@ -524,13 +592,14 @@ def update_compiled(rs: dict) -> None:
         lines.append(f"- next_action: {loop_next_action}")
         lines.append(f"- reason_code: {loop_reason}")
         lines.append(f"- workflow_run_url: {loop_primary_run_url}")
-        lines.append(f"- phase_result_path: {loop_result_path}")
         lines.append(f"- phase_result_pointer: {loop_result_pointer}")
-        lines.append(f"- phase_summary_path: {loop_summary_path}")
+        lines.append(f"- phase_result_local_path: {loop_result_local_path}")
         lines.append(f"- phase_summary_pointer: {loop_summary_pointer}")
-        lines.append(f"- phase_pointers_json: {loop_pointers}")
+        lines.append(f"- phase_summary_local_path: {loop_summary_local_path}")
         lines.append(f"- phase_pointers_pointer: {loop_pointers_pointer}")
+        lines.append(f"- phase_pointers_local_path: {loop_pointers_local_path}")
         lines.append(f"- restart_packet_pointer: {loop_restart_pointer}")
+        lines.append(f"- restart_packet_local_path: {loop_restart_local_path}")
         lines.append(f"- resume_origin_phase: {loop_resume_origin}")
         lines.append(f"- resume_via_workflow: {loop_resume_via}")
         lines.append(f"- resume_from_iter: {loop_resume_from}")
@@ -864,7 +933,7 @@ def _dispatch_loop_entry_wait_state(
         loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
         loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
 
@@ -911,7 +980,7 @@ def _dispatch_loop_entry_wait_state(
         loop["wait_loop_engine_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
         loop.update(_engine_pointer_fields(""))
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         evidence["loop_entry_workflow"] = entry_workflow
         evidence["loop_engine_workflow"] = engine_workflow
         evidence["loop_resume_origin_phase"] = origin_phase
@@ -971,7 +1040,7 @@ def _dispatch_loop_entry_wait_state(
     loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
     loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
     loop["updated_at"] = rs["updated_at"]
-    rs["loop_state"] = loop
+    rs["loop_state"] = _apply_loop_durable_primary(loop)
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
 
@@ -1007,7 +1076,7 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["phase_status"] = "STOP"
         loop["reason_code"] = "LOOP_WAIT_ACTION_UNSUPPORTED"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     if manual_refresh_reentry:
@@ -1029,7 +1098,7 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["phase_status"] = "STOP"
         loop["reason_code"] = "LOOP_REPO_UNRESOLVED"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     target_iter = _parse_loop_int(loop.get("resume_target_iter"))
@@ -1111,7 +1180,7 @@ def loop_wait_refresh(run_id: str) -> int:
             loop["phase_status"] = "STOP"
             loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
         lr["next_action"] = rs["next_action"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2 if rs["next_action"] == "WAIT_LOOP_ENGINE" else 0
     if engine_status and engine_status != "completed":
@@ -1125,7 +1194,7 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["reason_code"] = "LOOP_ENGINE_RUNNING"
         loop["wait_loop_engine_unresolved_refresh_count"] = "0"
         loop["wait_loop_engine_child_state_refresh_count"] = "0"
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     child_state = _download_run_artifact_json(repo, engine_run_id, "loop-phase-pointers", "mep/run_state.json") if engine_run_id else {}
@@ -1190,7 +1259,7 @@ def loop_wait_refresh(run_id: str) -> int:
             lr["next_action"] = rs["next_action"]
             loop["next_action"] = rs["next_action"]
             loop["phase_status"] = child_phase_status or ("WAIT" if child_next_action in LOOP_WAIT_ACTIONS else str(loop.get("phase_status") or ""))
-            rs["loop_state"] = loop
+            rs["loop_state"] = _apply_loop_durable_primary(loop)
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 2 if rs["next_action"] in LOOP_WAIT_ACTIONS or lr["stop_class"] == "WAIT" else 0
         if child_next_action in LOOP_TERMINAL_ACTIONS or (child_run_status == "DONE" and child_next_action in {"", "ALL_DONE"}):
@@ -1202,7 +1271,7 @@ def loop_wait_refresh(run_id: str) -> int:
             loop["next_action"] = rs["next_action"]
             loop["phase_status"] = "DONE"
             loop["reason_code"] = child_reason_code or "LOOP_ENGINE_COMPLETED"
-            rs["loop_state"] = loop
+            rs["loop_state"] = _apply_loop_durable_primary(loop)
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 0
         if child_next_action in LOOP_MANUAL_ACTIONS:
@@ -1214,7 +1283,7 @@ def loop_wait_refresh(run_id: str) -> int:
             loop["next_action"] = rs["next_action"]
             loop["phase_status"] = child_phase_status or "STOP"
             loop["reason_code"] = child_reason_code or child_next_action
-            rs["loop_state"] = loop
+            rs["loop_state"] = _apply_loop_durable_primary(loop)
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 0
         if child_next_action:
@@ -1226,7 +1295,7 @@ def loop_wait_refresh(run_id: str) -> int:
             loop["next_action"] = rs["next_action"]
             loop["phase_status"] = child_phase_status or str(loop.get("phase_status") or "").strip()
             loop["reason_code"] = child_reason_code or child_next_action
-            rs["loop_state"] = loop
+            rs["loop_state"] = _apply_loop_durable_primary(loop)
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 2 if lr["stop_class"] == "WAIT" else 0
     if engine_conclusion in {"success", "neutral", "skipped"} or (engine_status == "completed" and not engine_conclusion):
@@ -1257,7 +1326,7 @@ def loop_wait_refresh(run_id: str) -> int:
             loop["phase_status"] = "STOP"
             loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT"
         lr["next_action"] = rs["next_action"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2 if rs["next_action"] == "WAIT_LOOP_ENGINE" else 0
     rs["run_status"] = "STILL_OPEN"
@@ -1268,7 +1337,7 @@ def loop_wait_refresh(run_id: str) -> int:
     loop["next_action"] = rs["next_action"]
     loop["phase_status"] = "STOP"
     loop["reason_code"] = "LOOP_ENGINE_COMPLETED_WITH_FAILURE"
-    rs["loop_state"] = loop
+    rs["loop_state"] = _apply_loop_durable_primary(loop)
     write_json(RUN_STATE, rs); update_compiled(rs)
     return 0
 
@@ -1304,7 +1373,7 @@ def _route_post_merge(rs: dict, repo: str, pr_url: str, commit_sha: str = "") ->
         loop["resume_origin_phase"] = "POST_WRITEBACK_RESUME"
         loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     if current_iter >= max_iter:
@@ -1322,7 +1391,7 @@ def _route_post_merge(rs: dict, repo: str, pr_url: str, commit_sha: str = "") ->
         loop["resume_from_iter"] = str(current_iter)
         loop["resume_target_iter"] = ""
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
     return _dispatch_loop_entry_wait_state(
@@ -1375,7 +1444,7 @@ def loop_resume(run_id: str) -> int:
         loop["resume_origin_phase"] = loop_phase or next_action
         loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     if manual_resume_reentry:
@@ -1392,7 +1461,7 @@ def loop_resume(run_id: str) -> int:
             loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
             loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
             loop["updated_at"] = rs["updated_at"]
-            rs["loop_state"] = loop
+            rs["loop_state"] = _apply_loop_durable_primary(loop)
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 2
         loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
@@ -1411,7 +1480,7 @@ def loop_resume(run_id: str) -> int:
         loop["resume_origin_phase"] = loop_phase or next_action
         loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     current_iter = loop_ctx.get("iter")
@@ -1429,7 +1498,7 @@ def loop_resume(run_id: str) -> int:
         loop["resume_origin_phase"] = loop_phase or next_action
         loop["resume_via_workflow"] = ".github/workflows/mep_loop_entry.yml"
         loop["updated_at"] = rs["updated_at"]
-        rs["loop_state"] = loop
+        rs["loop_state"] = _apply_loop_durable_primary(loop)
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
     return _dispatch_loop_entry_wait_state(
