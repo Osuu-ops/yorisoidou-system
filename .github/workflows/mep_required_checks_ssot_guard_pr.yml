@@ -12,7 +12,8 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}`n      - name: required checks ssot vs statusCheckRollup
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: required checks ssot vs statusCheckRollup
         uses: actions/github-script@v7
         with:
           script: |
