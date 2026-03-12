@@ -1,14 +1,23 @@
-name: business-non-interference-guard
+name: "[SEALED] business-non-interference-guard"
+
 on:
   pull_request:
   merge_group:
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
-  noop:
+  sealed:
     name: business-non-interference-guard
     runs-on: ubuntu-latest
     steps:
-      - name: no-op success
-        run: echo "business-non-interference-guard required-check shim: success (2026-02-11T02:37:54+09:00)"
+      - name: Reject sealed legacy shim
+        shell: bash
+        run: |
+          echo "Legacy business non-interference shim is sealed." >> "$GITHUB_STEP_SUMMARY"
+          echo "This workflow is a non-canonical path." >> "$GITHUB_STEP_SUMMARY"
+          echo "Legacy business non-interference shim is sealed."
+          echo "This workflow is a non-canonical path."
+          exit 1
