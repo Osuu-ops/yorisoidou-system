@@ -119,7 +119,14 @@ LOOP_OWNED_ACTIONS = {
 LOOP_CONTINUATION_ACTIONS = LOOP_WAIT_ACTIONS | LOOP_OWNED_ACTIONS
 LOOP_TERMINAL_ACTIONS = {"ALL_DONE", "STATUS", "COMPACT"}
 LOOP_MANUAL_ACTIONS = {"MANUAL_RESOLUTION_REQUIRED", "PROVIDE_EVIDENCE_OR_ABORT"}
-LOOP_WAIT_REFRESH_REENTRY_REASON_CODES = {"LOOP_ENGINE_COMPLETED_WITH_FAILURE"}
+LOOP_WAIT_REFRESH_REENTRY_REASON_CODES = {
+    "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE",
+    "LOOP_ENGINE_COMPLETED_WITH_FAILURE",
+}
+LOOP_ENGINE_RUN_UNRESOLVED_MAX_REFRESH = 2
+LOOP_ENGINE_RUN_UNRESOLVED_MAX_RESUME = 1
+LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_REFRESH = 2
+LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_MANUAL_REFRESH = 1
 
 
 def _evidence_from_rs(rs: dict, note: str = "") -> dict:
@@ -332,6 +339,13 @@ def default_run_state() -> dict:
 def _loop_state_from_rs(rs: dict) -> dict:
     loop = (rs or {}).get("loop_state") or {}
     return loop if isinstance(loop, dict) else {}
+
+
+def _loop_retry_count(loop: dict, key: str) -> int:
+    try:
+        return max(0, int(str((loop or {}).get(key) or "").strip()))
+    except Exception:
+        return 0
 
 
 def _artifact_pointer(run_url: str, artifact_name: str, member_path: str = "") -> str:
@@ -782,6 +796,12 @@ def _dispatch_loop_entry_wait_state(
     evidence = rs.setdefault("last_result", {}).setdefault("evidence", {})
     loop = _loop_state_from_rs(rs)
     resume_token = str(loop.get("resume_token") or loop_ctx.get("resume_token") or f"loop-{target_iter}-{secrets.token_hex(4)}").strip()
+    preserve_recovery_counts = (
+        str(loop.get("resume_target_iter") or "").strip() == str(target_iter)
+        and str(loop.get("resume_origin_phase") or "").strip() == origin_phase
+    )
+    unresolved_resume_count = _loop_retry_count(loop, "wait_loop_engine_unresolved_resume_count") if preserve_recovery_counts else 0
+    child_manual_refresh_count = _loop_retry_count(loop, "wait_loop_engine_child_state_manual_refresh_count") if preserve_recovery_counts else 0
 
     already_waiting = (
         rs.get("next_action") == "WAIT_LOOP_ENGINE"
@@ -835,6 +855,10 @@ def _dispatch_loop_entry_wait_state(
         loop["resume_dispatched_entry_run_url"] = entry_run_url
         loop["resume_dispatched_engine_run_id"] = engine_run_id
         loop["resume_dispatched_engine_run_url"] = engine_run_url
+        loop["wait_loop_engine_unresolved_refresh_count"] = str(_loop_retry_count(loop, "wait_loop_engine_unresolved_refresh_count"))
+        loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+        loop["wait_loop_engine_child_state_refresh_count"] = str(_loop_retry_count(loop, "wait_loop_engine_child_state_refresh_count"))
+        loop["wait_loop_engine_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
         loop.update(engine_pointers)
         loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
         loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
@@ -881,6 +905,10 @@ def _dispatch_loop_entry_wait_state(
         loop["resume_dispatched_entry_run_url"] = ""
         loop["resume_dispatched_engine_run_id"] = ""
         loop["resume_dispatched_engine_run_url"] = ""
+        loop["wait_loop_engine_unresolved_refresh_count"] = "0"
+        loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+        loop["wait_loop_engine_child_state_refresh_count"] = "0"
+        loop["wait_loop_engine_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
         loop.update(_engine_pointer_fields(""))
         loop["updated_at"] = rs["updated_at"]
         rs["loop_state"] = loop
@@ -934,6 +962,10 @@ def _dispatch_loop_entry_wait_state(
     loop["resume_dispatched_entry_run_url"] = entry_run_url
     loop["resume_dispatched_engine_run_id"] = engine_run_id
     loop["resume_dispatched_engine_run_url"] = engine_run_url
+    loop["wait_loop_engine_unresolved_refresh_count"] = "0"
+    loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+    loop["wait_loop_engine_child_state_refresh_count"] = "0"
+    loop["wait_loop_engine_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
     loop.update(engine_pointers)
     loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
     loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
@@ -955,6 +987,10 @@ def loop_wait_refresh(run_id: str) -> int:
     loop = _loop_state_from_rs(rs)
     next_action = str(rs.get("next_action") or "").strip()
     reason_code = str(lr.get("reason_code") or loop.get("reason_code") or "").strip()
+    unresolved_refresh_count = _loop_retry_count(loop, "wait_loop_engine_unresolved_refresh_count")
+    unresolved_resume_count = _loop_retry_count(loop, "wait_loop_engine_unresolved_resume_count")
+    child_refresh_count = _loop_retry_count(loop, "wait_loop_engine_child_state_refresh_count")
+    child_manual_refresh_count = _loop_retry_count(loop, "wait_loop_engine_child_state_manual_refresh_count")
     manual_refresh_reentry = (
         next_action in LOOP_MANUAL_ACTIONS
         and reason_code in LOOP_WAIT_REFRESH_REENTRY_REASON_CODES
@@ -980,6 +1016,8 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["next_action"] = rs["next_action"]
         loop["phase_status"] = "WAIT"
         loop["reason_code"] = reason_code
+        if reason_code == "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE":
+            child_manual_refresh_count += 1
     if not repo:
         rs["run_status"] = "STILL_OPEN"
         lr["stop_class"] = "WAIT"
@@ -1038,23 +1076,44 @@ def loop_wait_refresh(run_id: str) -> int:
     loop["resume_dispatched_engine_status"] = engine_status
     loop["resume_dispatched_engine_conclusion"] = engine_conclusion
     loop["resume_dispatched_engine_completed_at"] = engine_completed_at
+    loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+    loop["wait_loop_engine_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
     loop.update(engine_pointers)
     loop["phase_summary_pointer"] = engine_pointers["resume_engine_phase_summary_pointer"] or str(loop.get("phase_summary_pointer") or "")
     loop["phase_pointers_pointer"] = engine_pointers["resume_engine_phase_pointers_pointer"] or str(loop.get("phase_pointers_pointer") or "")
     loop["restart_packet_pointer"] = engine_pointers["resume_engine_restart_packet_pointer"] or str(loop.get("restart_packet_pointer") or "")
     loop["updated_at"] = rs["updated_at"]
     if not engine_run_id and not engine_run_url:
+        unresolved_refresh_count += 1
+        loop["wait_loop_engine_unresolved_refresh_count"] = str(unresolved_refresh_count)
+        loop["wait_loop_engine_child_state_refresh_count"] = "0"
+        evidence["loop_wait_unresolved_refresh_count"] = str(unresolved_refresh_count)
+        evidence["loop_wait_unresolved_resume_count"] = str(unresolved_resume_count)
         rs["run_status"] = "STILL_OPEN"
-        lr["stop_class"] = "WAIT"
         lr["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
-        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        if unresolved_refresh_count <= LOOP_ENGINE_RUN_UNRESOLVED_MAX_REFRESH:
+            lr["stop_class"] = "WAIT"
+            rs["next_action"] = "WAIT_LOOP_ENGINE"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "WAIT"
+            loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
+        elif unresolved_resume_count < LOOP_ENGINE_RUN_UNRESOLVED_MAX_RESUME:
+            lr["stop_class"] = "WAIT"
+            rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "STOP"
+            loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
+        else:
+            lr["stop_class"] = "HARD"
+            lr["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
+            rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "STOP"
+            loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
         lr["next_action"] = rs["next_action"]
-        loop["next_action"] = rs["next_action"]
-        loop["phase_status"] = "WAIT"
-        loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED"
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        return 2 if rs["next_action"] == "WAIT_LOOP_ENGINE" else 0
     if engine_status and engine_status != "completed":
         rs["run_status"] = "STILL_OPEN"
         lr["stop_class"] = "WAIT"
@@ -1064,6 +1123,8 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["next_action"] = rs["next_action"]
         loop["phase_status"] = "WAIT"
         loop["reason_code"] = "LOOP_ENGINE_RUNNING"
+        loop["wait_loop_engine_unresolved_refresh_count"] = "0"
+        loop["wait_loop_engine_child_state_refresh_count"] = "0"
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
@@ -1115,6 +1176,10 @@ def loop_wait_refresh(run_id: str) -> int:
         loop["restart_packet_pointer"] = str(child_loop.get("restart_packet_pointer") or engine_pointers["resume_engine_restart_packet_pointer"] or loop.get("restart_packet_pointer") or "").strip()
         loop["reason_code"] = child_reason_code or str(loop.get("reason_code") or "").strip()
         loop["phase_status"] = child_phase_status or str(loop.get("phase_status") or "").strip()
+        loop["wait_loop_engine_unresolved_refresh_count"] = "0"
+        loop["wait_loop_engine_unresolved_resume_count"] = "0"
+        loop["wait_loop_engine_child_state_refresh_count"] = "0"
+        loop["wait_loop_engine_child_state_manual_refresh_count"] = "0"
         if child_next_action in LOOP_CONTINUATION_ACTIONS:
             rs["run_status"] = child_run_status or "STILL_OPEN"
             if rs["run_status"] == "DONE":
@@ -1165,17 +1230,36 @@ def loop_wait_refresh(run_id: str) -> int:
             write_json(RUN_STATE, rs); update_compiled(rs)
             return 2 if lr["stop_class"] == "WAIT" else 0
     if engine_conclusion in {"success", "neutral", "skipped"} or (engine_status == "completed" and not engine_conclusion):
+        child_refresh_count += 1
+        loop["wait_loop_engine_unresolved_refresh_count"] = "0"
+        loop["wait_loop_engine_child_state_refresh_count"] = str(child_refresh_count)
+        evidence["loop_wait_child_state_refresh_count"] = str(child_refresh_count)
+        evidence["loop_wait_child_state_manual_refresh_count"] = str(child_manual_refresh_count)
         rs["run_status"] = "STILL_OPEN"
-        lr["stop_class"] = "WAIT"
         lr["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
-        rs["next_action"] = "WAIT_LOOP_ENGINE"
+        if child_refresh_count <= LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_REFRESH:
+            lr["stop_class"] = "WAIT"
+            rs["next_action"] = "WAIT_LOOP_ENGINE"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "WAIT"
+            loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
+        elif child_manual_refresh_count < LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_MANUAL_REFRESH:
+            lr["stop_class"] = "WAIT"
+            rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "STOP"
+            loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
+        else:
+            lr["stop_class"] = "HARD"
+            lr["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT"
+            rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "STOP"
+            loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT"
         lr["next_action"] = rs["next_action"]
-        loop["next_action"] = rs["next_action"]
-        loop["phase_status"] = "WAIT"
-        loop["reason_code"] = "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE"
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        return 2 if rs["next_action"] == "WAIT_LOOP_ENGINE" else 0
     rs["run_status"] = "STILL_OPEN"
     lr["stop_class"] = "WAIT"
     lr["reason_code"] = "LOOP_ENGINE_COMPLETED_WITH_FAILURE"
@@ -1263,6 +1347,7 @@ def loop_resume(run_id: str) -> int:
     loop_ctx = _loop_resume_context(rs)
     loop = _loop_state_from_rs(rs)
     next_action = str(rs.get("next_action") or "").strip()
+    reason_code = str((rs.get("last_result") or {}).get("reason_code") or loop.get("reason_code") or "").strip()
     loop_phase = str(loop.get("current_phase") or next_action).strip()
     resumable_actions = {
         "SSOT_SCAN",
@@ -1272,7 +1357,12 @@ def loop_resume(run_id: str) -> int:
         "PHASE3_WRITEBACK_BUNDLE",
         "PHASE3_CREATE_PR",
     }
-    if next_action not in resumable_actions and loop_phase not in resumable_actions:
+    manual_resume_reentry = (
+        next_action in LOOP_MANUAL_ACTIONS
+        and reason_code == "LOOP_ENGINE_RUN_UNRESOLVED"
+        and str(loop.get("current_phase") or "").strip() == "WAIT_LOOP_ENGINE"
+    )
+    if next_action not in resumable_actions and loop_phase not in resumable_actions and not manual_resume_reentry:
         rs["run_status"] = "STILL_OPEN"
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "LOOP_RESUME_ACTION_UNSUPPORTED"
@@ -1288,12 +1378,26 @@ def loop_resume(run_id: str) -> int:
         rs["loop_state"] = loop
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
-    if manual_refresh_reentry:
-        rs["next_action"] = "WAIT_LOOP_ENGINE"
-        lr["next_action"] = rs["next_action"]
-        loop["next_action"] = rs["next_action"]
-        loop["phase_status"] = "WAIT"
-        loop["reason_code"] = reason_code
+    if manual_resume_reentry:
+        unresolved_resume_count = _loop_retry_count(loop, "wait_loop_engine_unresolved_resume_count") + 1
+        if unresolved_resume_count > LOOP_ENGINE_RUN_UNRESOLVED_MAX_RESUME:
+            rs["run_status"] = "STILL_OPEN"
+            rs["last_result"]["stop_class"] = "HARD"
+            rs["last_result"]["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
+            rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
+            rs["last_result"]["next_action"] = rs["next_action"]
+            loop["current_phase"] = "WAIT_LOOP_ENGINE"
+            loop["next_action"] = rs["next_action"]
+            loop["phase_status"] = "STOP"
+            loop["reason_code"] = "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT"
+            loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+            loop["updated_at"] = rs["updated_at"]
+            rs["loop_state"] = loop
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 2
+        loop["wait_loop_engine_unresolved_resume_count"] = str(unresolved_resume_count)
+        loop_phase = str(loop.get("resume_origin_phase") or loop_phase or next_action).strip()
+
     if not repo:
         rs["run_status"] = "STILL_OPEN"
         rs["last_result"]["stop_class"] = "WAIT"
