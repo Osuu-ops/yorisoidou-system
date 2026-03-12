@@ -6,6 +6,7 @@
 - .github/workflows/mep_required_checks_ssot_guard_pr.yml
 - .github/workflows/mep_entry_gate_pr.yml
 - .github/workflows/required_business_non_interference_guard.yml
+- .github/workflows/metadata-format-check.yml
 - docs/MEP/MASTER_GOAL.md
 - docs/MEP/ROADMAP.md
 - docs/MEP/SYSTEM_MAP.md
