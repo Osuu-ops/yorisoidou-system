@@ -19,12 +19,15 @@ jobs:
           script: |
             const fs = require('fs');
             const SSOT_PATH = 'docs/MEP/REQUIRED_CHECKS_SSOT.md';
+            const PENDING_STATES = new Set(['PENDING', 'IN_PROGRESS', 'QUEUED', 'WAITING', 'REQUESTED', 'EXPECTED']);
+            const MAX_ATTEMPTS = 24;
+            const POLL_MS = 15000;
+
             if (!fs.existsSync(SSOT_PATH)) {
               core.setFailed(`STOP_HARD REASON_CODE=REQUIRED_CHECKS_SSOT_MISSING path=${SSOT_PATH}`);
               return;
             }
             const md = fs.readFileSync(SSOT_PATH, 'utf8');
-            // Parse lines: - "NAME"
             const required = [];
             const re = /^\s*-\s*"([^"]+)"\s*$/gm;
             let m;
@@ -38,6 +41,7 @@ jobs:
               core.setFailed('STOP_HARD REASON_CODE=NO_PULL_REQUEST_CONTEXT');
               return;
             }
+
             const query = `
               query($owner:String!, $name:String!, $number:Int!) {
                 repository(owner:$owner, name:$name) {
@@ -64,50 +68,137 @@ jobs:
                 }
               }
             `;
+
             const owner = context.repo.owner;
-            const name  = context.repo.repo;
+            const name = context.repo.repo;
             const number = pr.number;
-            const res = await github.graphql(query, { owner, name, number });
-            const nodes = res?.repository?.pullRequest?.statusCheckRollup?.contexts?.nodes || [];
-            // Map displayed-name -> {kind,state}
-            const present = new Map();
-            for (const n of nodes) {
-              if (!n) continue;
-              if (n.__typename === 'CheckRun') {
-                const state = (n.conclusion ?? n.status ?? '').toString().toUpperCase();
-                present.set(n.name, { kind: 'CheckRun', state, url: n.detailsUrl || '' });
-              } else if (n.__typename === 'StatusContext') {
-                const state = (n.state ?? '').toString().toUpperCase();
-                present.set(n.context, { kind: 'StatusContext', state, url: n.targetUrl || '' });
+
+            async function sleep(ms) {
+              return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            function normalizeContext(node) {
+              if (!node) {
+                return null;
+              }
+              if (node.__typename === 'CheckRun') {
+                const status = (node.status ?? '').toString().toUpperCase();
+                const conclusion = (node.conclusion ?? '').toString().toUpperCase();
+                if (PENDING_STATES.has(status) || (status === 'COMPLETED' && !conclusion)) {
+                  return { name: node.name, kind: 'CheckRun', state: status || 'UNKNOWN', url: node.detailsUrl || '', pending: true, terminalFailure: false };
+                }
+                if (conclusion === 'SUCCESS') {
+                  return { name: node.name, kind: 'CheckRun', state: 'SUCCESS', url: node.detailsUrl || '', pending: false, terminalFailure: false };
+                }
+                return { name: node.name, kind: 'CheckRun', state: conclusion || status || 'UNKNOWN', url: node.detailsUrl || '', pending: false, terminalFailure: true };
+              }
+              if (node.__typename === 'StatusContext') {
+                const state = (node.state ?? '').toString().toUpperCase();
+                if (PENDING_STATES.has(state)) {
+                  return { name: node.context, kind: 'StatusContext', state: state || 'UNKNOWN', url: node.targetUrl || '', pending: true, terminalFailure: false };
+                }
+                if (state === 'SUCCESS') {
+                  return { name: node.context, kind: 'StatusContext', state: 'SUCCESS', url: node.targetUrl || '', pending: false, terminalFailure: false };
+                }
+                return { name: node.context, kind: 'StatusContext', state: state || 'UNKNOWN', url: node.targetUrl || '', pending: false, terminalFailure: true };
+              }
+              return null;
+            }
+
+            async function fetchSnapshot() {
+              const res = await github.graphql(query, { owner, name, number });
+              const nodes = res?.repository?.pullRequest?.statusCheckRollup?.contexts?.nodes || [];
+              const present = new Map();
+              for (const node of nodes) {
+                const normalized = normalizeContext(node);
+                if (!normalized) {
+                  continue;
+                }
+                present.set(normalized.name, normalized);
+              }
+              const missing = [];
+              const pending = [];
+              const notSuccess = [];
+              for (const requiredName of required) {
+                const hit = present.get(requiredName);
+                if (!hit) {
+                  missing.push(requiredName);
+                  continue;
+                }
+                if (hit.pending) {
+                  pending.push(`${requiredName} :: ${hit.kind} :: ${hit.state}`);
+                  continue;
+                }
+                if (hit.terminalFailure) {
+                  notSuccess.push(`${requiredName} :: ${hit.kind} :: ${hit.state}`);
+                }
+              }
+              return {
+                observed: Array.from(present.keys()).sort(),
+                missing,
+                pending,
+                notSuccess,
+              };
+            }
+
+            async function writeSummary(snapshot, mode) {
+              const summary = core.summary
+                .addHeading('REQUIRED_CHECKS_SSOT / gate')
+                .addRaw(`PR #${number}\n\n`)
+                .addHeading('Mode', 2)
+                .addRaw(`${mode}\n\n`)
+                .addHeading('SSOT required', 2)
+                .addList(required)
+                .addHeading('Observed (statusCheckRollup)', 2)
+                .addList(snapshot.observed);
+              if (snapshot.missing.length > 0) {
+                summary.addHeading('Missing', 2).addList(snapshot.missing);
+              }
+              if (snapshot.pending.length > 0) {
+                summary.addHeading('Pending', 2).addList(snapshot.pending);
+              }
+              if (snapshot.notSuccess.length > 0) {
+                summary.addHeading('Not success', 2).addList(snapshot.notSuccess);
+              }
+              await summary.write();
+            }
+
+            let snapshot = null;
+            for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+              snapshot = await fetchSnapshot();
+              core.info(`Attempt ${attempt}/${MAX_ATTEMPTS}: missing=${snapshot.missing.length} pending=${snapshot.pending.length} not_success=${snapshot.notSuccess.length}`);
+              if (snapshot.notSuccess.length > 0) {
+                await writeSummary(snapshot, 'terminal-failure');
+                const payload = {
+                  STOP_KIND: 'HARD',
+                  REASON_CODE: 'REQUIRED_CHECKS_NOT_SUCCESS',
+                  SSOT_PATH,
+                  missing: snapshot.missing,
+                  pending: snapshot.pending,
+                  not_success: snapshot.notSuccess,
+                };
+                core.error(JSON.stringify(payload, null, 2));
+                core.setFailed(`STOP_HARD REASON_CODE=${payload.REASON_CODE} missing=${snapshot.missing.length} pending=${snapshot.pending.length} not_success=${snapshot.notSuccess.length}`);
+                return;
+              }
+              if (snapshot.missing.length === 0 && snapshot.pending.length === 0) {
+                await writeSummary(snapshot, 'success');
+                core.info(`OK: SSOT(${required.length}) fully present and SUCCESS in statusCheckRollup`);
+                return;
+              }
+              if (attempt < MAX_ATTEMPTS) {
+                await sleep(POLL_MS);
               }
             }
-            const missing = [];
-            const notSuccess = [];
-            for (const r of required) {
-              const hit = present.get(r);
-              if (!hit) { missing.push(r); continue; }
-              const st = (hit.state || '').toUpperCase();
-              const ok = (st === 'SUCCESS');
-              if (!ok) notSuccess.push(`${r} :: ${hit.kind} :: ${st || 'UNKNOWN'}`);
-            }
-            await core.summary
-              .addHeading('REQUIRED_CHECKS_SSOT / gate')
-              .addRaw(`PR #${number}\n\n`)
-              .addHeading('SSOT required', 2)
-              .addList(required)
-              .addHeading('Observed (statusCheckRollup)', 2)
-              .addList(Array.from(present.keys()).sort())
-              .write();
-            if (missing.length > 0 || notSuccess.length > 0) {
-              const payload = {
-                STOP_KIND: 'HARD',
-                REASON_CODE: (missing.length > 0) ? 'REQUIRED_CHECKS_MISSING_OR_MISMATCH' : 'REQUIRED_CHECKS_NOT_SUCCESS',
-                SSOT_PATH,
-                missing,
-                not_success: notSuccess,
-              };
-              core.error(JSON.stringify(payload, null, 2));
-              core.setFailed(`STOP_HARD REASON_CODE=${payload.REASON_CODE} missing=${missing.length} not_success=${notSuccess.length}`);
-              return;
-            }
-            core.info(`OK: SSOT(${required.length}) fully present and SUCCESS in statusCheckRollup`);
+
+            await writeSummary(snapshot, 'timeout');
+            const payload = {
+              STOP_KIND: 'HARD',
+              REASON_CODE: 'REQUIRED_CHECKS_TIMEOUT',
+              SSOT_PATH,
+              missing: snapshot.missing,
+              pending: snapshot.pending,
+              not_success: snapshot.notSuccess,
+            };
+            core.error(JSON.stringify(payload, null, 2));
+            core.setFailed(`STOP_HARD REASON_CODE=${payload.REASON_CODE} missing=${snapshot.missing.length} pending=${snapshot.pending.length} not_success=${snapshot.notSuccess.length}`);
