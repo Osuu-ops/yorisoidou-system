@@ -88,6 +88,13 @@ REASON_CODE_RULES = {
     "category": "rerun canonical evidence probe",
     "runner_cmd": "pr-probe",
   },
+  "PATCH_DOES_NOT_APPLY": {
+    "category": "hard stop",
+    "stop": "hard",
+    "runner_cmd": "status",
+    "requires_run_id": False,
+    "resolution": "inspect canonical status/handoff before regenerating the patch as an update",
+  },
   "PINNED_OVERFLOW": {
     "category": "freeze to canonical status view",
     "runner_cmd": "status",
@@ -100,6 +107,13 @@ REASON_CODE_RULES = {
   "PR_NOT_FOUND_FOR_RUN": {
     "category": "rerun canonical PR creation",
     "runner_cmd": "pr-create",
+  },
+  "REPO_NOT_SET": {
+    "category": "hard stop",
+    "stop": "hard",
+    "runner_cmd": "status",
+    "requires_run_id": False,
+    "resolution": "inspect canonical status/handoff and set GH_REPO or persisted repo context before retrying",
   },
 }
 def stop_wait(code: str, msg: str):
