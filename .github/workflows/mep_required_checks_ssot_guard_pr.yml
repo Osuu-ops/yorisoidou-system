@@ -18,7 +18,6 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const core = require('@actions/core');
             const SSOT_PATH = 'docs/MEP/REQUIRED_CHECKS_SSOT.md';
             if (!fs.existsSync(SSOT_PATH)) {
               core.setFailed(`STOP_HARD REASON_CODE=REQUIRED_CHECKS_SSOT_MISSING path=${SSOT_PATH}`);
