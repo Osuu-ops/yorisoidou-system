@@ -39,8 +39,11 @@ REASON_CODE_RULES = {
     "runner_cmd": "loop-wait-refresh",
   },
   "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT": {
-    "category": "hard stop",
+    "category": "hard stop after bounded child-state recovery is exhausted",
     "stop": "hard",
+    "manual_runner_cmd": "status",
+    "requires_run_id": False,
+    "resolution": "inspect canonical status/handoff and durable engine pointers before any manual re-entry",
   },
   "LOOP_CONTEXT_INVALID": {
     "category": "freeze to canonical status view",
@@ -56,8 +59,11 @@ REASON_CODE_RULES = {
     "runner_cmd": "loop-resume",
   },
   "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT": {
-    "category": "hard stop",
+    "category": "hard stop after bounded unresolved-engine recovery is exhausted",
     "stop": "hard",
+    "manual_runner_cmd": "status",
+    "requires_run_id": False,
+    "resolution": "inspect canonical status/handoff and durable engine pointers before any manual re-entry",
   },
   "LOOP_REPO_UNRESOLVED": {
     "category": "freeze to canonical status view",
@@ -150,7 +156,14 @@ def _stop_from_reason_code(reason_code: str, stop_class: str) -> int | None:
     return None
   category = str(rule.get("category") or "").strip()
   if str(rule.get("stop") or "").strip() == "hard":
-    return stop_hard(reason_code or "MANUAL_RESOLUTION_REQUIRED", f"reason_code={reason_code} category={category} stop_class={stop_class}")
+    msg = f"reason_code={reason_code} category={category} stop_class={stop_class}"
+    resolution = str(rule.get("resolution") or "").strip()
+    manual_cmd = str(rule.get("manual_runner_cmd") or "").strip()
+    if resolution:
+      msg += f" resolution={resolution}"
+    if manual_cmd:
+      msg += f" inspect_cmd=python {RUNNER} {manual_cmd}"
+    return stop_hard(reason_code or "MANUAL_RESOLUTION_REQUIRED", msg)
   return None
 
 
