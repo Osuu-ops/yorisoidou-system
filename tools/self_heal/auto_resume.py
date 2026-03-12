@@ -17,9 +17,18 @@ SSOT_PATHS = [
   "docs/MEP/HANDOFF_WORK.md",
 ]
 REASON_CODE_RULES = {
+  "CHECKS_TIMEOUT": {
+    "category": "rerun canonical merge/check refresh",
+    "runner_cmd": "merge-finish",
+  },
   "EVIDENCE_REQUIRED_BUT_UNAVAILABLE": {
     "category": "rerun canonical evidence probe",
     "runner_cmd": "pr-probe",
+  },
+  "HANDOFF_ACK_REQUIRED": {
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
   },
   "LOOP_ENTRY_DISPATCH_FAILED": {
     "category": "rerun canonical loop entry",
@@ -65,9 +74,26 @@ REASON_CODE_RULES = {
     "runner_cmd": "status",
     "requires_run_id": False,
   },
+  "MERGE_TIMEOUT": {
+    "category": "rerun canonical merge/check refresh",
+    "runner_cmd": "merge-finish",
+  },
   "MULTIPLE_PR_FOR_ONE_RUN": {
     "category": "rerun canonical evidence probe",
     "runner_cmd": "pr-probe",
+  },
+  "PINNED_OVERFLOW": {
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
+  },
+  "PR_CLOSED_FOR_RUN": {
+    "category": "rerun canonical PR creation",
+    "runner_cmd": "pr-create",
+  },
+  "PR_NOT_FOUND_FOR_RUN": {
+    "category": "rerun canonical PR creation",
+    "runner_cmd": "pr-create",
   },
 }
 def stop_wait(code: str, msg: str):
@@ -243,7 +269,15 @@ def main() -> int:
     if not cmd:
       return stop_wait(next_action, f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   else:
-    return stop_wait("UNKNOWN_NEXT_ACTION", f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
+    stop_result = _stop_from_reason_code(reason_code, stop_class)
+    if stop_result is not None:
+      return stop_result
+    try:
+      cmd = _runner_cmd_from_reason_code(reason_code, run_id)
+    except RuntimeError as e:
+      return stop_wait("RUN_ID_MISSING", str(e))
+    if not cmd:
+      return stop_wait("UNKNOWN_NEXT_ACTION", f"next_action={next_action} stop_class={stop_class} reason_code={reason_code}")
   # pass GH_REPO if present in run_state
   gh_repo = (rs.get("gh_repo") or rs.get("repo") or os.environ.get("GH_REPO") or "").strip()
   env = dict(os.environ)
