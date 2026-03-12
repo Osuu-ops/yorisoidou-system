@@ -5,9 +5,15 @@
 MEPを「実行（Runner）」「正（SSOT）」「証跡（EVIDENCE）」で分離し、
 迷走・忘却・誤修正を構造で防ぎつつ、最終的に **完全自律で回る判断OS** にする。
 ## 完了条件（2段）
-- 運用上の完成（A 完了）：実運用でほぼ無人で回る（事故が reason_code で自動収束）
+- 運用上の完成（A 完了）：通常運用はほぼ無人で回り、仕様上の停止境界は `status` で観測して人判断へ渡す
 - 完全OS完成（A+B 完了）：SSOT_SCAN / CONFLICT_SCAN / EXTRACT / Self-heal完全 を統合し、post-writeback + loop owned phase resume、canonical engine run completion 追跡、child run_state 解釈、主要 manual reason_code の canonical self-heal mapping 拡張、structural/manual hard stop の一部 status canonicalization と governance / PR lifecycle reason_code の一部 canonical command 化、persistent loop structural reason の hard stop 維持理由と canonical inspection=status の明文化、environment / patch prerequisite hard stop の canonical observation=status 整理、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable fallback の deterministic recovery と、loop_state / handoff の durable-first cleanup まで含めて仕様本体までrunnerが責任を持つ
 更新: 2026-02-15T14:09:16Z
+
+## 実運用完成線（固定）
+- 自動継続範囲: post-writeback resume、loop owned phase resume、durable-first handoff、governance / PR lifecycle reason_code の主要 canonical mapping まで
+- 仕様上の停止境界: `LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT`、`LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT`、`REPO_NOT_SET`、`PATCH_DOES_NOT_APPLY`
+- 停止境界の canonical inspection: `python tools/runner/runner.py status`
+- full self-heal は未完: persistent structural loop reason の自動復旧や patch / environment 自動修復までは含まない
 
 
 ## UPDATE（Adopted）：完全自動ループ網羅（自動完了）
