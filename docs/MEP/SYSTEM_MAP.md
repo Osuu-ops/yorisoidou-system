@@ -15,8 +15,13 @@ Layer0: GitHub入口/起動
 Layer1: Runner Execution（完成：boot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact）
 Layer2: SSOT統合/検査（loop v2 から既存 SSOT_SCAN / CONFLICT_SCAN 実装を呼出し。phase state は run_state へ保存。全体統合は未）
 Layer3: Extract/派生生成（loop v2 から extract_generate に write 接続。phase state は run_state へ保存。canonical EXTRACT outputs は writeback stage 対象。full completion は未）
-Layer4: Self-heal（post-writeback + loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run の completion 観測と durable pointer を保持し、child run_state.next_action / loop_state を親 refresh で解釈。主要 manual reason_code は canonical self-heal command に拡張写像済で、structural/manual hard stop の一部は `status` へ canonical 化済、governance / PR lifecycle reason_code の一部も `status` / `pr-create` / `merge-finish` へ canonical 化済、persistent loop structural reason は hard stop のまま `status` を canonical inspection command に固定し、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable も retry境界つき deterministic recovery に整理済で、loop_state と handoff は durable pointer を主表示・workspace path を補助表示に整理済だが、full completion は未）
+Layer4: Self-heal（post-writeback + loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run の completion 観測と durable pointer を保持し、child run_state.next_action / loop_state を親 refresh で解釈。主要 manual reason_code は canonical self-heal command に拡張写像済で、structural/manual hard stop の一部は `status` へ canonical 化済、governance / PR lifecycle reason_code の一部も `status` / `pr-create` / `merge-finish` へ canonical 化済、persistent loop structural reason は hard stop のまま `status` を canonical inspection command に固定し、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable も retry境界つき deterministic recovery に整理済で、loop_state と handoff は durable pointer を主表示・workspace path を補助表示に整理済で、STATUS / HANDOFF は `STOP_BOUNDARY` を表示するが、full completion は未）
 Layer5: Governance（契約/停止/証跡/圧縮）
+## 運用停止境界（固定）
+- 停止境界: `LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT`、`LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT`、`REPO_NOT_SET`、`PATCH_DOES_NOT_APPLY`
+- これらは bounded retry exhaustion または prerequisite 不足後の仕様上の停止境界であり、自動復旧へは戻さない
+- canonical inspection: `python tools/runner/runner.py status`
+
 ## 未統合レイヤー（固定）
 A) SSOT_SCAN：MEP_SSOT_MASTER(Q整合/RULE-0単一解化/PATCH競合/business-system混在)
 B) CONFLICT_SCAN：旧WORK_ID系 vs 新RUN系 / forbidden path / allowed_paths逸脱

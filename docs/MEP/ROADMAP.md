@@ -24,6 +24,12 @@ B-4 Self-heal 完全版（reason_code辞書→自動復帰）：post-writeback +
 - v2 wiring: `tools/checks/ssot_scan.py` / `tools/checks/conflict_scan.py` / `tools/extract/extract_generate.py` を呼ぶ
 - Scope note: EXTRACT は write + writeback stage 接続済。post-writeback と loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run url/status/conclusion と durable artifact pointer を保持し、completed 時は child run_state.next_action / loop_state を解釈して親 state を継続または完了へ分岐する。主要 manual reason_code は `pr-probe` / `loop-resume` / `loop-wait-refresh` / `status` / `pr-create` / `merge-finish` などの canonical self-heal command に寄せ、governance / PR lifecycle reason_code の一部も同じ辞書で吸収し、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable も retry境界つき deterministic recovery に整理し、persistent loop structural reason は hard stop のまま `status` を canonical inspection command に固定し、environment / patch prerequisite hard stop も `status` を canonical observation command に固定し、loop_state と handoff は durable pointer を主表示・workspace path を補助表示に整理したが、full self-heal completion は未
 ---
+## 運用完成線（固定）
+- 通常運用は canonical loop / writeback / handoff まで自動継続する
+- persistent structural loop reason と environment / patch prerequisite は仕様上の停止境界として扱う
+- 停止境界の canonical inspection は `python tools/runner/runner.py status`
+- `STATUS.md` / `HANDOFF_AUDIT.md` / `HANDOFF_WORK.md` は `STOP_BOUNDARY` を表示する
+---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1
 NEXT_ITEM: B-1 SSOT_SCAN

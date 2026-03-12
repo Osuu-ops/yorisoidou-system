@@ -127,6 +127,12 @@ LOOP_ENGINE_RUN_UNRESOLVED_MAX_REFRESH = 2
 LOOP_ENGINE_RUN_UNRESOLVED_MAX_RESUME = 1
 LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_REFRESH = 2
 LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_MAX_MANUAL_REFRESH = 1
+STOP_BOUNDARY_REASON_CODES = {
+    "LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT",
+    "LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT",
+    "REPO_NOT_SET",
+    "PATCH_DOES_NOT_APPLY",
+}
 
 
 def _evidence_from_rs(rs: dict, note: str = "") -> dict:
@@ -417,6 +423,18 @@ def _engine_pointer_fields(run_url: str) -> dict[str, str]:
     }
 
 
+def _stop_boundary_reason(rs: dict, loop: dict) -> str:
+    candidates = [
+        ((rs or {}).get("last_result") or {}).get("reason_code"),
+        (loop or {}).get("reason_code"),
+    ]
+    for candidate in candidates:
+        reason = str(candidate or "").strip()
+        if reason in STOP_BOUNDARY_REASON_CODES:
+            return reason
+    return ""
+
+
 def _apply_loop_durable_primary(loop: dict, workflow_run_url: str = "") -> dict:
     normalized = _normalize_loop_state(loop)
     workflow_run_url = _first_nonempty(workflow_run_url, normalized.get("primary_workflow_run_url"), normalized.get("workflow_run_url"))
@@ -478,11 +496,17 @@ def update_compiled(rs: dict) -> None:
     loop_resume_engine_restart_packet_pointer = loop.get("resume_engine_restart_packet_pointer", "")
     loop_primary_run_url = _first_nonempty(loop_resume_engine_run_url, loop_primary_run_url, loop_resume_entry_run_url)
     current_source = "LOOP_STATE" if loop else "LAST_RESULT"
+    stop_boundary_reason = _stop_boundary_reason(rs, loop)
+    stop_boundary_active = "yes" if stop_boundary_reason else "no"
+    stop_boundary_inspection_cmd = "python tools/runner/runner.py status" if stop_boundary_reason else ""
     lines = [
         "# STATUS",
         f"RUN_ID: {run_id}",
         f"RUN_STATUS: {run_status}",
         f"CURRENT_SOURCE: {current_source}",
+        f"STOP_BOUNDARY: {stop_boundary_active}",
+        f"STOP_BOUNDARY_REASON: {stop_boundary_reason}",
+        f"CANONICAL_INSPECTION: {stop_boundary_inspection_cmd}",
         f"STOP_CLASS: {stop_class}",
         f"REASON_CODE: {reason_code}",
         f"NEXT_ACTION: {next_action}",
@@ -534,6 +558,10 @@ def update_compiled(rs: dict) -> None:
         "- mep/boot_spec.yaml",
         "- mep/policy.yaml",
         "- mep/run_state.json",
+        "OPERATIONAL_BOUNDARY:",
+        f"- active: {stop_boundary_active}",
+        f"- reason_code: {stop_boundary_reason}",
+        f"- inspection_cmd: {stop_boundary_inspection_cmd}",
         "LATEST_EVIDENCE_POINTERS:",
         f"- pr_url: {pr_url}",
         f"- commit_sha: {commit_sha}",
@@ -582,6 +610,9 @@ def update_compiled(rs: dict) -> None:
     write_md(HANDOFF_AUDIT_MD, "\n".join(audit_lines))
     lines = []
     lines.append("# HANDOFF_WORK")
+    lines.append(f"STOP_BOUNDARY: {stop_boundary_active}")
+    lines.append(f"STOP_BOUNDARY_REASON: {stop_boundary_reason}")
+    lines.append(f"CANONICAL_INSPECTION: {stop_boundary_inspection_cmd}")
     lines.append(f"NEXT_ACTION: {next_action}")
     lines.append(f"REASON_CODE: {reason_code}")
     lines.append(f"STOP_CLASS: {stop_class}")
