@@ -68,6 +68,54 @@ function Ensure-PrForHead([string]$head, [string]$base, [string]$title, [string]
   return $url
 }
 
+function Ensure-ControllerLabelOnPr {
+  param(
+    [Parameter(Mandatory=$true)]
+    [string]$PrRef,
+
+    [Parameter(Mandatory=$true)]
+    [string]$ControllerLabel,
+
+    [Parameter()]
+    [string]$Repo = ""
+  )
+
+  $repoName = [string]$Repo
+  if ([string]::IsNullOrWhiteSpace($repoName)) {
+    $repoName = Resolve-FullRepo
+  }
+  if ([string]::IsNullOrWhiteSpace($repoName)) {
+    StopHard "REPO_NOT_SET"
+  }
+
+  $numberArgs = @('pr', 'view', $PrRef, '--json', 'number', '--jq', '.number', '--repo', $repoName)
+  $prNumber = ((& gh @numberArgs 2>$null) | Out-String).Trim()
+  if ([string]::IsNullOrWhiteSpace($prNumber)) {
+    StopHard ("PR_NUMBER_UNRESOLVED: " + $PrRef)
+  }
+
+  $labelsArgs = @('pr', 'view', $PrRef, '--json', 'labels', '--jq', '.labels[].name', '--repo', $repoName)
+  $labels = @(
+    (& gh @labelsArgs 2>$null) |
+      ForEach-Object { ([string]$_).Trim() } |
+      Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+  )
+  if ($labels -contains $ControllerLabel) {
+    Info ("Controller label already present on PR #" + $prNumber + ": " + $ControllerLabel)
+    return
+  }
+
+  $addArgs = @(
+    'api',
+    '--method', 'POST',
+    ("repos/{0}/issues/{1}/labels" -f $repoName, $prNumber),
+    '-f',
+    ("labels[]=" + $ControllerLabel)
+  )
+  & gh @addArgs | Out-Null
+  Info ("Attached controller label to PR #" + $prNumber + ": " + $ControllerLabel)
+}
+
 Assert-ControllerLock
 
 $writebackPaths = Resolve-WritebackPaths -PrimaryPath $BundlePath -MorePaths $AdditionalPaths
@@ -85,11 +133,13 @@ $head = (git rev-parse --abbrev-ref HEAD).Trim()
 $base = "main"
 $runId = [string]$env:GITHUB_RUN_ID; if ([string]::IsNullOrWhiteSpace($runId)) { $runId = "0" }
 $prNo  = [string]$env:PR_NUMBER;     if ([string]::IsNullOrWhiteSpace($prNo))  { $prNo  = "0" }
+$controllerLabel = [string]$env:MEP_CONTROLLER_LABEL
 
 if ($head -like "auto/writeback-bundle_*") {
   $title = ("Writeback bundle evidence ({0})" -f $head)
   $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $head, $runId)
-  [void](Ensure-PrForHead -head $head -base $base -title $title -body $body)
+  $prUrl = Ensure-PrForHead -head $head -base $base -title $title -body $body
+  Ensure-ControllerLabelOnPr -PrRef $prUrl -ControllerLabel $controllerLabel -Repo $repo
   exit 0
 }
 
@@ -129,4 +179,5 @@ try {
 git push -u origin $newHead | Out-Null
 $title = ("Writeback bundle evidence ({0})" -f $newHead)
 $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $newHead, $runId)
-[void](Ensure-PrForHead -head $newHead -base $base -title $title -body $body)
+$prUrl = Ensure-PrForHead -head $newHead -base $base -title $title -body $body
+Ensure-ControllerLabelOnPr -PrRef $prUrl -ControllerLabel $controllerLabel -Repo $repo
