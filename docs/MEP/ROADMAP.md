@@ -29,6 +29,12 @@ B-4 Self-heal 完全版（reason_code辞書→自動復帰）：post-writeback +
 - persistent structural loop reason と environment / patch prerequisite は仕様上の停止境界として扱う
 - 停止境界の canonical inspection は `python tools/runner/runner.py status`
 - `STATUS.md` / `HANDOFF_AUDIT.md` / `HANDOFF_WORK.md` は `STOP_BOUNDARY` を表示する
+- これ以降の未完は full self-heal backlog として扱い、micro PR ではなく backlog 群ごとに再開する
+
+## 残る未完（固定）
+- persistent structural loop boundary: `LOOP_ENGINE_RUN_UNRESOLVED_PERSISTENT` / `LOOP_ENGINE_CHILD_STATE_UNAVAILABLE_PERSISTENT`
+- evidence / PR ambiguity の truly ambiguous case: 複数 open PR や probe 不能時の最終判断
+- environment / patch prerequisite の自動修復: `REPO_NOT_SET` / `PATCH_DOES_NOT_APPLY`
 ---
 ## 現在地（固定）
 CURRENT_PHASE: A_DONE -> 次は B-1

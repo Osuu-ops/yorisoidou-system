@@ -22,6 +22,14 @@ Layer5: Governance（契約/停止/証跡/圧縮）
 - これらは bounded retry exhaustion または prerequisite 不足後の仕様上の停止境界であり、自動復旧へは戻さない
 - canonical inspection: `python tools/runner/runner.py status`
 
+## 運用完成 / 未完 の線引き
+- 運用完成: canonical loop / writeback / handoff までの通常運用は可能
+- 停止境界: `STATUS.md` / `HANDOFF_AUDIT.md` / `HANDOFF_WORK.md` の `STOP_BOUNDARY` で判別する
+- 未完 backlog:
+  - persistent structural loop boundary
+  - evidence / PR ambiguity の truly ambiguous case
+  - environment / patch prerequisite の自動修復
+
 ## 未統合レイヤー（固定）
 A) SSOT_SCAN：MEP_SSOT_MASTER(Q整合/RULE-0単一解化/PATCH競合/business-system混在)
 B) CONFLICT_SCAN：旧WORK_ID系 vs 新RUN系 / forbidden path / allowed_paths逸脱
