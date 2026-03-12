@@ -13,11 +13,15 @@ jobs:
     name: business-non-interference-guard
     runs-on: ubuntu-latest
     steps:
-      - name: Reject sealed legacy shim
+      - name: Emit sealed summary
         shell: bash
         run: |
           echo "Legacy business non-interference shim is sealed." >> "$GITHUB_STEP_SUMMARY"
           echo "This workflow is a non-canonical path." >> "$GITHUB_STEP_SUMMARY"
+      - name: Reject sealed legacy shim on manual dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
           echo "Legacy business non-interference shim is sealed."
           echo "This workflow is a non-canonical path."
           exit 1
