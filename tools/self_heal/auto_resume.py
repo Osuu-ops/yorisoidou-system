@@ -34,8 +34,9 @@ REASON_CODE_RULES = {
     "stop": "hard",
   },
   "LOOP_CONTEXT_INVALID": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
   },
   "LOOP_ENGINE_COMPLETED_WITH_FAILURE": {
     "category": "rerun canonical engine refresh",
@@ -50,16 +51,19 @@ REASON_CODE_RULES = {
     "stop": "hard",
   },
   "LOOP_REPO_UNRESOLVED": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
   },
   "LOOP_RESUME_ACTION_UNSUPPORTED": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
   },
   "LOOP_WAIT_ACTION_UNSUPPORTED": {
-    "category": "hard stop",
-    "stop": "hard",
+    "category": "freeze to canonical status view",
+    "runner_cmd": "status",
+    "requires_run_id": False,
   },
   "MULTIPLE_PR_FOR_ONE_RUN": {
     "category": "rerun canonical evidence probe",
@@ -106,6 +110,9 @@ def _runner_cmd_from_reason_code(reason_code: str, run_id: str) -> list[str] | N
   runner_cmd = str(rule.get("runner_cmd") or "").strip()
   if not runner_cmd:
     return None
+  requires_run_id = bool(rule.get("requires_run_id", True))
+  if not requires_run_id:
+    return ["python", str(RUNNER), runner_cmd]
   if not run_id:
     raise RuntimeError(f"reason_code={reason_code} requires run_id")
   return ["python", str(RUNNER), runner_cmd, "--run-id", run_id]

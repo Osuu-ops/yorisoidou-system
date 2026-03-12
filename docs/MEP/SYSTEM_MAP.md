@@ -15,10 +15,10 @@ Layer0: GitHub入口/起動
 Layer1: Runner Execution（完成：boot/status/apply/pr-probe/pr-create/assemble-pr/apply-safe/merge-finish/compact）
 Layer2: SSOT統合/検査（loop v2 から既存 SSOT_SCAN / CONFLICT_SCAN 実装を呼出し。phase state は run_state へ保存。全体統合は未）
 Layer3: Extract/派生生成（loop v2 から extract_generate に write 接続。phase state は run_state へ保存。canonical EXTRACT outputs は writeback stage 対象。full completion は未）
-Layer4: Self-heal（post-writeback + loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run の completion 観測と durable pointer を保持し、child run_state.next_action / loop_state を親 refresh で解釈。主要 manual reason_code は canonical self-heal command に拡張写像済で、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable も retry境界つき deterministic recovery に整理済だが、full completion は未）
+Layer4: Self-heal（post-writeback + loop owned phase resume は canonical loop entry 経由で接続済。`WAIT_LOOP_ENGINE` は canonical engine run の completion 観測と durable pointer を保持し、child run_state.next_action / loop_state を親 refresh で解釈。主要 manual reason_code は canonical self-heal command に拡張写像済で、structural/manual hard stop の一部は `status` へ canonical 化済、`WAIT_LOOP_ENGINE` の unresolved / child-state-unavailable も retry境界つき deterministic recovery に整理済だが、full completion は未）
 Layer5: Governance（契約/停止/証跡/圧縮）
 ## 未統合レイヤー（固定）
 A) SSOT_SCAN：MEP_SSOT_MASTER(Q整合/RULE-0単一解化/PATCH競合/business-system混在)
 B) CONFLICT_SCAN：旧WORK_ID系 vs 新RUN系 / forbidden path / allowed_paths逸脱
 C) EXTRACT生成：DECISION_LEDGER.md / INPUT_PACKET.md / health.md / cards
-D) Self-heal完全版：push retry / gh fallback / check再取得 / reason_code→自動復帰（主要 manual reason_code mapping は拡張済、全辞書化は未）
+D) Self-heal完全版：push retry / gh fallback / check再取得 / reason_code→自動復帰（主要 manual reason_code mapping と structural/manual hard stop の一部 status 化は拡張済、全辞書化は未）
