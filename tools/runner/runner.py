@@ -1734,18 +1734,64 @@ def pr_probe(run_id: str) -> int:
         rs["next_action"] = "SET_GH_REPO"
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 1
+    ev = rs["last_result"].get("evidence", {}) or {}
+    ev["branch_name"] = branch
+
+    def _handoff_to_pr_create(wait_reason_code: str, wait_next_action: str) -> int:
+        rs["last_result"]["evidence"] = ev
+        write_json(RUN_STATE, rs); update_compiled(rs)
+        try:
+            return pr_create(run_id)
+        except Exception:
+            rs["updated_at"] = utc_now_z()
+            rs["last_result"]["timestamp_utc"] = rs["updated_at"]
+            rs["last_result"]["action"] = {"name": "PR_PROBE", "outcome": "WAIT"}
+            rs["last_result"]["stop_class"] = "WAIT"
+            rs["last_result"]["reason_code"] = wait_reason_code
+            rs["next_action"] = wait_next_action
+            rs["last_result"]["evidence"] = ev
+            write_json(RUN_STATE, rs); update_compiled(rs)
+            return 2
+
     try:
         open_prs = _list_prs_by_state(repo, branch, "open")
         closed_prs = _list_prs_by_state(repo, branch, "closed")
     except Exception:
+        remembered_pr_url = str(ev.get("pr_url") or "").strip()
+        if remembered_pr_url:
+            try:
+                remembered_pr = json.loads(_run([
+                    "gh", "pr", "view", remembered_pr_url,
+                    "--repo", repo,
+                    "--json", "state,url",
+                    "-q", ".",
+                ]))
+                remembered_state = str(remembered_pr.get("state") or "").strip().upper()
+                ev["pr_url"] = remembered_pr.get("url") or remembered_pr_url
+                if remembered_state == "OPEN":
+                    rs["last_result"]["evidence"] = ev
+                    rs["last_result"]["stop_class"] = ""
+                    rs["last_result"]["reason_code"] = ""
+                    rs["next_action"] = "STATUS"
+                    write_json(RUN_STATE, rs); update_compiled(rs)
+                    return 0
+                if remembered_state == "CLOSED":
+                    return _handoff_to_pr_create("PR_CLOSED_FOR_RUN", "OPEN_NEW_PR_FOR_RUN")
+                if remembered_state == "MERGED":
+                    rs["last_result"]["evidence"] = ev
+                    rs["last_result"]["stop_class"] = ""
+                    rs["last_result"]["reason_code"] = ""
+                    rs["next_action"] = "STATUS"
+                    write_json(RUN_STATE, rs); update_compiled(rs)
+                    return 0
+            except Exception:
+                pass
         rs["last_result"]["stop_class"] = "WAIT"
         rs["last_result"]["reason_code"] = "EVIDENCE_REQUIRED_BUT_UNAVAILABLE"
         rs["next_action"] = "PROVIDE_EVIDENCE_OR_ABORT"
-        rs["last_result"]["evidence"] = {"branch_name": branch}
+        rs["last_result"]["evidence"] = ev
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 2
-    ev = rs["last_result"].get("evidence", {}) or {}
-    ev["branch_name"] = branch
     if len(open_prs) == 1:
         ev["pr_url"] = open_prs[0].get("url")
         rs["last_result"]["evidence"] = ev
@@ -1768,19 +1814,12 @@ def pr_probe(run_id: str) -> int:
         write_json(RUN_STATE, rs); update_compiled(rs)
         return 0
     if len(open_prs) == 0 and len(closed_prs) >= 1:
-        rs["last_result"]["stop_class"] = "WAIT"
-        rs["last_result"]["reason_code"] = "PR_CLOSED_FOR_RUN"
-        rs["next_action"] = "OPEN_NEW_PR_FOR_RUN"
-        rs["last_result"]["evidence"] = ev
-        write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        ev["closed_pr_urls"] = [pr.get("url") for pr in closed_prs if pr.get("url")]
+        return _handoff_to_pr_create("PR_CLOSED_FOR_RUN", "OPEN_NEW_PR_FOR_RUN")
     if len(open_prs) == 0 and len(closed_prs) == 0:
-        rs["last_result"]["stop_class"] = "WAIT"
-        rs["last_result"]["reason_code"] = "PR_NOT_FOUND_FOR_RUN"
-        rs["next_action"] = "CREATE_PR_FOR_RUN"
-        rs["last_result"]["evidence"] = ev
-        write_json(RUN_STATE, rs); update_compiled(rs)
-        return 2
+        return _handoff_to_pr_create("PR_NOT_FOUND_FOR_RUN", "CREATE_PR_FOR_RUN")
+    ev["open_pr_urls"] = [pr.get("url") for pr in open_prs if pr.get("url")]
+    ev["closed_pr_urls"] = [pr.get("url") for pr in closed_prs if pr.get("url")]
     rs["last_result"]["stop_class"] = "HARD"
     rs["last_result"]["reason_code"] = "MULTIPLE_PR_FOR_ONE_RUN"
     rs["next_action"] = "MANUAL_RESOLUTION_REQUIRED"
@@ -1811,6 +1850,7 @@ def pr_probe(run_id: str) -> int:
                 rs["last_result"]["evidence"]["pr_url"] = new_pr.strip()
         except Exception:
             pass
+
 def pr_create(run_id: str) -> int:
     branch = f"mep/run_{run_id}"
     rs = load_json(RUN_STATE) if RUN_STATE.exists() else default_run_state()
