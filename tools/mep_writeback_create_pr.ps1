@@ -116,6 +116,40 @@ function Ensure-ControllerLabelOnPr {
   Info ("Attached controller label to PR #" + $prNumber + ": " + $ControllerLabel)
 }
 
+function Ensure-AutoMergeOnPr {
+  param(
+    [Parameter(Mandatory=$true)]
+    [string]$PrRef,
+
+    [Parameter()]
+    [string]$Repo = ""
+  )
+
+  $repoName = [string]$Repo
+  if ([string]::IsNullOrWhiteSpace($repoName)) {
+    $repoName = Resolve-FullRepo
+  }
+  if ([string]::IsNullOrWhiteSpace($repoName)) {
+    StopHard "REPO_NOT_SET"
+  }
+
+  $mergeArgs = @(
+    'pr', 'merge', $PrRef,
+    '--repo', $repoName,
+    '--auto', '--squash', '--delete-branch'
+  )
+  $mergeOutput = ((& gh @mergeArgs 2>&1) | Out-String).Trim()
+  if ($LASTEXITCODE -eq 0) {
+    Info ("Auto-merge enabled for PR " + $PrRef)
+    return
+  }
+  if ($mergeOutput -match 'already enabled' -or $mergeOutput -match 'Auto-merge already enabled') {
+    Info ("Auto-merge already enabled for PR " + $PrRef)
+    return
+  }
+  StopHard ("AUTO_MERGE_ENABLE_FAILED: " + $mergeOutput)
+}
+
 Assert-ControllerLock
 
 $writebackPaths = Resolve-WritebackPaths -PrimaryPath $BundlePath -MorePaths $AdditionalPaths
@@ -140,6 +174,7 @@ if ($head -like "auto/writeback-bundle_*") {
   $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $head, $runId)
   $prUrl = Ensure-PrForHead -head $head -base $base -title $title -body $body
   Ensure-ControllerLabelOnPr -PrRef $prUrl -ControllerLabel $controllerLabel -Repo $repo
+  Ensure-AutoMergeOnPr -PrRef $prUrl -Repo $repo
   exit 0
 }
 
@@ -181,3 +216,4 @@ $title = ("Writeback bundle evidence ({0})" -f $newHead)
 $body  = ("Automated writeback: created from branch {0} (run_id={1})" -f $newHead, $runId)
 $prUrl = Ensure-PrForHead -head $newHead -base $base -title $title -body $body
 Ensure-ControllerLabelOnPr -PrRef $prUrl -ControllerLabel $controllerLabel -Repo $repo
+Ensure-AutoMergeOnPr -PrRef $prUrl -Repo $repo
