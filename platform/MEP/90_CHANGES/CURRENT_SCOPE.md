@@ -7,6 +7,8 @@
 - .github/workflows/mep_entry_gate_pr.yml
 - .github/workflows/required_business_non_interference_guard.yml
 - .github/workflows/metadata-format-check.yml
+- .github/workflows/mep_gate_runner_manual.yml
+- .github/workflows/mep_merge_finish_outcome_on_intake_merge.yml
 - docs/MEP/MASTER_GOAL.md
 - docs/MEP/ROADMAP.md
 - docs/MEP/SYSTEM_MAP.md
