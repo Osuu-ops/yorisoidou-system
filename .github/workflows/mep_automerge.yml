@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Enable auto-merge (waits for all required checks)
         env:
-        GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
+          GH_TOKEN: ${{ secrets.MEP_BOT_PAT }}
         shell: bash
         run: |
           set -euo pipefail
