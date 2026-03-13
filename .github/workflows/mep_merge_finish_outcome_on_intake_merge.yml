@@ -14,7 +14,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
-      - name: Guard: only IssueOps intake PRs
+      - name: "Guard: only IssueOps intake PRs"
         id: guard
         shell: bash
         run: |
@@ -30,7 +30,7 @@ jobs:
             echo "note: title not typical intake ($TITLE) but head_ref matches; continue"
           fi
           echo "skip=false" >> "$GITHUB_OUTPUT"
-      - name: Merge-finish: post OUTCOME to Issue (best-effort)
+      - name: "Merge-finish: post OUTCOME to Issue (best-effort)"
         if: ${{ steps.guard.outputs.skip == 'false' }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,43 +44,43 @@ jobs:
           # Fetch PR body/title and try to extract ISSUE_NUMBER.
           pr_json="$(gh api "repos/${REPO}/pulls/${PR_NUM}")"
           title="$(printf '%s' "$pr_json" | python - <<'PY'
-import json,sys
-d=json.load(sys.stdin)
-print(d.get("title",""))
-PY
-)"
+          import json,sys
+          d=json.load(sys.stdin)
+          print(d.get("title",""))
+          PY
+          )"
           body="$(printf '%s' "$pr_json" | python - <<'PY'
-import json,sys
-d=json.load(sys.stdin)
-print(d.get("body","") or "")
-PY
-)"
+          import json,sys
+          d=json.load(sys.stdin)
+          print(d.get("body","") or "")
+          PY
+          )"
           # Heuristics: "Issue #1234" or "ISSUE_NUMBER: 1234" or "issue_number: 1234"
           issue=""
           issue="$(printf '%s\n%s\n' "$title" "$body" | python - <<'PY'
-import re,sys
-s=sys.stdin.read()
-m=re.search(r'\bIssue\s*#\s*(\d+)\b', s, re.IGNORECASE)
-if not m:
-  m=re.search(r'^\s*ISSUE_NUMBER:\s*(\d+)\s*$', s, re.MULTILINE)
-if not m:
-  m=re.search(r'^\s*issue_number:\s*(\d+)\s*$', s, re.MULTILINE)
-print(m.group(1) if m else "")
-PY
-)"
+          import re,sys
+          s=sys.stdin.read()
+          m=re.search(r'\bIssue\s*#\s*(\d+)\b', s, re.IGNORECASE)
+          if not m:
+            m=re.search(r'^\s*ISSUE_NUMBER:\s*(\d+)\s*$', s, re.MULTILINE)
+          if not m:
+            m=re.search(r'^\s*issue_number:\s*(\d+)\s*$', s, re.MULTILINE)
+          print(m.group(1) if m else "")
+          PY
+          )"
           if [[ -z "$issue" ]]; then
             # Could not map to issue; leave evidence on PR and exit 0.
             gh api "repos/${REPO}/issues/${PR_NUM}/comments" -f body="[MEP][MERGE_FINISH] merged intake PR but ISSUE_NUMBER not found. PR=${PR_URL} MERGE_SHA=${MERGE_SHA}" >/dev/null || true
             exit 0
           fi
           msg="$(cat <<MSG
-RUN_ID=MERGE_FINISH
-OUTCOME=PASS
-REASON_CODE=MERGE_FINISH_OK
-NEXT_ACTION=RESTART_PACKET
-PR_URL=${PR_URL}
-MERGE_SHA=${MERGE_SHA}
-EVIDENCE=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-MSG
-)"
+          RUN_ID=MERGE_FINISH
+          OUTCOME=PASS
+          REASON_CODE=MERGE_FINISH_OK
+          NEXT_ACTION=RESTART_PACKET
+          PR_URL=${PR_URL}
+          MERGE_SHA=${MERGE_SHA}
+          EVIDENCE=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MSG
+          )"
           gh api "repos/${REPO}/issues/${issue}/comments" -f body="$msg" >/dev/null || true
