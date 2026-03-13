@@ -49,7 +49,7 @@ jobs:
             if (!m) {
               const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: null, result: "FAIL", reason: "missing Signed-by line", checks: [] , allowlist_snapshot: null };
               appendAudit(rec);
-              await github.issues.createComment({ owner, repo, issue_number: prNumber, body: "❌ Signed-by 検証失敗: PR Body に `Signed-by: <github-login>` 行が見つかりません。FAST_LOOP / auto-merge の対象外です。" });
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: "❌ Signed-by 検証失敗: PR Body に `Signed-by: <github-login>` 行が見つかりません。FAST_LOOP / auto-merge の対象外です。" });
               core.setFailed("Signed-by line missing in PR body.");
               return;
             }
@@ -86,7 +86,7 @@ jobs:
             // 4) PR author == signedBy and org membership
             if (pr.user && pr.user.login === signedBy) {
               try {
-                const res = await github.orgs.checkMembershipForUser({ org: owner, username: signedBy }).catch(e => e);
+                const res = await github.rest.orgs.checkMembershipForUser({ org: owner, username: signedBy }).catch(e => e);
                 if (res && res.status === 204) {
                   await pass("pr author is org member", ["author-membership"]);
                   return;
@@ -99,7 +99,7 @@ jobs:
             // 5) check commits for verification and collect commit checks for audit
             let commitChecks = [];
             try {
-              const commitsRes = await github.pulls.listCommits({ owner, repo, pull_number: prNumber });
+              const commitsRes = await github.rest.pulls.listCommits({ owner, repo, pull_number: prNumber });
               const commits = commitsRes.data || [];
               for (const c of commits) {
                 const verification = (c.commit && c.commit.verification) ? c.commit.verification : null;
@@ -116,7 +116,7 @@ jobs:
 
             // 6) check PR comments for FAST_LOOP_GAS trigger by signedBy
             try {
-              const commentsRes = await github.issues.listComments({ owner, repo, issue_number: prNumber });
+              const commentsRes = await github.rest.issues.listComments({ owner, repo, issue_number: prNumber });
               const comments = commentsRes.data || [];
               for (const cm of comments) {
                 if ((cm.body || "").trim() === "FAST_LOOP_GAS" && cm.user && cm.user.login === signedBy) {
@@ -131,7 +131,7 @@ jobs:
             // 7) all checks failed -> FAIL and create comment + audit
             const rec = { ts: new Date().toISOString(), pr: prNumber, actor: pr.user.login, signed_by: signedBy, result: "FAIL", reason: "no allowlist/membership/commit.verification/comment match", checks: [], allowlist_snapshot, commitChecks };
             appendAudit(rec);
-            await github.issues.createComment({ owner, repo, issue_number: prNumber, body: `❌ Signed-by 検証失敗: \`Signed-by: ${signedBy}\` は許可されていないか、署名/コミット検証が取れませんでした。FAST_LOOP / auto-merge は実行されません。Ops Lead に連絡してください。` });
+            await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: `❌ Signed-by 検証失敗: \`Signed-by: ${signedBy}\` は許可されていないか、署名/コミット検証が取れませんでした。FAST_LOOP / auto-merge は実行されません。Ops Lead に連絡してください。` });
             core.setFailed("Signed-by verification failed: no matching proof found.");
 
       - name: Upload Signed-by verification audit (artifact)
