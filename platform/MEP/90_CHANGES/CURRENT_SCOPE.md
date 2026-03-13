@@ -8,6 +8,7 @@
 - .github/workflows/required_business_non_interference_guard.yml
 - .github/workflows/metadata-format-check.yml
 - .github/workflows/mep_gate_runner_manual.yml
+- .github/workflows/mep_gate_min5.yml
 - .github/workflows/mep_merge_finish_outcome_on_intake_merge.yml
 - .github/workflows/mep_automerge.yml
 - docs/MEP/MASTER_GOAL.md
