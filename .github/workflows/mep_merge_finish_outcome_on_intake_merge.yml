@@ -16,11 +16,12 @@ jobs:
     steps:
       - name: "Guard: only IssueOps intake PRs"
         id: guard
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TITLE: ${{ github.event.pull_request.title }}
         shell: bash
         run: |
           set -euo pipefail
-          HEAD_REF="${{ github.event.pull_request.head.ref }}"
-          TITLE="${{ github.event.pull_request.title }}"
           if [[ "$HEAD_REF" != mep/issueops-run-* ]]; then
             echo "skip: head ref not intake ($HEAD_REF)"
             echo "skip=true" >> "$GITHUB_OUTPUT"
