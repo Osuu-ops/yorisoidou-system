@@ -1,4 +1,6 @@
-﻿MEP entrypoint: START_HERE.md
+> RETIRED: This repository is not current MEP truth. See `Osuu-ops/mep-runtime-scaffold` and its repo retirement ledger.
+
+MEP entrypoint: START_HERE.md
 
 
 BAT report canary
